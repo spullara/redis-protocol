@@ -1,7 +1,15 @@
 import org.junit.Test;
+import redis.Command;
 import redis.RedisProtocol;
+import redis.Reply;
+import redis.SocketPool;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -16,12 +24,37 @@ import static org.junit.Assert.assertTrue;
 public class RedisProtocolTest {
   @Test
   public void testSetGet() throws IOException {
-    RedisProtocol redisProtocol = new RedisProtocol("localhost", 6379);
-    RedisProtocol.Reply setReply = redisProtocol.send(new RedisProtocol.Message("SET", "test", "value"));
-    assertTrue(setReply instanceof RedisProtocol.Reply.StatusReply);
-    assertEquals("OK", ((RedisProtocol.Reply.StatusReply) setReply).status);
-    RedisProtocol.Reply getReply = redisProtocol.send(new RedisProtocol.Message("GET", "test"));
-    assertTrue(getReply instanceof RedisProtocol.Reply.BulkReply);
-    assertEquals("value", new String(((RedisProtocol.Reply.BulkReply) getReply).bytes));
+    SocketPool socketPool = new SocketPool("localhost", 6379);
+    RedisProtocol redisProtocol = new RedisProtocol(socketPool.get());
+    Reply setReply = redisProtocol.send(new Command("SET", "test", "value"));
+    assertTrue(setReply instanceof Reply.StatusReply);
+    assertEquals("OK", ((Reply.StatusReply) setReply).status);
+    Reply getReply = redisProtocol.send(new Command("GET", "test"));
+    assertTrue(getReply instanceof Reply.BulkReply);
+    assertEquals("value", new String(((Reply.BulkReply) getReply).bytes));
+  }
+
+  @Test
+  public void testClientServer() throws IOException, BrokenBarrierException, InterruptedException {
+    final ServerSocket serverSocket = new ServerSocket(0);
+    Thread thread = new Thread(new Runnable() {
+      public void run() {
+        try {
+          final Socket accept = serverSocket.accept();
+          final RedisProtocol rp = new RedisProtocol(accept);
+          final Command receive = rp.receive();
+          rp.send(new Reply.StatusReply("OK"));
+          accept.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    });
+    thread.start();
+    RedisProtocol rp = new RedisProtocol(new Socket("localhost", serverSocket.getLocalPort()));
+    Reply setReply = rp.send(new Command("SET", "test", "value"));
+    assertTrue(setReply instanceof Reply.StatusReply);
+    assertEquals("OK", ((Reply.StatusReply) setReply).status);
   }
 }
+
