@@ -23,6 +23,10 @@ public class Command {
     this.arguments = arguments;
   }
 
+  public byte[][] getArguments() {
+    return arguments;
+  }
+
   public Command(Object... objects) {
     int length = objects.length;
     arguments = new byte[length][];
