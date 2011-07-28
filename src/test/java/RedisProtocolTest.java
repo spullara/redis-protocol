@@ -5,11 +5,9 @@ import redis.Reply;
 import redis.SocketPool;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -65,6 +63,39 @@ public class RedisProtocolTest {
     Reply getReply = rp.send(new Command("GET", "test"));
     assertTrue(getReply instanceof Reply.BulkReply);
     assertEquals("value", new String(((Reply.BulkReply) getReply).bytes));
+  }
+
+  volatile boolean running = true;
+
+  @Test
+  public void testEchoBench() throws IOException {
+    final ServerSocket serverSocket = new ServerSocket(0);
+    Thread thread = new Thread(new Runnable() {
+      public void run() {
+        try {
+          Socket accept = serverSocket.accept();
+          RedisProtocol rp = new RedisProtocol(accept);
+          while (running) {
+            Command receive = rp.receive();
+            rp.send(new Reply.StatusReply("OK"));
+          }
+          accept.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    });
+    thread.start();
+    RedisProtocol rp = new RedisProtocol(new Socket("localhost", serverSocket.getLocalPort()));
+    long start = System.currentTimeMillis();
+    final int TOTAL = 10000;
+    for (int i = 0; i < TOTAL; i++) {
+      Reply setReply = rp.send(new Command("SET", "test", "value"));
+    }
+    long diff = System.currentTimeMillis() - start;
+    System.out.println(TOTAL / diff);
+    running = false;
+    serverSocket.close();
   }
 }
 

@@ -6,7 +6,7 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
 /**
-* Created by IntelliJ IDEA.
+* Pooling sockets.
 * User: sam
 * Date: 7/27/11
 * Time: 3:00 PM

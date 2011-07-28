@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 /**
-* Created by IntelliJ IDEA.
+* Replies.
 * User: sam
 * Date: 7/27/11
 * Time: 3:04 PM
@@ -16,40 +16,6 @@ import java.nio.charset.Charset;
 public abstract class Reply {
 
   private static Charset UTF8 = Charset.forName("UTF-8");
-
-  public static Reply read(DataInputStream is) throws IOException {
-    int code = is.read();
-    switch (code) {
-      case StatusReply.MARKER: {
-        return new StatusReply(is.readLine());
-      }
-      case ErrorReply.MARKER: {
-        return new ErrorReply(is.readLine());
-      }
-      case IntegerReply.MARKER: {
-        return new IntegerReply(Integer.parseInt(is.readLine()));
-      }
-      case BulkReply.MARKER: {
-        byte[] bytes = RedisProtocol.readBytes(is);
-        return new BulkReply(bytes);
-      }
-      case MultiBulkReply.MARKER: {
-        int size = Integer.parseInt(is.readLine());
-        byte[][] byteArrays = new byte[size][];
-        for (int i = 0; i < size; i++) {
-          if (is.read() == BulkReply.MARKER) {
-            byteArrays[i] = RedisProtocol.readBytes(is);
-          } else {
-            throw new IOException("Unexpected character in stream");
-          }
-        }
-        return new MultiBulkReply(byteArrays);
-      }
-      default: {
-        throw new IOException("Unexpected character in stream: " + code);
-      }
-    }
-  }
 
   public abstract void write(OutputStream os) throws IOException;
 

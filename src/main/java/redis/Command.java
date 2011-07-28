@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Created by IntelliJ IDEA.
+ * Command holder.
  * User: sam
  * Date: 7/27/11
  * Time: 3:04 PM
