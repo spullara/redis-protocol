@@ -56,7 +56,8 @@ public class Command {
   }
 
   public static Command read(DataInputStream is) throws IOException {
-    if (is.read() == ARGS_PREFIX[0]) {
+    int read = is.read();
+    if (read == ARGS_PREFIX[0]) {
       int numArgs = Integer.parseInt(is.readLine());
       byte[][] byteArrays = new byte[numArgs][];
       for (int i = 0; i < numArgs; i++) {
@@ -68,6 +69,9 @@ public class Command {
       }
       return new Command(byteArrays);
     } else {
+      if (read == -1) {
+        return null;
+      }
       throw new IOException("Unexpected character");
     }
   }

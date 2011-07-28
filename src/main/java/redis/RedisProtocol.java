@@ -1,5 +1,7 @@
 package redis;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -11,10 +13,12 @@ import java.net.Socket;
  */
 public class RedisProtocol {
 
-  private Socket socket;
+  private DataInputStream is;
+  private OutputStream os;
 
-  public RedisProtocol(Socket socket) {
-    this.socket = socket;
+  public RedisProtocol(Socket socket) throws IOException {
+    is = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+    os = new BufferedOutputStream(socket.getOutputStream());
   }
 
   public static byte[] readBytes(DataInputStream is) throws IOException {
@@ -74,20 +78,16 @@ public class RedisProtocol {
   }
 
   public Reply send(Command command) throws IOException {
-    OutputStream os = socket.getOutputStream();
     command.write(os);
     os.flush();
-    DataInputStream is = new DataInputStream(socket.getInputStream());
     return receive(is);
   }
 
   public Command receive() throws IOException {
-    DataInputStream is = new DataInputStream(socket.getInputStream());
     return Command.read(is);
   }
 
   public void send(Reply reply) throws IOException {
-    OutputStream os = socket.getOutputStream();
     reply.write(os);
     os.flush();
   }

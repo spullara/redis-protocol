@@ -7,7 +7,14 @@ import redis.SocketPool;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -66,6 +73,7 @@ public class RedisProtocolTest {
   }
 
   volatile boolean running = true;
+  final int TOTAL = 10000;
 
   @Test
   public void testEchoBench() throws IOException {
@@ -77,7 +85,9 @@ public class RedisProtocolTest {
           RedisProtocol rp = new RedisProtocol(accept);
           while (running) {
             Command receive = rp.receive();
-            rp.send(new Reply.StatusReply("OK"));
+            if (receive != null) {
+              rp.send(new Reply.StatusReply("OK"));
+            }
           }
           accept.close();
         } catch (IOException e) {
@@ -88,14 +98,103 @@ public class RedisProtocolTest {
     thread.start();
     RedisProtocol rp = new RedisProtocol(new Socket("localhost", serverSocket.getLocalPort()));
     long start = System.currentTimeMillis();
-    final int TOTAL = 10000;
     for (int i = 0; i < TOTAL; i++) {
       Reply setReply = rp.send(new Command("SET", "test", "value"));
     }
     long diff = System.currentTimeMillis() - start;
-    System.out.println(TOTAL / diff);
+    System.out.println("Echo: " + (TOTAL / diff));
     running = false;
     serverSocket.close();
+  }
+
+  @Test
+  public void testRedisBench() throws IOException {
+    RedisProtocol rp = new RedisProtocol(new Socket("localhost", 6379));
+    long start = System.currentTimeMillis();
+    for (int i = 0; i < TOTAL; i++) {
+      Reply setReply = rp.send(new Command("SET", "test", "value"));
+    }
+    long diff = System.currentTimeMillis() - start;
+    System.out.println("Redis: " + (TOTAL / diff));
+  }
+
+  final ExecutorService es = Executors.newCachedThreadPool();
+
+  @Test
+  public void testMultiEchoBench() throws IOException, ExecutionException, InterruptedException {
+    final ServerSocket serverSocket = new ServerSocket(0);
+    Thread thread = new Thread(new Runnable() {
+      public void run() {
+        try {
+          while (running) {
+            final Socket accept = serverSocket.accept();
+            es.execute(new Runnable() {
+              public void run() {
+                try {
+                  RedisProtocol rp = new RedisProtocol(accept);
+                  while (running) {
+                    Command receive = rp.receive();
+                    if (receive != null) {
+                      rp.send(new Reply.StatusReply("OK"));
+                    }
+                  }
+                  accept.close();
+                } catch (IOException e) {
+                  e.printStackTrace();
+                }
+              }
+            });
+          }
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    });
+    thread.start();
+    long start = System.currentTimeMillis();
+    List<Callable<Void>> clients = new ArrayList<>();
+    final int CLIENTS = 50;
+    for (int j = 0; j < CLIENTS; j++) {
+      clients.add(new Callable<Void>() {
+        public Void call() throws Exception {
+          RedisProtocol rp = new RedisProtocol(new Socket("localhost", serverSocket.getLocalPort()));
+          for (int i = 0; i < TOTAL; i++) {
+            Reply setReply = rp.send(new Command("SET", "test", "value"));
+          }
+          return null;
+        }
+      });
+    }
+    for (Future<Void> future : es.invokeAll(clients)){
+      future.get();
+    }
+    long diff = System.currentTimeMillis() - start;
+    System.out.println("Echo: " + (TOTAL * CLIENTS / diff));
+    running = false;
+    serverSocket.close();
+  }
+
+  @Test
+  public void testMultiRedisBench() throws IOException, InterruptedException, ExecutionException {
+    long start = System.currentTimeMillis();
+    List<Callable<Void>> clients = new ArrayList<>();
+    final int CLIENTS = 50;
+    for (int j = 0; j < CLIENTS; j++) {
+      clients.add(new Callable<Void>() {
+        public Void call() throws Exception {
+          RedisProtocol rp = new RedisProtocol(new Socket("localhost", 6379));
+          for (int i = 0; i < TOTAL; i++) {
+            Reply setReply = rp.send(new Command("SET", "test", "value"));
+          }
+          return null;
+        }
+      });
+    }
+    for (Future<Void> future : es.invokeAll(clients)){
+      future.get();
+    }
+    long diff = System.currentTimeMillis() - start;
+    System.out.println("Redis: " + (TOTAL * CLIENTS / diff));
   }
 }
 

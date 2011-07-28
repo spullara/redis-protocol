@@ -15,6 +15,13 @@
   </properties>
 
   <dependencies>
+    <!-- Mojava -->
+    <dependency>
+      <groupId>com.github.spullara.mojava</groupId>
+      <artifactId>mojava</artifactId>
+      <version>0.1-SNAPSHOT</version>
+    </dependency>
+
     <!-- Testing -->
     <dependency>
       <groupId>junit</groupId>
