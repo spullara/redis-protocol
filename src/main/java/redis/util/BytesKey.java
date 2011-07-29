@@ -61,4 +61,8 @@ public class BytesKey {
   public ReadWriteLock getLock() {
     return locks[hashCode % locks.length];
   }
+
+  public byte[] getBytes() {
+    return bytes;
+  }
 }

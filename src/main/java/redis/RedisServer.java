@@ -3,6 +3,9 @@ package redis;
 import com.google.common.base.Charsets;
 import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
+import redis.reply.ErrorReply;
+import redis.reply.Reply;
+import redis.reply.StatusReply;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandle;
@@ -88,18 +91,18 @@ public class RedisServer {
       String verb = new String(arguments[0], Charsets.UTF_8).toLowerCase();
       if (!"auth".equals(verb)) {
         if (password != null && !password.equals(auth)) {
-          return new Reply.ErrorReply("Not authenticated");
+          return new ErrorReply("Not authenticated");
         }
       }
       MethodHandle code = commands.get(verb);
       if (code == null) {
-        return new Reply.ErrorReply("Command not implemented or invalid arguments: " + verb);
+        return new ErrorReply("Command not implemented or invalid arguments: " + verb);
       }
       try {
         return (Reply) code.invoke(database, arguments);
       } catch (Throwable throwable) {
         logger.log(Level.SEVERE, "Failed", throwable);
-        return new Reply.ErrorReply("Failed: " + throwable);
+        return new ErrorReply("Failed: " + throwable);
       }
     }
 
@@ -108,6 +111,9 @@ public class RedisServer {
         RedisProtocol rp = new RedisProtocol(accept);
         while (true) {
           Command command = rp.receive();
+          if (command == null) {
+            break;
+          }
           byte[][] arguments = command.getArguments();
           if ("select".equals(new String(arguments[0], Charsets.UTF_8).toLowerCase())) {
             String name = new String(arguments[1], Charsets.UTF_8);
@@ -115,12 +121,14 @@ public class RedisServer {
             if (database == null) {
               databases.put(name, database = new Database());
             }
-          }
-          Reply execute = execute(command);
-          if (execute == null) {
-            break;
+            rp.send(new StatusReply("OK"));
           } else {
-            rp.send(execute);
+            Reply execute = execute(command);
+            if (execute == null) {
+              break;
+            } else {
+              rp.send(execute);
+            }
           }
         }
       } catch (IOException e) {

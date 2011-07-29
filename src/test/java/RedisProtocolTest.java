@@ -1,8 +1,10 @@
 import org.junit.Test;
+import redis.reply.BulkReply;
 import redis.Command;
 import redis.RedisProtocol;
-import redis.Reply;
+import redis.reply.Reply;
 import redis.SocketPool;
+import redis.reply.StatusReply;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -32,11 +34,11 @@ public class RedisProtocolTest {
     SocketPool socketPool = new SocketPool("localhost", 6379);
     RedisProtocol redisProtocol = new RedisProtocol(socketPool.get());
     Reply setReply = redisProtocol.send(new Command("SET", "test", "value"));
-    assertTrue(setReply instanceof Reply.StatusReply);
-    assertEquals("OK", ((Reply.StatusReply) setReply).status);
+    assertTrue(setReply instanceof StatusReply);
+    assertEquals("OK", ((StatusReply) setReply).status);
     Reply getReply = redisProtocol.send(new Command("GET", "test"));
-    assertTrue(getReply instanceof Reply.BulkReply);
-    assertEquals("value", new String(((Reply.BulkReply) getReply).bytes));
+    assertTrue(getReply instanceof BulkReply);
+    assertEquals("value", new String(((BulkReply) getReply).bytes));
   }
 
   @Test
@@ -51,11 +53,11 @@ public class RedisProtocolTest {
           assertEquals("SET", new String(receive.getArguments()[0]));
           assertEquals("test", new String(receive.getArguments()[1]));
           assertEquals("value", new String(receive.getArguments()[2]));
-          rp.send(new Reply.StatusReply("OK"));
+          rp.send(new StatusReply("OK"));
           receive = rp.receive();
           assertEquals("GET", new String(receive.getArguments()[0]));
           assertEquals("test", new String(receive.getArguments()[1]));
-          rp.send(new Reply.BulkReply("value".getBytes()));
+          rp.send(new BulkReply("value".getBytes()));
           accept.close();
         } catch (IOException e) {
           e.printStackTrace();
@@ -65,11 +67,11 @@ public class RedisProtocolTest {
     thread.start();
     RedisProtocol rp = new RedisProtocol(new Socket("localhost", serverSocket.getLocalPort()));
     Reply setReply = rp.send(new Command("SET", "test", "value"));
-    assertTrue(setReply instanceof Reply.StatusReply);
-    assertEquals("OK", ((Reply.StatusReply) setReply).status);
+    assertTrue(setReply instanceof StatusReply);
+    assertEquals("OK", ((StatusReply) setReply).status);
     Reply getReply = rp.send(new Command("GET", "test"));
-    assertTrue(getReply instanceof Reply.BulkReply);
-    assertEquals("value", new String(((Reply.BulkReply) getReply).bytes));
+    assertTrue(getReply instanceof BulkReply);
+    assertEquals("value", new String(((BulkReply) getReply).bytes));
   }
 
   volatile boolean running = true;
@@ -86,7 +88,7 @@ public class RedisProtocolTest {
           while (running) {
             Command receive = rp.receive();
             if (receive != null) {
-              rp.send(new Reply.StatusReply("OK"));
+              rp.send(new StatusReply("OK"));
             }
           }
           accept.close();
@@ -135,7 +137,7 @@ public class RedisProtocolTest {
                   while (running) {
                     Command receive = rp.receive();
                     if (receive != null) {
-                      rp.send(new Reply.StatusReply("OK"));
+                      rp.send(new StatusReply("OK"));
                     }
                   }
                   accept.close();

@@ -1,5 +1,12 @@
 package redis;
 
+import redis.reply.BulkReply;
+import redis.reply.ErrorReply;
+import redis.reply.IntegerReply;
+import redis.reply.MultiBulkReply;
+import redis.reply.Reply;
+import redis.reply.StatusReply;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
@@ -46,30 +53,30 @@ public class RedisProtocol {
   public static Reply receive(DataInputStream is) throws IOException {
     int code = is.read();
     switch (code) {
-      case Reply.StatusReply.MARKER: {
-        return new Reply.StatusReply(is.readLine());
+      case StatusReply.MARKER: {
+        return new StatusReply(is.readLine());
       }
-      case Reply.ErrorReply.MARKER: {
-        return new Reply.ErrorReply(is.readLine());
+      case ErrorReply.MARKER: {
+        return new ErrorReply(is.readLine());
       }
-      case Reply.IntegerReply.MARKER: {
-        return new Reply.IntegerReply(Integer.parseInt(is.readLine()));
+      case IntegerReply.MARKER: {
+        return new IntegerReply(Integer.parseInt(is.readLine()));
       }
-      case Reply.BulkReply.MARKER: {
+      case BulkReply.MARKER: {
         byte[] bytes = readBytes(is);
-        return new Reply.BulkReply(bytes);
+        return new BulkReply(bytes);
       }
-      case Reply.MultiBulkReply.MARKER: {
+      case MultiBulkReply.MARKER: {
         int size = Integer.parseInt(is.readLine());
         byte[][] byteArrays = new byte[size][];
         for (int i = 0; i < size; i++) {
-          if (is.read() == Reply.BulkReply.MARKER) {
+          if (is.read() == BulkReply.MARKER) {
             byteArrays[i] = readBytes(is);
           } else {
             throw new IOException("Unexpected character in stream");
           }
         }
-        return new Reply.MultiBulkReply(byteArrays);
+        return new MultiBulkReply(byteArrays);
       }
       default: {
         throw new IOException("Unexpected character in stream: " + code);

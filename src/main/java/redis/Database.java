@@ -2,28 +2,38 @@ package redis;
 
 import com.google.common.base.Charsets;
 import mojava.F;
+import redis.reply.BulkReply;
+import redis.reply.ErrorReply;
+import redis.reply.IntegerReply;
+import redis.reply.MultiBulkReply;
+import redis.reply.Reply;
+import redis.reply.StatusReply;
 import redis.util.BytesKey;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 
 /**
-* TODO: Edit this
-* <p/>
-* User: sam
-* Date: 7/28/11
-* Time: 7:50 PM
-*/
+ * TODO: Edit this
+ * <p/>
+ * User: sam
+ * Date: 7/28/11
+ * Time: 7:50 PM
+ */
 public class Database {
 
-  private static final Reply.BulkReply EMPTY = new Reply.BulkReply(new byte[0]);
-  private static final Reply.StatusReply OK = new Reply.StatusReply("OK");
+  private static final BulkReply EMPTY = new BulkReply(new byte[0]);
+  private static final StatusReply OK = new StatusReply("OK");
+  private static final MultiBulkReply MEMPTY = mbytes(null);
+  private static final IntegerReply ZERO = new IntegerReply(0);
 
   // Every database has a map
-  private volatile Map<BytesKey, Object> map = new HashMap<>();
+  private volatile Map<BytesKey, Object> map = Collections.synchronizedMap(new HashMap<BytesKey, Object>());
+  private volatile Map<BytesKey, Long> expireMap = new HashMap<>();
 
   public Reply append(byte[][] a) {
     if (a.length != 3) return argerr();
@@ -85,7 +95,7 @@ public class Database {
     byte[][] pushArguments = new byte[3][];
     pushArguments[0] = a[0];
     pushArguments[1] = a[2];
-    pushArguments[2] = ((Reply.MultiBulkReply) brpop).byteArrays[1];
+    pushArguments[2] = ((MultiBulkReply) brpop).byteArrays[1];
     return lpush(pushArguments);
   }
 
@@ -105,12 +115,12 @@ public class Database {
 
   public Reply decr(byte[][] a) {
     if (a.length != 2) return argerr();
-    return decr(a[1], 1);
+    return change(a[1], -1);
   }
 
   public Reply decrby(byte[][] a) {
     if (a.length != 3) return argerr();
-    return decr(a[1], tonum(a[2]));
+    return change(a[1], -tonum(a[2]));
   }
 
   public Reply del(byte[][] a) {
@@ -130,7 +140,7 @@ public class Database {
 
   public Reply echo(byte[][] a) {
     if (a.length != 2) return argerr();
-    return new Reply.BulkReply(a[1]);
+    return new BulkReply(a[1]);
   }
 
   // EXEC
@@ -221,7 +231,7 @@ public class Database {
         }
         byte[] r = new byte[end - start];
         System.arraycopy(b, start, r, 0, end - start);
-        return new Reply.BulkReply(r);
+        return new BulkReply(r);
       } else if (o == null) {
         return EMPTY;
       } else {
@@ -242,7 +252,7 @@ public class Database {
       if (o instanceof byte[]) {
         return bytes((byte[]) o);
       }
-      return new Reply.BulkReply(null);
+      return new BulkReply(null);
     } finally {
       lock.unlock();
     }
@@ -321,12 +331,128 @@ public class Database {
     }
   }
 
-  // HGETALL
+  public Reply hgetall(byte[][] a) {
+    if (a.length != 2) return argerr();
+    BytesKey key = $(a[1]);
+    Lock lock = readLock(key);
+    try {
+      Object o = get(key);
+      if (o instanceof Map) {
+        Map<BytesKey, byte[]> hash = (Map) o;
+        byte[][] r = new byte[hash.size()][];
+        int i = 0;
+        for (Map.Entry<BytesKey, byte[]> entry : hash.entrySet()) {
+          r[i++] = entry.getKey().getBytes();
+          r[i++] = entry.getValue();
+        }
+        return mbytes(r);
+      } else if (o == null) {
+        return mbytes(new byte[0][]);
+      } else {
+        return typeerr();
+      }
+    } finally {
+      lock.unlock();
+    }
+  }
+
   // HINCRBY
-  // HKEYS
-  // HLEN
-  // HMGET
-  // HMSET
+
+  public Reply hkeys(byte[][] a) {
+    if (a.length != 2) return argerr();
+    BytesKey key = $(a[1]);
+    Lock lock = readLock(key);
+    try {
+      Object o = get(key);
+      if (o instanceof Map) {
+        Map<BytesKey, byte[]> hash = (Map) o;
+        byte[][] r = new byte[hash.size() * 2][];
+        int i = 0;
+        for (BytesKey entry : hash.keySet()) {
+          r[i++] = entry.getBytes();
+        }
+        return mbytes(r);
+      } else if (o == null) {
+        return mbytes(new byte[0][]);
+      } else {
+        return typeerr();
+      }
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  public Reply hlen(byte[][] a) {
+    if (a.length != 2) return argerr();
+    BytesKey key = $(a[1]);
+    Lock lock = readLock(key);
+    try {
+      Object o = get(key);
+      if (o instanceof Map) {
+        Map<BytesKey, byte[]> hash = (Map) o;
+        return new IntegerReply(hash.size());
+      } else if (o == null) {
+        return ZERO;
+      } else {
+        return typeerr();
+      }
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  public Reply hmget(byte[][] a) {
+    if (a.length < 3) return argerr();
+    int total = a.length - 2;
+    BytesKey key = $(a[1]);
+    Lock lock = readLock(key);
+    try {
+      Object o = get(key);
+      if (o instanceof Map) {
+        Map<BytesKey, byte[]> hash = (Map<BytesKey, byte[]>) o;
+        byte[][] r = new byte[total][];
+        for (int i = 0; i < total; i++) {
+          r[i] = hash.get(new BytesKey(a[3 + i]));
+        }
+        return mbytes(r);
+      } else if (o == null) {
+        return mbytes(new byte[total][]);
+      } else {
+        return typeerr();
+      }
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  public Reply hmset(byte[][] a) {
+    if (a.length < 4 || a.length % 2 == 1) return argerr();
+    BytesKey key = $(a[1]);
+    Lock lock = writeLock(key);
+    try {
+      Object o = get(key);
+      if (o instanceof Map || o == null) {
+        Map hash = (Map) o;
+        if (hash == null) {
+          synchronized (this) {
+            hash = (Map) get(key);
+            if (hash == null) {
+              hash = new HashMap();
+              put(key, hash);
+            }
+          }
+        }
+        for (int i = 2; i < a.length; i += 2) {
+          hash.put(new BytesKey(a[i]), a[i + 1]);
+        }
+        return OK;
+      } else {
+        return typeerr();
+      }
+    } finally {
+      lock.unlock();
+    }
+  }
 
   public Reply hset(byte[][] a) {
     if (a.length != 4) return argerr();
@@ -385,16 +511,163 @@ public class Database {
     }
   }
 
-  // HVALS
-  // INCR
-  // INCRBY
+  public Reply hvals(byte[][] a) {
+    if (a.length != 2) return argerr();
+    BytesKey key = $(a[1]);
+    Lock lock = readLock(key);
+    try {
+      Object o = get(key);
+      if (o instanceof Map) {
+        Map<BytesKey, byte[]> hash = (Map) o;
+        byte[][] r = new byte[hash.size() * 2][];
+        int i = 0;
+        for (byte[] entry : hash.values()) {
+          r[i++] = entry;
+        }
+        return mbytes(r);
+      } else if (o == null) {
+        return mbytes(new byte[0][]);
+      } else {
+        return typeerr();
+      }
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  public Reply incr(byte[][] a) {
+    if (a.length != 2) return argerr();
+    return change(a[1], 1);
+  }
+
+  public Reply incrby(byte[][] a) {
+    if (a.length != 3) return argerr();
+    return change(a[1], tonum(a[2]));
+  }
+
   // INFO
-  // KEYS
+
+  public Reply keys(byte[][] a) {
+    if (a.length != 2) return argerr();
+    String regex = new String(a[1], Charsets.US_ASCII);
+    regex = regex.replaceAll("[*]", ".*");
+    regex = regex.replaceAll("[?]", ".");
+    List<BytesKey> matches = new ArrayList<>();
+    for (BytesKey bytesKey : map.keySet()) {
+      if (new String(bytesKey.getBytes(), Charsets.US_ASCII).matches(regex)) {
+        matches.add(bytesKey);
+      }
+    }
+    byte[][] r = new byte[matches.size()][];
+    int i = 0;
+    for (BytesKey match : matches) {
+      r[i++] = match.getBytes();
+    }
+    return mbytes(r);
+  }
+
   // LASTSAVE
-  // LINDEX
-  // LINSERT
-  // LLEN
-  // LPOP
+
+  public Reply lindex(byte[][] a) {
+    if (a.length != 3) return argerr();
+    BytesKey key = $(a[1]);
+    Lock lock = writeLock(key);
+    try {
+      Object o = get(key);
+      if (o instanceof List) {
+        List<byte[]> l = (List<byte[]>) o;
+        long index = tonum(a[2]);
+        int size = l.size();
+        if (index < 0) index = size + index;
+        if (index < 0 || index >= size) {
+          return bytes(null);
+        }
+        return bytes(l.get((int) index));
+      } else {
+        return typeerr();
+      }
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  public Reply linsert(byte[][] a) {
+    if (a.length != 4) return argerr();
+    String where = new String(a[2], Charsets.US_ASCII).toLowerCase();
+    boolean before;
+    switch (where) {
+      case "before":
+        before = true;
+        break;
+      case "after":
+        before = false;
+        break;
+      default:
+        return argerr();
+    }
+    BytesKey key = $(a[1]);
+    BytesKey pivot = $(a[2]);
+    Lock lock = writeLock(key);
+    try {
+      Object o = map.get(key);
+      if (o instanceof List) {
+        List<byte[]> l = (List<byte[]>) o;
+        int i = 0;
+        for (byte[] bytes : l) {
+          if (pivot.equals(new BytesKey(bytes))) {
+            break;
+          }
+          i++;
+        }
+        if (i == l.size()) return num(-1);
+        if (before) {
+          l.add(i, a[3]);
+        } else {
+          l.add(i + 1, a[3]);
+        }
+        return num(l.size());
+      } else return typeerr();
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  public Reply llen(byte[][] a) {
+    if (a.length != 2) return argerr();
+    BytesKey key = $(a[1]);
+    Lock lock = writeLock(key);
+    try {
+      Object o = get(key);
+      if (o instanceof List) {
+        List<byte[]> l = (List<byte[]>) o;
+        return num(l.size());
+      } else if (o == null) {
+        return num(0);
+      } else {
+        return typeerr();
+      }
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  public Reply lpop(byte[][] a) {
+    if (a.length != 2) return argerr();
+    BytesKey key = $(a[1]);
+    Lock lock = writeLock(key);
+    try {
+      Object o = map.get(key);
+      if (o instanceof List) {
+        List<byte[]> l = (List<byte[]>) o;
+        if (l.size() == 0) return bytes(null);
+        return bytes(l.remove(0));
+      } else if (o == null) {
+        return bytes(null);
+      } else return typeerr();
+    } finally {
+      lock.unlock();
+    }
+  }
 
   public Reply lpush(byte[][] a) {
     if (a.length < 3) return argerr();
@@ -408,9 +681,11 @@ public class Database {
           l = new ArrayList<>(a.length - 2);
           put(key, l);
         }
-        for (int i = 1; i < a.length; i++) {
+        for (int i = 2; i < a.length; i++) {
           l.add(0, a[i]);
-          notifyAll();
+          synchronized (this) {
+            notifyAll();
+          }
         }
         return OK;
       } else return typeerr();
@@ -419,7 +694,27 @@ public class Database {
     }
   }
 
-  // LPUSHX
+  public Reply lpushx(byte[][] a) {
+    if (a.length != 3) return argerr();
+    BytesKey key = $(a[1]);
+    Lock lock = writeLock(key);
+    try {
+      Object o = map.get(key);
+      if (o instanceof List) {
+        List<byte[]> l = (List<byte[]>) o;
+        l.add(0, a[2]);
+        synchronized (this) {
+          notifyAll();
+        }
+        return num(l.size());
+      } else if (o == null) {
+        return num(0);
+      } else return typeerr();
+    } finally {
+      lock.unlock();
+    }
+  }
+
   // LRANGE
   // LREM
   // LSET
@@ -511,14 +806,14 @@ public class Database {
     return lock;
   }
 
-  private Reply decr(byte[] k, long num) {
+  private Reply change(byte[] k, long num) {
     BytesKey key = $(k);
     Lock lock = writeLock(key);
     try {
       Object o = get(key);
       if (o instanceof byte[]) {
         try {
-          long l = tonum((byte[]) o) - num;
+          long l = tonum((byte[]) o) + num;
           final String value = String.valueOf(l);
           put(key, value.getBytes(Charsets.UTF_8));
           return num(l);
@@ -537,12 +832,12 @@ public class Database {
     return new BytesKey(k);
   }
 
-  private Reply.IntegerReply num(long total) {
-    return new Reply.IntegerReply(total);
+  private IntegerReply num(long total) {
+    return new IntegerReply(total);
   }
 
   private Reply numerr() {
-    return new Reply.ErrorReply("value is not an integer");
+    return new ErrorReply("value is not an integer");
   }
 
   private Reply pop(byte[][] a, F<List, Object> f) {
@@ -564,7 +859,7 @@ public class Database {
                 synchronized (this) {
                   notifyAll();
                 }
-                return new Reply.MultiBulkReply(new byte[][]{a[i], (byte[]) remove});
+                return mbytes(new byte[][]{a[i], (byte[]) remove});
               } else {
                 return typeerr();
               }
@@ -581,7 +876,7 @@ public class Database {
           // ignore
         }
       }
-      return new Reply.MultiBulkReply(null);
+      return mbytes(null);
     } finally {
       lock.unlock();
     }
@@ -598,13 +893,13 @@ public class Database {
     }
   }
 
-  private Reply.ErrorReply argerr() {
+  private ErrorReply argerr() {
     String c = Thread.currentThread().getStackTrace()[2].getMethodName();
-    return new Reply.ErrorReply("wrong number of arguments for '" + c + "' command");
+    return new ErrorReply("wrong number of arguments for '" + c + "' command");
   }
 
-  private Reply.ErrorReply typeerr() {
-    return new Reply.ErrorReply("Operation against a key holding the wrong kind of value");
+  private ErrorReply typeerr() {
+    return new ErrorReply("Operation against a key holding the wrong kind of value");
   }
 
   private long tonum(byte[] k) {
@@ -612,7 +907,11 @@ public class Database {
   }
 
   private Reply bytes(byte[] o) {
-    return new Reply.BulkReply(o);
+    return new BulkReply(o);
+  }
+
+  private static MultiBulkReply mbytes(byte[][] r) {
+    return new MultiBulkReply(r);
   }
 
 }
