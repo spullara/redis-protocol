@@ -74,9 +74,13 @@ public abstract class Reply {
 
     public void write(OutputStream os) throws IOException {
       os.write(MARKER);
-      os.write(String.valueOf(bytes.length).getBytes(UTF8));
-      os.write("\r\n".getBytes(UTF8));
-      os.write(bytes);
+      if (bytes == null) {
+        os.write(String.valueOf(-1).getBytes(UTF8));
+      } else {
+        os.write(String.valueOf(bytes.length).getBytes(UTF8));
+        os.write("\r\n".getBytes(UTF8));
+        os.write(bytes);
+      }
       os.write("\r\n".getBytes(UTF8));
     }
   }
@@ -91,18 +95,23 @@ public abstract class Reply {
 
     public void write(OutputStream os) throws IOException {
       os.write(MARKER);
-      os.write(String.valueOf(byteArrays.length).getBytes(UTF8));
-      os.write("\r\n".getBytes(UTF8));
-      for (byte[] bytes : byteArrays) {
-        os.write(BulkReply.MARKER);
-        if (bytes == null) {
-          os.write(String.valueOf(-1).getBytes(UTF8));
-        } else {
-          os.write(String.valueOf(bytes.length).getBytes(UTF8));
-          os.write("\r\n".getBytes(UTF8));
-          os.write(bytes);
-        }
+      if (byteArrays == null) {
+        os.write(String.valueOf(-1).getBytes(UTF8));
         os.write("\r\n".getBytes(UTF8));
+      } else {
+        os.write(String.valueOf(byteArrays.length).getBytes(UTF8));
+        os.write("\r\n".getBytes(UTF8));
+        for (byte[] bytes : byteArrays) {
+          os.write(BulkReply.MARKER);
+          if (bytes == null) {
+            os.write(String.valueOf(-1).getBytes(UTF8));
+          } else {
+            os.write(String.valueOf(bytes.length).getBytes(UTF8));
+            os.write("\r\n".getBytes(UTF8));
+            os.write(bytes);
+          }
+          os.write("\r\n".getBytes(UTF8));
+        }
       }
     }
   }
