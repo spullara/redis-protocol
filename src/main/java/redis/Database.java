@@ -571,7 +571,7 @@ public class Database {
   public Reply lindex(byte[][] a) {
     if (a.length != 3) return argerr();
     BytesKey key = $(a[1]);
-    Lock lock = writeLock(key);
+    Lock lock = readLock(key);
     try {
       Object o = get(key);
       if (o instanceof List) {
@@ -715,9 +715,90 @@ public class Database {
     }
   }
 
-  // LRANGE
-  // LREM
-  // LSET
+  public Reply lrange(byte[][] a) {
+    if (a.length != 4) return argerr();
+    BytesKey key = $(a[1]);
+    Lock lock = writeLock(key);
+    try {
+      Object o = map.get(key);
+      if (o instanceof List) {
+        List<byte[]> list = (List<byte[]>) o;
+        int l = list.size();
+        int start = (int) tonum(a[2]);
+        if (start < 0) start = l + start;
+        start = Math.min(start, l);
+        int end = (int) tonum(a[3]);
+        if (end < 0) end = l + end;
+        end = Math.min(end + 1, l);
+        List<byte[]> sublist = list.subList(start, end);
+        byte[][] r = new byte[sublist.size()][];
+        int i = 0;
+        for (byte[] bytes : sublist) {
+          r[i++] = bytes;
+        }
+        return mbytes(r);
+      } else if (o == null) {
+        return bytes(null);
+      } else return typeerr();
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  public Reply lrem(byte[][] a) {
+    if (a.length != 4) return argerr();
+    BytesKey key = $(a[1]);
+    int count = (int) tonum(a[2]);
+    BytesKey pivot = $(a[3]);
+    Lock lock = writeLock(key);
+    try {
+      Object o = map.get(key);
+      if (o instanceof List) {
+        List<byte[]> list = (List<byte[]>) o;
+        List<byte[]> l = new ArrayList<>(list);
+        if (count >= 0) {
+          int removed = 0;
+          for (int i = 0; i < l.size(); i ++) {
+            if (new BytesKey(l.get(i)).equals(pivot)) {
+              list.remove(i - removed++);
+              if (removed == count) break;
+            }
+          }
+        } else {
+          int removed = 0;
+          for (int i = l.size() - 1; i >= 0; i--) {
+            if (new BytesKey(l.get(i)).equals(pivot)) {
+              list.remove(i);
+              if (++removed == -count) break;
+            }
+          }
+        }
+        return num(list.size());
+      } else return typeerr();
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  public Reply lset(byte[][] a) {
+    if (a.length != 4) return argerr();
+    BytesKey key = $(a[1]);
+    Lock lock = writeLock(key);
+    try {
+      Object o = map.get(key);
+      if (o instanceof List) {
+        List<byte[]> list = (List<byte[]>) o;
+        int index = (int) tonum(a[2]);
+        if (index < 0) index = list.size() + index;
+        if (index < 0 || index >= list.size()) return indexerr();
+        list.set(index, a[3]);
+        return OK;
+      } else return typeerr();
+    } finally {
+      lock.unlock();
+    }
+  }
+
   // LTRIM
   // MGET
   // MONITOR
@@ -900,6 +981,10 @@ public class Database {
 
   private ErrorReply typeerr() {
     return new ErrorReply("Operation against a key holding the wrong kind of value");
+  }
+
+  private ErrorReply indexerr() {
+    return new ErrorReply("Invalid index for list");
   }
 
   private long tonum(byte[] k) {
