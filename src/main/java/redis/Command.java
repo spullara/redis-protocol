@@ -69,7 +69,22 @@ public class Command {
       }
       return new Command(byteArrays);
     } else {
-      if (read == -1) {
+      // Special case MONITOR & QUIT command
+      if (read == 'M' || read == 'm') {
+        String command = ("m" + is.readLine()).toLowerCase();
+        if (command.equals("monitor")) {
+          byte[][] byteArrays = new byte[1][];
+          byteArrays[0] = "monitor".getBytes();
+          return new Command(byteArrays);
+        }
+      } else if (read == 'Q' || read == 'q') {
+        String command = ("q" + is.readLine()).toLowerCase();
+        if (command.equals("quit")) {
+          byte[][] byteArrays = new byte[1][];
+          byteArrays[0] = "quit".getBytes();
+          return new Command(byteArrays);
+        }
+      } else if (read == -1) {
         return null;
       }
       throw new IOException("Unexpected character");

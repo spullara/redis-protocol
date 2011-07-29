@@ -6,6 +6,7 @@ import com.sampullara.cli.Argument;
 import redis.reply.ErrorReply;
 import redis.reply.Reply;
 import redis.reply.StatusReply;
+import redis.util.BytesKey;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandle;
@@ -13,7 +14,9 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -74,7 +77,12 @@ public class RedisServer {
     }
   }
 
+  private static List<RedisListener> serverListeners = new ArrayList<>();
+
   private static class ServerConnection implements Runnable {
+    private static final byte[] SELECT = "select".getBytes();
+    private static final byte[] QUIT = "quit".getBytes();
+    private static final byte[] MONITOR = "monitor".getBytes();
     private final Socket accept;
     private Database database;
 
@@ -108,21 +116,57 @@ public class RedisServer {
 
     public void run() {
       try {
-        RedisProtocol rp = new RedisProtocol(accept);
+        final RedisProtocol rp = new RedisProtocol(accept);
+        REDIS:
         while (true) {
           Command command = rp.receive();
           if (command == null) {
             break;
           }
           byte[][] arguments = command.getArguments();
-          if ("select".equals(new String(arguments[0], Charsets.UTF_8).toLowerCase())) {
+          if (BytesKey.equals(SELECT, arguments[0])) {
             String name = new String(arguments[1], Charsets.UTF_8);
             database = databases.get(name);
             if (database == null) {
               databases.put(name, database = new Database());
             }
             rp.send(new StatusReply("OK"));
+          } else if (BytesKey.equals(MONITOR, arguments[0])) {
+            rp.send(new StatusReply("OK"));
+            RedisListener redisListener = new RedisListener() {
+              public void received(Command command) {
+                try {
+                  boolean first = true;
+                  for (byte[] bytes : command.getArguments()) {
+                    if (first) {
+                      first = false;
+                    } else {
+                      rp.write(" ".getBytes());
+                    }
+                    rp.write(bytes);
+                  }
+                  rp.write("\r\n".getBytes());
+                } catch (IOException e) {
+                  serverListeners.remove(this);
+                }
+              }
+            };
+            serverListeners.add(redisListener);
+            while(true) {
+              Command quit = rp.receive();
+              if (BytesKey.equals(QUIT, quit.getArguments()[0])) {
+                serverListeners.remove(redisListener);
+                break REDIS;
+              }
+            }
           } else {
+            if (serverListeners.size() > 0) {
+              for (RedisListener serverListener : serverListeners) {
+                synchronized (serverListeners) {
+                  serverListener.received(command);
+                }
+              }
+            }
             Reply execute = execute(command);
             if (execute == null) {
               break;

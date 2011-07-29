@@ -98,4 +98,9 @@ public class RedisProtocol {
     reply.write(os);
     os.flush();
   }
+
+  public void write(byte[] bytes) throws IOException {
+    os.write(bytes);
+    os.flush();
+  }
 }

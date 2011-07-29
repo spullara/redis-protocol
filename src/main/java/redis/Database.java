@@ -635,7 +635,7 @@ public class Database {
   public Reply llen(byte[][] a) {
     if (a.length != 2) return argerr();
     BytesKey key = $(a[1]);
-    Lock lock = writeLock(key);
+    Lock lock = readLock(key);
     try {
       Object o = get(key);
       if (o instanceof List) {
@@ -718,7 +718,7 @@ public class Database {
   public Reply lrange(byte[][] a) {
     if (a.length != 4) return argerr();
     BytesKey key = $(a[1]);
-    Lock lock = writeLock(key);
+    Lock lock = readLock(key);
     try {
       Object o = map.get(key);
       if (o instanceof List) {
@@ -799,9 +799,51 @@ public class Database {
     }
   }
 
-  // LTRIM
-  // MGET
-  // MONITOR
+  public Reply ltrim(byte[][] a) {
+    if (a.length != 4) return argerr();
+    BytesKey key = $(a[1]);
+    Lock lock = writeLock(key);
+    try {
+      Object o = map.get(key);
+      if (o instanceof List) {
+        List<byte[]> list = (List<byte[]>) o;
+        int l = list.size();
+        int start = (int) tonum(a[2]);
+        if (start < 0) start = l + start;
+        start = Math.min(start, l);
+        int end = (int) tonum(a[3]);
+        if (end < 0) end = l + end;
+        end = Math.min(end + 1, l);
+        put(key, list.subList(start, end));
+        return OK;
+      } else if (o == null) {
+        return bytes(null);
+      } else return typeerr();
+    } finally {
+      lock.unlock();
+    }
+  }
+
+  public Reply mget(byte[][] a) {
+    if (a.length < 2) return argerr();
+    byte[][] r = new byte[a.length - 1][];
+    for (int i = 1; i < a.length; i++) {
+      BytesKey key = $(a[i]);
+      Lock lock = readLock(key);
+      try {
+        Object value = get(key);
+        if (value instanceof byte[]) {
+          r[i] = (byte[]) value;
+        }
+      } finally {
+        lock.unlock();
+      }
+    }
+    return new MultiBulkReply(r);
+  }
+
+  // MONITOR implemented in RedisServer
+
   // MOVE
   // MSET
   // MSETNX

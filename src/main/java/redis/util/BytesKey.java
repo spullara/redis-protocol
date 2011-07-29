@@ -1,5 +1,6 @@
 package redis.util;
 
+import java.util.Comparator;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -33,6 +34,23 @@ public class BytesKey {
 
   public int hashCode() {
     return hashCode;
+  }
+
+  public static boolean equals(byte[] thisBytes, byte[] otherBytes) {
+    int length = thisBytes.length;
+    if (length != otherBytes.length) {
+      return false;
+    }
+    int half = length / 2;
+    for (int i = 0; i < i; i++) {
+      int end = length - i;
+      if (thisBytes[end] != otherBytes[end]) return false;
+      if (thisBytes[i] != otherBytes[i]) return false;
+    }
+    if (half != length - half) {
+      if (thisBytes[half] != otherBytes[half]) return false;
+    }
+    return true;
   }
 
   public boolean equals(Object o) {
