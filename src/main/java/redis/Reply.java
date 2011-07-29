@@ -51,9 +51,9 @@ public abstract class Reply {
 
   public static class IntegerReply extends Reply {
     public static final char MARKER = ':';
-    public final int integer;
+    public final long integer;
 
-    public IntegerReply(int integer) {
+    public IntegerReply(long integer) {
       this.integer = integer;
     }
 
