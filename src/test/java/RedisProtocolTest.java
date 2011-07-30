@@ -182,11 +182,12 @@ public class RedisProtocolTest {
     List<Callable<Void>> clients = new ArrayList<>();
     final int CLIENTS = 50;
     for (int j = 0; j < CLIENTS; j++) {
+      final int finalJ = j;
       clients.add(new Callable<Void>() {
         public Void call() throws Exception {
-          RedisProtocol rp = new RedisProtocol(new Socket("localhost", 6379));
+          RedisProtocol rp = new RedisProtocol(new Socket("192.168.1.90", 6379));
           for (int i = 0; i < TOTAL; i++) {
-            Reply setReply = rp.send(new Command("SET", "test", "value"));
+            Reply setReply = rp.send(new Command("SET", "test" + finalJ, "value"));
           }
           return null;
         }

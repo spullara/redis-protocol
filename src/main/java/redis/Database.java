@@ -13,8 +13,11 @@ import redis.util.BytesKey;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.Lock;
 
 /**
@@ -30,6 +33,7 @@ public class Database {
   private static final StatusReply OK = new StatusReply("OK");
   private static final MultiBulkReply MEMPTY = mbytes(null);
   private static final IntegerReply ZERO = new IntegerReply(0);
+  private static final StatusReply PONG = new StatusReply("PONG");
 
   // Every database has a map
   private volatile Map<BytesKey, Object> map = Collections.synchronizedMap(new HashMap<BytesKey, Object>());
@@ -758,7 +762,7 @@ public class Database {
         List<byte[]> l = new ArrayList<>(list);
         if (count >= 0) {
           int removed = 0;
-          for (int i = 0; i < l.size(); i ++) {
+          for (int i = 0; i < l.size(); i++) {
             if (new BytesKey(l.get(i)).equals(pivot)) {
               list.remove(i - removed++);
               if (removed == count) break;
@@ -845,12 +849,61 @@ public class Database {
   // MONITOR implemented in RedisServer
 
   // MOVE
-  // MSET
-  // MSETNX
+
+  public Reply mset(byte[][] a) {
+    if (a.length < 3 || a.length % 2 != 1) return argerr();
+    for (int i = 1; i < a.length; i += 2) {
+      BytesKey key = $(a[i]);
+      Lock lock = writeLock(key);
+      try {
+        put(key, a[i + 1]);
+      } finally {
+        lock.unlock();
+      }
+    }
+    return OK;
+  }
+
+  public Reply msetnx(byte[][] a) {
+    if (a.length < 3 || a.length % 2 != 1) return argerr();
+    int num = (a.length - 1) / 2;
+    List<Lock> locks = new ArrayList<>(num);
+    List<BytesKey> keys = new ArrayList<>(num);
+    try {
+      for (int i = 1; i < a.length; i += 2) {
+        keys.add($(a[i]));
+      }
+      // Acquire the locks in a set order to avoid deadlocks
+      Collections.sort(keys);
+      for (BytesKey key : keys) {
+        locks.add(writeLock(key));
+      }
+      for (int i = 1; i < a.length; i += 2) {
+        BytesKey key = $(a[i]);
+        if (map.get(key) != null) {
+          return new IntegerReply(0);
+        }
+      }
+      for (int i = 1; i < a.length; i += 2) {
+        BytesKey key = $(a[i]);
+        put(key, a[i + 1]);
+      }
+      return new IntegerReply(1);
+    } finally {
+      for (Lock lock : locks) {
+        lock.unlock();
+      }
+    }
+  }
+
   // MULTI
   // OBJECT
   // PERSIST
-  // PING
+
+  public Reply ping(byte[][] a) {
+    return PONG;
+  }
+
   // PSUBSCRIBE
   // PUBLISH
   // PUNSUBSCRIBE
@@ -862,7 +915,35 @@ public class Database {
   // RPOPLPUSH
   // RPUSH
   // RPUSHX
-  // SADD
+
+  public Reply sadd(byte[][] a) {
+    if (a.length < 3) return argerr();
+    BytesKey key = $(a[1]);
+    Lock lock = writeLock(key);
+    try {
+      Object o = map.get(key);
+      if (o instanceof Set || o == null) {
+        Set<BytesKey> s = (Set<BytesKey>) o;
+        if (s == null) {
+          s = new HashSet<BytesKey>();
+          put(key, s);
+        }
+        int total = 0;
+        for (int i = 2; i < a.length; i++) {
+          if (s.add(new BytesKey(a[i]))) {
+            total++;
+          }
+          synchronized (this) {
+            notifyAll();
+          }
+        }
+        return num(total);
+      } else return typeerr();
+    } finally {
+      lock.unlock();
+    }
+  }
+
   // SAVE
   // SCARD
   // SDIFF
@@ -894,7 +975,30 @@ public class Database {
   // SMEMBERS
   // SMOVE
   // SORT
-  // SPOP
+
+  public Reply spop(byte[][] a) {
+    if (a.length != 2) return argerr();
+    BytesKey key = $(a[1]);
+    Lock lock = writeLock(key);
+    try {
+      Object o = map.get(key);
+      if (o instanceof Set) {
+        Set<BytesKey> s = (Set<BytesKey>) o;
+        Iterator<BytesKey> i = s.iterator();
+        if (i.hasNext()) {
+          BytesKey value = i.next();
+          s.remove(value);
+          return bytes(value.getBytes());
+        }
+        return bytes(null);
+      } else if (o == null) {
+        return bytes(null);
+      } else return typeerr();
+    } finally {
+      lock.unlock();
+    }
+  }
+
   // SRANDMEMBER
   // SREM
   // STRLEN
@@ -934,9 +1038,9 @@ public class Database {
     Lock lock = writeLock(key);
     try {
       Object o = get(key);
-      if (o instanceof byte[]) {
+      if (o instanceof byte[] || o == null) {
         try {
-          long l = tonum((byte[]) o) + num;
+          long l = (o == null ? 0 : tonum((byte[]) o)) + num;
           final String value = String.valueOf(l);
           put(key, value.getBytes(Charsets.UTF_8));
           return num(l);

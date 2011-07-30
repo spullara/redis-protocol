@@ -59,6 +59,8 @@ public class RedisServer {
     logger.info("Listening");
     while (true) {
       final Socket accept = ss.accept();
+      accept.setTcpNoDelay(true);
+      accept.setKeepAlive(true);
       es.execute(new ServerConnection(accept));
       logger.info("Client connected");
     }

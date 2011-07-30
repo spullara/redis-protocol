@@ -69,7 +69,7 @@ public class Command {
       }
       return new Command(byteArrays);
     } else {
-      // Special case MONITOR & QUIT command
+      // Special case MONITOR & PING & QUIT command
       if (read == 'M' || read == 'm') {
         String command = ("m" + is.readLine()).toLowerCase();
         if (command.equals("monitor")) {
@@ -82,6 +82,13 @@ public class Command {
         if (command.equals("quit")) {
           byte[][] byteArrays = new byte[1][];
           byteArrays[0] = "quit".getBytes();
+          return new Command(byteArrays);
+        }
+      } else if (read == 'P' || read == 'p') {
+        String command = ("p" + is.readLine()).toLowerCase();
+        if (command.equals("ping")) {
+          byte[][] byteArrays = new byte[1][];
+          byteArrays[0] = "ping".getBytes();
           return new Command(byteArrays);
         }
       } else if (read == -1) {

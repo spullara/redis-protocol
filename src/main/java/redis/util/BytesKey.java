@@ -1,5 +1,7 @@
 package redis.util;
 
+import com.google.common.primitives.SignedBytes;
+
 import java.util.Comparator;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -11,8 +13,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 * Date: 7/28/11
 * Time: 7:03 PM
 */
-public class BytesKey {
+public class BytesKey implements Comparable<BytesKey> {
   private static final ReadWriteLock[] locks = new ReadWriteLock[100];
+  private static final Comparator<byte[]> COMPARATOR = SignedBytes.lexicographicalComparator();
+
   static {
     for (int i = 0; i < locks.length; i++) {
       locks[i] = new ReentrantReadWriteLock(true);
@@ -82,5 +86,10 @@ public class BytesKey {
 
   public byte[] getBytes() {
     return bytes;
+  }
+
+  @Override
+  public int compareTo(BytesKey o) {
+    return COMPARATOR.compare(this.bytes, o.bytes);
   }
 }
