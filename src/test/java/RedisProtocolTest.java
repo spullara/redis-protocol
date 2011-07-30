@@ -187,7 +187,7 @@ public class RedisProtocolTest {
         public Void call() throws Exception {
           RedisProtocol rp = new RedisProtocol(new Socket("192.168.1.90", 6379));
           for (int i = 0; i < TOTAL; i++) {
-            Reply setReply = rp.send(new Command("SET", "test" + finalJ, "value"));
+            Reply setReply = rp.send(new Command("SET", "test" + finalJ, "valuevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevalue"));
           }
           return null;
         }
