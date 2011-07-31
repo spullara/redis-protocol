@@ -185,9 +185,9 @@ public class RedisProtocolTest {
       final int finalJ = j;
       clients.add(new Callable<Void>() {
         public Void call() throws Exception {
-          RedisProtocol rp = new RedisProtocol(new Socket("192.168.1.90", 6379));
+          RedisProtocol rp = new RedisProtocol(new Socket("localhost", 6379));
           for (int i = 0; i < TOTAL; i++) {
-            Reply setReply = rp.send(new Command("SET", "test" + finalJ, "valuevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevaluevalue"));
+            Reply setReply = rp.send(new Command("SET", "test" + finalJ, "value"));
           }
           return null;
         }
@@ -198,6 +198,11 @@ public class RedisProtocolTest {
     }
     long diff = System.currentTimeMillis() - start;
     System.out.println("Redis: " + (TOTAL * CLIENTS / diff));
+  }
+
+  public static void main(String[] args) throws IOException, ExecutionException, InterruptedException {
+    RedisProtocolTest redisProtocolTest = new RedisProtocolTest();
+    redisProtocolTest.testMultiRedisBench();
   }
 }
 
