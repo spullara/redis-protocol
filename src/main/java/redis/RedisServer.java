@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -194,102 +193,7 @@ public class RedisServer {
               break;
             } else {
               rp.send(execute);
-              int subscriptions = 0;
-              final AtomicReference<Exception> failed = new AtomicReference<>(null);
-              do {
-                if (execute instanceof SubscribeReply) {
-                  if (execute instanceof PSubscribeReply) {
-                    PSubscribeReply sr = (PSubscribeReply) execute;
-                    for (byte[] bytes : sr.getPatterns()) {
-                      final Pattern match = Pattern.compile(Database.makeRegex(bytes));
-                      PublishListener pl = new PublishListener() {
-                        public boolean publish(byte[] target, byte[] message) {
-                          if (match.matcher(Database.makeAscii(target)).matches()) {
-                            send(target, message, rp, failed);
-                            return true;
-                          }
-                          return false;
-                        }
-                      };
-                      database.addPublishListener(pl);
-                      BytesKey key = new BytesKey(bytes);
-                      subs.put(key, pl);
-                      Object[] r = new Object[3];
-                      r[0] = PSUBSCRIBE;
-                      r[1] = bytes;
-                      r[2] = subscriptions = subs.size() + psubs.size();
-                      rp.send(new MultiBulkReply(r));
-                    }
-                  } else {
-                    SubscribeReply sr = (SubscribeReply) execute;
-                    for (byte[] bytes : sr.getPatterns()) {
-                      final BytesKey match = new BytesKey(bytes);
-                      PublishListener pl = new PublishListener() {
-                        public boolean publish(byte[] target, byte[] message) {
-                          if (match.equals(new BytesKey(target))) {
-                            send(target, message, rp, failed);
-                            return true;
-                          }
-                          return false;
-                        }
-                      };
-                      database.addPublishListener(pl);
-                      BytesKey key = new BytesKey(bytes);
-                      subs.put(key, pl);
-                      Object[] r = new Object[3];
-                      r[0] = SUBSCRIBE;
-                      r[1] = bytes;
-                      r[2] = subscriptions = subs.size() + psubs.size();
-                      rp.send(new MultiBulkReply(r));
-                    }
-                  }
-                } else if (execute instanceof UnsubscribeReply) {
-                  if (execute instanceof PUnsubscribeReply) {
-                    PUnsubscribeReply pr = (PUnsubscribeReply) execute;
-                    for (byte[] pattern : getPatterns(psubs, pr)) {
-                      BytesKey key = new BytesKey(pattern);
-                      for (PublishListener pl : n(psubs.get(key))) {
-                        database.removePublishListener(pl);
-                      }
-                      psubs.removeAll(key);
-                      Object[] r = new Object[3];
-                      r[0] = PUNSUBSCRIBE;
-                      r[1] = pattern;
-                      r[2] = subscriptions = subs.size() + psubs.size();
-                      rp.send(new MultiBulkReply(r));
-                    }
-                  } else {
-                    UnsubscribeReply pr = (UnsubscribeReply) execute;
-                    for (byte[] pattern : getPatterns(psubs, pr)) {
-                      BytesKey key = new BytesKey(pattern);
-                      for (PublishListener pl : n(subs.get(key))) {
-                        database.removePublishListener(pl);
-                      }
-                      subs.removeAll(key);
-                      Object[] r = new Object[3];
-                      r[0] = UNSUBSCRIBE;
-                      r[1] = pattern;
-                      r[2] = subscriptions = subs.size() + psubs.size();
-                      rp.send(new MultiBulkReply(r));
-                    }
-                  }
-                } else {
-                  // This is a non-subscription command
-                  if (subscriptions > 0) {
-                    // And you are subscribed
-                    rp.send(new ErrorReply("Invalid command while subscribed"));
-                  }
-                  break;
-                }
-                if (subscriptions == 0) {
-                  break;
-                }
-                command = rp.receive();
-                if (command == null) {
-                  break REDIS;
-                }
-                execute = execute(command);
-              } while (true);
+              pubsub(rp, subs, psubs, execute);
             }
           }
         }
@@ -311,6 +215,104 @@ public class RedisServer {
       }
     }
 
+    private void pubsub(final RedisProtocol rp, Multimap<BytesKey, PublishListener> subs, Multimap<BytesKey, PublishListener> psubs, Reply execute) throws IOException {
+      Command command;
+      int subscriptions = 0;
+      do {
+        if (execute instanceof SubscribeReply) {
+          if (execute instanceof PSubscribeReply) {
+            PSubscribeReply sr = (PSubscribeReply) execute;
+            for (byte[] bytes : sr.getPatterns()) {
+              final Pattern match = Pattern.compile(Database.makeRegex(bytes));
+              PublishListener pl = new PublishListener() {
+                public boolean publish(byte[] target, byte[] message) {
+                  if (match.matcher(Database.makeAscii(target)).matches()) {
+                    send(target, message, rp);
+                    return true;
+                  }
+                  return false;
+                }
+              };
+              database.addPublishListener(pl);
+              BytesKey key = new BytesKey(bytes);
+              subs.put(key, pl);
+              Object[] r = new Object[3];
+              r[0] = PSUBSCRIBE;
+              r[1] = bytes;
+              r[2] = subscriptions = subs.size() + psubs.size();
+              rp.send(new MultiBulkReply(r));
+            }
+          } else {
+            SubscribeReply sr = (SubscribeReply) execute;
+            for (byte[] bytes : sr.getPatterns()) {
+              final BytesKey match = new BytesKey(bytes);
+              PublishListener pl = new PublishListener() {
+                public boolean publish(byte[] target, byte[] message) {
+                  if (match.equals(new BytesKey(target))) {
+                    send(target, message, rp);
+                    return true;
+                  }
+                  return false;
+                }
+              };
+              database.addPublishListener(pl);
+              subs.put(match, pl);
+              Object[] r = new Object[3];
+              r[0] = SUBSCRIBE;
+              r[1] = bytes;
+              r[2] = subscriptions = subs.size() + psubs.size();
+              rp.send(new MultiBulkReply(r));
+            }
+          }
+        } else if (execute instanceof UnsubscribeReply) {
+          if (execute instanceof PUnsubscribeReply) {
+            PUnsubscribeReply pr = (PUnsubscribeReply) execute;
+            for (byte[] pattern : getPatterns(psubs, pr)) {
+              BytesKey key = new BytesKey(pattern);
+              for (PublishListener pl : n(psubs.get(key))) {
+                database.removePublishListener(pl);
+              }
+              psubs.removeAll(key);
+              Object[] r = new Object[3];
+              r[0] = PUNSUBSCRIBE;
+              r[1] = pattern;
+              r[2] = subscriptions = subs.size() + psubs.size();
+              rp.send(new MultiBulkReply(r));
+            }
+          } else {
+            UnsubscribeReply pr = (UnsubscribeReply) execute;
+            for (byte[] pattern : getPatterns(psubs, pr)) {
+              BytesKey key = new BytesKey(pattern);
+              for (PublishListener pl : n(subs.get(key))) {
+                database.removePublishListener(pl);
+              }
+              subs.removeAll(key);
+              Object[] r = new Object[3];
+              r[0] = UNSUBSCRIBE;
+              r[1] = pattern;
+              r[2] = subscriptions = subs.size() + psubs.size();
+              rp.send(new MultiBulkReply(r));
+            }
+          }
+        } else {
+          // This is a non-subscription command
+          if (subscriptions > 0) {
+            // And you are subscribed
+            rp.send(new ErrorReply("Invalid command while subscribed"));
+          }
+          break;
+        }
+        if (subscriptions == 0) {
+          break;
+        }
+        command = rp.receive();
+        if (command == null) {
+          break;
+        }
+        execute = execute(command);
+      } while (true);
+    }
+
     private byte[][] getPatterns(Multimap<BytesKey, PublishListener> psubs, UnsubscribeReply pr) {
       byte[][] patterns = pr.getPatterns();
       if (patterns == null) {
@@ -324,7 +326,7 @@ public class RedisServer {
       return patterns;
     }
 
-    private void send(byte[] target, byte[] message, RedisProtocol rp, AtomicReference<Exception> failed) {
+    private void send(byte[] target, byte[] message, RedisProtocol rp) {
       Object[] r = new Object[3];
       r[0] = MESSAGE;
       r[1] = target;
@@ -332,7 +334,7 @@ public class RedisServer {
       try {
         rp.send(new MultiBulkReply(r));
       } catch (IOException e) {
-        failed.set(e);
+        logger.log(Level.SEVERE, "Failed to send message", e);
       }
     }
   }
