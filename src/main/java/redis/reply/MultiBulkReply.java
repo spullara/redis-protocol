@@ -14,10 +14,10 @@ import java.io.OutputStream;
 */
 public class MultiBulkReply extends Reply {
   public static final char MARKER = '*';
-  public final byte[][] byteArrays;
+  public final Object[] byteArrays;
 
-  public MultiBulkReply(byte[][] byteArrays) {
-    this.byteArrays = byteArrays;
+  public MultiBulkReply(Object... values) {
+    this.byteArrays = values;
   }
 
   public void write(OutputStream os) throws IOException {
@@ -28,14 +28,19 @@ public class MultiBulkReply extends Reply {
     } else {
       os.write(String.valueOf(byteArrays.length).getBytes(Charsets.UTF_8));
       os.write("\r\n".getBytes(Charsets.UTF_8));
-      for (byte[] bytes : byteArrays) {
-        os.write(BulkReply.MARKER);
-        if (bytes == null) {
+      for (Object value : byteArrays) {
+        if (value == null) {
+          os.write(BulkReply.MARKER);
           os.write(String.valueOf(-1).getBytes(Charsets.UTF_8));
-        } else {
+        } else if (value instanceof byte[]) {
+          byte[] bytes = (byte[]) value;
+          os.write(BulkReply.MARKER);
           os.write(String.valueOf(bytes.length).getBytes(Charsets.UTF_8));
           os.write("\r\n".getBytes(Charsets.UTF_8));
           os.write(bytes);
+        } else if (value instanceof Number) {
+          os.write(IntegerReply.MARKER);
+          os.write(String.valueOf(value).getBytes(Charsets.UTF_8));
         }
         os.write("\r\n".getBytes(Charsets.UTF_8));
       }

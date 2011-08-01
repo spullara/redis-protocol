@@ -6,8 +6,12 @@ import redis.reply.BulkReply;
 import redis.reply.ErrorReply;
 import redis.reply.IntegerReply;
 import redis.reply.MultiBulkReply;
+import redis.reply.PSubscribeReply;
+import redis.reply.PUnsubscribeReply;
 import redis.reply.Reply;
 import redis.reply.StatusReply;
+import redis.reply.SubscribeReply;
+import redis.reply.UnsubscribeReply;
 import redis.util.BytesKey;
 
 import java.util.ArrayList;
@@ -18,7 +22,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.locks.Lock;
+
+import static mojava.Abbrev.t;
 
 /**
  * TODO: Edit this
@@ -38,6 +48,18 @@ public class Database {
   // Every database has a map
   private volatile Map<BytesKey, Object> map = Collections.synchronizedMap(new HashMap<BytesKey, Object>());
   private volatile Map<BytesKey, Long> expireMap = new HashMap<>();
+
+  // Publish listeners
+  private Set<PublishListener> publishListeners = new HashSet<>();
+  private static ExecutorService publishService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+
+  public void addPublishListener(PublishListener pl) {
+    publishListeners.add(pl);
+  }
+
+  public void removePublishListener(PublishListener pl) {
+    publishListeners.remove(pl);
+  }
 
   public Reply append(byte[][] a) {
     if (a.length != 3) return argerr();
@@ -99,7 +121,7 @@ public class Database {
     byte[][] pushArguments = new byte[3][];
     pushArguments[0] = a[0];
     pushArguments[1] = a[2];
-    pushArguments[2] = ((MultiBulkReply) brpop).byteArrays[1];
+    pushArguments[2] = (byte[]) ((MultiBulkReply) brpop).byteArrays[1];
     return lpush(pushArguments);
   }
 
@@ -343,7 +365,7 @@ public class Database {
       Object o = get(key);
       if (o instanceof Map) {
         Map<BytesKey, byte[]> hash = (Map) o;
-        byte[][] r = new byte[hash.size()][];
+        byte[][] r = new byte[hash.size()*2][];
         int i = 0;
         for (Map.Entry<BytesKey, byte[]> entry : hash.entrySet()) {
           r[i++] = entry.getKey().getBytes();
@@ -553,12 +575,10 @@ public class Database {
 
   public Reply keys(byte[][] a) {
     if (a.length != 2) return argerr();
-    String regex = new String(a[1], Charsets.US_ASCII);
-    regex = regex.replaceAll("[*]", ".*");
-    regex = regex.replaceAll("[?]", ".");
+    String regex = makeRegex(a[1]);
     List<BytesKey> matches = new ArrayList<>();
     for (BytesKey bytesKey : map.keySet()) {
-      if (new String(bytesKey.getBytes(), Charsets.US_ASCII).matches(regex)) {
+      if (makeAscii(bytesKey.getBytes()).matches(regex)) {
         matches.add(bytesKey);
       }
     }
@@ -568,6 +588,17 @@ public class Database {
       r[i++] = match.getBytes();
     }
     return mbytes(r);
+  }
+
+  public static String makeRegex(byte[] bytes) {
+    String regex = makeAscii(bytes);
+    regex = regex.replaceAll("[*]", ".*");
+    regex = regex.replaceAll("[?]", ".");
+    return regex;
+  }
+
+  public static String makeAscii(byte[] bytes) {
+    return new String(bytes, Charsets.ISO_8859_1);
   }
 
   // LASTSAVE
@@ -597,7 +628,7 @@ public class Database {
 
   public Reply linsert(byte[][] a) {
     if (a.length != 4) return argerr();
-    String where = new String(a[2], Charsets.US_ASCII).toLowerCase();
+    String where = makeAscii(a[2]).toLowerCase();
     boolean before;
     switch (where) {
       case "before":
@@ -904,9 +935,37 @@ public class Database {
     return PONG;
   }
 
-  // PSUBSCRIBE
-  // PUBLISH
-  // PUNSUBSCRIBE
+  public Reply psubscribe(byte[][] a) {
+    if (a.length < 2) return argerr();
+    byte[][] byteArrays = new byte[a.length - 1][];
+    System.arraycopy(a, 1, byteArrays, 0, a.length - 1);
+    return new PSubscribeReply(byteArrays);
+  }
+
+  public Reply publish(byte[][] a) throws ExecutionException, InterruptedException {
+    if (a.length != 3) return argerr();
+    int total = 0;
+    if (publishListeners.size() > 0) {
+      final byte[] target = a[1];
+      final byte[] message = a[2];
+      for (Future<Boolean> matched : t(publishService, publishListeners, new F<PublishListener, Boolean>() {
+        public Boolean apply(PublishListener input) {
+          return input.publish(target, message);
+        }
+      })) {
+        if (matched.get()) total++;
+      }
+    }
+    return num(total);
+  }
+
+  public Reply punsubscribe(byte[][] a) {
+    if (a.length == 0) return argerr();
+    byte[][] byteArrays = new byte[a.length - 1][];
+    System.arraycopy(a, 1, byteArrays, 0, a.length - 1);
+    return new PUnsubscribeReply(byteArrays);
+  }
+
   // QUIT
   // RANDOMKEY
   // RENAME
@@ -1002,13 +1061,27 @@ public class Database {
   // SRANDMEMBER
   // SREM
   // STRLEN
-  // SUBSCRIBE
+
+  public Reply subscribe(byte[][] a) {
+    if (a.length < 2) return argerr();
+    byte[][] byteArrays = new byte[a.length - 1][];
+    System.arraycopy(a, 1, byteArrays, 0, a.length - 1);
+    return new SubscribeReply(byteArrays);
+  }
+
   // SUNION
   // SUNIONSTORE
   // SYNC
   // TTL
   // TYPE
-  // UNSUBSCRIBE
+
+  public Reply unsubscribe(byte[][] a) {
+    if (a.length == 0) return argerr();
+    byte[][] byteArrays = new byte[a.length - 1][];
+    System.arraycopy(a, 1, byteArrays, 0, a.length - 1);
+    return new UnsubscribeReply(byteArrays);
+  }
+
   // UNWATCH
   // WATCH
   // ZADD
