@@ -1,0 +1,39 @@
+package redis.client;
+
+import com.google.common.base.Charsets;
+import redis.Command;
+import redis.reply.Reply;
+
+import java.io.IOException;
+import java.util.concurrent.Future;
+
+public class RedisClient extends RedisClientBase {
+  protected Pipeline pipeline = new Pipeline();
+
+  public RedisClient(SocketPool socketPool) throws IOException {
+    super(socketPool);
+  }
+
+  public Pipeline pipeline() {
+    return pipeline;
+  }
+
+  {{#commands}}
+  private static final String {{name}} = "{{name}}";
+  private static final byte[] {{name}}_BYTES = {{name}}.getBytes(Charsets.US_ASCII);
+
+  {{<method}}
+  {{$method}}execute{{/method}}
+  {{/method}}
+  {{/commands}}
+
+  public class Pipeline {
+    {{#commands}}
+
+    {{<method}}
+      {{$return}}Future<Reply>{{/return}}
+      {{$method}}pipeline{{/method}}
+    {{/method}}
+    {{/commands}}
+  }
+}

@@ -29,6 +29,10 @@
       <id>javarants snapshots</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </repository>
+    <repository>
+      <id>twitter</id>
+      <url>http://maven.twttr.com/</url>
+    </repository>
   </repositories>
 
   <dependencies>

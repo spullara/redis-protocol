@@ -18,6 +18,10 @@
   </properties>
 
   <dependencies>
-    
+    <dependency>
+      <groupId>com.github.spullara.redis</groupId>
+      <artifactId>protocol</artifactId>
+      <version>0.1-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 </project>
