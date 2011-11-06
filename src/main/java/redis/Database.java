@@ -47,10 +47,10 @@ public class Database {
 
   // Every database has a map
   private volatile Map<BytesKey, Object> map = Collections.synchronizedMap(new HashMap<BytesKey, Object>());
-  private volatile Map<BytesKey, Long> expireMap = new HashMap<>();
+  private volatile Map<BytesKey, Long> expireMap = new HashMap<BytesKey, Long>();
 
   // Publish listeners
-  private Set<PublishListener> publishListeners = new HashSet<>();
+  private Set<PublishListener> publishListeners = new HashSet<PublishListener>();
   private static ExecutorService publishService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
 
   public void addPublishListener(PublishListener pl) {
@@ -187,7 +187,7 @@ public class Database {
 
   public Reply flushall(byte[][] a) {
     if (a.length != 1) return argerr();
-    map = new HashMap<>();
+    map = new HashMap<BytesKey, Object>();
     return OK;
   }
 
@@ -576,7 +576,7 @@ public class Database {
   public Reply keys(byte[][] a) {
     if (a.length != 2) return argerr();
     String regex = makeRegex(a[1]);
-    List<BytesKey> matches = new ArrayList<>();
+    List<BytesKey> matches = new ArrayList<BytesKey>();
     for (BytesKey bytesKey : map.keySet()) {
       if (makeAscii(bytesKey.getBytes()).matches(regex)) {
         matches.add(bytesKey);
@@ -629,18 +629,10 @@ public class Database {
   public Reply linsert(byte[][] a) {
     if (a.length != 4) return argerr();
     String where = makeAscii(a[2]).toLowerCase();
-    boolean before;
-    switch (where) {
-      case "before":
-        before = true;
-        break;
-      case "after":
-        before = false;
-        break;
-      default:
-        return argerr();
-    }
+    boolean before = where.equals("before");
+    boolean after = !before && where.equals("after");
     BytesKey key = $(a[1]);
+    if (!before && !after) return argerr();
     BytesKey pivot = $(a[2]);
     Lock lock = writeLock(key);
     try {
@@ -713,7 +705,7 @@ public class Database {
       if (o instanceof List || o == null) {
         List<byte[]> l = (List<byte[]>) o;
         if (l == null) {
-          l = new ArrayList<>(a.length - 2);
+          l = new ArrayList<byte[]>(a.length - 2);
           put(key, l);
         }
         for (int i = 2; i < a.length; i++) {
@@ -790,7 +782,7 @@ public class Database {
       Object o = map.get(key);
       if (o instanceof List) {
         List<byte[]> list = (List<byte[]>) o;
-        List<byte[]> l = new ArrayList<>(list);
+        List<byte[]> l = new ArrayList<byte[]>(list);
         if (count >= 0) {
           int removed = 0;
           for (int i = 0; i < l.size(); i++) {
@@ -898,8 +890,8 @@ public class Database {
   public Reply msetnx(byte[][] a) {
     if (a.length < 3 || a.length % 2 != 1) return argerr();
     int num = (a.length - 1) / 2;
-    List<Lock> locks = new ArrayList<>(num);
-    List<BytesKey> keys = new ArrayList<>(num);
+    List<Lock> locks = new ArrayList<Lock>(num);
+    List<BytesKey> keys = new ArrayList<BytesKey>(num);
     try {
       for (int i = 1; i < a.length; i += 2) {
         keys.add($(a[i]));

@@ -20,8 +20,8 @@ import java.net.Socket;
  */
 public class RedisProtocol {
 
-  private DataInputStream is;
-  private OutputStream os;
+  private final DataInputStream is;
+  private final OutputStream os;
 
   public RedisProtocol(Socket socket) throws IOException {
     is = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
@@ -50,7 +50,7 @@ public class RedisProtocol {
     return bytes;
   }
 
-  public static Reply receive(DataInputStream is) throws IOException {
+  private static Reply receive(DataInputStream is) throws IOException {
     int code = is.read();
     switch (code) {
       case StatusReply.MARKER: {
@@ -68,12 +68,15 @@ public class RedisProtocol {
       }
       case MultiBulkReply.MARKER: {
         int size = Integer.parseInt(is.readLine());
-        byte[][] byteArrays = new byte[size][];
+        Object[] byteArrays = new Object[size];
         for (int i = 0; i < size; i++) {
-          if (is.read() == BulkReply.MARKER) {
+          int read = is.read();
+          if (read == BulkReply.MARKER) {
             byteArrays[i] = readBytes(is);
+          } else if (read == IntegerReply.MARKER) {
+            byteArrays[i] = Integer.parseInt(is.readLine());
           } else {
-            throw new IOException("Unexpected character in stream");
+            throw new IOException("Unexpected character in stream: " + read);
           }
         }
         return new MultiBulkReply(byteArrays);
@@ -85,22 +88,40 @@ public class RedisProtocol {
   }
 
   public Reply send(Command command) throws IOException {
-    command.write(os);
-    os.flush();
-    return receive(is);
+    sendAsync(command);
+    return receiveAsync();
+  }
+
+  public Reply receiveAsync() throws IOException {
+    synchronized (is) {
+      return receive(is);
+    }
+  }
+
+  public void sendAsync(Command command) throws IOException {
+    synchronized (os) {
+      command.write(os);
+      os.flush();
+    }
   }
 
   public Command receive() throws IOException {
-    return Command.read(is);
+    synchronized (is) {
+      return Command.read(is);
+    }
   }
 
   public void send(Reply reply) throws IOException {
-    reply.write(os);
-    os.flush();
+    synchronized (os) {
+      reply.write(os);
+      os.flush();
+    }
   }
 
   public void write(byte[] bytes) throws IOException {
-    os.write(bytes);
-    os.flush();
+    synchronized (os) {
+      os.write(bytes);
+      os.flush();
+    }
   }
 }

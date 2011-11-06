@@ -16,8 +16,6 @@ import redis.reply.UnsubscribeReply;
 import redis.util.BytesKey;
 
 import java.io.IOException;
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -54,7 +52,7 @@ public class RedisServer {
 
   protected static String auth;
 
-  private static Map<String, MethodHandle> commands = new HashMap<>();
+  private static Map<String, Method> commands = new HashMap<String, Method>();
   private static final byte[] MESSAGE = "message".getBytes();
   private static final byte[] PMESSAGE = "pmessage".getBytes();
   private static final byte[] SUBSCRIBE = "subscribe".getBytes();
@@ -87,16 +85,15 @@ public class RedisServer {
     Reply call(byte[][] arguments);
   }
 
-  private static Map<String, Database> databases = new ConcurrentHashMap<>();
+  private static Map<String, Database> databases = new ConcurrentHashMap<String, Database>();
 
   private static void init() throws IllegalAccessException {
-    MethodHandles.Lookup lookup = MethodHandles.lookup();
     for (Method method : Database.class.getMethods()) {
-      commands.put(method.getName(), lookup.unreflect(method));
+      commands.put(method.getName(), method);
     }
   }
 
-  private static List<RedisListener> serverListeners = new ArrayList<>();
+  private static List<RedisListener> serverListeners = new ArrayList<RedisListener>();
 
   private static class ServerConnection implements Runnable {
     private static final byte[] SELECT = "select".getBytes();
@@ -121,12 +118,12 @@ public class RedisServer {
           return new ErrorReply("Not authenticated");
         }
       }
-      MethodHandle code = commands.get(verb);
+      Method code = commands.get(verb);
       if (code == null) {
         return new ErrorReply("Command not implemented or invalid arguments: " + verb);
       }
       try {
-        return (Reply) code.invoke(database, arguments);
+        return (Reply) code.invoke(database, new Object[] { arguments });
       } catch (Throwable throwable) {
         logger.log(Level.SEVERE, "Failed", throwable);
         return new ErrorReply("Failed: " + throwable);

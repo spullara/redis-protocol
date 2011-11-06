@@ -154,7 +154,7 @@ public class RedisProtocolTest {
     });
     thread.start();
     long start = System.currentTimeMillis();
-    List<Callable<Void>> clients = new ArrayList<>();
+    List<Callable<Void>> clients = new ArrayList<Callable<Void>>();
     final int CLIENTS = 50;
     for (int j = 0; j < CLIENTS; j++) {
       clients.add(new Callable<Void>() {
@@ -179,7 +179,7 @@ public class RedisProtocolTest {
   @Test
   public void testMultiRedisBench() throws IOException, InterruptedException, ExecutionException {
     long start = System.currentTimeMillis();
-    List<Callable<Void>> clients = new ArrayList<>();
+    List<Callable<Void>> clients = new ArrayList<Callable<Void>>();
     final int CLIENTS = 50;
     for (int j = 0; j < CLIENTS; j++) {
       final int finalJ = j;
