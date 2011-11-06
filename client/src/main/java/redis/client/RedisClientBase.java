@@ -30,7 +30,7 @@ public class RedisClientBase {
     }
   }
 
-  protected Future<Reply> pipeline(String name, Command command) throws RedisException {
+  protected Future<? extends Reply> pipeline(String name, Command command) throws RedisException {
     try {
       redisProtocol.sendAsync(command);
     } catch (IOException e) {

@@ -22,7 +22,7 @@ public class RedisClientTest {
   public void testIt() throws IOException, ExecutionException, InterruptedException {
     RedisClient redisClient = new RedisClient(new SocketPool("localhost", 6379));
     redisClient.set("test", "value");
-    BulkReply test = (BulkReply) redisClient.get("test");
+    BulkReply test = redisClient.get("test");
     assertEquals("value", new String(test.bytes));
   }
 }

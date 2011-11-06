@@ -10,6 +10,7 @@
     <module>protocol</module>
     <module>client</module>
     <module>clientgen</module>
+    <module>native</module>
   </modules>
   <packaging>pom</packaging>
 

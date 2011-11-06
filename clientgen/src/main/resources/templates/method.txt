@@ -1,4 +1,4 @@
   // {{comment}}
   public {{$return}}{{reply}}{{/return}} {{methodname}}({{#arguments}}{{typename}} {{name}}{{#notlast}}, {{/notlast}}{{/arguments}}) throws RedisException {
-    return {{$method}}method{{/method}}({{name}}, new Command({{name}}_BYTES{{#arguments}}, {{name}}{{/arguments}}));
+    return ({{$return}}{{reply}}{{/return}}) {{$method}}method{{/method}}({{name}}, new Command({{name}}_BYTES{{#arguments}}, {{name}}{{/arguments}}));
   }

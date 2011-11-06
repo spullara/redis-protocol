@@ -20,12 +20,15 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Generate client code for redis based on the protocol.
@@ -50,7 +53,7 @@ public class Main {
     MustacheBuilder mb = new MustacheBuilder("templates");
     mb.setSuperclass(NoEncodingMustache.class.getName());
     Mustache mustache = mb.parseFile("client.txt");
-
+    
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     final DocumentBuilder db = dbf.newDocumentBuilder();
     Document redis = db.parse("http://query.yahooapis.com/v1/public/yql/javarants/redis");
@@ -61,19 +64,30 @@ public class Main {
     final XPathExpression argumentsX = xpf.newXPath().compile("span/span[@class='args']/text()");
     final XPathExpression summaryX = xpf.newXPath().compile("span[@class='summary']/text()");
     final XPathExpression replyX = xpf.newXPath().compile("//a");
+    final Properties cache = new Properties();
+    File cacheFile = new File("cache");
+    if (cacheFile.exists()) {
+      cache.load(new FileInputStream(cacheFile));
+    }
     List<Object> commands = new ArrayList<Object>();
     for (int i = 0; i < commandNodes.getLength(); i++) {
       final Node node = commandNodes.item(i);
       final String command = commandX.evaluate(node).replace(" ", "_");
       final String commandArguments = argumentsX.evaluate(node);
       final String commandSummary = summaryX.evaluate(node);
-      final Document detail = db.parse("http://query.yahooapis.com/v1/public/yql/javarants/redisreply?url=" + URLEncoder.encode("http://redis.io/commands/" + command.toLowerCase(), "utf-8"));
-      final String finalReply = replyX.evaluate(detail).replaceAll("[- ]", "").replaceAll("reply", "Reply").replaceAll("bulk", "Bulk");
+      String cacheReply = cache.getProperty(command.toLowerCase());
+      if (cacheReply == null) {
+        final Document detail = db.parse("http://query.yahooapis.com/v1/public/yql/javarants/redisreply?url=" + URLEncoder.encode("http://redis.io/commands/" + command.toLowerCase(), "utf-8"));
+        cacheReply = replyX.evaluate(detail).replaceAll("[- ]", "").replaceAll("reply", "Reply").replaceAll("bulk", "Bulk").replaceAll("Statuscode", "Status");
+        cache.setProperty(command.toLowerCase(), cacheReply);
+        cache.store(new FileWriter(cacheFile), "# Updated " + new Date());
+      }
+      final String finalReply = cacheReply;
       if (!commandArguments.contains("[") && !commandArguments.contains("|")) {
         commands.add(new Object() {
           String name = command;
           String comment = commandSummary;
-          String reply = finalReply;
+          String reply = finalReply.equals("") ? "Reply" : finalReply;
           List<Object> arguments = new ArrayList<Object>();
           {
             final String[] split = commandArguments.split(" ");
