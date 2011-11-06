@@ -1,4 +1,4 @@
-package redis;
+package redis.client;
 
 import java.io.IOException;
 import java.net.Socket;

@@ -1,7 +1,7 @@
 import org.junit.Test;
 import redis.Command;
 import redis.RedisProtocol;
-import redis.SocketPool;
+import redis.client.SocketPool;
 import redis.reply.MultiBulkReply;
 
 import java.io.IOException;

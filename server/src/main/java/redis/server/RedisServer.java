@@ -1,10 +1,12 @@
-package redis;
+package redis.server;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
+import redis.Command;
+import redis.RedisProtocol;
 import redis.reply.ErrorReply;
 import redis.reply.MultiBulkReply;
 import redis.reply.PSubscribeReply;

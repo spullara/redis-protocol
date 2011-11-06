@@ -1,4 +1,4 @@
-package redis;
+package redis.server;
 
 /**
  * TODO: Edit this

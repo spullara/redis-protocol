@@ -1,4 +1,4 @@
-package redis;
+package redis.server;
 
 import com.google.common.base.Charsets;
 import mojava.F;

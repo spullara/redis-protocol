@@ -1,9 +1,9 @@
 import org.junit.Test;
-import redis.reply.BulkReply;
 import redis.Command;
 import redis.RedisProtocol;
+import redis.client.SocketPool;
+import redis.reply.BulkReply;
 import redis.reply.Reply;
-import redis.SocketPool;
 import redis.reply.StatusReply;
 
 import java.io.IOException;

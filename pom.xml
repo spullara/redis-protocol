@@ -2,12 +2,18 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.github.spullara.jredis</groupId>
-  <artifactId>jredis</artifactId>
-  <version>1.0</version>
-  <packaging>jar</packaging>
+  <groupId>com.github.spullara.redis</groupId>
+  <artifactId>redis</artifactId>
+  <version>0.1-SNAPSHOT</version>
+  <modules>
+    <module>server</module>
+    <module>protocol</module>
+    <module>client</module>
+    <module>clientgen</module>
+  </modules>
+  <packaging>pom</packaging>
 
-  <name>redis-protocol</name>
+  <name>redis</name>
   <url>http://maven.apache.org</url>
 
   <properties>
@@ -51,31 +57,6 @@
 
   <build>
     <plugins>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-
-        <configuration>
-          <descriptorRefs>
-            <descriptorRef>jar-with-dependencies</descriptorRef>
-          </descriptorRefs>
-          <archive>
-            <manifest>
-              <mainClass>redis.RedisServer</mainClass>
-            </manifest>
-          </archive>
-        </configuration>
-
-        <executions>
-          <execution>
-            <id>make-assembly</id>
-            <phase>package</phase>
-            <goals>
-              <goal>attached</goal>
-            </goals>
-          </execution>
-        </executions>
-
-      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
