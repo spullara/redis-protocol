@@ -24,5 +24,10 @@ public class RedisClientTest {
     redisClient.set("test", "value");
     BulkReply test = redisClient.get("test");
     assertEquals("value", new String(test.bytes));
+    RedisClient.Pipeline p = redisClient.pipeline();
+    p.set("increment", 0);
+    p.incr("increment");
+    p.incr("increment");
+    assertEquals(3, redisClient.incr("increment").integer);
   }
 }
