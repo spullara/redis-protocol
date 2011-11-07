@@ -19,7 +19,7 @@ import java.util.concurrent.Future;
  */
 public class RedisClientBase {
   // Single threaded pipelining
-  private static ExecutorService es = Executors.newFixedThreadPool(1);
+  private ExecutorService es = Executors.newFixedThreadPool(1);
   protected RedisProtocol redisProtocol;
 
   protected RedisClientBase(SocketPool socketPool) throws RedisException {
@@ -30,7 +30,7 @@ public class RedisClientBase {
     }
   }
 
-  protected Future<? extends Reply> pipeline(String name, Command command) throws RedisException {
+  protected synchronized Future<? extends Reply> pipeline(String name, Command command) throws RedisException {
     try {
       redisProtocol.sendAsync(command);
     } catch (IOException e) {
