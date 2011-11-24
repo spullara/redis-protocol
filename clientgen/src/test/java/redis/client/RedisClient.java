@@ -26,7 +26,7 @@ public class RedisClient extends RedisClientBase {
   }
 
   public class Pipeline {
-    public Future<Reply> set(Object key, Object value) throws RedisException {
+    public Future<? extends Reply> set(Object key, Object value) throws RedisException {
       return pipeline(SET, new Command(SET_BYTES, key, value));
     }
   }
