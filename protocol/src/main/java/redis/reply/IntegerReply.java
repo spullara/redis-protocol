@@ -1,6 +1,7 @@
 package redis.reply;
 
 import com.google.common.base.Charsets;
+import redis.Command;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -22,7 +23,7 @@ public class IntegerReply extends Reply {
 
   public void write(OutputStream os) throws IOException {
     os.write(MARKER);
-    os.write(String.valueOf(integer).getBytes(Charsets.UTF_8));
-    os.write("\r\n".getBytes(Charsets.UTF_8));
+    os.write(Command.numToBytes(integer));
+    os.write(Command.CRLF);
   }
 }

@@ -3,19 +3,23 @@ package redis;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.math.BigInteger;
+
+import com.google.common.base.Charsets;
 
 /**
- * Command holder.
+ * Command serialization.
  * User: sam
  * Date: 7/27/11
  * Time: 3:04 PM
  * To change this template use File | Settings | File Templates.
  */
 public class Command {
-  public static byte[] ARGS_PREFIX = "*".getBytes();
-  public static byte[] CRLF = "\r\n".getBytes();
-  public static byte[] BYTES_PREFIX = "$".getBytes();
-  private static final byte[] EMPTY_BYTES = new byte[0];
+  public static final byte[] ARGS_PREFIX = "*".getBytes();
+  public static final byte[] CRLF = "\r\n".getBytes();
+  public static final byte[] BYTES_PREFIX = "$".getBytes();
+  public static final byte[] EMPTY_BYTES = new byte[0];
+  public static final byte[] NEG_ONE = Command.numToBytes(-1);
 
   private byte[][] arguments;
 
@@ -44,11 +48,11 @@ public class Command {
 
   public void write(OutputStream os) throws IOException {
     os.write(ARGS_PREFIX);
-    os.write(String.valueOf(arguments.length).getBytes());
+    os.write(Command.numToBytes(arguments.length));
     os.write(CRLF);
     for (byte[] argument : arguments) {
       os.write(BYTES_PREFIX);
-      os.write(String.valueOf(argument.length).getBytes());
+      os.write(Command.numToBytes(argument.length));
       os.write(CRLF);
       os.write(argument);
       os.write(CRLF);
@@ -96,5 +100,29 @@ public class Command {
       }
       throw new IOException("Unexpected character");
     }
+  }
+
+  // Optimized for the direct to ASCII bytes case
+  // Could be even more optimized but it is already
+  // about twice as fast as using Long.toString().getBytes()
+  public static byte[] numToBytes(long value) {
+    boolean negative = value < 0;
+    int index = 1 + (negative ? 1 : 0);
+    long current = negative ? -value : value;
+    while ((current /= 10) > 0) {
+      index++;
+    }
+    byte[] bytes = new byte[index];
+    if (negative) {
+      bytes[0] = '-';
+    }
+    current = negative ? -value : value;
+    long tmp = current;
+    while ((tmp /= 10) > 0) {
+      bytes[--index] = (byte) ('0' + (current % 10));
+      current = tmp;
+    }
+    bytes[--index] = (byte) ('0' + current);
+    return bytes;
   }
 }

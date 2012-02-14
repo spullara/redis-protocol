@@ -165,7 +165,7 @@ public class RedisServer {
                     }
                     rp.write(bytes);
                   }
-                  rp.write("\r\n".getBytes());
+                  rp.write(Command.CRLF);
                 } catch (IOException e) {
                   serverListeners.remove(this);
                 }

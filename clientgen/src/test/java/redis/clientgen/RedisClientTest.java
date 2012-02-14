@@ -1,7 +1,9 @@
-package redis.client;
+package redis.clientgen;
 
 import org.junit.Test;
+import redis.client.*;
 import redis.reply.Reply;
+import redis.reply.StatusReply;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -20,8 +22,8 @@ public class RedisClientTest {
     RedisClient redisClient = new RedisClient(new SocketPool("localhost", 6379));
     redisClient.set("test", "value");
     RedisClient.Pipeline pipeline = redisClient.pipeline();
-    Future<Reply> test1 = pipeline.set("test1", "value1");
-    Future<Reply> test2 = pipeline.set("test2", "value2");
+    Future<StatusReply> test1 = pipeline.set("test1", "value1");
+    Future<StatusReply> test2 = pipeline.set("test2", "value2");
     test2.get();
     test1.get();
   }

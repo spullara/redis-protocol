@@ -6,7 +6,6 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -14,7 +13,7 @@
     <orderEntry type="library" name="Maven: net.java.dev.jna:jna:3.2.7" level="project" />
     <orderEntry type="library" name="Maven: com.github.spullara.mojava:mojava:0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:r09" level="project" />
-    <orderEntry type="library" name="Maven: com.github.spullara.cli-parser:cli-parser:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: com.github.spullara.cli-parser:cli-parser:1.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.8.2" level="project" />
   </component>
 </module>

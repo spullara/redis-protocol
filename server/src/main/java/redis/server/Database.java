@@ -2,6 +2,7 @@ package redis.server;
 
 import com.google.common.base.Charsets;
 import mojava.F;
+import redis.Command;
 import redis.reply.BulkReply;
 import redis.reply.ErrorReply;
 import redis.reply.IntegerReply;
@@ -1106,8 +1107,7 @@ public class Database {
       if (o instanceof byte[] || o == null) {
         try {
           long l = (o == null ? 0 : tonum((byte[]) o)) + num;
-          final String value = String.valueOf(l);
-          put(key, value.getBytes(Charsets.UTF_8));
+          put(key, Command.numToBytes(l));
           return num(l);
         } catch (NumberFormatException e) {
           return numerr();

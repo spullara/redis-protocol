@@ -1,6 +1,7 @@
 package redis.reply;
 
 import com.google.common.base.Charsets;
+import redis.Command;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,12 +24,12 @@ public class BulkReply extends Reply {
   public void write(OutputStream os) throws IOException {
     os.write(MARKER);
     if (bytes == null) {
-      os.write(String.valueOf(-1).getBytes(Charsets.UTF_8));
+      os.write(Command.NEG_ONE);
     } else {
-      os.write(String.valueOf(bytes.length).getBytes(Charsets.UTF_8));
-      os.write("\r\n".getBytes(Charsets.UTF_8));
+      os.write(Command.numToBytes(bytes.length));
+      os.write(Command.CRLF);
       os.write(bytes);
     }
-    os.write("\r\n".getBytes(Charsets.UTF_8));
+    os.write(Command.CRLF);
   }
 }

@@ -5,6 +5,8 @@ import com.google.common.base.Charsets;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import redis.Command;
+
 /**
 * Created by IntelliJ IDEA.
 * User: sam
@@ -23,6 +25,6 @@ public class StatusReply extends Reply {
   public void write(OutputStream os) throws IOException {
     os.write(MARKER);
     os.write(status.getBytes(Charsets.UTF_8));
-    os.write("\r\n".getBytes(Charsets.UTF_8));
+    os.write(Command.CRLF);
   }
 }

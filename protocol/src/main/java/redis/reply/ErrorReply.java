@@ -1,6 +1,7 @@
 package redis.reply;
 
 import com.google.common.base.Charsets;
+import redis.Command;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -25,6 +26,6 @@ public class ErrorReply extends Reply {
     os.write(MARKER);
     os.write(ERR);
     os.write(error.getBytes(Charsets.UTF_8));
-    os.write("\r\n".getBytes(Charsets.UTF_8));
+    os.write(Command.CRLF);
   }
 }

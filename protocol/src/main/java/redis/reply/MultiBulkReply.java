@@ -1,6 +1,7 @@
 package redis.reply;
 
 import com.google.common.base.Charsets;
+import redis.Command;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,26 +24,27 @@ public class MultiBulkReply extends Reply {
   public void write(OutputStream os) throws IOException {
     os.write(MARKER);
     if (byteArrays == null) {
-      os.write(String.valueOf(-1).getBytes(Charsets.UTF_8));
-      os.write("\r\n".getBytes(Charsets.UTF_8));
+      os.write(Command.NEG_ONE);
+      os.write(Command.CRLF);
     } else {
-      os.write(String.valueOf(byteArrays.length).getBytes(Charsets.UTF_8));
-      os.write("\r\n".getBytes(Charsets.UTF_8));
+      os.write(Command.numToBytes(byteArrays.length));
+      os.write(Command.CRLF);
       for (Object value : byteArrays) {
         if (value == null) {
           os.write(BulkReply.MARKER);
-          os.write(String.valueOf(-1).getBytes(Charsets.UTF_8));
+          os.write(Command.NEG_ONE);
         } else if (value instanceof byte[]) {
           byte[] bytes = (byte[]) value;
           os.write(BulkReply.MARKER);
-          os.write(String.valueOf(bytes.length).getBytes(Charsets.UTF_8));
-          os.write("\r\n".getBytes(Charsets.UTF_8));
+          int length = bytes.length;
+          os.write(Command.numToBytes(length));
+          os.write(Command.CRLF);
           os.write(bytes);
         } else if (value instanceof Number) {
           os.write(IntegerReply.MARKER);
-          os.write(String.valueOf(value).getBytes(Charsets.UTF_8));
+          os.write(Command.numToBytes(((Number) value).longValue()));
         }
-        os.write("\r\n".getBytes(Charsets.UTF_8));
+        os.write(Command.CRLF);
       }
     }
   }

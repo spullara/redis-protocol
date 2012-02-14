@@ -2,6 +2,7 @@ package redis.client;
 
 import redis.Command;
 import redis.RedisProtocol;
+import redis.reply.ErrorReply;
 import redis.reply.Reply;
 
 import java.io.IOException;
@@ -39,7 +40,11 @@ public class RedisClientBase {
     return es.submit(new Callable<Reply>() {
       @Override
       public Reply call() throws Exception {
-        return redisProtocol.receiveAsync();
+        Reply reply = redisProtocol.receiveAsync();
+        if (reply instanceof ErrorReply) {
+          throw new RedisException(((ErrorReply) reply).error);
+        }
+        return reply;
       }
     });
   }
