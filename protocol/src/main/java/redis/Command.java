@@ -3,7 +3,6 @@ package redis;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.math.BigInteger;
 
 import com.google.common.base.Charsets;
 
@@ -22,6 +21,7 @@ public class Command {
   public static final byte[] NEG_ONE = Command.numToBytes(-1);
 
   private byte[][] arguments;
+  private Object[] objects;
 
   public Command(byte[]... arguments) {
     this.arguments = arguments;
@@ -32,8 +32,16 @@ public class Command {
   }
 
   public Command(Object... objects) {
+    this.objects = objects;
+  }
+
+  public void write(OutputStream os) throws IOException {
+    writeDirect(os, objects);
+  }
+
+  public static void writeDirect(OutputStream os, Object... objects) throws IOException {
     int length = objects.length;
-    arguments = new byte[length][];
+    byte[][] arguments = new byte[length][];
     for (int i = 0; i < length; i++) {
       Object object = objects[i];
       if (object == null) {
@@ -44,9 +52,10 @@ public class Command {
         arguments[i] = object.toString().getBytes(Charsets.UTF_8);
       }
     }
+    writeDirect(os, arguments);
   }
 
-  public void write(OutputStream os) throws IOException {
+  private static void writeDirect(OutputStream os, byte[][] arguments) throws IOException {
     os.write(ARGS_PREFIX);
     os.write(Command.numToBytes(arguments.length));
     os.write(CRLF);

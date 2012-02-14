@@ -23,7 +23,7 @@ public class RedisClient extends RedisClientBase {
 
   // Append a value to a key
   public IntegerReply append(Object key, Object value) throws RedisException {
-    return (IntegerReply) execute(APPEND, new Command(APPEND_BYTES, key, value));
+    return (IntegerReply) execute(APPEND, APPEND_BYTES, key, value);
   }
   
   private static final String AUTH = "AUTH";
@@ -31,7 +31,7 @@ public class RedisClient extends RedisClientBase {
 
   // Authenticate to the server
   public StatusReply auth(Object password) throws RedisException {
-    return (StatusReply) execute(AUTH, new Command(AUTH_BYTES, password));
+    return (StatusReply) execute(AUTH, AUTH_BYTES, password);
   }
   
   private static final String BGREWRITEAOF = "BGREWRITEAOF";
@@ -39,7 +39,7 @@ public class RedisClient extends RedisClientBase {
 
   // Asynchronously rewrite the append-only file
   public StatusReply bgrewriteaof() throws RedisException {
-    return (StatusReply) execute(BGREWRITEAOF, new Command(BGREWRITEAOF_BYTES));
+    return (StatusReply) execute(BGREWRITEAOF, BGREWRITEAOF_BYTES);
   }
   
   private static final String BGSAVE = "BGSAVE";
@@ -47,7 +47,7 @@ public class RedisClient extends RedisClientBase {
 
   // Asynchronously save the dataset to disk
   public StatusReply bgsave() throws RedisException {
-    return (StatusReply) execute(BGSAVE, new Command(BGSAVE_BYTES));
+    return (StatusReply) execute(BGSAVE, BGSAVE_BYTES);
   }
   
   private static final String BRPOPLPUSH = "BRPOPLPUSH";
@@ -55,7 +55,7 @@ public class RedisClient extends RedisClientBase {
 
   // Pop a value from a list, push it to another list and return it; or block until one is available
   public BulkReply brpoplpush(Object source, Object destination, Object timeout) throws RedisException {
-    return (BulkReply) execute(BRPOPLPUSH, new Command(BRPOPLPUSH_BYTES, source, destination, timeout));
+    return (BulkReply) execute(BRPOPLPUSH, BRPOPLPUSH_BYTES, source, destination, timeout);
   }
   
   private static final String CONFIG_GET = "CONFIG_GET";
@@ -63,7 +63,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get the value of a configuration parameter
   public Reply config_get(Object parameter) throws RedisException {
-    return (Reply) execute(CONFIG_GET, new Command(CONFIG_GET_BYTES, parameter));
+    return (Reply) execute(CONFIG_GET, CONFIG_GET_BYTES, parameter);
   }
   
   private static final String CONFIG_SET = "CONFIG_SET";
@@ -71,7 +71,7 @@ public class RedisClient extends RedisClientBase {
 
   // Set a configuration parameter to the given value
   public Reply config_set(Object parameter, Object value) throws RedisException {
-    return (Reply) execute(CONFIG_SET, new Command(CONFIG_SET_BYTES, parameter, value));
+    return (Reply) execute(CONFIG_SET, CONFIG_SET_BYTES, parameter, value);
   }
   
   private static final String CONFIG_RESETSTAT = "CONFIG_RESETSTAT";
@@ -79,7 +79,7 @@ public class RedisClient extends RedisClientBase {
 
   // Reset the stats returned by INFO
   public Reply config_resetstat() throws RedisException {
-    return (Reply) execute(CONFIG_RESETSTAT, new Command(CONFIG_RESETSTAT_BYTES));
+    return (Reply) execute(CONFIG_RESETSTAT, CONFIG_RESETSTAT_BYTES);
   }
   
   private static final String DBSIZE = "DBSIZE";
@@ -87,7 +87,7 @@ public class RedisClient extends RedisClientBase {
 
   // Return the number of keys in the selected database
   public IntegerReply dbsize() throws RedisException {
-    return (IntegerReply) execute(DBSIZE, new Command(DBSIZE_BYTES));
+    return (IntegerReply) execute(DBSIZE, DBSIZE_BYTES);
   }
   
   private static final String DEBUG_OBJECT = "DEBUG_OBJECT";
@@ -95,7 +95,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get debugging information about a key
   public Reply debug_object(Object key) throws RedisException {
-    return (Reply) execute(DEBUG_OBJECT, new Command(DEBUG_OBJECT_BYTES, key));
+    return (Reply) execute(DEBUG_OBJECT, DEBUG_OBJECT_BYTES, key);
   }
   
   private static final String DEBUG_SEGFAULT = "DEBUG_SEGFAULT";
@@ -103,7 +103,7 @@ public class RedisClient extends RedisClientBase {
 
   // Make the server crash
   public Reply debug_segfault() throws RedisException {
-    return (Reply) execute(DEBUG_SEGFAULT, new Command(DEBUG_SEGFAULT_BYTES));
+    return (Reply) execute(DEBUG_SEGFAULT, DEBUG_SEGFAULT_BYTES);
   }
   
   private static final String DECR = "DECR";
@@ -111,7 +111,7 @@ public class RedisClient extends RedisClientBase {
 
   // Decrement the integer value of a key by one
   public IntegerReply decr(Object key) throws RedisException {
-    return (IntegerReply) execute(DECR, new Command(DECR_BYTES, key));
+    return (IntegerReply) execute(DECR, DECR_BYTES, key);
   }
   
   private static final String DECRBY = "DECRBY";
@@ -119,7 +119,7 @@ public class RedisClient extends RedisClientBase {
 
   // Decrement the integer value of a key by the given number
   public IntegerReply decrby(Object key, Object decrement) throws RedisException {
-    return (IntegerReply) execute(DECRBY, new Command(DECRBY_BYTES, key, decrement));
+    return (IntegerReply) execute(DECRBY, DECRBY_BYTES, key, decrement);
   }
   
   private static final String DISCARD = "DISCARD";
@@ -127,7 +127,7 @@ public class RedisClient extends RedisClientBase {
 
   // Discard all commands issued after MULTI
   public StatusReply discard() throws RedisException {
-    return (StatusReply) execute(DISCARD, new Command(DISCARD_BYTES));
+    return (StatusReply) execute(DISCARD, DISCARD_BYTES);
   }
   
   private static final String ECHO = "ECHO";
@@ -135,7 +135,7 @@ public class RedisClient extends RedisClientBase {
 
   // Echo the given string
   public BulkReply echo(Object message) throws RedisException {
-    return (BulkReply) execute(ECHO, new Command(ECHO_BYTES, message));
+    return (BulkReply) execute(ECHO, ECHO_BYTES, message);
   }
   
   private static final String EXEC = "EXEC";
@@ -143,7 +143,7 @@ public class RedisClient extends RedisClientBase {
 
   // Execute all commands issued after MULTI
   public MultiBulkReply exec() throws RedisException {
-    return (MultiBulkReply) execute(EXEC, new Command(EXEC_BYTES));
+    return (MultiBulkReply) execute(EXEC, EXEC_BYTES);
   }
   
   private static final String EXISTS = "EXISTS";
@@ -151,7 +151,7 @@ public class RedisClient extends RedisClientBase {
 
   // Determine if a key exists
   public IntegerReply exists(Object key) throws RedisException {
-    return (IntegerReply) execute(EXISTS, new Command(EXISTS_BYTES, key));
+    return (IntegerReply) execute(EXISTS, EXISTS_BYTES, key);
   }
   
   private static final String EXPIRE = "EXPIRE";
@@ -159,7 +159,7 @@ public class RedisClient extends RedisClientBase {
 
   // Set a key's time to live in seconds
   public IntegerReply expire(Object key, Object seconds) throws RedisException {
-    return (IntegerReply) execute(EXPIRE, new Command(EXPIRE_BYTES, key, seconds));
+    return (IntegerReply) execute(EXPIRE, EXPIRE_BYTES, key, seconds);
   }
   
   private static final String EXPIREAT = "EXPIREAT";
@@ -167,7 +167,7 @@ public class RedisClient extends RedisClientBase {
 
   // Set the expiration for a key as a UNIX timestamp
   public IntegerReply expireat(Object key, Object timestamp) throws RedisException {
-    return (IntegerReply) execute(EXPIREAT, new Command(EXPIREAT_BYTES, key, timestamp));
+    return (IntegerReply) execute(EXPIREAT, EXPIREAT_BYTES, key, timestamp);
   }
   
   private static final String FLUSHALL = "FLUSHALL";
@@ -175,7 +175,7 @@ public class RedisClient extends RedisClientBase {
 
   // Remove all keys from all databases
   public StatusReply flushall() throws RedisException {
-    return (StatusReply) execute(FLUSHALL, new Command(FLUSHALL_BYTES));
+    return (StatusReply) execute(FLUSHALL, FLUSHALL_BYTES);
   }
   
   private static final String FLUSHDB = "FLUSHDB";
@@ -183,7 +183,7 @@ public class RedisClient extends RedisClientBase {
 
   // Remove all keys from the current database
   public StatusReply flushdb() throws RedisException {
-    return (StatusReply) execute(FLUSHDB, new Command(FLUSHDB_BYTES));
+    return (StatusReply) execute(FLUSHDB, FLUSHDB_BYTES);
   }
   
   private static final String GET = "GET";
@@ -191,7 +191,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get the value of a key
   public BulkReply get(Object key) throws RedisException {
-    return (BulkReply) execute(GET, new Command(GET_BYTES, key));
+    return (BulkReply) execute(GET, GET_BYTES, key);
   }
   
   private static final String GETBIT = "GETBIT";
@@ -199,7 +199,7 @@ public class RedisClient extends RedisClientBase {
 
   // Returns the bit value at offset in the string value stored at key
   public IntegerReply getbit(Object key, Object offset) throws RedisException {
-    return (IntegerReply) execute(GETBIT, new Command(GETBIT_BYTES, key, offset));
+    return (IntegerReply) execute(GETBIT, GETBIT_BYTES, key, offset);
   }
   
   private static final String GETRANGE = "GETRANGE";
@@ -207,7 +207,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get a substring of the string stored at a key
   public BulkReply getrange(Object key, Object start, Object end) throws RedisException {
-    return (BulkReply) execute(GETRANGE, new Command(GETRANGE_BYTES, key, start, end));
+    return (BulkReply) execute(GETRANGE, GETRANGE_BYTES, key, start, end);
   }
   
   private static final String GETSET = "GETSET";
@@ -215,7 +215,7 @@ public class RedisClient extends RedisClientBase {
 
   // Set the string value of a key and return its old value
   public BulkReply getset(Object key, Object value) throws RedisException {
-    return (BulkReply) execute(GETSET, new Command(GETSET_BYTES, key, value));
+    return (BulkReply) execute(GETSET, GETSET_BYTES, key, value);
   }
   
   private static final String HEXISTS = "HEXISTS";
@@ -223,7 +223,7 @@ public class RedisClient extends RedisClientBase {
 
   // Determine if a hash field exists
   public IntegerReply hexists(Object key, Object field) throws RedisException {
-    return (IntegerReply) execute(HEXISTS, new Command(HEXISTS_BYTES, key, field));
+    return (IntegerReply) execute(HEXISTS, HEXISTS_BYTES, key, field);
   }
   
   private static final String HGET = "HGET";
@@ -231,7 +231,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get the value of a hash field
   public BulkReply hget(Object key, Object field) throws RedisException {
-    return (BulkReply) execute(HGET, new Command(HGET_BYTES, key, field));
+    return (BulkReply) execute(HGET, HGET_BYTES, key, field);
   }
   
   private static final String HGETALL = "HGETALL";
@@ -239,7 +239,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get all the fields and values in a hash
   public MultiBulkReply hgetall(Object key) throws RedisException {
-    return (MultiBulkReply) execute(HGETALL, new Command(HGETALL_BYTES, key));
+    return (MultiBulkReply) execute(HGETALL, HGETALL_BYTES, key);
   }
   
   private static final String HINCRBY = "HINCRBY";
@@ -247,7 +247,7 @@ public class RedisClient extends RedisClientBase {
 
   // Increment the integer value of a hash field by the given number
   public IntegerReply hincrby(Object key, Object field, Object increment) throws RedisException {
-    return (IntegerReply) execute(HINCRBY, new Command(HINCRBY_BYTES, key, field, increment));
+    return (IntegerReply) execute(HINCRBY, HINCRBY_BYTES, key, field, increment);
   }
   
   private static final String HKEYS = "HKEYS";
@@ -255,7 +255,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get all the fields in a hash
   public MultiBulkReply hkeys(Object key) throws RedisException {
-    return (MultiBulkReply) execute(HKEYS, new Command(HKEYS_BYTES, key));
+    return (MultiBulkReply) execute(HKEYS, HKEYS_BYTES, key);
   }
   
   private static final String HLEN = "HLEN";
@@ -263,7 +263,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get the number of fields in a hash
   public IntegerReply hlen(Object key) throws RedisException {
-    return (IntegerReply) execute(HLEN, new Command(HLEN_BYTES, key));
+    return (IntegerReply) execute(HLEN, HLEN_BYTES, key);
   }
   
   private static final String HSET = "HSET";
@@ -271,7 +271,7 @@ public class RedisClient extends RedisClientBase {
 
   // Set the string value of a hash field
   public IntegerReply hset(Object key, Object field, Object value) throws RedisException {
-    return (IntegerReply) execute(HSET, new Command(HSET_BYTES, key, field, value));
+    return (IntegerReply) execute(HSET, HSET_BYTES, key, field, value);
   }
   
   private static final String HSETNX = "HSETNX";
@@ -279,7 +279,7 @@ public class RedisClient extends RedisClientBase {
 
   // Set the value of a hash field, only if the field does not exist
   public IntegerReply hsetnx(Object key, Object field, Object value) throws RedisException {
-    return (IntegerReply) execute(HSETNX, new Command(HSETNX_BYTES, key, field, value));
+    return (IntegerReply) execute(HSETNX, HSETNX_BYTES, key, field, value);
   }
   
   private static final String HVALS = "HVALS";
@@ -287,7 +287,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get all the values in a hash
   public MultiBulkReply hvals(Object key) throws RedisException {
-    return (MultiBulkReply) execute(HVALS, new Command(HVALS_BYTES, key));
+    return (MultiBulkReply) execute(HVALS, HVALS_BYTES, key);
   }
   
   private static final String INCR = "INCR";
@@ -295,7 +295,7 @@ public class RedisClient extends RedisClientBase {
 
   // Increment the integer value of a key by one
   public IntegerReply incr(Object key) throws RedisException {
-    return (IntegerReply) execute(INCR, new Command(INCR_BYTES, key));
+    return (IntegerReply) execute(INCR, INCR_BYTES, key);
   }
   
   private static final String INCRBY = "INCRBY";
@@ -303,7 +303,7 @@ public class RedisClient extends RedisClientBase {
 
   // Increment the integer value of a key by the given number
   public IntegerReply incrby(Object key, Object increment) throws RedisException {
-    return (IntegerReply) execute(INCRBY, new Command(INCRBY_BYTES, key, increment));
+    return (IntegerReply) execute(INCRBY, INCRBY_BYTES, key, increment);
   }
   
   private static final String INFO = "INFO";
@@ -311,7 +311,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get information and statistics about the server
   public BulkReply info() throws RedisException {
-    return (BulkReply) execute(INFO, new Command(INFO_BYTES));
+    return (BulkReply) execute(INFO, INFO_BYTES);
   }
   
   private static final String KEYS = "KEYS";
@@ -319,7 +319,7 @@ public class RedisClient extends RedisClientBase {
 
   // Find all keys matching the given pattern
   public MultiBulkReply keys(Object pattern) throws RedisException {
-    return (MultiBulkReply) execute(KEYS, new Command(KEYS_BYTES, pattern));
+    return (MultiBulkReply) execute(KEYS, KEYS_BYTES, pattern);
   }
   
   private static final String LASTSAVE = "LASTSAVE";
@@ -327,7 +327,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get the UNIX time stamp of the last successful save to disk
   public IntegerReply lastsave() throws RedisException {
-    return (IntegerReply) execute(LASTSAVE, new Command(LASTSAVE_BYTES));
+    return (IntegerReply) execute(LASTSAVE, LASTSAVE_BYTES);
   }
   
   private static final String LINDEX = "LINDEX";
@@ -335,7 +335,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get an element from a list by its index
   public BulkReply lindex(Object key, Object index) throws RedisException {
-    return (BulkReply) execute(LINDEX, new Command(LINDEX_BYTES, key, index));
+    return (BulkReply) execute(LINDEX, LINDEX_BYTES, key, index);
   }
   
   private static final String LLEN = "LLEN";
@@ -343,7 +343,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get the length of a list
   public IntegerReply llen(Object key) throws RedisException {
-    return (IntegerReply) execute(LLEN, new Command(LLEN_BYTES, key));
+    return (IntegerReply) execute(LLEN, LLEN_BYTES, key);
   }
   
   private static final String LPOP = "LPOP";
@@ -351,7 +351,7 @@ public class RedisClient extends RedisClientBase {
 
   // Remove and get the first element in a list
   public BulkReply lpop(Object key) throws RedisException {
-    return (BulkReply) execute(LPOP, new Command(LPOP_BYTES, key));
+    return (BulkReply) execute(LPOP, LPOP_BYTES, key);
   }
   
   private static final String LPUSHX = "LPUSHX";
@@ -359,7 +359,7 @@ public class RedisClient extends RedisClientBase {
 
   // Prepend a value to a list, only if the list exists
   public IntegerReply lpushx(Object key, Object value) throws RedisException {
-    return (IntegerReply) execute(LPUSHX, new Command(LPUSHX_BYTES, key, value));
+    return (IntegerReply) execute(LPUSHX, LPUSHX_BYTES, key, value);
   }
   
   private static final String LRANGE = "LRANGE";
@@ -367,7 +367,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get a range of elements from a list
   public MultiBulkReply lrange(Object key, Object start, Object stop) throws RedisException {
-    return (MultiBulkReply) execute(LRANGE, new Command(LRANGE_BYTES, key, start, stop));
+    return (MultiBulkReply) execute(LRANGE, LRANGE_BYTES, key, start, stop);
   }
   
   private static final String LREM = "LREM";
@@ -375,7 +375,7 @@ public class RedisClient extends RedisClientBase {
 
   // Remove elements from a list
   public IntegerReply lrem(Object key, Object count, Object value) throws RedisException {
-    return (IntegerReply) execute(LREM, new Command(LREM_BYTES, key, count, value));
+    return (IntegerReply) execute(LREM, LREM_BYTES, key, count, value);
   }
   
   private static final String LSET = "LSET";
@@ -383,7 +383,7 @@ public class RedisClient extends RedisClientBase {
 
   // Set the value of an element in a list by its index
   public StatusReply lset(Object key, Object index, Object value) throws RedisException {
-    return (StatusReply) execute(LSET, new Command(LSET_BYTES, key, index, value));
+    return (StatusReply) execute(LSET, LSET_BYTES, key, index, value);
   }
   
   private static final String LTRIM = "LTRIM";
@@ -391,7 +391,7 @@ public class RedisClient extends RedisClientBase {
 
   // Trim a list to the specified range
   public StatusReply ltrim(Object key, Object start, Object stop) throws RedisException {
-    return (StatusReply) execute(LTRIM, new Command(LTRIM_BYTES, key, start, stop));
+    return (StatusReply) execute(LTRIM, LTRIM_BYTES, key, start, stop);
   }
   
   private static final String MONITOR = "MONITOR";
@@ -399,7 +399,7 @@ public class RedisClient extends RedisClientBase {
 
   // Listen for all requests received by the server in real time
   public Reply monitor() throws RedisException {
-    return (Reply) execute(MONITOR, new Command(MONITOR_BYTES));
+    return (Reply) execute(MONITOR, MONITOR_BYTES);
   }
   
   private static final String MOVE = "MOVE";
@@ -407,7 +407,7 @@ public class RedisClient extends RedisClientBase {
 
   // Move a key to another database
   public IntegerReply move(Object key, Object db) throws RedisException {
-    return (IntegerReply) execute(MOVE, new Command(MOVE_BYTES, key, db));
+    return (IntegerReply) execute(MOVE, MOVE_BYTES, key, db);
   }
   
   private static final String MULTI = "MULTI";
@@ -415,7 +415,7 @@ public class RedisClient extends RedisClientBase {
 
   // Mark the start of a transaction block
   public StatusReply multi() throws RedisException {
-    return (StatusReply) execute(MULTI, new Command(MULTI_BYTES));
+    return (StatusReply) execute(MULTI, MULTI_BYTES);
   }
   
   private static final String PERSIST = "PERSIST";
@@ -423,7 +423,7 @@ public class RedisClient extends RedisClientBase {
 
   // Remove the expiration from a key
   public IntegerReply persist(Object key) throws RedisException {
-    return (IntegerReply) execute(PERSIST, new Command(PERSIST_BYTES, key));
+    return (IntegerReply) execute(PERSIST, PERSIST_BYTES, key);
   }
   
   private static final String PING = "PING";
@@ -431,7 +431,7 @@ public class RedisClient extends RedisClientBase {
 
   // Ping the server
   public StatusReply ping() throws RedisException {
-    return (StatusReply) execute(PING, new Command(PING_BYTES));
+    return (StatusReply) execute(PING, PING_BYTES);
   }
   
   private static final String PUBLISH = "PUBLISH";
@@ -439,7 +439,7 @@ public class RedisClient extends RedisClientBase {
 
   // Post a message to a channel
   public IntegerReply publish(Object channel, Object message) throws RedisException {
-    return (IntegerReply) execute(PUBLISH, new Command(PUBLISH_BYTES, channel, message));
+    return (IntegerReply) execute(PUBLISH, PUBLISH_BYTES, channel, message);
   }
   
   private static final String QUIT = "QUIT";
@@ -447,7 +447,7 @@ public class RedisClient extends RedisClientBase {
 
   // Close the connection
   public StatusReply quit() throws RedisException {
-    return (StatusReply) execute(QUIT, new Command(QUIT_BYTES));
+    return (StatusReply) execute(QUIT, QUIT_BYTES);
   }
   
   private static final String RANDOMKEY = "RANDOMKEY";
@@ -455,7 +455,7 @@ public class RedisClient extends RedisClientBase {
 
   // Return a random key from the keyspace
   public BulkReply randomkey() throws RedisException {
-    return (BulkReply) execute(RANDOMKEY, new Command(RANDOMKEY_BYTES));
+    return (BulkReply) execute(RANDOMKEY, RANDOMKEY_BYTES);
   }
   
   private static final String RENAME = "RENAME";
@@ -463,7 +463,7 @@ public class RedisClient extends RedisClientBase {
 
   // Rename a key
   public StatusReply rename(Object key, Object newkey) throws RedisException {
-    return (StatusReply) execute(RENAME, new Command(RENAME_BYTES, key, newkey));
+    return (StatusReply) execute(RENAME, RENAME_BYTES, key, newkey);
   }
   
   private static final String RENAMENX = "RENAMENX";
@@ -471,7 +471,7 @@ public class RedisClient extends RedisClientBase {
 
   // Rename a key, only if the new key does not exist
   public IntegerReply renamenx(Object key, Object newkey) throws RedisException {
-    return (IntegerReply) execute(RENAMENX, new Command(RENAMENX_BYTES, key, newkey));
+    return (IntegerReply) execute(RENAMENX, RENAMENX_BYTES, key, newkey);
   }
   
   private static final String RPOP = "RPOP";
@@ -479,7 +479,7 @@ public class RedisClient extends RedisClientBase {
 
   // Remove and get the last element in a list
   public BulkReply rpop(Object key) throws RedisException {
-    return (BulkReply) execute(RPOP, new Command(RPOP_BYTES, key));
+    return (BulkReply) execute(RPOP, RPOP_BYTES, key);
   }
   
   private static final String RPOPLPUSH = "RPOPLPUSH";
@@ -487,7 +487,7 @@ public class RedisClient extends RedisClientBase {
 
   // Remove the last element in a list, append it to another list and return it
   public BulkReply rpoplpush(Object source, Object destination) throws RedisException {
-    return (BulkReply) execute(RPOPLPUSH, new Command(RPOPLPUSH_BYTES, source, destination));
+    return (BulkReply) execute(RPOPLPUSH, RPOPLPUSH_BYTES, source, destination);
   }
   
   private static final String RPUSHX = "RPUSHX";
@@ -495,7 +495,7 @@ public class RedisClient extends RedisClientBase {
 
   // Append a value to a list, only if the list exists
   public IntegerReply rpushx(Object key, Object value) throws RedisException {
-    return (IntegerReply) execute(RPUSHX, new Command(RPUSHX_BYTES, key, value));
+    return (IntegerReply) execute(RPUSHX, RPUSHX_BYTES, key, value);
   }
   
   private static final String SAVE = "SAVE";
@@ -503,7 +503,7 @@ public class RedisClient extends RedisClientBase {
 
   // Synchronously save the dataset to disk
   public Reply save() throws RedisException {
-    return (Reply) execute(SAVE, new Command(SAVE_BYTES));
+    return (Reply) execute(SAVE, SAVE_BYTES);
   }
   
   private static final String SCARD = "SCARD";
@@ -511,7 +511,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get the number of members in a set
   public IntegerReply scard(Object key) throws RedisException {
-    return (IntegerReply) execute(SCARD, new Command(SCARD_BYTES, key));
+    return (IntegerReply) execute(SCARD, SCARD_BYTES, key);
   }
   
   private static final String SELECT = "SELECT";
@@ -519,7 +519,7 @@ public class RedisClient extends RedisClientBase {
 
   // Change the selected database for the current connection
   public StatusReply select(Object index) throws RedisException {
-    return (StatusReply) execute(SELECT, new Command(SELECT_BYTES, index));
+    return (StatusReply) execute(SELECT, SELECT_BYTES, index);
   }
   
   private static final String SET = "SET";
@@ -527,7 +527,7 @@ public class RedisClient extends RedisClientBase {
 
   // Set the string value of a key
   public StatusReply set(Object key, Object value) throws RedisException {
-    return (StatusReply) execute(SET, new Command(SET_BYTES, key, value));
+    return (StatusReply) execute(SET, SET_BYTES, key, value);
   }
   
   private static final String SETBIT = "SETBIT";
@@ -535,7 +535,7 @@ public class RedisClient extends RedisClientBase {
 
   // Sets or clears the bit at offset in the string value stored at key
   public IntegerReply setbit(Object key, Object offset, Object value) throws RedisException {
-    return (IntegerReply) execute(SETBIT, new Command(SETBIT_BYTES, key, offset, value));
+    return (IntegerReply) execute(SETBIT, SETBIT_BYTES, key, offset, value);
   }
   
   private static final String SETEX = "SETEX";
@@ -543,7 +543,7 @@ public class RedisClient extends RedisClientBase {
 
   // Set the value and expiration of a key
   public StatusReply setex(Object key, Object seconds, Object value) throws RedisException {
-    return (StatusReply) execute(SETEX, new Command(SETEX_BYTES, key, seconds, value));
+    return (StatusReply) execute(SETEX, SETEX_BYTES, key, seconds, value);
   }
   
   private static final String SETNX = "SETNX";
@@ -551,7 +551,7 @@ public class RedisClient extends RedisClientBase {
 
   // Set the value of a key, only if the key does not exist
   public IntegerReply setnx(Object key, Object value) throws RedisException {
-    return (IntegerReply) execute(SETNX, new Command(SETNX_BYTES, key, value));
+    return (IntegerReply) execute(SETNX, SETNX_BYTES, key, value);
   }
   
   private static final String SETRANGE = "SETRANGE";
@@ -559,7 +559,7 @@ public class RedisClient extends RedisClientBase {
 
   // Overwrite part of a string at key starting at the specified offset
   public IntegerReply setrange(Object key, Object offset, Object value) throws RedisException {
-    return (IntegerReply) execute(SETRANGE, new Command(SETRANGE_BYTES, key, offset, value));
+    return (IntegerReply) execute(SETRANGE, SETRANGE_BYTES, key, offset, value);
   }
   
   private static final String SHUTDOWN = "SHUTDOWN";
@@ -567,7 +567,7 @@ public class RedisClient extends RedisClientBase {
 
   // Synchronously save the dataset to disk and then shut down the server
   public StatusReply shutdown() throws RedisException {
-    return (StatusReply) execute(SHUTDOWN, new Command(SHUTDOWN_BYTES));
+    return (StatusReply) execute(SHUTDOWN, SHUTDOWN_BYTES);
   }
   
   private static final String SISMEMBER = "SISMEMBER";
@@ -575,7 +575,7 @@ public class RedisClient extends RedisClientBase {
 
   // Determine if a given value is a member of a set
   public IntegerReply sismember(Object key, Object member) throws RedisException {
-    return (IntegerReply) execute(SISMEMBER, new Command(SISMEMBER_BYTES, key, member));
+    return (IntegerReply) execute(SISMEMBER, SISMEMBER_BYTES, key, member);
   }
   
   private static final String SLAVEOF = "SLAVEOF";
@@ -583,7 +583,7 @@ public class RedisClient extends RedisClientBase {
 
   // Make the server a slave of another instance, or promote it as master
   public StatusReply slaveof(Object host, Object port) throws RedisException {
-    return (StatusReply) execute(SLAVEOF, new Command(SLAVEOF_BYTES, host, port));
+    return (StatusReply) execute(SLAVEOF, SLAVEOF_BYTES, host, port);
   }
   
   private static final String SMEMBERS = "SMEMBERS";
@@ -591,7 +591,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get all the members in a set
   public MultiBulkReply smembers(Object key) throws RedisException {
-    return (MultiBulkReply) execute(SMEMBERS, new Command(SMEMBERS_BYTES, key));
+    return (MultiBulkReply) execute(SMEMBERS, SMEMBERS_BYTES, key);
   }
   
   private static final String SMOVE = "SMOVE";
@@ -599,7 +599,7 @@ public class RedisClient extends RedisClientBase {
 
   // Move a member from one set to another
   public IntegerReply smove(Object source, Object destination, Object member) throws RedisException {
-    return (IntegerReply) execute(SMOVE, new Command(SMOVE_BYTES, source, destination, member));
+    return (IntegerReply) execute(SMOVE, SMOVE_BYTES, source, destination, member);
   }
   
   private static final String SPOP = "SPOP";
@@ -607,7 +607,7 @@ public class RedisClient extends RedisClientBase {
 
   // Remove and return a random member from a set
   public BulkReply spop(Object key) throws RedisException {
-    return (BulkReply) execute(SPOP, new Command(SPOP_BYTES, key));
+    return (BulkReply) execute(SPOP, SPOP_BYTES, key);
   }
   
   private static final String SRANDMEMBER = "SRANDMEMBER";
@@ -615,7 +615,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get a random member from a set
   public BulkReply srandmember(Object key) throws RedisException {
-    return (BulkReply) execute(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, key));
+    return (BulkReply) execute(SRANDMEMBER, SRANDMEMBER_BYTES, key);
   }
   
   private static final String STRLEN = "STRLEN";
@@ -623,7 +623,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get the length of the value stored in a key
   public IntegerReply strlen(Object key) throws RedisException {
-    return (IntegerReply) execute(STRLEN, new Command(STRLEN_BYTES, key));
+    return (IntegerReply) execute(STRLEN, STRLEN_BYTES, key);
   }
   
   private static final String SYNC = "SYNC";
@@ -631,7 +631,7 @@ public class RedisClient extends RedisClientBase {
 
   // Internal command used for replication
   public Reply sync() throws RedisException {
-    return (Reply) execute(SYNC, new Command(SYNC_BYTES));
+    return (Reply) execute(SYNC, SYNC_BYTES);
   }
   
   private static final String TTL = "TTL";
@@ -639,7 +639,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get the time to live for a key
   public IntegerReply ttl(Object key) throws RedisException {
-    return (IntegerReply) execute(TTL, new Command(TTL_BYTES, key));
+    return (IntegerReply) execute(TTL, TTL_BYTES, key);
   }
   
   private static final String TYPE = "TYPE";
@@ -647,7 +647,7 @@ public class RedisClient extends RedisClientBase {
 
   // Determine the type stored at key
   public StatusReply type(Object key) throws RedisException {
-    return (StatusReply) execute(TYPE, new Command(TYPE_BYTES, key));
+    return (StatusReply) execute(TYPE, TYPE_BYTES, key);
   }
   
   private static final String UNWATCH = "UNWATCH";
@@ -655,7 +655,7 @@ public class RedisClient extends RedisClientBase {
 
   // Forget about all watched keys
   public StatusReply unwatch() throws RedisException {
-    return (StatusReply) execute(UNWATCH, new Command(UNWATCH_BYTES));
+    return (StatusReply) execute(UNWATCH, UNWATCH_BYTES);
   }
   
   private static final String ZCARD = "ZCARD";
@@ -663,7 +663,7 @@ public class RedisClient extends RedisClientBase {
 
   // Get the number of members in a sorted set
   public IntegerReply zcard(Object key) throws RedisException {
-    return (IntegerReply) execute(ZCARD, new Command(ZCARD_BYTES, key));
+    return (IntegerReply) execute(ZCARD, ZCARD_BYTES, key);
   }
   
   private static final String ZCOUNT = "ZCOUNT";
@@ -671,7 +671,7 @@ public class RedisClient extends RedisClientBase {
 
   // Count the members in a sorted set with scores within the given values
   public IntegerReply zcount(Object key, Object min, Object max) throws RedisException {
-    return (IntegerReply) execute(ZCOUNT, new Command(ZCOUNT_BYTES, key, min, max));
+    return (IntegerReply) execute(ZCOUNT, ZCOUNT_BYTES, key, min, max);
   }
   
   private static final String ZINCRBY = "ZINCRBY";
@@ -679,7 +679,7 @@ public class RedisClient extends RedisClientBase {
 
   // Increment the score of a member in a sorted set
   public BulkReply zincrby(Object key, Object increment, Object member) throws RedisException {
-    return (BulkReply) execute(ZINCRBY, new Command(ZINCRBY_BYTES, key, increment, member));
+    return (BulkReply) execute(ZINCRBY, ZINCRBY_BYTES, key, increment, member);
   }
   
   private static final String ZRANK = "ZRANK";
@@ -687,7 +687,7 @@ public class RedisClient extends RedisClientBase {
 
   // Determine the index of a member in a sorted set
   public IntegerReply zrank(Object key, Object member) throws RedisException {
-    return (IntegerReply) execute(ZRANK, new Command(ZRANK_BYTES, key, member));
+    return (IntegerReply) execute(ZRANK, ZRANK_BYTES, key, member);
   }
   
   private static final String ZREMRANGEBYRANK = "ZREMRANGEBYRANK";
@@ -695,7 +695,7 @@ public class RedisClient extends RedisClientBase {
 
   // Remove all members in a sorted set within the given indexes
   public IntegerReply zremrangebyrank(Object key, Object start, Object stop) throws RedisException {
-    return (IntegerReply) execute(ZREMRANGEBYRANK, new Command(ZREMRANGEBYRANK_BYTES, key, start, stop));
+    return (IntegerReply) execute(ZREMRANGEBYRANK, ZREMRANGEBYRANK_BYTES, key, start, stop);
   }
   
   private static final String ZREMRANGEBYSCORE = "ZREMRANGEBYSCORE";
@@ -703,7 +703,7 @@ public class RedisClient extends RedisClientBase {
 
   // Remove all members in a sorted set within the given scores
   public IntegerReply zremrangebyscore(Object key, Object min, Object max) throws RedisException {
-    return (IntegerReply) execute(ZREMRANGEBYSCORE, new Command(ZREMRANGEBYSCORE_BYTES, key, min, max));
+    return (IntegerReply) execute(ZREMRANGEBYSCORE, ZREMRANGEBYSCORE_BYTES, key, min, max);
   }
   
   private static final String ZREVRANK = "ZREVRANK";
@@ -711,7 +711,7 @@ public class RedisClient extends RedisClientBase {
 
   // Determine the index of a member in a sorted set, with scores ordered from high to low
   public IntegerReply zrevrank(Object key, Object member) throws RedisException {
-    return (IntegerReply) execute(ZREVRANK, new Command(ZREVRANK_BYTES, key, member));
+    return (IntegerReply) execute(ZREVRANK, ZREVRANK_BYTES, key, member);
   }
   
   private static final String ZSCORE = "ZSCORE";
@@ -719,449 +719,449 @@ public class RedisClient extends RedisClientBase {
 
   // Get the score associated with the given member in a sorted set
   public BulkReply zscore(Object key, Object member) throws RedisException {
-    return (BulkReply) execute(ZSCORE, new Command(ZSCORE_BYTES, key, member));
+    return (BulkReply) execute(ZSCORE, ZSCORE_BYTES, key, member);
   }
 
   public class Pipeline {
 
   // Append a value to a key
   public Future<IntegerReply> append(Object key, Object value) throws RedisException {
-    return (Future<IntegerReply>) pipeline(APPEND, new Command(APPEND_BYTES, key, value));
+    return (Future<IntegerReply>) pipeline(APPEND, APPEND_BYTES, key, value);
   }
 
   // Authenticate to the server
   public Future<StatusReply> auth(Object password) throws RedisException {
-    return (Future<StatusReply>) pipeline(AUTH, new Command(AUTH_BYTES, password));
+    return (Future<StatusReply>) pipeline(AUTH, AUTH_BYTES, password);
   }
 
   // Asynchronously rewrite the append-only file
   public Future<StatusReply> bgrewriteaof() throws RedisException {
-    return (Future<StatusReply>) pipeline(BGREWRITEAOF, new Command(BGREWRITEAOF_BYTES));
+    return (Future<StatusReply>) pipeline(BGREWRITEAOF, BGREWRITEAOF_BYTES);
   }
 
   // Asynchronously save the dataset to disk
   public Future<StatusReply> bgsave() throws RedisException {
-    return (Future<StatusReply>) pipeline(BGSAVE, new Command(BGSAVE_BYTES));
+    return (Future<StatusReply>) pipeline(BGSAVE, BGSAVE_BYTES);
   }
 
   // Pop a value from a list, push it to another list and return it; or block until one is available
   public Future<BulkReply> brpoplpush(Object source, Object destination, Object timeout) throws RedisException {
-    return (Future<BulkReply>) pipeline(BRPOPLPUSH, new Command(BRPOPLPUSH_BYTES, source, destination, timeout));
+    return (Future<BulkReply>) pipeline(BRPOPLPUSH, BRPOPLPUSH_BYTES, source, destination, timeout);
   }
 
   // Get the value of a configuration parameter
   public Future<Reply> config_get(Object parameter) throws RedisException {
-    return (Future<Reply>) pipeline(CONFIG_GET, new Command(CONFIG_GET_BYTES, parameter));
+    return (Future<Reply>) pipeline(CONFIG_GET, CONFIG_GET_BYTES, parameter);
   }
 
   // Set a configuration parameter to the given value
   public Future<Reply> config_set(Object parameter, Object value) throws RedisException {
-    return (Future<Reply>) pipeline(CONFIG_SET, new Command(CONFIG_SET_BYTES, parameter, value));
+    return (Future<Reply>) pipeline(CONFIG_SET, CONFIG_SET_BYTES, parameter, value);
   }
 
   // Reset the stats returned by INFO
   public Future<Reply> config_resetstat() throws RedisException {
-    return (Future<Reply>) pipeline(CONFIG_RESETSTAT, new Command(CONFIG_RESETSTAT_BYTES));
+    return (Future<Reply>) pipeline(CONFIG_RESETSTAT, CONFIG_RESETSTAT_BYTES);
   }
 
   // Return the number of keys in the selected database
   public Future<IntegerReply> dbsize() throws RedisException {
-    return (Future<IntegerReply>) pipeline(DBSIZE, new Command(DBSIZE_BYTES));
+    return (Future<IntegerReply>) pipeline(DBSIZE, DBSIZE_BYTES);
   }
 
   // Get debugging information about a key
   public Future<Reply> debug_object(Object key) throws RedisException {
-    return (Future<Reply>) pipeline(DEBUG_OBJECT, new Command(DEBUG_OBJECT_BYTES, key));
+    return (Future<Reply>) pipeline(DEBUG_OBJECT, DEBUG_OBJECT_BYTES, key);
   }
 
   // Make the server crash
   public Future<Reply> debug_segfault() throws RedisException {
-    return (Future<Reply>) pipeline(DEBUG_SEGFAULT, new Command(DEBUG_SEGFAULT_BYTES));
+    return (Future<Reply>) pipeline(DEBUG_SEGFAULT, DEBUG_SEGFAULT_BYTES);
   }
 
   // Decrement the integer value of a key by one
   public Future<IntegerReply> decr(Object key) throws RedisException {
-    return (Future<IntegerReply>) pipeline(DECR, new Command(DECR_BYTES, key));
+    return (Future<IntegerReply>) pipeline(DECR, DECR_BYTES, key);
   }
 
   // Decrement the integer value of a key by the given number
   public Future<IntegerReply> decrby(Object key, Object decrement) throws RedisException {
-    return (Future<IntegerReply>) pipeline(DECRBY, new Command(DECRBY_BYTES, key, decrement));
+    return (Future<IntegerReply>) pipeline(DECRBY, DECRBY_BYTES, key, decrement);
   }
 
   // Discard all commands issued after MULTI
   public Future<StatusReply> discard() throws RedisException {
-    return (Future<StatusReply>) pipeline(DISCARD, new Command(DISCARD_BYTES));
+    return (Future<StatusReply>) pipeline(DISCARD, DISCARD_BYTES);
   }
 
   // Echo the given string
   public Future<BulkReply> echo(Object message) throws RedisException {
-    return (Future<BulkReply>) pipeline(ECHO, new Command(ECHO_BYTES, message));
+    return (Future<BulkReply>) pipeline(ECHO, ECHO_BYTES, message);
   }
 
   // Execute all commands issued after MULTI
   public Future<MultiBulkReply> exec() throws RedisException {
-    return (Future<MultiBulkReply>) pipeline(EXEC, new Command(EXEC_BYTES));
+    return (Future<MultiBulkReply>) pipeline(EXEC, EXEC_BYTES);
   }
 
   // Determine if a key exists
   public Future<IntegerReply> exists(Object key) throws RedisException {
-    return (Future<IntegerReply>) pipeline(EXISTS, new Command(EXISTS_BYTES, key));
+    return (Future<IntegerReply>) pipeline(EXISTS, EXISTS_BYTES, key);
   }
 
   // Set a key's time to live in seconds
   public Future<IntegerReply> expire(Object key, Object seconds) throws RedisException {
-    return (Future<IntegerReply>) pipeline(EXPIRE, new Command(EXPIRE_BYTES, key, seconds));
+    return (Future<IntegerReply>) pipeline(EXPIRE, EXPIRE_BYTES, key, seconds);
   }
 
   // Set the expiration for a key as a UNIX timestamp
   public Future<IntegerReply> expireat(Object key, Object timestamp) throws RedisException {
-    return (Future<IntegerReply>) pipeline(EXPIREAT, new Command(EXPIREAT_BYTES, key, timestamp));
+    return (Future<IntegerReply>) pipeline(EXPIREAT, EXPIREAT_BYTES, key, timestamp);
   }
 
   // Remove all keys from all databases
   public Future<StatusReply> flushall() throws RedisException {
-    return (Future<StatusReply>) pipeline(FLUSHALL, new Command(FLUSHALL_BYTES));
+    return (Future<StatusReply>) pipeline(FLUSHALL, FLUSHALL_BYTES);
   }
 
   // Remove all keys from the current database
   public Future<StatusReply> flushdb() throws RedisException {
-    return (Future<StatusReply>) pipeline(FLUSHDB, new Command(FLUSHDB_BYTES));
+    return (Future<StatusReply>) pipeline(FLUSHDB, FLUSHDB_BYTES);
   }
 
   // Get the value of a key
   public Future<BulkReply> get(Object key) throws RedisException {
-    return (Future<BulkReply>) pipeline(GET, new Command(GET_BYTES, key));
+    return (Future<BulkReply>) pipeline(GET, GET_BYTES, key);
   }
 
   // Returns the bit value at offset in the string value stored at key
   public Future<IntegerReply> getbit(Object key, Object offset) throws RedisException {
-    return (Future<IntegerReply>) pipeline(GETBIT, new Command(GETBIT_BYTES, key, offset));
+    return (Future<IntegerReply>) pipeline(GETBIT, GETBIT_BYTES, key, offset);
   }
 
   // Get a substring of the string stored at a key
   public Future<BulkReply> getrange(Object key, Object start, Object end) throws RedisException {
-    return (Future<BulkReply>) pipeline(GETRANGE, new Command(GETRANGE_BYTES, key, start, end));
+    return (Future<BulkReply>) pipeline(GETRANGE, GETRANGE_BYTES, key, start, end);
   }
 
   // Set the string value of a key and return its old value
   public Future<BulkReply> getset(Object key, Object value) throws RedisException {
-    return (Future<BulkReply>) pipeline(GETSET, new Command(GETSET_BYTES, key, value));
+    return (Future<BulkReply>) pipeline(GETSET, GETSET_BYTES, key, value);
   }
 
   // Determine if a hash field exists
   public Future<IntegerReply> hexists(Object key, Object field) throws RedisException {
-    return (Future<IntegerReply>) pipeline(HEXISTS, new Command(HEXISTS_BYTES, key, field));
+    return (Future<IntegerReply>) pipeline(HEXISTS, HEXISTS_BYTES, key, field);
   }
 
   // Get the value of a hash field
   public Future<BulkReply> hget(Object key, Object field) throws RedisException {
-    return (Future<BulkReply>) pipeline(HGET, new Command(HGET_BYTES, key, field));
+    return (Future<BulkReply>) pipeline(HGET, HGET_BYTES, key, field);
   }
 
   // Get all the fields and values in a hash
   public Future<MultiBulkReply> hgetall(Object key) throws RedisException {
-    return (Future<MultiBulkReply>) pipeline(HGETALL, new Command(HGETALL_BYTES, key));
+    return (Future<MultiBulkReply>) pipeline(HGETALL, HGETALL_BYTES, key);
   }
 
   // Increment the integer value of a hash field by the given number
   public Future<IntegerReply> hincrby(Object key, Object field, Object increment) throws RedisException {
-    return (Future<IntegerReply>) pipeline(HINCRBY, new Command(HINCRBY_BYTES, key, field, increment));
+    return (Future<IntegerReply>) pipeline(HINCRBY, HINCRBY_BYTES, key, field, increment);
   }
 
   // Get all the fields in a hash
   public Future<MultiBulkReply> hkeys(Object key) throws RedisException {
-    return (Future<MultiBulkReply>) pipeline(HKEYS, new Command(HKEYS_BYTES, key));
+    return (Future<MultiBulkReply>) pipeline(HKEYS, HKEYS_BYTES, key);
   }
 
   // Get the number of fields in a hash
   public Future<IntegerReply> hlen(Object key) throws RedisException {
-    return (Future<IntegerReply>) pipeline(HLEN, new Command(HLEN_BYTES, key));
+    return (Future<IntegerReply>) pipeline(HLEN, HLEN_BYTES, key);
   }
 
   // Set the string value of a hash field
   public Future<IntegerReply> hset(Object key, Object field, Object value) throws RedisException {
-    return (Future<IntegerReply>) pipeline(HSET, new Command(HSET_BYTES, key, field, value));
+    return (Future<IntegerReply>) pipeline(HSET, HSET_BYTES, key, field, value);
   }
 
   // Set the value of a hash field, only if the field does not exist
   public Future<IntegerReply> hsetnx(Object key, Object field, Object value) throws RedisException {
-    return (Future<IntegerReply>) pipeline(HSETNX, new Command(HSETNX_BYTES, key, field, value));
+    return (Future<IntegerReply>) pipeline(HSETNX, HSETNX_BYTES, key, field, value);
   }
 
   // Get all the values in a hash
   public Future<MultiBulkReply> hvals(Object key) throws RedisException {
-    return (Future<MultiBulkReply>) pipeline(HVALS, new Command(HVALS_BYTES, key));
+    return (Future<MultiBulkReply>) pipeline(HVALS, HVALS_BYTES, key);
   }
 
   // Increment the integer value of a key by one
   public Future<IntegerReply> incr(Object key) throws RedisException {
-    return (Future<IntegerReply>) pipeline(INCR, new Command(INCR_BYTES, key));
+    return (Future<IntegerReply>) pipeline(INCR, INCR_BYTES, key);
   }
 
   // Increment the integer value of a key by the given number
   public Future<IntegerReply> incrby(Object key, Object increment) throws RedisException {
-    return (Future<IntegerReply>) pipeline(INCRBY, new Command(INCRBY_BYTES, key, increment));
+    return (Future<IntegerReply>) pipeline(INCRBY, INCRBY_BYTES, key, increment);
   }
 
   // Get information and statistics about the server
   public Future<BulkReply> info() throws RedisException {
-    return (Future<BulkReply>) pipeline(INFO, new Command(INFO_BYTES));
+    return (Future<BulkReply>) pipeline(INFO, INFO_BYTES);
   }
 
   // Find all keys matching the given pattern
   public Future<MultiBulkReply> keys(Object pattern) throws RedisException {
-    return (Future<MultiBulkReply>) pipeline(KEYS, new Command(KEYS_BYTES, pattern));
+    return (Future<MultiBulkReply>) pipeline(KEYS, KEYS_BYTES, pattern);
   }
 
   // Get the UNIX time stamp of the last successful save to disk
   public Future<IntegerReply> lastsave() throws RedisException {
-    return (Future<IntegerReply>) pipeline(LASTSAVE, new Command(LASTSAVE_BYTES));
+    return (Future<IntegerReply>) pipeline(LASTSAVE, LASTSAVE_BYTES);
   }
 
   // Get an element from a list by its index
   public Future<BulkReply> lindex(Object key, Object index) throws RedisException {
-    return (Future<BulkReply>) pipeline(LINDEX, new Command(LINDEX_BYTES, key, index));
+    return (Future<BulkReply>) pipeline(LINDEX, LINDEX_BYTES, key, index);
   }
 
   // Get the length of a list
   public Future<IntegerReply> llen(Object key) throws RedisException {
-    return (Future<IntegerReply>) pipeline(LLEN, new Command(LLEN_BYTES, key));
+    return (Future<IntegerReply>) pipeline(LLEN, LLEN_BYTES, key);
   }
 
   // Remove and get the first element in a list
   public Future<BulkReply> lpop(Object key) throws RedisException {
-    return (Future<BulkReply>) pipeline(LPOP, new Command(LPOP_BYTES, key));
+    return (Future<BulkReply>) pipeline(LPOP, LPOP_BYTES, key);
   }
 
   // Prepend a value to a list, only if the list exists
   public Future<IntegerReply> lpushx(Object key, Object value) throws RedisException {
-    return (Future<IntegerReply>) pipeline(LPUSHX, new Command(LPUSHX_BYTES, key, value));
+    return (Future<IntegerReply>) pipeline(LPUSHX, LPUSHX_BYTES, key, value);
   }
 
   // Get a range of elements from a list
   public Future<MultiBulkReply> lrange(Object key, Object start, Object stop) throws RedisException {
-    return (Future<MultiBulkReply>) pipeline(LRANGE, new Command(LRANGE_BYTES, key, start, stop));
+    return (Future<MultiBulkReply>) pipeline(LRANGE, LRANGE_BYTES, key, start, stop);
   }
 
   // Remove elements from a list
   public Future<IntegerReply> lrem(Object key, Object count, Object value) throws RedisException {
-    return (Future<IntegerReply>) pipeline(LREM, new Command(LREM_BYTES, key, count, value));
+    return (Future<IntegerReply>) pipeline(LREM, LREM_BYTES, key, count, value);
   }
 
   // Set the value of an element in a list by its index
   public Future<StatusReply> lset(Object key, Object index, Object value) throws RedisException {
-    return (Future<StatusReply>) pipeline(LSET, new Command(LSET_BYTES, key, index, value));
+    return (Future<StatusReply>) pipeline(LSET, LSET_BYTES, key, index, value);
   }
 
   // Trim a list to the specified range
   public Future<StatusReply> ltrim(Object key, Object start, Object stop) throws RedisException {
-    return (Future<StatusReply>) pipeline(LTRIM, new Command(LTRIM_BYTES, key, start, stop));
+    return (Future<StatusReply>) pipeline(LTRIM, LTRIM_BYTES, key, start, stop);
   }
 
   // Listen for all requests received by the server in real time
   public Future<Reply> monitor() throws RedisException {
-    return (Future<Reply>) pipeline(MONITOR, new Command(MONITOR_BYTES));
+    return (Future<Reply>) pipeline(MONITOR, MONITOR_BYTES);
   }
 
   // Move a key to another database
   public Future<IntegerReply> move(Object key, Object db) throws RedisException {
-    return (Future<IntegerReply>) pipeline(MOVE, new Command(MOVE_BYTES, key, db));
+    return (Future<IntegerReply>) pipeline(MOVE, MOVE_BYTES, key, db);
   }
 
   // Mark the start of a transaction block
   public Future<StatusReply> multi() throws RedisException {
-    return (Future<StatusReply>) pipeline(MULTI, new Command(MULTI_BYTES));
+    return (Future<StatusReply>) pipeline(MULTI, MULTI_BYTES);
   }
 
   // Remove the expiration from a key
   public Future<IntegerReply> persist(Object key) throws RedisException {
-    return (Future<IntegerReply>) pipeline(PERSIST, new Command(PERSIST_BYTES, key));
+    return (Future<IntegerReply>) pipeline(PERSIST, PERSIST_BYTES, key);
   }
 
   // Ping the server
   public Future<StatusReply> ping() throws RedisException {
-    return (Future<StatusReply>) pipeline(PING, new Command(PING_BYTES));
+    return (Future<StatusReply>) pipeline(PING, PING_BYTES);
   }
 
   // Post a message to a channel
   public Future<IntegerReply> publish(Object channel, Object message) throws RedisException {
-    return (Future<IntegerReply>) pipeline(PUBLISH, new Command(PUBLISH_BYTES, channel, message));
+    return (Future<IntegerReply>) pipeline(PUBLISH, PUBLISH_BYTES, channel, message);
   }
 
   // Close the connection
   public Future<StatusReply> quit() throws RedisException {
-    return (Future<StatusReply>) pipeline(QUIT, new Command(QUIT_BYTES));
+    return (Future<StatusReply>) pipeline(QUIT, QUIT_BYTES);
   }
 
   // Return a random key from the keyspace
   public Future<BulkReply> randomkey() throws RedisException {
-    return (Future<BulkReply>) pipeline(RANDOMKEY, new Command(RANDOMKEY_BYTES));
+    return (Future<BulkReply>) pipeline(RANDOMKEY, RANDOMKEY_BYTES);
   }
 
   // Rename a key
   public Future<StatusReply> rename(Object key, Object newkey) throws RedisException {
-    return (Future<StatusReply>) pipeline(RENAME, new Command(RENAME_BYTES, key, newkey));
+    return (Future<StatusReply>) pipeline(RENAME, RENAME_BYTES, key, newkey);
   }
 
   // Rename a key, only if the new key does not exist
   public Future<IntegerReply> renamenx(Object key, Object newkey) throws RedisException {
-    return (Future<IntegerReply>) pipeline(RENAMENX, new Command(RENAMENX_BYTES, key, newkey));
+    return (Future<IntegerReply>) pipeline(RENAMENX, RENAMENX_BYTES, key, newkey);
   }
 
   // Remove and get the last element in a list
   public Future<BulkReply> rpop(Object key) throws RedisException {
-    return (Future<BulkReply>) pipeline(RPOP, new Command(RPOP_BYTES, key));
+    return (Future<BulkReply>) pipeline(RPOP, RPOP_BYTES, key);
   }
 
   // Remove the last element in a list, append it to another list and return it
   public Future<BulkReply> rpoplpush(Object source, Object destination) throws RedisException {
-    return (Future<BulkReply>) pipeline(RPOPLPUSH, new Command(RPOPLPUSH_BYTES, source, destination));
+    return (Future<BulkReply>) pipeline(RPOPLPUSH, RPOPLPUSH_BYTES, source, destination);
   }
 
   // Append a value to a list, only if the list exists
   public Future<IntegerReply> rpushx(Object key, Object value) throws RedisException {
-    return (Future<IntegerReply>) pipeline(RPUSHX, new Command(RPUSHX_BYTES, key, value));
+    return (Future<IntegerReply>) pipeline(RPUSHX, RPUSHX_BYTES, key, value);
   }
 
   // Synchronously save the dataset to disk
   public Future<Reply> save() throws RedisException {
-    return (Future<Reply>) pipeline(SAVE, new Command(SAVE_BYTES));
+    return (Future<Reply>) pipeline(SAVE, SAVE_BYTES);
   }
 
   // Get the number of members in a set
   public Future<IntegerReply> scard(Object key) throws RedisException {
-    return (Future<IntegerReply>) pipeline(SCARD, new Command(SCARD_BYTES, key));
+    return (Future<IntegerReply>) pipeline(SCARD, SCARD_BYTES, key);
   }
 
   // Change the selected database for the current connection
   public Future<StatusReply> select(Object index) throws RedisException {
-    return (Future<StatusReply>) pipeline(SELECT, new Command(SELECT_BYTES, index));
+    return (Future<StatusReply>) pipeline(SELECT, SELECT_BYTES, index);
   }
 
   // Set the string value of a key
   public Future<StatusReply> set(Object key, Object value) throws RedisException {
-    return (Future<StatusReply>) pipeline(SET, new Command(SET_BYTES, key, value));
+    return (Future<StatusReply>) pipeline(SET, SET_BYTES, key, value);
   }
 
   // Sets or clears the bit at offset in the string value stored at key
   public Future<IntegerReply> setbit(Object key, Object offset, Object value) throws RedisException {
-    return (Future<IntegerReply>) pipeline(SETBIT, new Command(SETBIT_BYTES, key, offset, value));
+    return (Future<IntegerReply>) pipeline(SETBIT, SETBIT_BYTES, key, offset, value);
   }
 
   // Set the value and expiration of a key
   public Future<StatusReply> setex(Object key, Object seconds, Object value) throws RedisException {
-    return (Future<StatusReply>) pipeline(SETEX, new Command(SETEX_BYTES, key, seconds, value));
+    return (Future<StatusReply>) pipeline(SETEX, SETEX_BYTES, key, seconds, value);
   }
 
   // Set the value of a key, only if the key does not exist
   public Future<IntegerReply> setnx(Object key, Object value) throws RedisException {
-    return (Future<IntegerReply>) pipeline(SETNX, new Command(SETNX_BYTES, key, value));
+    return (Future<IntegerReply>) pipeline(SETNX, SETNX_BYTES, key, value);
   }
 
   // Overwrite part of a string at key starting at the specified offset
   public Future<IntegerReply> setrange(Object key, Object offset, Object value) throws RedisException {
-    return (Future<IntegerReply>) pipeline(SETRANGE, new Command(SETRANGE_BYTES, key, offset, value));
+    return (Future<IntegerReply>) pipeline(SETRANGE, SETRANGE_BYTES, key, offset, value);
   }
 
   // Synchronously save the dataset to disk and then shut down the server
   public Future<StatusReply> shutdown() throws RedisException {
-    return (Future<StatusReply>) pipeline(SHUTDOWN, new Command(SHUTDOWN_BYTES));
+    return (Future<StatusReply>) pipeline(SHUTDOWN, SHUTDOWN_BYTES);
   }
 
   // Determine if a given value is a member of a set
   public Future<IntegerReply> sismember(Object key, Object member) throws RedisException {
-    return (Future<IntegerReply>) pipeline(SISMEMBER, new Command(SISMEMBER_BYTES, key, member));
+    return (Future<IntegerReply>) pipeline(SISMEMBER, SISMEMBER_BYTES, key, member);
   }
 
   // Make the server a slave of another instance, or promote it as master
   public Future<StatusReply> slaveof(Object host, Object port) throws RedisException {
-    return (Future<StatusReply>) pipeline(SLAVEOF, new Command(SLAVEOF_BYTES, host, port));
+    return (Future<StatusReply>) pipeline(SLAVEOF, SLAVEOF_BYTES, host, port);
   }
 
   // Get all the members in a set
   public Future<MultiBulkReply> smembers(Object key) throws RedisException {
-    return (Future<MultiBulkReply>) pipeline(SMEMBERS, new Command(SMEMBERS_BYTES, key));
+    return (Future<MultiBulkReply>) pipeline(SMEMBERS, SMEMBERS_BYTES, key);
   }
 
   // Move a member from one set to another
   public Future<IntegerReply> smove(Object source, Object destination, Object member) throws RedisException {
-    return (Future<IntegerReply>) pipeline(SMOVE, new Command(SMOVE_BYTES, source, destination, member));
+    return (Future<IntegerReply>) pipeline(SMOVE, SMOVE_BYTES, source, destination, member);
   }
 
   // Remove and return a random member from a set
   public Future<BulkReply> spop(Object key) throws RedisException {
-    return (Future<BulkReply>) pipeline(SPOP, new Command(SPOP_BYTES, key));
+    return (Future<BulkReply>) pipeline(SPOP, SPOP_BYTES, key);
   }
 
   // Get a random member from a set
   public Future<BulkReply> srandmember(Object key) throws RedisException {
-    return (Future<BulkReply>) pipeline(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, key));
+    return (Future<BulkReply>) pipeline(SRANDMEMBER, SRANDMEMBER_BYTES, key);
   }
 
   // Get the length of the value stored in a key
   public Future<IntegerReply> strlen(Object key) throws RedisException {
-    return (Future<IntegerReply>) pipeline(STRLEN, new Command(STRLEN_BYTES, key));
+    return (Future<IntegerReply>) pipeline(STRLEN, STRLEN_BYTES, key);
   }
 
   // Internal command used for replication
   public Future<Reply> sync() throws RedisException {
-    return (Future<Reply>) pipeline(SYNC, new Command(SYNC_BYTES));
+    return (Future<Reply>) pipeline(SYNC, SYNC_BYTES);
   }
 
   // Get the time to live for a key
   public Future<IntegerReply> ttl(Object key) throws RedisException {
-    return (Future<IntegerReply>) pipeline(TTL, new Command(TTL_BYTES, key));
+    return (Future<IntegerReply>) pipeline(TTL, TTL_BYTES, key);
   }
 
   // Determine the type stored at key
   public Future<StatusReply> type(Object key) throws RedisException {
-    return (Future<StatusReply>) pipeline(TYPE, new Command(TYPE_BYTES, key));
+    return (Future<StatusReply>) pipeline(TYPE, TYPE_BYTES, key);
   }
 
   // Forget about all watched keys
   public Future<StatusReply> unwatch() throws RedisException {
-    return (Future<StatusReply>) pipeline(UNWATCH, new Command(UNWATCH_BYTES));
+    return (Future<StatusReply>) pipeline(UNWATCH, UNWATCH_BYTES);
   }
 
   // Get the number of members in a sorted set
   public Future<IntegerReply> zcard(Object key) throws RedisException {
-    return (Future<IntegerReply>) pipeline(ZCARD, new Command(ZCARD_BYTES, key));
+    return (Future<IntegerReply>) pipeline(ZCARD, ZCARD_BYTES, key);
   }
 
   // Count the members in a sorted set with scores within the given values
   public Future<IntegerReply> zcount(Object key, Object min, Object max) throws RedisException {
-    return (Future<IntegerReply>) pipeline(ZCOUNT, new Command(ZCOUNT_BYTES, key, min, max));
+    return (Future<IntegerReply>) pipeline(ZCOUNT, ZCOUNT_BYTES, key, min, max);
   }
 
   // Increment the score of a member in a sorted set
   public Future<BulkReply> zincrby(Object key, Object increment, Object member) throws RedisException {
-    return (Future<BulkReply>) pipeline(ZINCRBY, new Command(ZINCRBY_BYTES, key, increment, member));
+    return (Future<BulkReply>) pipeline(ZINCRBY, ZINCRBY_BYTES, key, increment, member);
   }
 
   // Determine the index of a member in a sorted set
   public Future<IntegerReply> zrank(Object key, Object member) throws RedisException {
-    return (Future<IntegerReply>) pipeline(ZRANK, new Command(ZRANK_BYTES, key, member));
+    return (Future<IntegerReply>) pipeline(ZRANK, ZRANK_BYTES, key, member);
   }
 
   // Remove all members in a sorted set within the given indexes
   public Future<IntegerReply> zremrangebyrank(Object key, Object start, Object stop) throws RedisException {
-    return (Future<IntegerReply>) pipeline(ZREMRANGEBYRANK, new Command(ZREMRANGEBYRANK_BYTES, key, start, stop));
+    return (Future<IntegerReply>) pipeline(ZREMRANGEBYRANK, ZREMRANGEBYRANK_BYTES, key, start, stop);
   }
 
   // Remove all members in a sorted set within the given scores
   public Future<IntegerReply> zremrangebyscore(Object key, Object min, Object max) throws RedisException {
-    return (Future<IntegerReply>) pipeline(ZREMRANGEBYSCORE, new Command(ZREMRANGEBYSCORE_BYTES, key, min, max));
+    return (Future<IntegerReply>) pipeline(ZREMRANGEBYSCORE, ZREMRANGEBYSCORE_BYTES, key, min, max);
   }
 
   // Determine the index of a member in a sorted set, with scores ordered from high to low
   public Future<IntegerReply> zrevrank(Object key, Object member) throws RedisException {
-    return (Future<IntegerReply>) pipeline(ZREVRANK, new Command(ZREVRANK_BYTES, key, member));
+    return (Future<IntegerReply>) pipeline(ZREVRANK, ZREVRANK_BYTES, key, member);
   }
 
   // Get the score associated with the given member in a sorted set
   public Future<BulkReply> zscore(Object key, Object member) throws RedisException {
-    return (Future<BulkReply>) pipeline(ZSCORE, new Command(ZSCORE_BYTES, key, member));
+    return (Future<BulkReply>) pipeline(ZSCORE, ZSCORE_BYTES, key, member);
   }
   }
 }

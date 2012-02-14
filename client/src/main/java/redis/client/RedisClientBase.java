@@ -49,9 +49,35 @@ public class RedisClientBase {
     });
   }
 
+  protected synchronized Future<? extends Reply> pipeline(String name, Object... objects) throws RedisException {
+    try {
+      redisProtocol.sendAsync(objects);
+    } catch (IOException e) {
+      throw new RedisException("Failed to execute: " + name, e);
+    }
+    return es.submit(new Callable<Reply>() {
+      @Override
+      public Reply call() throws Exception {
+        Reply reply = redisProtocol.receiveAsync();
+        if (reply instanceof ErrorReply) {
+          throw new RedisException(((ErrorReply) reply).error);
+        }
+        return reply;
+      }
+    });
+  }
+
   protected Reply execute(String name, Command command) throws RedisException {
     try {
       return pipeline(name, command).get();
+    } catch (Exception e) {
+      throw new RedisException("Failed to execute: " + name, e);
+    }
+  }
+
+  protected Reply execute(String name, Object... objects) throws RedisException {
+    try {
+      return pipeline(name, objects).get();
     } catch (Exception e) {
       throw new RedisException("Failed to execute: " + name, e);
     }

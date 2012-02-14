@@ -124,4 +124,11 @@ public class RedisProtocol {
       os.flush();
     }
   }
+
+  public void sendAsync(Object[] objects) throws IOException {
+    synchronized (os) {
+      Command.writeDirect(os, objects);
+      os.flush();
+    }
+  }
 }

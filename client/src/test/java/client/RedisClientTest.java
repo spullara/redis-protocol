@@ -22,6 +22,9 @@ import static junit.framework.Assert.assertEquals;
  * Time: 10:20 PM
  */
 public class RedisClientTest {
+
+  private static final byte[] VALUE = "value".getBytes(Charsets.UTF_8);
+
   @Test
   public void testIt() throws IOException, ExecutionException, InterruptedException {
     RedisClient redisClient = new RedisClient(new SocketPool("localhost", 6379));
@@ -41,7 +44,7 @@ public class RedisClientTest {
     long start = System.currentTimeMillis();
     RedisClient redisClient = new RedisClient(new SocketPool("localhost", 6379));
     for (int i = 0; i < CALLS; i++) {
-      redisClient.get(Command.numToBytes(i));
+      redisClient.set(Command.numToBytes(i), VALUE);
     }
     long end = System.currentTimeMillis();
     System.out.println(CALLS * 1000 / (end - start) + " calls per second");
