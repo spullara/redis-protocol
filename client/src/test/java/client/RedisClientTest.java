@@ -1,12 +1,16 @@
 package client;
 
 import org.junit.Test;
+import redis.Command;
 import redis.client.RedisClient;
 import redis.client.SocketPool;
 import redis.reply.BulkReply;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Semaphore;
+
+import com.google.common.base.Charsets;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -29,5 +33,17 @@ public class RedisClientTest {
     p.incr("increment");
     p.incr("increment");
     assertEquals(3, redisClient.incr("increment").integer);
+  }
+  
+  @Test
+  public void benchmark() throws IOException {
+    int CALLS = 1000000;
+    long start = System.currentTimeMillis();
+    RedisClient redisClient = new RedisClient(new SocketPool("localhost", 6379));
+    for (int i = 0; i < CALLS; i++) {
+      redisClient.get(Command.numToBytes(i));
+    }
+    long end = System.currentTimeMillis();
+    System.out.println(CALLS * 1000 / (end - start) + " calls per second");
   }
 }
