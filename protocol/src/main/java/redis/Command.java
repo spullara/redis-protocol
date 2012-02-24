@@ -113,12 +113,29 @@ public class Command {
     }
   }
 
+  private static final int NUM_MAP_LENGTH = 256;
+  private static byte[][] numMap = new byte[NUM_MAP_LENGTH][];
+  static {
+    for (int i = 0; i < NUM_MAP_LENGTH; i++) {
+      numMap[i] = convert(i);
+    }
+  }
+
   // Optimized for the direct to ASCII bytes case
   // Could be even more optimized but it is already
   // about twice as fast as using Long.toString().getBytes()
   public static byte[] numToBytes(long value) {
+    if (value >= 0 && value < NUM_MAP_LENGTH) {
+      return numMap[((int) value)];
+    } else if (value == -1) {
+      return NEG_ONE;
+    }
+    return convert(value);
+  }
+
+  private static byte[] convert(long value) {
     boolean negative = value < 0;
-    int index = 1 + (negative ? 1 : 0);
+    int index = negative ? 2 : 1;
     long current = negative ? -value : value;
     while ((current /= 10) > 0) {
       index++;

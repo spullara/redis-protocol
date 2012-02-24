@@ -25,7 +25,11 @@ public class SocketPool {
   public Socket get() throws IOException {
     Socket poll = queue.poll();
     if (poll == null) {
-      return new Socket(host, port);
+      Socket socket = new Socket(host, port);
+      socket.setKeepAlive(true);
+      socket.setTcpNoDelay(true);
+      socket.setReceiveBufferSize(1024);
+      return socket;
     }
     return poll;
   }

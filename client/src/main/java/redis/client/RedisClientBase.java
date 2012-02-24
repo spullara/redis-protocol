@@ -69,7 +69,7 @@ public class RedisClientBase {
 
   protected Reply execute(String name, Command command) throws RedisException {
     try {
-      return pipeline(name, command).get();
+      return redisProtocol.send(command);
     } catch (Exception e) {
       throw new RedisException("Failed to execute: " + name, e);
     }
@@ -77,7 +77,8 @@ public class RedisClientBase {
 
   protected Reply execute(String name, Object... objects) throws RedisException {
     try {
-      return pipeline(name, objects).get();
+      redisProtocol.sendAsync(objects);
+      return redisProtocol.receiveAsync();
     } catch (Exception e) {
       throw new RedisException("Failed to execute: " + name, e);
     }
