@@ -24,11 +24,11 @@ public class RedisProtocol {
   private static final char CR = '\r';
   private static final char LF = '\n';
   private static final char ZERO = '0';
-  private final DataInputStream is;
+  private final BufferedInputStream is;
   private final OutputStream os;
 
   public RedisProtocol(Socket socket) throws IOException {
-    is = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+    is = new BufferedInputStream(socket.getInputStream());
     os = new BufferedOutputStream(socket.getOutputStream());
   }
 

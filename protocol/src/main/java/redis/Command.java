@@ -2,6 +2,7 @@ package redis;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import com.google.common.base.Charsets;
@@ -68,7 +69,7 @@ public class Command {
     }
   }
 
-  public static Command read(DataInputStream is) throws IOException {
+  public static Command read(InputStream is) throws IOException {
     int read = is.read();
     if (read == ARGS_PREFIX[0]) {
       int numArgs = RedisProtocol.readInteger(is);
@@ -82,23 +83,24 @@ public class Command {
       }
       return new Command(byteArrays);
     } else {
+      DataInputStream dis = new DataInputStream(is);
       // Special case MONITOR & PING & QUIT command
       if (read == 'M' || read == 'm') {
-        String command = ("m" + is.readLine()).toLowerCase();
+        String command = ("m" + dis.readLine()).toLowerCase();
         if (command.equals("monitor")) {
           byte[][] byteArrays = new byte[1][];
           byteArrays[0] = "monitor".getBytes();
           return new Command(byteArrays);
         }
       } else if (read == 'Q' || read == 'q') {
-        String command = ("q" + is.readLine()).toLowerCase();
+        String command = ("q" + dis.readLine()).toLowerCase();
         if (command.equals("quit")) {
           byte[][] byteArrays = new byte[1][];
           byteArrays[0] = "quit".getBytes();
           return new Command(byteArrays);
         }
       } else if (read == 'P' || read == 'p') {
-        String command = ("p" + is.readLine()).toLowerCase();
+        String command = ("p" + dis.readLine()).toLowerCase();
         if (command.equals("ping")) {
           byte[][] byteArrays = new byte[1][];
           byteArrays[0] = "ping".getBytes();
