@@ -55,7 +55,7 @@ public class CommandTest {
   @Test
   public void freelsBench() throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    byte[][] replies = new byte[100][6];
+    byte[][] replies = new byte[100][];
     for (int i = 0; i < replies.length; i++) {
       replies[i] = "foobar".getBytes();
     }

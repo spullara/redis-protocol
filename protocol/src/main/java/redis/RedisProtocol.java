@@ -20,6 +20,9 @@ import java.net.Socket;
  */
 public class RedisProtocol {
 
+  private static final char CR = '\r';
+  private static final char LF = '\n';
+  private static final char ZERO = '0';
   private final DataInputStream is;
   private final OutputStream os;
 
@@ -44,7 +47,7 @@ public class RedisProtocol {
     }
     int cr = is.read();
     int lf = is.read();
-    if (cr != '\r' || lf != '\n') {
+    if (cr != CR || lf != LF) {
       throw new IOException("Improper line ending: " + cr + ", " + lf);
     }
     return bytes;
@@ -52,34 +55,28 @@ public class RedisProtocol {
 
   public static int readInteger(DataInputStream is) throws IOException {
     int size = 0;
-    boolean negative = false;
-    boolean sign = false;
-    int read;
-    while ((read = is.read()) != -1) {
-      if (read == '-') {
-        if (sign) {
-          throw new IOException("Invalid character in integer");
-        } else {
-          negative = true;
-        }
-      } else {
-        int value = read - '0';
-        if (value >= 0 && value < 10) {
-          size *= 10;
-          size += value;
-        } else {
-          if (read == '\r') {
-            if (is.read() == '\n') {
-              break;
-            }
-          }
-          throw new IOException("Invalid character in integer");
+    int sign = 1;
+    int read = is.read();
+    if (read == '-') {
+      read = is.read();
+      sign = -1;
+    }
+    do {
+      if (read == CR) {
+        if (is.read() == LF) {
+          break;
         }
       }
-      sign = true;
-    }
-    size = negative ? -size : size;
-    return size;
+      int value = read - ZERO;
+      if (value >= 0 && value < 10) {
+        size *= 10;
+        size += value;
+      } else {
+        throw new IOException("Invalid character in integer");
+      }
+      read = is.read();
+    } while (true);
+    return size * sign;
   }
 
   public static Reply receive(DataInputStream is) throws IOException {
@@ -92,7 +89,7 @@ public class RedisProtocol {
         return new ErrorReply(is.readLine());
       }
       case IntegerReply.MARKER: {
-        return new IntegerReply(Integer.parseInt(is.readLine()));
+        return new IntegerReply(readInteger(is));
       }
       case BulkReply.MARKER: {
         return new BulkReply(readBytes(is));
