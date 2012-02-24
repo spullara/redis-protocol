@@ -6,6 +6,7 @@ import redis.RedisProtocol;
 
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 /**
@@ -19,7 +20,7 @@ public class MultiBulkReply extends Reply {
   public static final char MARKER = '*';
   public final Object[] byteArrays;
 
-  public MultiBulkReply(DataInputStream is) throws IOException {
+  public MultiBulkReply(InputStream is) throws IOException {
     int size = RedisProtocol.readInteger(is);
     byteArrays = new Object[size];
     for (int i = 0; i < size; i++) {

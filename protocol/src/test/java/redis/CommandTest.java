@@ -64,7 +64,7 @@ public class CommandTest {
     long start = System.currentTimeMillis();
     for (int i = 0; i < 100; i++) {
       for (int j = 0; j < 100000; j++) {
-        RedisProtocol.receive(new DataInputStream(new ByteArrayInputStream(multiBulkReply)));
+        RedisProtocol.receive(new ByteArrayInputStream(multiBulkReply));
       }
       long end = System.currentTimeMillis();
       long diff = end - start;

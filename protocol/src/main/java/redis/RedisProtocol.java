@@ -11,6 +11,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
@@ -31,7 +32,7 @@ public class RedisProtocol {
     os = new BufferedOutputStream(socket.getOutputStream());
   }
 
-  public static byte[] readBytes(DataInputStream is) throws IOException {
+  public static byte[] readBytes(InputStream is) throws IOException {
     int size = readInteger(is);
     int read;
     if (size == -1) {
@@ -53,7 +54,7 @@ public class RedisProtocol {
     return bytes;
   }
 
-  public static int readInteger(DataInputStream is) throws IOException {
+  public static int readInteger(InputStream is) throws IOException {
     int size = 0;
     int sign = 1;
     int read = is.read();
@@ -79,14 +80,14 @@ public class RedisProtocol {
     return size * sign;
   }
 
-  public static Reply receive(DataInputStream is) throws IOException {
+  public static Reply receive(InputStream is) throws IOException {
     int code = is.read();
     switch (code) {
       case StatusReply.MARKER: {
-        return new StatusReply(is.readLine());
+        return new StatusReply(new DataInputStream(is).readLine());
       }
       case ErrorReply.MARKER: {
-        return new ErrorReply(is.readLine());
+        return new ErrorReply(new DataInputStream(is).readLine());
       }
       case IntegerReply.MARKER: {
         return new IntegerReply(readInteger(is));
