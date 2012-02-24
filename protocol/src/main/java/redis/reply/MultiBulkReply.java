@@ -2,7 +2,9 @@ package redis.reply;
 
 import com.google.common.base.Charsets;
 import redis.Command;
+import redis.RedisProtocol;
 
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -16,6 +18,21 @@ import java.io.OutputStream;
 public class MultiBulkReply extends Reply {
   public static final char MARKER = '*';
   public final Object[] byteArrays;
+
+  public MultiBulkReply(DataInputStream is) throws IOException {
+    int size = RedisProtocol.readInteger(is);
+    byteArrays = new Object[size];
+    for (int i = 0; i < size; i++) {
+      int read = is.read();
+      if (read == BulkReply.MARKER) {
+        byteArrays[i] = RedisProtocol.readBytes(is);
+      } else if (read == IntegerReply.MARKER) {
+        byteArrays[i] = RedisProtocol.readInteger(is);
+      } else {
+        throw new IOException("Unexpected character in stream: " + read);
+      }
+    }
+  }
 
   public MultiBulkReply(Object... values) {
     this.byteArrays = values;

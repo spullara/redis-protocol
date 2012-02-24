@@ -29,13 +29,13 @@ public class RedisProtocol {
   }
 
   public static byte[] readBytes(DataInputStream is) throws IOException {
-    int size = Integer.parseInt(is.readLine());
+    int size = readInteger(is);
+    int read;
     if (size == -1) {
       return null;
     }
     byte[] bytes = new byte[size];
     int total = 0;
-    int read;
     while (total < bytes.length && (read = is.read(bytes, total, bytes.length - total)) != -1) {
       total += read;
     }
@@ -48,6 +48,38 @@ public class RedisProtocol {
       throw new IOException("Improper line ending: " + cr + ", " + lf);
     }
     return bytes;
+  }
+
+  public static int readInteger(DataInputStream is) throws IOException {
+    int size = 0;
+    boolean negative = false;
+    boolean sign = false;
+    int read;
+    while ((read = is.read()) != -1) {
+      if (read == '-') {
+        if (sign) {
+          throw new IOException("Invalid character in integer");
+        } else {
+          negative = true;
+        }
+      } else {
+        int value = read - '0';
+        if (value >= 0 && value < 10) {
+          size *= 10;
+          size += value;
+        } else {
+          if (read == '\r') {
+            if (is.read() == '\n') {
+              break;
+            }
+          }
+          throw new IOException("Invalid character in integer");
+        }
+      }
+      sign = true;
+    }
+    size = negative ? -size : size;
+    return size;
   }
 
   public static Reply receive(DataInputStream is) throws IOException {
@@ -63,23 +95,10 @@ public class RedisProtocol {
         return new IntegerReply(Integer.parseInt(is.readLine()));
       }
       case BulkReply.MARKER: {
-        byte[] bytes = readBytes(is);
-        return new BulkReply(bytes);
+        return new BulkReply(readBytes(is));
       }
       case MultiBulkReply.MARKER: {
-        int size = Integer.parseInt(is.readLine());
-        Object[] byteArrays = new Object[size];
-        for (int i = 0; i < size; i++) {
-          int read = is.read();
-          if (read == BulkReply.MARKER) {
-            byteArrays[i] = readBytes(is);
-          } else if (read == IntegerReply.MARKER) {
-            byteArrays[i] = Integer.parseInt(is.readLine());
-          } else {
-            throw new IOException("Unexpected character in stream: " + read);
-          }
-        }
-        return new MultiBulkReply(byteArrays);
+        return new MultiBulkReply(is);
       }
       default: {
         throw new IOException("Unexpected character in stream: " + code);

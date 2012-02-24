@@ -71,7 +71,7 @@ public class Command {
   public static Command read(DataInputStream is) throws IOException {
     int read = is.read();
     if (read == ARGS_PREFIX[0]) {
-      int numArgs = Integer.parseInt(is.readLine());
+      int numArgs = RedisProtocol.readInteger(is);
       byte[][] byteArrays = new byte[numArgs][];
       for (int i = 0; i < numArgs; i++) {
         if (is.read() == BYTES_PREFIX[0]) {
