@@ -50,7 +50,7 @@ public class RedisProtocol {
     return bytes;
   }
 
-  private static Reply receive(DataInputStream is) throws IOException {
+  public static Reply receive(DataInputStream is) throws IOException {
     int code = is.read();
     switch (code) {
       case StatusReply.MARKER: {
