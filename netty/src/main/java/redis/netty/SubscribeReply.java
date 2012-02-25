@@ -1,4 +1,4 @@
-package redis.reply;
+package redis.netty;
 
 import java.io.IOException;
 

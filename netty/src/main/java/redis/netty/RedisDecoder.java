@@ -8,18 +8,16 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
-import redis.reply.BulkReply;
-import redis.reply.ErrorReply;
-import redis.reply.IntegerReply;
-import redis.reply.MultiBulkReply;
-import redis.reply.Reply;
-import redis.reply.StatusReply;
 
 public class RedisDecoder extends ReplayingDecoder {
 
   private static final char CR = '\r';
   private static final char LF = '\n';
   private static final char ZERO = '0';
+
+  // We track the current multibulk reply in the case
+  // where we do not get a complete reply in a single
+  // decode invocation.
   private MultiBulkReply reply;
 
   public byte[] readBytes(ChannelBuffer is) throws IOException {
@@ -68,7 +66,7 @@ public class RedisDecoder extends ReplayingDecoder {
     return size * sign;
   }
 
-  public Reply receive(final ChannelBuffer is, RedisDecoder rd) throws IOException {
+  public Reply receive(final ChannelBuffer is) throws IOException {
     int code = is.readByte();
     switch (code) {
       case StatusReply.MARKER: {
@@ -84,7 +82,7 @@ public class RedisDecoder extends ReplayingDecoder {
         return new BulkReply(readBytes(is));
       }
       case MultiBulkReply.MARKER: {
-        return rd.decodeMultiBulkReply(is);
+        return decodeMultiBulkReply(is);
       }
       default: {
         throw new IOException("Unexpected character in stream: " + code);
@@ -99,7 +97,7 @@ public class RedisDecoder extends ReplayingDecoder {
 
   @Override
   protected Object decode(ChannelHandlerContext channelHandlerContext, Channel channel, ChannelBuffer channelBuffer, Enum anEnum) throws Exception {
-    return receive(channelBuffer, this);
+    return receive(channelBuffer);
   }
 
   public MultiBulkReply decodeMultiBulkReply(ChannelBuffer is) throws IOException {

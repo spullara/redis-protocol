@@ -1,4 +1,4 @@
-package redis.reply;
+package redis.netty;
 
 import java.io.IOException;
 
@@ -11,14 +11,20 @@ import org.jboss.netty.buffer.ChannelBuffer;
  * Date: 7/31/11
  * Time: 5:13 PM
  */
-public class PUnsubscribeReply extends UnsubscribeReply {
+public class UnsubscribeReply extends Reply {
 
-  public PUnsubscribeReply(byte[][] patterns) {
-    super(patterns);
+  private final byte[][] patterns;
+
+  public UnsubscribeReply(byte[][] patterns) {
+    this.patterns = patterns;
   }
 
   @Override
   public void write(ChannelBuffer os) throws IOException {
     
+  }
+
+  public byte[][] getPatterns() {
+    return patterns;
   }
 }

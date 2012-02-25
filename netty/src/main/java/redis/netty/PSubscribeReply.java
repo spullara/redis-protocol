@@ -1,4 +1,4 @@
-package redis.reply;
+package redis.netty;
 
 /**
  * TODO: Edit this

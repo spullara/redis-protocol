@@ -11,7 +11,6 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelDownstreamHandler;
-import redis.Command;
 
 public class RedisEncoder extends SimpleChannelDownstreamHandler {
 

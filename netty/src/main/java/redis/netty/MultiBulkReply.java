@@ -1,10 +1,8 @@
-package redis.reply;
+package redis.netty;
 
 import java.io.IOException;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import redis.Command;
-import redis.netty.RedisDecoder;
 
 /**
 * Created by IntelliJ IDEA.
@@ -21,8 +19,7 @@ public class MultiBulkReply extends Reply {
   private int size;
   private int num;
 
-  public MultiBulkReply(RedisDecoder rd, ChannelBuffer is) throws IOException {
-    read(rd, is);
+  public MultiBulkReply() {
   }
 
   public void read(RedisDecoder rd, ChannelBuffer is) throws IOException {
