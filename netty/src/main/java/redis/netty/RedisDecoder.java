@@ -9,7 +9,11 @@ import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 
-public class RedisDecoder extends ReplayingDecoder {
+enum State {
+
+}
+
+public class RedisDecoder extends ReplayingDecoder<State> {
 
   private static final char CR = '\r';
   private static final char LF = '\n';
@@ -96,7 +100,7 @@ public class RedisDecoder extends ReplayingDecoder {
   }
 
   @Override
-  protected Object decode(ChannelHandlerContext channelHandlerContext, Channel channel, ChannelBuffer channelBuffer, Enum anEnum) throws Exception {
+  protected Object decode(ChannelHandlerContext channelHandlerContext, Channel channel, ChannelBuffer channelBuffer, State anEnum) throws Exception {
     return receive(channelBuffer);
   }
 

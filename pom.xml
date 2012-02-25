@@ -12,6 +12,7 @@
     <module>clientgen</module>
     <module>native</module>
     <module>netty</module>
+    <module>finagle</module>
   </modules>
   <packaging>pom</packaging>
 
