@@ -18,7 +18,7 @@ public class Command {
   public static final byte[] CRLF = "\r\n".getBytes();
   public static final byte[] BYTES_PREFIX = "$".getBytes();
   public static final byte[] EMPTY_BYTES = new byte[0];
-  public static final byte[] NEG_ONE = Command.numToBytes(-1);
+  public static final byte[] NEG_ONE = convert(-1);
 
   private byte[][] arguments;
   private Object[] objects;
