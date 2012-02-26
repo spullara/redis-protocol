@@ -4,21 +4,22 @@ Still smoothing out the edges.
 Description of each module:
 
 client/
-  Leverages the protocol module for encoding and decoding. Supports both synchronous and asynchronous pipelined
-  requests from the RedisClient.
+  Leverages the protocol module for encoding and decoding. Supports both synchronous
+  and asynchronous pipelined requests from the RedisClient.
 clientgen/
-  Scrapes the redis.io/commands page and produces the typed Java client and the Finagle-based Scala client.
+  Scrapes the redis.io/commands page and produces the typed Java client and the
+  Finagle-based Scala client.
 finagle/
   Based on the Netty codec, this provides a Finagle based client.
 native/
-  An experiment in combination with spullara/redis allows you to start up a Redis instance in a Java process
-  and call it directly through JNI.
+  An experiment in combination with spullara/redis allows you to start up a Redis
+  instance in a Java process and call it directly through JNI.
 netty/
-  A channel buffer based protocol implementation wrapped in a Netty codec. I am currently trying to push
-  this upstream to Netty as a default codec.
+  A channel buffer based protocol implementation wrapped in a Netty codec. I am
+  currently trying to push this upstream to Netty as a default codec.
 protocol/
-  Redis protocol encoder / decoder based on input/outputstreams. This is the fastest implementation if blocking i/o
-  is ok for your use case.
+  Redis protocol encoder / decoder based on input/outputstreams. This is the
+  fastest implementation if blocking i/o is ok for your use case.
 server/
   Very, very rough, incomplete Java based Redis clone. Do not use.
 
