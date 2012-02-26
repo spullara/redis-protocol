@@ -1,4 +1,2 @@
-The intention of this project is to make a complete replacement for Redis in Java. Early prototypes suggest
-that we can increase performance by as much as 2x. Further, it will act as a nice experimentation platform
-for various I/O and GC optimizations. The storage engine will be pluggable so you will be able to use almost
-any backend store.
+The Redis client in this repository is faster, in my tests, than the redis-benchmark application that comes with Redis.
+Still smoothing out the edges.
