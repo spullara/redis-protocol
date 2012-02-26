@@ -26,5 +26,15 @@ class RedisTest extends Specification {
       client.set("test", "value")()
       client.get("test")() mustEqual "value"
     }
+
+    "benchmark" in {
+      val CALLS = 1000000;
+      val start = System.currentTimeMillis();
+      for (i <- 0 to CALLS) {
+        client.set(String.valueOf(i), "value")()
+      }
+      val end = System.currentTimeMillis();
+      System.out.println(CALLS * 1000 / (end - start) + " calls per second");
+    }
   }
 }
