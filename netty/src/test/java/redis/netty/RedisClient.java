@@ -45,7 +45,7 @@ public class RedisClient {
     int CALLS = 1000000;
     long start = System.currentTimeMillis();
     for (int i = 0; i < CALLS; i++) {
-      channel.write(new Command("SET", Command.numToBytes(i), VALUE));
+      channel.write(new Command("SET", Long.toString(i).getBytes(Charsets.US_ASCII), VALUE));
       blockingReadHandler.read();
     }
     long end = System.currentTimeMillis();
