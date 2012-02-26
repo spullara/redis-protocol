@@ -1,8 +1,5 @@
 package redis.netty;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.ChannelFuture;
@@ -11,6 +8,9 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelDownstreamHandler;
+
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class RedisEncoder extends SimpleChannelDownstreamHandler {
 
@@ -36,6 +36,9 @@ public class RedisEncoder extends SimpleChannelDownstreamHandler {
         }
       });
       Channels.write(ctx, future, cb);
+    } else {
+      super.writeRequested(ctx, e);
     }
+
   }
 }
