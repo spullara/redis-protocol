@@ -27,8 +27,10 @@ import java.io.Writer;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Generate client code for redis based on the protocol.
@@ -44,6 +46,10 @@ public class Main {
 
   @Argument(alias = "d", required = true)
   private static File dest;
+
+  private static Set<String> keywords = new HashSet<String>() {{
+    add("type");
+  }};
 
   public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException, MustacheException {
     try {
@@ -88,7 +94,7 @@ public class Main {
       final String finalReply = cacheReply;
       if (!commandArguments.contains("[") && !commandArguments.contains("|")) {
         commands.add(new Object() {
-          public String name = command;
+          String name = command;
           String comment = commandSummary;
           String reply = finalReply.equals("") ? "Reply" : finalReply;
           List<Object> arguments = new ArrayList<Object>();
@@ -105,6 +111,7 @@ public class Main {
           }
 
           String methodname = command.toLowerCase();
+          String quote = keywords.contains(methodname) ? "`" : "";
         });
       }
     }

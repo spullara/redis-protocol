@@ -299,7 +299,7 @@ class RedisException(message:String) extends RuntimeException(message) {
 class RedisClient(service: Service[Command, Reply]) {
 
   // Append a value to a key
-  def `append`(key: Object, value: Object) = {
+  def append(key: Object, value: Object) = {
     service(new Command(RedisClient.APPEND_BYTES, key, value)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -309,7 +309,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Authenticate to the server
-  def `auth`(password: Object) = {
+  def auth(password: Object) = {
     service(new Command(RedisClient.AUTH_BYTES, password)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -319,7 +319,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Asynchronously rewrite the append-only file
-  def `bgrewriteaof`() = {
+  def bgrewriteaof() = {
     service(new Command(RedisClient.BGREWRITEAOF_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -329,7 +329,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Asynchronously save the dataset to disk
-  def `bgsave`() = {
+  def bgsave() = {
     service(new Command(RedisClient.BGSAVE_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -339,7 +339,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Pop a value from a list, push it to another list and return it; or block until one is available
-  def `brpoplpush`(source: Object, destination: Object, timeout: Object) = {
+  def brpoplpush(source: Object, destination: Object, timeout: Object) = {
     service(new Command(RedisClient.BRPOPLPUSH_BYTES, source, destination, timeout)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -349,7 +349,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get the value of a configuration parameter
-  def `config_get`(parameter: Object) = {
+  def config_get(parameter: Object) = {
     service(new Command(RedisClient.CONFIG_GET_BYTES, parameter)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -359,7 +359,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Set a configuration parameter to the given value
-  def `config_set`(parameter: Object, value: Object) = {
+  def config_set(parameter: Object, value: Object) = {
     service(new Command(RedisClient.CONFIG_SET_BYTES, parameter, value)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -369,7 +369,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Reset the stats returned by INFO
-  def `config_resetstat`() = {
+  def config_resetstat() = {
     service(new Command(RedisClient.CONFIG_RESETSTAT_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -379,7 +379,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Return the number of keys in the selected database
-  def `dbsize`() = {
+  def dbsize() = {
     service(new Command(RedisClient.DBSIZE_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -389,7 +389,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get debugging information about a key
-  def `debug_object`(key: Object) = {
+  def debug_object(key: Object) = {
     service(new Command(RedisClient.DEBUG_OBJECT_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -399,7 +399,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Make the server crash
-  def `debug_segfault`() = {
+  def debug_segfault() = {
     service(new Command(RedisClient.DEBUG_SEGFAULT_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -409,7 +409,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Decrement the integer value of a key by one
-  def `decr`(key: Object) = {
+  def decr(key: Object) = {
     service(new Command(RedisClient.DECR_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -419,7 +419,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Decrement the integer value of a key by the given number
-  def `decrby`(key: Object, decrement: Object) = {
+  def decrby(key: Object, decrement: Object) = {
     service(new Command(RedisClient.DECRBY_BYTES, key, decrement)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -429,7 +429,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Discard all commands issued after MULTI
-  def `discard`() = {
+  def discard() = {
     service(new Command(RedisClient.DISCARD_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -439,7 +439,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Echo the given string
-  def `echo`(message: Object) = {
+  def echo(message: Object) = {
     service(new Command(RedisClient.ECHO_BYTES, message)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -449,7 +449,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Execute all commands issued after MULTI
-  def `exec`() = {
+  def exec() = {
     service(new Command(RedisClient.EXEC_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -459,7 +459,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Determine if a key exists
-  def `exists`(key: Object) = {
+  def exists(key: Object) = {
     service(new Command(RedisClient.EXISTS_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -469,7 +469,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Set a key's time to live in seconds
-  def `expire`(key: Object, seconds: Object) = {
+  def expire(key: Object, seconds: Object) = {
     service(new Command(RedisClient.EXPIRE_BYTES, key, seconds)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -479,7 +479,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Set the expiration for a key as a UNIX timestamp
-  def `expireat`(key: Object, timestamp: Object) = {
+  def expireat(key: Object, timestamp: Object) = {
     service(new Command(RedisClient.EXPIREAT_BYTES, key, timestamp)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -489,7 +489,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Remove all keys from all databases
-  def `flushall`() = {
+  def flushall() = {
     service(new Command(RedisClient.FLUSHALL_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -499,7 +499,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Remove all keys from the current database
-  def `flushdb`() = {
+  def flushdb() = {
     service(new Command(RedisClient.FLUSHDB_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -509,7 +509,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get the value of a key
-  def `get`(key: Object) = {
+  def get(key: Object) = {
     service(new Command(RedisClient.GET_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -519,7 +519,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Returns the bit value at offset in the string value stored at key
-  def `getbit`(key: Object, offset: Object) = {
+  def getbit(key: Object, offset: Object) = {
     service(new Command(RedisClient.GETBIT_BYTES, key, offset)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -529,7 +529,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get a substring of the string stored at a key
-  def `getrange`(key: Object, start: Object, end: Object) = {
+  def getrange(key: Object, start: Object, end: Object) = {
     service(new Command(RedisClient.GETRANGE_BYTES, key, start, end)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -539,7 +539,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Set the string value of a key and return its old value
-  def `getset`(key: Object, value: Object) = {
+  def getset(key: Object, value: Object) = {
     service(new Command(RedisClient.GETSET_BYTES, key, value)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -549,7 +549,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Determine if a hash field exists
-  def `hexists`(key: Object, field: Object) = {
+  def hexists(key: Object, field: Object) = {
     service(new Command(RedisClient.HEXISTS_BYTES, key, field)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -559,7 +559,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get the value of a hash field
-  def `hget`(key: Object, field: Object) = {
+  def hget(key: Object, field: Object) = {
     service(new Command(RedisClient.HGET_BYTES, key, field)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -569,7 +569,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get all the fields and values in a hash
-  def `hgetall`(key: Object) = {
+  def hgetall(key: Object) = {
     service(new Command(RedisClient.HGETALL_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -579,7 +579,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Increment the integer value of a hash field by the given number
-  def `hincrby`(key: Object, field: Object, increment: Object) = {
+  def hincrby(key: Object, field: Object, increment: Object) = {
     service(new Command(RedisClient.HINCRBY_BYTES, key, field, increment)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -589,7 +589,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get all the fields in a hash
-  def `hkeys`(key: Object) = {
+  def hkeys(key: Object) = {
     service(new Command(RedisClient.HKEYS_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -599,7 +599,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get the number of fields in a hash
-  def `hlen`(key: Object) = {
+  def hlen(key: Object) = {
     service(new Command(RedisClient.HLEN_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -609,7 +609,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Set the string value of a hash field
-  def `hset`(key: Object, field: Object, value: Object) = {
+  def hset(key: Object, field: Object, value: Object) = {
     service(new Command(RedisClient.HSET_BYTES, key, field, value)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -619,7 +619,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Set the value of a hash field, only if the field does not exist
-  def `hsetnx`(key: Object, field: Object, value: Object) = {
+  def hsetnx(key: Object, field: Object, value: Object) = {
     service(new Command(RedisClient.HSETNX_BYTES, key, field, value)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -629,7 +629,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get all the values in a hash
-  def `hvals`(key: Object) = {
+  def hvals(key: Object) = {
     service(new Command(RedisClient.HVALS_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -639,7 +639,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Increment the integer value of a key by one
-  def `incr`(key: Object) = {
+  def incr(key: Object) = {
     service(new Command(RedisClient.INCR_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -649,7 +649,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Increment the integer value of a key by the given number
-  def `incrby`(key: Object, increment: Object) = {
+  def incrby(key: Object, increment: Object) = {
     service(new Command(RedisClient.INCRBY_BYTES, key, increment)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -659,7 +659,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get information and statistics about the server
-  def `info`() = {
+  def info() = {
     service(new Command(RedisClient.INFO_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -669,7 +669,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Find all keys matching the given pattern
-  def `keys`(pattern: Object) = {
+  def keys(pattern: Object) = {
     service(new Command(RedisClient.KEYS_BYTES, pattern)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -679,7 +679,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get the UNIX time stamp of the last successful save to disk
-  def `lastsave`() = {
+  def lastsave() = {
     service(new Command(RedisClient.LASTSAVE_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -689,7 +689,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get an element from a list by its index
-  def `lindex`(key: Object, index: Object) = {
+  def lindex(key: Object, index: Object) = {
     service(new Command(RedisClient.LINDEX_BYTES, key, index)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -699,7 +699,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get the length of a list
-  def `llen`(key: Object) = {
+  def llen(key: Object) = {
     service(new Command(RedisClient.LLEN_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -709,7 +709,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Remove and get the first element in a list
-  def `lpop`(key: Object) = {
+  def lpop(key: Object) = {
     service(new Command(RedisClient.LPOP_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -719,7 +719,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Prepend a value to a list, only if the list exists
-  def `lpushx`(key: Object, value: Object) = {
+  def lpushx(key: Object, value: Object) = {
     service(new Command(RedisClient.LPUSHX_BYTES, key, value)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -729,7 +729,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get a range of elements from a list
-  def `lrange`(key: Object, start: Object, stop: Object) = {
+  def lrange(key: Object, start: Object, stop: Object) = {
     service(new Command(RedisClient.LRANGE_BYTES, key, start, stop)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -739,7 +739,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Remove elements from a list
-  def `lrem`(key: Object, count: Object, value: Object) = {
+  def lrem(key: Object, count: Object, value: Object) = {
     service(new Command(RedisClient.LREM_BYTES, key, count, value)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -749,7 +749,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Set the value of an element in a list by its index
-  def `lset`(key: Object, index: Object, value: Object) = {
+  def lset(key: Object, index: Object, value: Object) = {
     service(new Command(RedisClient.LSET_BYTES, key, index, value)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -759,7 +759,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Trim a list to the specified range
-  def `ltrim`(key: Object, start: Object, stop: Object) = {
+  def ltrim(key: Object, start: Object, stop: Object) = {
     service(new Command(RedisClient.LTRIM_BYTES, key, start, stop)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -769,7 +769,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Listen for all requests received by the server in real time
-  def `monitor`() = {
+  def monitor() = {
     service(new Command(RedisClient.MONITOR_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -779,7 +779,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Move a key to another database
-  def `move`(key: Object, db: Object) = {
+  def move(key: Object, db: Object) = {
     service(new Command(RedisClient.MOVE_BYTES, key, db)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -789,7 +789,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Mark the start of a transaction block
-  def `multi`() = {
+  def multi() = {
     service(new Command(RedisClient.MULTI_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -799,7 +799,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Remove the expiration from a key
-  def `persist`(key: Object) = {
+  def persist(key: Object) = {
     service(new Command(RedisClient.PERSIST_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -809,7 +809,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Ping the server
-  def `ping`() = {
+  def ping() = {
     service(new Command(RedisClient.PING_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -819,7 +819,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Post a message to a channel
-  def `publish`(channel: Object, message: Object) = {
+  def publish(channel: Object, message: Object) = {
     service(new Command(RedisClient.PUBLISH_BYTES, channel, message)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -829,7 +829,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Close the connection
-  def `quit`() = {
+  def quit() = {
     service(new Command(RedisClient.QUIT_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -839,7 +839,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Return a random key from the keyspace
-  def `randomkey`() = {
+  def randomkey() = {
     service(new Command(RedisClient.RANDOMKEY_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -849,7 +849,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Rename a key
-  def `rename`(key: Object, newkey: Object) = {
+  def rename(key: Object, newkey: Object) = {
     service(new Command(RedisClient.RENAME_BYTES, key, newkey)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -859,7 +859,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Rename a key, only if the new key does not exist
-  def `renamenx`(key: Object, newkey: Object) = {
+  def renamenx(key: Object, newkey: Object) = {
     service(new Command(RedisClient.RENAMENX_BYTES, key, newkey)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -869,7 +869,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Remove and get the last element in a list
-  def `rpop`(key: Object) = {
+  def rpop(key: Object) = {
     service(new Command(RedisClient.RPOP_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -879,7 +879,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Remove the last element in a list, append it to another list and return it
-  def `rpoplpush`(source: Object, destination: Object) = {
+  def rpoplpush(source: Object, destination: Object) = {
     service(new Command(RedisClient.RPOPLPUSH_BYTES, source, destination)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -889,7 +889,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Append a value to a list, only if the list exists
-  def `rpushx`(key: Object, value: Object) = {
+  def rpushx(key: Object, value: Object) = {
     service(new Command(RedisClient.RPUSHX_BYTES, key, value)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -899,7 +899,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Synchronously save the dataset to disk
-  def `save`() = {
+  def save() = {
     service(new Command(RedisClient.SAVE_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -909,7 +909,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get the number of members in a set
-  def `scard`(key: Object) = {
+  def scard(key: Object) = {
     service(new Command(RedisClient.SCARD_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -919,7 +919,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Change the selected database for the current connection
-  def `select`(index: Object) = {
+  def select(index: Object) = {
     service(new Command(RedisClient.SELECT_BYTES, index)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -929,7 +929,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Set the string value of a key
-  def `set`(key: Object, value: Object) = {
+  def set(key: Object, value: Object) = {
     service(new Command(RedisClient.SET_BYTES, key, value)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -939,7 +939,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Sets or clears the bit at offset in the string value stored at key
-  def `setbit`(key: Object, offset: Object, value: Object) = {
+  def setbit(key: Object, offset: Object, value: Object) = {
     service(new Command(RedisClient.SETBIT_BYTES, key, offset, value)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -949,7 +949,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Set the value and expiration of a key
-  def `setex`(key: Object, seconds: Object, value: Object) = {
+  def setex(key: Object, seconds: Object, value: Object) = {
     service(new Command(RedisClient.SETEX_BYTES, key, seconds, value)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -959,7 +959,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Set the value of a key, only if the key does not exist
-  def `setnx`(key: Object, value: Object) = {
+  def setnx(key: Object, value: Object) = {
     service(new Command(RedisClient.SETNX_BYTES, key, value)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -969,7 +969,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Overwrite part of a string at key starting at the specified offset
-  def `setrange`(key: Object, offset: Object, value: Object) = {
+  def setrange(key: Object, offset: Object, value: Object) = {
     service(new Command(RedisClient.SETRANGE_BYTES, key, offset, value)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -979,7 +979,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Synchronously save the dataset to disk and then shut down the server
-  def `shutdown`() = {
+  def shutdown() = {
     service(new Command(RedisClient.SHUTDOWN_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -989,7 +989,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Determine if a given value is a member of a set
-  def `sismember`(key: Object, member: Object) = {
+  def sismember(key: Object, member: Object) = {
     service(new Command(RedisClient.SISMEMBER_BYTES, key, member)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -999,7 +999,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Make the server a slave of another instance, or promote it as master
-  def `slaveof`(host: Object, port: Object) = {
+  def slaveof(host: Object, port: Object) = {
     service(new Command(RedisClient.SLAVEOF_BYTES, host, port)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -1009,7 +1009,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get all the members in a set
-  def `smembers`(key: Object) = {
+  def smembers(key: Object) = {
     service(new Command(RedisClient.SMEMBERS_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -1019,7 +1019,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Move a member from one set to another
-  def `smove`(source: Object, destination: Object, member: Object) = {
+  def smove(source: Object, destination: Object, member: Object) = {
     service(new Command(RedisClient.SMOVE_BYTES, source, destination, member)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -1029,7 +1029,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Remove and return a random member from a set
-  def `spop`(key: Object) = {
+  def spop(key: Object) = {
     service(new Command(RedisClient.SPOP_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -1039,7 +1039,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get a random member from a set
-  def `srandmember`(key: Object) = {
+  def srandmember(key: Object) = {
     service(new Command(RedisClient.SRANDMEMBER_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -1049,7 +1049,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get the length of the value stored in a key
-  def `strlen`(key: Object) = {
+  def strlen(key: Object) = {
     service(new Command(RedisClient.STRLEN_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -1059,7 +1059,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Internal command used for replication
-  def `sync`() = {
+  def sync() = {
     service(new Command(RedisClient.SYNC_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -1069,7 +1069,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get the time to live for a key
-  def `ttl`(key: Object) = {
+  def ttl(key: Object) = {
     service(new Command(RedisClient.TTL_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -1089,7 +1089,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Forget about all watched keys
-  def `unwatch`() = {
+  def unwatch() = {
     service(new Command(RedisClient.UNWATCH_BYTES)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -1099,7 +1099,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get the number of members in a sorted set
-  def `zcard`(key: Object) = {
+  def zcard(key: Object) = {
     service(new Command(RedisClient.ZCARD_BYTES, key)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -1109,7 +1109,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Count the members in a sorted set with scores within the given values
-  def `zcount`(key: Object, min: Object, max: Object) = {
+  def zcount(key: Object, min: Object, max: Object) = {
     service(new Command(RedisClient.ZCOUNT_BYTES, key, min, max)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -1119,7 +1119,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Increment the score of a member in a sorted set
-  def `zincrby`(key: Object, increment: Object, member: Object) = {
+  def zincrby(key: Object, increment: Object, member: Object) = {
     service(new Command(RedisClient.ZINCRBY_BYTES, key, increment, member)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -1129,7 +1129,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Determine the index of a member in a sorted set
-  def `zrank`(key: Object, member: Object) = {
+  def zrank(key: Object, member: Object) = {
     service(new Command(RedisClient.ZRANK_BYTES, key, member)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -1139,7 +1139,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Remove all members in a sorted set within the given indexes
-  def `zremrangebyrank`(key: Object, start: Object, stop: Object) = {
+  def zremrangebyrank(key: Object, start: Object, stop: Object) = {
     service(new Command(RedisClient.ZREMRANGEBYRANK_BYTES, key, start, stop)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -1149,7 +1149,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Remove all members in a sorted set within the given scores
-  def `zremrangebyscore`(key: Object, min: Object, max: Object) = {
+  def zremrangebyscore(key: Object, min: Object, max: Object) = {
     service(new Command(RedisClient.ZREMRANGEBYSCORE_BYTES, key, min, max)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -1159,7 +1159,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Determine the index of a member in a sorted set, with scores ordered from high to low
-  def `zrevrank`(key: Object, member: Object) = {
+  def zrevrank(key: Object, member: Object) = {
     service(new Command(RedisClient.ZREVRANK_BYTES, key, member)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)
@@ -1169,7 +1169,7 @@ class RedisClient(service: Service[Command, Reply]) {
   }
 
   // Get the score associated with the given member in a sorted set
-  def `zscore`(key: Object, member: Object) = {
+  def zscore(key: Object, member: Object) = {
     service(new Command(RedisClient.ZSCORE_BYTES, key, member)) map {
       _ match {
         case error: ErrorReply => throw new RedisException(error.error)

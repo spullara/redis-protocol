@@ -25,7 +25,7 @@ class RedisTest extends Specification {
 
     "perform simple commands" in {
       client.set("test", "value")()
-      client.get("test")() mustEqual "value"
+      new String(client.get("test")().bytes) mustEqual "value"
     }
 
     "benchmark" in {
