@@ -21,6 +21,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String {{name}} = "{{name}}";
   private static final byte[] {{name}}_BYTES = {{name}}.getBytes(Charsets.US_ASCII);
+  private static final int {{name}}_VERSION = parseVersion("{{version}}");
 
   {{<method}}
   {{$method}}execute{{/method}}

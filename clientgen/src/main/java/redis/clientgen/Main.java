@@ -6,16 +6,16 @@ import com.sampullara.mustache.Mustache;
 import com.sampullara.mustache.MustacheBuilder;
 import com.sampullara.mustache.MustacheException;
 import com.sampullara.mustache.Scope;
+import org.codehaus.jackson.JsonFactory;
+import org.codehaus.jackson.JsonNode;
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.map.MappingJsonFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
@@ -24,10 +24,12 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -49,6 +51,7 @@ public class Main {
 
   private static Set<String> keywords = new HashSet<String>() {{
     add("type");
+    add("object");
   }};
 
   public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException, MustacheException {
@@ -62,59 +65,83 @@ public class Main {
     MustacheBuilder mb = new MustacheBuilder("templates/" + language + "client");
     mb.setSuperclass(NoEncodingMustache.class.getName());
     Mustache mustache = mb.parseFile("client.txt");
-    
+
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-    final DocumentBuilder db = dbf.newDocumentBuilder();
-    Document redis = db.parse("http://query.yahooapis.com/v1/public/yql/javarants/redis");
     XPathFactory xpf = XPathFactory.newInstance();
-    XPath xPath = xpf.newXPath();
-    NodeList commandNodes = (NodeList) xPath.evaluate("//li", redis, XPathConstants.NODESET);
-    final XPathExpression commandX = xpf.newXPath().compile("span/a/text()");
-    final XPathExpression argumentsX = xpf.newXPath().compile("span/span[@class='args']/text()");
-    final XPathExpression summaryX = xpf.newXPath().compile("span[@class='summary']/text()");
+    final DocumentBuilder db = dbf.newDocumentBuilder();
     final XPathExpression replyX = xpf.newXPath().compile("//a");
     final Properties cache = new Properties();
     File cacheFile = new File("cache");
     if (cacheFile.exists()) {
       cache.load(new FileInputStream(cacheFile));
     }
+
+    JsonFactory jf = new MappingJsonFactory();
+    JsonParser jsonParser = jf.createJsonParser(new URL("https://raw.github.com/antirez/redis-doc/master/commands.json"));
+    final JsonNode commandNodes = jsonParser.readValueAsTree();
+    Iterator<String> fieldNames = commandNodes.getFieldNames();
     List<Object> commands = new ArrayList<Object>();
-    for (int i = 0; i < commandNodes.getLength(); i++) {
-      final Node node = commandNodes.item(i);
-      final String command = commandX.evaluate(node).replace(" ", "_");
-      final String commandArguments = argumentsX.evaluate(node);
-      final String commandSummary = summaryX.evaluate(node);
+    while (fieldNames.hasNext()) {
+      final String command = fieldNames.next();
+      final String safeCommand = command.replace(" ", "_");
       String cacheReply = cache.getProperty(command.toLowerCase());
       if (cacheReply == null) {
-        final Document detail = db.parse("http://query.yahooapis.com/v1/public/yql/javarants/redisreply?url=" + URLEncoder.encode("http://redis.io/commands/" + command.toLowerCase(), "utf-8"));
+        final Document detail = db.parse("http://query.yahooapis.com/v1/public/yql/javarants/redisreply?url=" + URLEncoder.encode("http://redis.io/commands/" + safeCommand.toLowerCase(), "utf-8"));
         cacheReply = replyX.evaluate(detail).replaceAll("[- ]", "").replaceAll("reply", "Reply").replaceAll("bulk", "Bulk").replaceAll("Statuscode", "Status");
-        cache.setProperty(command.toLowerCase(), cacheReply);
+        cache.setProperty(safeCommand.toLowerCase(), cacheReply);
         cache.store(new FileWriter(cacheFile), "# Updated " + new Date());
       }
       final String finalReply = cacheReply;
-      if (!commandArguments.contains("[") && !commandArguments.contains("|")) {
-        commands.add(new Object() {
-          String name = command;
-          String comment = commandSummary;
-          String reply = finalReply.equals("") ? "Reply" : finalReply;
-          List<Object> arguments = new ArrayList<Object>();
-          {
-            final String[] split = commandArguments.split(" ");
-            for (int i = 0; split[0].length() > 0 && i < split.length; i++) {
-              final int finalI = i;
+      final JsonNode commandNode = commandNodes.get(command);
+      commands.add(new Object() {
+        String name = safeCommand;
+        String comment = commandNode.get("summary").getTextValue();
+        String reply = finalReply.equals("") ? "Reply" : finalReply;
+        String version = commandNode.get("since").getTextValue();
+        List<Object> arguments = new ArrayList<Object>();
+        {
+          JsonNode argumentArray = commandNode.get("arguments");
+          if (argumentArray != null) {
+            boolean first = true;
+            int argNum = 0;
+            for (final JsonNode argumentNode : argumentArray) {
+              JsonNode nameNodes = argumentNode.get("name");
+              final String argName;
+              if (nameNodes.isArray()) {
+                boolean f = true;
+                StringBuilder sb = new StringBuilder();
+                for (JsonNode nameNode : nameNodes) {
+                  if (!f) {
+                    sb.append("_or_");
+                  }
+                  f = false;
+                  sb.append(nameNode.getTextValue());
+                }
+                argName = sb.toString();
+              } else {
+                argName = nameNodes.getTextValue();
+              }
+              final boolean finalFirst = first;
+              final int finalArgNum = argNum;
+              final boolean isMultiple = argumentNode.get("multiple") != null;
               arguments.add(new Object() {
+                boolean first = finalFirst;
+                boolean multiple = isMultiple;
                 String typename = "Object";
-                String name = split[finalI].toLowerCase();
-                boolean notlast = finalI != split.length - 1;
+                String name = argName + finalArgNum;
               });
+              first = false;
+              argNum++;
+              if (isMultiple) break;
             }
           }
+        }
 
-          String methodname = command.toLowerCase();
-          String quote = keywords.contains(methodname) ? "`" : "";
-        });
-      }
+        String methodname = safeCommand.toLowerCase();
+        String quote = keywords.contains(methodname) ? "`" : "";
+      });
     }
+
     Scope ctx = new Scope();
     ctx.put("commands", commands);
     File base = new File(dest, "redis/client");

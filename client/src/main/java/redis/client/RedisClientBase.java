@@ -1,16 +1,21 @@
 package redis.client;
 
+import redis.Command;
+import redis.RedisProtocol;
+import redis.reply.BulkReply;
+import redis.reply.ErrorReply;
+import redis.reply.Reply;
+
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import redis.Command;
-import redis.RedisProtocol;
-import redis.reply.ErrorReply;
-import redis.reply.Reply;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * TODO: Edit this
@@ -23,15 +28,42 @@ public class RedisClientBase {
   // Single threaded pipelining
   private ExecutorService es = Executors.newSingleThreadExecutor();
   protected RedisProtocol redisProtocol;
-
+  private static final Pattern versionMatcher = Pattern.compile("([0-9]+)\\.([0-9]+)(\\.([0-9]+))?");
   private AtomicInteger pipelined = new AtomicInteger(0);
+  protected int version;
 
   protected RedisClientBase(SocketPool socketPool) throws RedisException {
     try {
       redisProtocol = new RedisProtocol(socketPool.get());
+      BulkReply info = (BulkReply) redisProtocol.send(new Command("info"));
+      BufferedReader br = new BufferedReader(new StringReader(new String(info.bytes)));
+      String line;
+      while ((line = br.readLine()) != null) {
+        int index = line.indexOf(':');
+        String name = line.substring(0, index);
+        String value = line.substring(index + 1);
+        if ("redis_version".equals(name)) {
+          this.version = parseVersion(value);
+        }
+      }
     } catch (IOException e) {
       throw new RedisException("Could not connect", e);
     }
+  }
+
+  public static int parseVersion(String value) {
+    int version = 0;
+    Matcher matcher = versionMatcher.matcher(value);
+    if (matcher.matches()) {
+      String major = matcher.group(1);
+      String minor = matcher.group(2);
+      String patch = matcher.group(4);
+      version  = 100*Integer.parseInt(minor) + 10000*Integer.parseInt(major);
+      if (patch != null) {
+        version += Integer.parseInt(patch);
+      }
+    }
+    return version;
   }
 
   protected synchronized Future<? extends Reply> pipeline(String name, Command command) throws RedisException {
