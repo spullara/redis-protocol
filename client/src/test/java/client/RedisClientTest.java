@@ -1,5 +1,6 @@
 package client;
 
+import com.google.common.base.Charsets;
 import org.junit.Test;
 import redis.Command;
 import redis.client.RedisClient;
@@ -8,9 +9,6 @@ import redis.reply.BulkReply;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Semaphore;
-
-import com.google.common.base.Charsets;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -44,7 +42,7 @@ public class RedisClientTest {
     long start = System.currentTimeMillis();
     RedisClient redisClient = new RedisClient(new SocketPool("localhost", 6379));
     for (int i = 0; i < CALLS; i++) {
-      redisClient.set(Command.numToBytes(i), VALUE);
+      redisClient.set(Command.numToBytes(i, false), VALUE);
     }
     long end = System.currentTimeMillis();
     System.out.println(CALLS * 1000 / (end - start) + " calls per second");

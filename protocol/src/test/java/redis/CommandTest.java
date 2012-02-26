@@ -1,18 +1,14 @@
 package redis;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-
 import com.google.common.base.Charsets;
-
 import org.junit.Test;
 import redis.reply.MultiBulkReply;
-import redis.reply.Reply;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
 
 /**
  * Some low level tests
@@ -20,11 +16,14 @@ import static junit.framework.Assert.assertTrue;
 public class CommandTest {
   @Test
   public void numToBytes() {
-    assertEquals("-12345678", new String(Command.numToBytes(-12345678)));
-    assertEquals("-1", new String(Command.numToBytes(-1)));
-    assertEquals("0", new String(Command.numToBytes(0)));
-    assertEquals("10", new String(Command.numToBytes(10)));
-    assertEquals("12345678", new String(Command.numToBytes(12345678)));
+    assertEquals("-12345678", new String(Command.numToBytes(-12345678, false)));
+    assertEquals("-1", new String(Command.numToBytes(-1, false)));
+    assertEquals("0", new String(Command.numToBytes(0, false)));
+    assertEquals("10", new String(Command.numToBytes(10, false)));
+    assertEquals("12345678", new String(Command.numToBytes(12345678, false)));
+    assertEquals("-1\r\n", new String(Command.numToBytes(-1, true)));
+    assertEquals("10\r\n", new String(Command.numToBytes(10, true)));
+    assertEquals("12345678\r\n", new String(Command.numToBytes(12345678, true)));
   }
 
   @Test
@@ -35,7 +34,7 @@ public class CommandTest {
       // Warm them up
       for (int i = 0; i < 10000000; i++) {
         Long.toString(i).getBytes(Charsets.UTF_8);
-        Command.numToBytes(i);
+        Command.numToBytes(i, true);
       }
     }
     {
@@ -48,7 +47,7 @@ public class CommandTest {
     {
       long start = System.currentTimeMillis();
       for (int i = 0; i < 10000000; i++) {
-        Command.numToBytes(i);
+        Command.numToBytes(i, true);
       }
       diff -= System.currentTimeMillis() - start;
     }

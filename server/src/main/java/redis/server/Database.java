@@ -1107,7 +1107,7 @@ public class Database {
       if (o instanceof byte[] || o == null) {
         try {
           long l = (o == null ? 0 : tonum((byte[]) o)) + num;
-          put(key, Command.numToBytes(l));
+          put(key, Command.numToBytes(l, false));
           return num(l);
         } catch (NumberFormatException e) {
           return numerr();

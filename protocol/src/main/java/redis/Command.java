@@ -1,11 +1,11 @@
 package redis;
 
+import com.google.common.base.Charsets;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import com.google.common.base.Charsets;
 
 /**
  * Command serialization.
@@ -19,7 +19,10 @@ public class Command {
   public static final byte[] CRLF = "\r\n".getBytes();
   public static final byte[] BYTES_PREFIX = "$".getBytes();
   public static final byte[] EMPTY_BYTES = new byte[0];
-  public static final byte[] NEG_ONE = convert(-1);
+  public static final byte[] NEG_ONE = convert(-1, false);
+  public static final byte[] NEG_ONE_WITH_CRLF = convert(-1, true);
+  public static final char LF = '\n';
+  public static final char CR = '\r';
 
   private byte[][] arguments;
   private Object[] objects;
@@ -58,12 +61,10 @@ public class Command {
 
   private static void writeDirect(OutputStream os, byte[][] arguments) throws IOException {
     os.write(ARGS_PREFIX);
-    os.write(Command.numToBytes(arguments.length));
-    os.write(CRLF);
+    os.write(Command.numToBytes(arguments.length, true));
     for (byte[] argument : arguments) {
       os.write(BYTES_PREFIX);
-      os.write(Command.numToBytes(argument.length));
-      os.write(CRLF);
+      os.write(Command.numToBytes(argument.length, true));
       os.write(argument);
       os.write(CRLF);
     }
@@ -117,30 +118,41 @@ public class Command {
   private static byte[][] numMap = new byte[NUM_MAP_LENGTH][];
   static {
     for (int i = 0; i < NUM_MAP_LENGTH; i++) {
-      numMap[i] = convert(i);
+      numMap[i] = convert(i, false);
+    }
+  }
+  private static byte[][] numMapWithCRLF = new byte[NUM_MAP_LENGTH][];
+  static {
+    for (int i = 0; i < NUM_MAP_LENGTH; i++) {
+      numMapWithCRLF[i] = convert(i, true);
     }
   }
 
   // Optimized for the direct to ASCII bytes case
   // Could be even more optimized but it is already
   // about twice as fast as using Long.toString().getBytes()
-  public static byte[] numToBytes(long value) {
+  public static byte[] numToBytes(long value, boolean withCRLF) {
     if (value >= 0 && value < NUM_MAP_LENGTH) {
-      return numMap[((int) value)];
+      int index = (int) value;
+      return withCRLF ? numMapWithCRLF[index] : numMap[index];
     } else if (value == -1) {
-      return NEG_ONE;
+      return withCRLF ? NEG_ONE_WITH_CRLF : NEG_ONE;
     }
-    return convert(value);
+    return convert(value, withCRLF);
   }
 
-  private static byte[] convert(long value) {
+  private static byte[] convert(long value, boolean withCRLF) {
     boolean negative = value < 0;
     int index = negative ? 2 : 1;
     long current = negative ? -value : value;
     while ((current /= 10) > 0) {
       index++;
     }
-    byte[] bytes = new byte[index];
+    byte[] bytes = new byte[withCRLF ? index + 2 : index];
+    if (withCRLF) {
+      bytes[index + 1] = LF;
+      bytes[index] = CR;
+    }
     if (negative) {
       bytes[0] = '-';
     }

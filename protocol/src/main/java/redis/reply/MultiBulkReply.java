@@ -1,10 +1,8 @@
 package redis.reply;
 
-import com.google.common.base.Charsets;
 import redis.Command;
 import redis.RedisProtocol;
 
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -42,27 +40,24 @@ public class MultiBulkReply extends Reply {
   public void write(OutputStream os) throws IOException {
     os.write(MARKER);
     if (byteArrays == null) {
-      os.write(Command.NEG_ONE);
-      os.write(Command.CRLF);
+      os.write(Command.NEG_ONE_WITH_CRLF);
     } else {
-      os.write(Command.numToBytes(byteArrays.length));
-      os.write(Command.CRLF);
+      os.write(Command.numToBytes(byteArrays.length, true));
       for (Object value : byteArrays) {
         if (value == null) {
           os.write(BulkReply.MARKER);
-          os.write(Command.NEG_ONE);
+          os.write(Command.NEG_ONE_WITH_CRLF);
         } else if (value instanceof byte[]) {
           byte[] bytes = (byte[]) value;
           os.write(BulkReply.MARKER);
           int length = bytes.length;
-          os.write(Command.numToBytes(length));
-          os.write(Command.CRLF);
+          os.write(Command.numToBytes(length, true));
           os.write(bytes);
+          os.write(Command.CRLF);
         } else if (value instanceof Number) {
           os.write(IntegerReply.MARKER);
-          os.write(Command.numToBytes(((Number) value).longValue()));
+          os.write(Command.numToBytes(((Number) value).longValue(), true));
         }
-        os.write(Command.CRLF);
       }
     }
   }
