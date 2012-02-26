@@ -1,0 +1,53 @@
+package redis.client
+
+import com.google.common.base.Charsets
+
+import com.twitter.finagle.Service
+import com.twitter.finagle.builder.ClientBuilder
+
+import redis.finagle._
+import redis.netty._
+
+object RedisClient {
+
+  {{#commands}}
+  val {{name}} = "{{name}}";
+  val {{name}}_BYTES = {{name}}.getBytes(Charsets.US_ASCII);
+
+  {{/commands}}
+
+  /**
+   * Construct a client from a single host.
+   * @param host a String of host:port combination.
+   */
+  def apply(host: String): RedisClient = RedisClient(
+    ClientBuilder()
+      .hosts(host)
+      .hostConnectionLimit(1)
+      .codec(new RedisCodecFactory)
+      .build())
+
+  /**
+   * Construct a client from a single Service.
+   */
+  def apply(service: Service[Command, Reply]): RedisClient = new RedisClient(service)
+
+}
+
+class RedisException(message:String) extends RuntimeException(message) {
+}
+
+class RedisClient(service: Service[Command, Reply]) {
+  {{#commands}}
+
+  // {{comment}}
+  def `{{methodname}}`({{#arguments}}{{name}}: {{typename}}{{#notlast}}, {{/notlast}}{{/arguments}}) = {
+    service(new Command(RedisClient.{{name}}_BYTES{{#arguments}}, {{name}}{{/arguments}})) map {
+      _ match {
+        case error: ErrorReply => throw new RedisException(error.error)
+        case reply: {{reply}} => reply
+      }
+    }
+  }
+  {{/commands}}
+}

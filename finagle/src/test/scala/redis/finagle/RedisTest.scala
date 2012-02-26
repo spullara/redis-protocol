@@ -2,6 +2,7 @@ package redis.finagle
 
 import org.specs.Specification
 import com.twitter.finagle.builder.ClientBuilder
+import redis.client.RedisClient
 
 class RedisTest extends Specification {
   "The redis client" should {

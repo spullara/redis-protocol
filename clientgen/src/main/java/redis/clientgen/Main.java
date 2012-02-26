@@ -39,6 +39,9 @@ import java.util.Properties;
  */
 public class Main {
 
+  @Argument(alias = "l")
+  private static String language = "java";
+
   @Argument(alias = "d", required = true)
   private static File dest;
 
@@ -50,7 +53,7 @@ public class Main {
       System.exit(1);
     }
 
-    MustacheBuilder mb = new MustacheBuilder("templates");
+    MustacheBuilder mb = new MustacheBuilder("templates/" + language + "client");
     mb.setSuperclass(NoEncodingMustache.class.getName());
     Mustache mustache = mb.parseFile("client.txt");
     
@@ -85,7 +88,7 @@ public class Main {
       final String finalReply = cacheReply;
       if (!commandArguments.contains("[") && !commandArguments.contains("|")) {
         commands.add(new Object() {
-          String name = command;
+          public String name = command;
           String comment = commandSummary;
           String reply = finalReply.equals("") ? "Reply" : finalReply;
           List<Object> arguments = new ArrayList<Object>();
@@ -107,7 +110,9 @@ public class Main {
     }
     Scope ctx = new Scope();
     ctx.put("commands", commands);
-    Writer writer = new FileWriter(new File(dest, "redis/client/RedisClient.java"));
+    File base = new File(dest, "redis/client");
+    base.mkdirs();
+    Writer writer = new FileWriter(new File(base, "RedisClient." + language));
     mustache.execute(writer, ctx);
     writer.flush();
   }
