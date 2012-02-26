@@ -21,7 +21,7 @@ import redis.reply.Reply;
  */
 public class RedisClientBase {
   // Single threaded pipelining
-  private ExecutorService es = Executors.newFixedThreadPool(1);
+  private ExecutorService es = Executors.newSingleThreadExecutor();
   protected RedisProtocol redisProtocol;
 
   private AtomicInteger pipelined = new AtomicInteger(0);
