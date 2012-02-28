@@ -1,11 +1,15 @@
 package redis.client;
 
-import com.google.common.base.Charsets;
-import redis.Command;
-import redis.reply.*;
-
 import java.io.IOException;
+
+import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ListenableFuture;
+
+import redis.reply.BulkReply;
+import redis.reply.IntegerReply;
+import redis.reply.MultiBulkReply;
+import redis.reply.Reply;
+import redis.reply.StatusReply;
 
 public class RedisClient extends RedisClientBase {
   protected Pipeline pipeline = new Pipeline();
