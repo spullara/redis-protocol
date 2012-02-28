@@ -9,8 +9,12 @@ import redis.reply.BulkReply;
 import redis.reply.StatusReply;
 
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -24,6 +28,7 @@ import static junit.framework.Assert.assertEquals;
 public class RedisClientTest {
 
   private static final byte[] VALUE = "value".getBytes(Charsets.UTF_8);
+  private static final int CALLS = 1000000;
 
   @Test
   public void testIt() throws IOException, ExecutionException, InterruptedException {
@@ -49,6 +54,41 @@ public class RedisClientTest {
     long end = System.currentTimeMillis();
     System.out.println(CALLS * 1000 / (end - start) + " calls per second");
   }
+
+  @Test
+  public void benchmarkFutureGet() throws IOException, ExecutionException, InterruptedException {
+    int CALLS = 1000000;
+    long start = System.currentTimeMillis();
+    RedisClient.Pipeline redisClient = new RedisClient(new SocketPool("localhost", 6379)).pipeline();
+    for (int i = 0; i < CALLS; i++) {
+      redisClient.set(Command.numToBytes(i, false), VALUE).get();
+    }
+    long end = System.currentTimeMillis();
+    System.out.println(CALLS * 1000 / (end - start) + " calls per second");
+  }
+
+  @Test
+  public void benchmarkListenFuture() throws IOException, InterruptedException {
+    final ExecutorService es = Executors.newSingleThreadExecutor();
+    final AtomicInteger total = new AtomicInteger(CALLS);
+    final long start = System.currentTimeMillis();
+    final RedisClient.Pipeline redisClient = new RedisClient(new SocketPool("localhost", 6379)).pipeline();
+    final CountDownLatch countDownLatch = new CountDownLatch(1);
+    new Runnable() {
+      @Override
+      public void run() {
+        if (total.decrementAndGet() == 0) {
+          long end = System.currentTimeMillis();
+          System.out.println(CALLS * 1000 / (end - start) + " calls per second");
+          countDownLatch.countDown();
+        } else {
+          redisClient.set(Command.numToBytes(total.intValue(), false), VALUE).addListener(this, es);
+        }
+      }
+    }.run();
+    countDownLatch.await();
+  }
+
 
   @Test
   public void benchmarkPipeline() throws IOException, ExecutionException, InterruptedException {

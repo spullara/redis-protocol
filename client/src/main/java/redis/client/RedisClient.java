@@ -1,14 +1,11 @@
 package redis.client;
 
 import com.google.common.base.Charsets;
-import redis.reply.BulkReply;
-import redis.reply.IntegerReply;
-import redis.reply.MultiBulkReply;
-import redis.reply.Reply;
-import redis.reply.StatusReply;
+import redis.Command;
+import redis.reply.*;
 
 import java.io.IOException;
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 
 public class RedisClient extends RedisClientBase {
   protected Pipeline pipeline = new Pipeline();
@@ -1274,753 +1271,753 @@ public class RedisClient extends RedisClientBase {
   public class Pipeline {
 
   // Append a value to a key
-  public Future<IntegerReply> append(Object key0, Object value1) throws RedisException {
+  public ListenableFuture<IntegerReply> append(Object key0, Object value1) throws RedisException {
     if (version < APPEND_VERSION) throw new RedisException("Server does not support APPEND");
-    return (Future<IntegerReply>) pipeline(APPEND, APPEND_BYTES, key0, value1);
+    return (ListenableFuture<IntegerReply>) pipeline(APPEND, APPEND_BYTES, key0, value1);
   }
 
   // Authenticate to the server
-  public Future<StatusReply> auth(Object password0) throws RedisException {
+  public ListenableFuture<StatusReply> auth(Object password0) throws RedisException {
     if (version < AUTH_VERSION) throw new RedisException("Server does not support AUTH");
-    return (Future<StatusReply>) pipeline(AUTH, AUTH_BYTES, password0);
+    return (ListenableFuture<StatusReply>) pipeline(AUTH, AUTH_BYTES, password0);
   }
 
   // Asynchronously rewrite the append-only file
-  public Future<StatusReply> bgrewriteaof() throws RedisException {
+  public ListenableFuture<StatusReply> bgrewriteaof() throws RedisException {
     if (version < BGREWRITEAOF_VERSION) throw new RedisException("Server does not support BGREWRITEAOF");
-    return (Future<StatusReply>) pipeline(BGREWRITEAOF, BGREWRITEAOF_BYTES);
+    return (ListenableFuture<StatusReply>) pipeline(BGREWRITEAOF, BGREWRITEAOF_BYTES);
   }
 
   // Asynchronously save the dataset to disk
-  public Future<StatusReply> bgsave() throws RedisException {
+  public ListenableFuture<StatusReply> bgsave() throws RedisException {
     if (version < BGSAVE_VERSION) throw new RedisException("Server does not support BGSAVE");
-    return (Future<StatusReply>) pipeline(BGSAVE, BGSAVE_BYTES);
+    return (ListenableFuture<StatusReply>) pipeline(BGSAVE, BGSAVE_BYTES);
   }
 
   // Remove and get the first element in a list, or block until one is available
-  public Future<MultiBulkReply> blpop(Object... key0) throws RedisException {
+  public ListenableFuture<MultiBulkReply> blpop(Object... key0) throws RedisException {
     if (version < BLPOP_VERSION) throw new RedisException("Server does not support BLPOP");
-    return (Future<MultiBulkReply>) pipeline(BLPOP, BLPOP_BYTES, key0);
+    return (ListenableFuture<MultiBulkReply>) pipeline(BLPOP, BLPOP_BYTES, key0);
   }
 
   // Remove and get the last element in a list, or block until one is available
-  public Future<MultiBulkReply> brpop(Object... key0) throws RedisException {
+  public ListenableFuture<MultiBulkReply> brpop(Object... key0) throws RedisException {
     if (version < BRPOP_VERSION) throw new RedisException("Server does not support BRPOP");
-    return (Future<MultiBulkReply>) pipeline(BRPOP, BRPOP_BYTES, key0);
+    return (ListenableFuture<MultiBulkReply>) pipeline(BRPOP, BRPOP_BYTES, key0);
   }
 
   // Pop a value from a list, push it to another list and return it; or block until one is available
-  public Future<BulkReply> brpoplpush(Object source0, Object destination1, Object timeout2) throws RedisException {
+  public ListenableFuture<BulkReply> brpoplpush(Object source0, Object destination1, Object timeout2) throws RedisException {
     if (version < BRPOPLPUSH_VERSION) throw new RedisException("Server does not support BRPOPLPUSH");
-    return (Future<BulkReply>) pipeline(BRPOPLPUSH, BRPOPLPUSH_BYTES, source0, destination1, timeout2);
+    return (ListenableFuture<BulkReply>) pipeline(BRPOPLPUSH, BRPOPLPUSH_BYTES, source0, destination1, timeout2);
   }
 
   // Get the value of a configuration parameter
-  public Future<Reply> config_get(Object parameter0) throws RedisException {
+  public ListenableFuture<Reply> config_get(Object parameter0) throws RedisException {
     if (version < CONFIG_GET_VERSION) throw new RedisException("Server does not support CONFIG_GET");
-    return (Future<Reply>) pipeline(CONFIG_GET, CONFIG_GET_BYTES, parameter0);
+    return (ListenableFuture<Reply>) pipeline(CONFIG_GET, CONFIG_GET_BYTES, parameter0);
   }
 
   // Set a configuration parameter to the given value
-  public Future<Reply> config_set(Object parameter0, Object value1) throws RedisException {
+  public ListenableFuture<Reply> config_set(Object parameter0, Object value1) throws RedisException {
     if (version < CONFIG_SET_VERSION) throw new RedisException("Server does not support CONFIG_SET");
-    return (Future<Reply>) pipeline(CONFIG_SET, CONFIG_SET_BYTES, parameter0, value1);
+    return (ListenableFuture<Reply>) pipeline(CONFIG_SET, CONFIG_SET_BYTES, parameter0, value1);
   }
 
   // Reset the stats returned by INFO
-  public Future<Reply> config_resetstat() throws RedisException {
+  public ListenableFuture<Reply> config_resetstat() throws RedisException {
     if (version < CONFIG_RESETSTAT_VERSION) throw new RedisException("Server does not support CONFIG_RESETSTAT");
-    return (Future<Reply>) pipeline(CONFIG_RESETSTAT, CONFIG_RESETSTAT_BYTES);
+    return (ListenableFuture<Reply>) pipeline(CONFIG_RESETSTAT, CONFIG_RESETSTAT_BYTES);
   }
 
   // Return the number of keys in the selected database
-  public Future<IntegerReply> dbsize() throws RedisException {
+  public ListenableFuture<IntegerReply> dbsize() throws RedisException {
     if (version < DBSIZE_VERSION) throw new RedisException("Server does not support DBSIZE");
-    return (Future<IntegerReply>) pipeline(DBSIZE, DBSIZE_BYTES);
+    return (ListenableFuture<IntegerReply>) pipeline(DBSIZE, DBSIZE_BYTES);
   }
 
   // Get debugging information about a key
-  public Future<Reply> debug_object(Object key0) throws RedisException {
+  public ListenableFuture<Reply> debug_object(Object key0) throws RedisException {
     if (version < DEBUG_OBJECT_VERSION) throw new RedisException("Server does not support DEBUG_OBJECT");
-    return (Future<Reply>) pipeline(DEBUG_OBJECT, DEBUG_OBJECT_BYTES, key0);
+    return (ListenableFuture<Reply>) pipeline(DEBUG_OBJECT, DEBUG_OBJECT_BYTES, key0);
   }
 
   // Make the server crash
-  public Future<Reply> debug_segfault() throws RedisException {
+  public ListenableFuture<Reply> debug_segfault() throws RedisException {
     if (version < DEBUG_SEGFAULT_VERSION) throw new RedisException("Server does not support DEBUG_SEGFAULT");
-    return (Future<Reply>) pipeline(DEBUG_SEGFAULT, DEBUG_SEGFAULT_BYTES);
+    return (ListenableFuture<Reply>) pipeline(DEBUG_SEGFAULT, DEBUG_SEGFAULT_BYTES);
   }
 
   // Decrement the integer value of a key by one
-  public Future<IntegerReply> decr(Object key0) throws RedisException {
+  public ListenableFuture<IntegerReply> decr(Object key0) throws RedisException {
     if (version < DECR_VERSION) throw new RedisException("Server does not support DECR");
-    return (Future<IntegerReply>) pipeline(DECR, DECR_BYTES, key0);
+    return (ListenableFuture<IntegerReply>) pipeline(DECR, DECR_BYTES, key0);
   }
 
   // Decrement the integer value of a key by the given number
-  public Future<IntegerReply> decrby(Object key0, Object decrement1) throws RedisException {
+  public ListenableFuture<IntegerReply> decrby(Object key0, Object decrement1) throws RedisException {
     if (version < DECRBY_VERSION) throw new RedisException("Server does not support DECRBY");
-    return (Future<IntegerReply>) pipeline(DECRBY, DECRBY_BYTES, key0, decrement1);
+    return (ListenableFuture<IntegerReply>) pipeline(DECRBY, DECRBY_BYTES, key0, decrement1);
   }
 
   // Delete a key
-  public Future<IntegerReply> del(Object... key0) throws RedisException {
+  public ListenableFuture<IntegerReply> del(Object... key0) throws RedisException {
     if (version < DEL_VERSION) throw new RedisException("Server does not support DEL");
-    return (Future<IntegerReply>) pipeline(DEL, DEL_BYTES, key0);
+    return (ListenableFuture<IntegerReply>) pipeline(DEL, DEL_BYTES, key0);
   }
 
   // Discard all commands issued after MULTI
-  public Future<StatusReply> discard() throws RedisException {
+  public ListenableFuture<StatusReply> discard() throws RedisException {
     if (version < DISCARD_VERSION) throw new RedisException("Server does not support DISCARD");
-    return (Future<StatusReply>) pipeline(DISCARD, DISCARD_BYTES);
+    return (ListenableFuture<StatusReply>) pipeline(DISCARD, DISCARD_BYTES);
   }
 
   // Echo the given string
-  public Future<BulkReply> echo(Object message0) throws RedisException {
+  public ListenableFuture<BulkReply> echo(Object message0) throws RedisException {
     if (version < ECHO_VERSION) throw new RedisException("Server does not support ECHO");
-    return (Future<BulkReply>) pipeline(ECHO, ECHO_BYTES, message0);
+    return (ListenableFuture<BulkReply>) pipeline(ECHO, ECHO_BYTES, message0);
   }
 
   // Execute all commands issued after MULTI
-  public Future<MultiBulkReply> exec() throws RedisException {
+  public ListenableFuture<MultiBulkReply> exec() throws RedisException {
     if (version < EXEC_VERSION) throw new RedisException("Server does not support EXEC");
-    return (Future<MultiBulkReply>) pipeline(EXEC, EXEC_BYTES);
+    return (ListenableFuture<MultiBulkReply>) pipeline(EXEC, EXEC_BYTES);
   }
 
   // Determine if a key exists
-  public Future<IntegerReply> exists(Object key0) throws RedisException {
+  public ListenableFuture<IntegerReply> exists(Object key0) throws RedisException {
     if (version < EXISTS_VERSION) throw new RedisException("Server does not support EXISTS");
-    return (Future<IntegerReply>) pipeline(EXISTS, EXISTS_BYTES, key0);
+    return (ListenableFuture<IntegerReply>) pipeline(EXISTS, EXISTS_BYTES, key0);
   }
 
   // Set a key's time to live in seconds
-  public Future<IntegerReply> expire(Object key0, Object seconds1) throws RedisException {
+  public ListenableFuture<IntegerReply> expire(Object key0, Object seconds1) throws RedisException {
     if (version < EXPIRE_VERSION) throw new RedisException("Server does not support EXPIRE");
-    return (Future<IntegerReply>) pipeline(EXPIRE, EXPIRE_BYTES, key0, seconds1);
+    return (ListenableFuture<IntegerReply>) pipeline(EXPIRE, EXPIRE_BYTES, key0, seconds1);
   }
 
   // Set the expiration for a key as a UNIX timestamp
-  public Future<IntegerReply> expireat(Object key0, Object timestamp1) throws RedisException {
+  public ListenableFuture<IntegerReply> expireat(Object key0, Object timestamp1) throws RedisException {
     if (version < EXPIREAT_VERSION) throw new RedisException("Server does not support EXPIREAT");
-    return (Future<IntegerReply>) pipeline(EXPIREAT, EXPIREAT_BYTES, key0, timestamp1);
+    return (ListenableFuture<IntegerReply>) pipeline(EXPIREAT, EXPIREAT_BYTES, key0, timestamp1);
   }
 
   // Remove all keys from all databases
-  public Future<StatusReply> flushall() throws RedisException {
+  public ListenableFuture<StatusReply> flushall() throws RedisException {
     if (version < FLUSHALL_VERSION) throw new RedisException("Server does not support FLUSHALL");
-    return (Future<StatusReply>) pipeline(FLUSHALL, FLUSHALL_BYTES);
+    return (ListenableFuture<StatusReply>) pipeline(FLUSHALL, FLUSHALL_BYTES);
   }
 
   // Remove all keys from the current database
-  public Future<StatusReply> flushdb() throws RedisException {
+  public ListenableFuture<StatusReply> flushdb() throws RedisException {
     if (version < FLUSHDB_VERSION) throw new RedisException("Server does not support FLUSHDB");
-    return (Future<StatusReply>) pipeline(FLUSHDB, FLUSHDB_BYTES);
+    return (ListenableFuture<StatusReply>) pipeline(FLUSHDB, FLUSHDB_BYTES);
   }
 
   // Get the value of a key
-  public Future<BulkReply> get(Object key0) throws RedisException {
+  public ListenableFuture<BulkReply> get(Object key0) throws RedisException {
     if (version < GET_VERSION) throw new RedisException("Server does not support GET");
-    return (Future<BulkReply>) pipeline(GET, GET_BYTES, key0);
+    return (ListenableFuture<BulkReply>) pipeline(GET, GET_BYTES, key0);
   }
 
   // Returns the bit value at offset in the string value stored at key
-  public Future<IntegerReply> getbit(Object key0, Object offset1) throws RedisException {
+  public ListenableFuture<IntegerReply> getbit(Object key0, Object offset1) throws RedisException {
     if (version < GETBIT_VERSION) throw new RedisException("Server does not support GETBIT");
-    return (Future<IntegerReply>) pipeline(GETBIT, GETBIT_BYTES, key0, offset1);
+    return (ListenableFuture<IntegerReply>) pipeline(GETBIT, GETBIT_BYTES, key0, offset1);
   }
 
   // Get a substring of the string stored at a key
-  public Future<BulkReply> getrange(Object key0, Object start1, Object end2) throws RedisException {
+  public ListenableFuture<BulkReply> getrange(Object key0, Object start1, Object end2) throws RedisException {
     if (version < GETRANGE_VERSION) throw new RedisException("Server does not support GETRANGE");
-    return (Future<BulkReply>) pipeline(GETRANGE, GETRANGE_BYTES, key0, start1, end2);
+    return (ListenableFuture<BulkReply>) pipeline(GETRANGE, GETRANGE_BYTES, key0, start1, end2);
   }
 
   // Set the string value of a key and return its old value
-  public Future<BulkReply> getset(Object key0, Object value1) throws RedisException {
+  public ListenableFuture<BulkReply> getset(Object key0, Object value1) throws RedisException {
     if (version < GETSET_VERSION) throw new RedisException("Server does not support GETSET");
-    return (Future<BulkReply>) pipeline(GETSET, GETSET_BYTES, key0, value1);
+    return (ListenableFuture<BulkReply>) pipeline(GETSET, GETSET_BYTES, key0, value1);
   }
 
   // Delete one or more hash fields
-  public Future<IntegerReply> hdel(Object key0, Object... field1) throws RedisException {
+  public ListenableFuture<IntegerReply> hdel(Object key0, Object... field1) throws RedisException {
     if (version < HDEL_VERSION) throw new RedisException("Server does not support HDEL");
-    return (Future<IntegerReply>) pipeline(HDEL, HDEL_BYTES, key0, field1);
+    return (ListenableFuture<IntegerReply>) pipeline(HDEL, HDEL_BYTES, key0, field1);
   }
 
   // Determine if a hash field exists
-  public Future<IntegerReply> hexists(Object key0, Object field1) throws RedisException {
+  public ListenableFuture<IntegerReply> hexists(Object key0, Object field1) throws RedisException {
     if (version < HEXISTS_VERSION) throw new RedisException("Server does not support HEXISTS");
-    return (Future<IntegerReply>) pipeline(HEXISTS, HEXISTS_BYTES, key0, field1);
+    return (ListenableFuture<IntegerReply>) pipeline(HEXISTS, HEXISTS_BYTES, key0, field1);
   }
 
   // Get the value of a hash field
-  public Future<BulkReply> hget(Object key0, Object field1) throws RedisException {
+  public ListenableFuture<BulkReply> hget(Object key0, Object field1) throws RedisException {
     if (version < HGET_VERSION) throw new RedisException("Server does not support HGET");
-    return (Future<BulkReply>) pipeline(HGET, HGET_BYTES, key0, field1);
+    return (ListenableFuture<BulkReply>) pipeline(HGET, HGET_BYTES, key0, field1);
   }
 
   // Get all the fields and values in a hash
-  public Future<MultiBulkReply> hgetall(Object key0) throws RedisException {
+  public ListenableFuture<MultiBulkReply> hgetall(Object key0) throws RedisException {
     if (version < HGETALL_VERSION) throw new RedisException("Server does not support HGETALL");
-    return (Future<MultiBulkReply>) pipeline(HGETALL, HGETALL_BYTES, key0);
+    return (ListenableFuture<MultiBulkReply>) pipeline(HGETALL, HGETALL_BYTES, key0);
   }
 
   // Increment the integer value of a hash field by the given number
-  public Future<IntegerReply> hincrby(Object key0, Object field1, Object increment2) throws RedisException {
+  public ListenableFuture<IntegerReply> hincrby(Object key0, Object field1, Object increment2) throws RedisException {
     if (version < HINCRBY_VERSION) throw new RedisException("Server does not support HINCRBY");
-    return (Future<IntegerReply>) pipeline(HINCRBY, HINCRBY_BYTES, key0, field1, increment2);
+    return (ListenableFuture<IntegerReply>) pipeline(HINCRBY, HINCRBY_BYTES, key0, field1, increment2);
   }
 
   // Get all the fields in a hash
-  public Future<MultiBulkReply> hkeys(Object key0) throws RedisException {
+  public ListenableFuture<MultiBulkReply> hkeys(Object key0) throws RedisException {
     if (version < HKEYS_VERSION) throw new RedisException("Server does not support HKEYS");
-    return (Future<MultiBulkReply>) pipeline(HKEYS, HKEYS_BYTES, key0);
+    return (ListenableFuture<MultiBulkReply>) pipeline(HKEYS, HKEYS_BYTES, key0);
   }
 
   // Get the number of fields in a hash
-  public Future<IntegerReply> hlen(Object key0) throws RedisException {
+  public ListenableFuture<IntegerReply> hlen(Object key0) throws RedisException {
     if (version < HLEN_VERSION) throw new RedisException("Server does not support HLEN");
-    return (Future<IntegerReply>) pipeline(HLEN, HLEN_BYTES, key0);
+    return (ListenableFuture<IntegerReply>) pipeline(HLEN, HLEN_BYTES, key0);
   }
 
   // Get the values of all the given hash fields
-  public Future<MultiBulkReply> hmget(Object key0, Object... field1) throws RedisException {
+  public ListenableFuture<MultiBulkReply> hmget(Object key0, Object... field1) throws RedisException {
     if (version < HMGET_VERSION) throw new RedisException("Server does not support HMGET");
-    return (Future<MultiBulkReply>) pipeline(HMGET, HMGET_BYTES, key0, field1);
+    return (ListenableFuture<MultiBulkReply>) pipeline(HMGET, HMGET_BYTES, key0, field1);
   }
 
   // Set multiple hash fields to multiple values
-  public Future<StatusReply> hmset(Object key0, Object... field_or_value1) throws RedisException {
+  public ListenableFuture<StatusReply> hmset(Object key0, Object... field_or_value1) throws RedisException {
     if (version < HMSET_VERSION) throw new RedisException("Server does not support HMSET");
-    return (Future<StatusReply>) pipeline(HMSET, HMSET_BYTES, key0, field_or_value1);
+    return (ListenableFuture<StatusReply>) pipeline(HMSET, HMSET_BYTES, key0, field_or_value1);
   }
 
   // Set the string value of a hash field
-  public Future<IntegerReply> hset(Object key0, Object field1, Object value2) throws RedisException {
+  public ListenableFuture<IntegerReply> hset(Object key0, Object field1, Object value2) throws RedisException {
     if (version < HSET_VERSION) throw new RedisException("Server does not support HSET");
-    return (Future<IntegerReply>) pipeline(HSET, HSET_BYTES, key0, field1, value2);
+    return (ListenableFuture<IntegerReply>) pipeline(HSET, HSET_BYTES, key0, field1, value2);
   }
 
   // Set the value of a hash field, only if the field does not exist
-  public Future<IntegerReply> hsetnx(Object key0, Object field1, Object value2) throws RedisException {
+  public ListenableFuture<IntegerReply> hsetnx(Object key0, Object field1, Object value2) throws RedisException {
     if (version < HSETNX_VERSION) throw new RedisException("Server does not support HSETNX");
-    return (Future<IntegerReply>) pipeline(HSETNX, HSETNX_BYTES, key0, field1, value2);
+    return (ListenableFuture<IntegerReply>) pipeline(HSETNX, HSETNX_BYTES, key0, field1, value2);
   }
 
   // Get all the values in a hash
-  public Future<MultiBulkReply> hvals(Object key0) throws RedisException {
+  public ListenableFuture<MultiBulkReply> hvals(Object key0) throws RedisException {
     if (version < HVALS_VERSION) throw new RedisException("Server does not support HVALS");
-    return (Future<MultiBulkReply>) pipeline(HVALS, HVALS_BYTES, key0);
+    return (ListenableFuture<MultiBulkReply>) pipeline(HVALS, HVALS_BYTES, key0);
   }
 
   // Increment the integer value of a key by one
-  public Future<IntegerReply> incr(Object key0) throws RedisException {
+  public ListenableFuture<IntegerReply> incr(Object key0) throws RedisException {
     if (version < INCR_VERSION) throw new RedisException("Server does not support INCR");
-    return (Future<IntegerReply>) pipeline(INCR, INCR_BYTES, key0);
+    return (ListenableFuture<IntegerReply>) pipeline(INCR, INCR_BYTES, key0);
   }
 
   // Increment the integer value of a key by the given number
-  public Future<IntegerReply> incrby(Object key0, Object increment1) throws RedisException {
+  public ListenableFuture<IntegerReply> incrby(Object key0, Object increment1) throws RedisException {
     if (version < INCRBY_VERSION) throw new RedisException("Server does not support INCRBY");
-    return (Future<IntegerReply>) pipeline(INCRBY, INCRBY_BYTES, key0, increment1);
+    return (ListenableFuture<IntegerReply>) pipeline(INCRBY, INCRBY_BYTES, key0, increment1);
   }
 
   // Get information and statistics about the server
-  public Future<BulkReply> info() throws RedisException {
+  public ListenableFuture<BulkReply> info() throws RedisException {
     if (version < INFO_VERSION) throw new RedisException("Server does not support INFO");
-    return (Future<BulkReply>) pipeline(INFO, INFO_BYTES);
+    return (ListenableFuture<BulkReply>) pipeline(INFO, INFO_BYTES);
   }
 
   // Find all keys matching the given pattern
-  public Future<MultiBulkReply> keys(Object pattern0) throws RedisException {
+  public ListenableFuture<MultiBulkReply> keys(Object pattern0) throws RedisException {
     if (version < KEYS_VERSION) throw new RedisException("Server does not support KEYS");
-    return (Future<MultiBulkReply>) pipeline(KEYS, KEYS_BYTES, pattern0);
+    return (ListenableFuture<MultiBulkReply>) pipeline(KEYS, KEYS_BYTES, pattern0);
   }
 
   // Get the UNIX time stamp of the last successful save to disk
-  public Future<IntegerReply> lastsave() throws RedisException {
+  public ListenableFuture<IntegerReply> lastsave() throws RedisException {
     if (version < LASTSAVE_VERSION) throw new RedisException("Server does not support LASTSAVE");
-    return (Future<IntegerReply>) pipeline(LASTSAVE, LASTSAVE_BYTES);
+    return (ListenableFuture<IntegerReply>) pipeline(LASTSAVE, LASTSAVE_BYTES);
   }
 
   // Get an element from a list by its index
-  public Future<BulkReply> lindex(Object key0, Object index1) throws RedisException {
+  public ListenableFuture<BulkReply> lindex(Object key0, Object index1) throws RedisException {
     if (version < LINDEX_VERSION) throw new RedisException("Server does not support LINDEX");
-    return (Future<BulkReply>) pipeline(LINDEX, LINDEX_BYTES, key0, index1);
+    return (ListenableFuture<BulkReply>) pipeline(LINDEX, LINDEX_BYTES, key0, index1);
   }
 
   // Insert an element before or after another element in a list
-  public Future<IntegerReply> linsert(Object key0, Object where1, Object pivot2, Object value3) throws RedisException {
+  public ListenableFuture<IntegerReply> linsert(Object key0, Object where1, Object pivot2, Object value3) throws RedisException {
     if (version < LINSERT_VERSION) throw new RedisException("Server does not support LINSERT");
-    return (Future<IntegerReply>) pipeline(LINSERT, LINSERT_BYTES, key0, where1, pivot2, value3);
+    return (ListenableFuture<IntegerReply>) pipeline(LINSERT, LINSERT_BYTES, key0, where1, pivot2, value3);
   }
 
   // Get the length of a list
-  public Future<IntegerReply> llen(Object key0) throws RedisException {
+  public ListenableFuture<IntegerReply> llen(Object key0) throws RedisException {
     if (version < LLEN_VERSION) throw new RedisException("Server does not support LLEN");
-    return (Future<IntegerReply>) pipeline(LLEN, LLEN_BYTES, key0);
+    return (ListenableFuture<IntegerReply>) pipeline(LLEN, LLEN_BYTES, key0);
   }
 
   // Remove and get the first element in a list
-  public Future<BulkReply> lpop(Object key0) throws RedisException {
+  public ListenableFuture<BulkReply> lpop(Object key0) throws RedisException {
     if (version < LPOP_VERSION) throw new RedisException("Server does not support LPOP");
-    return (Future<BulkReply>) pipeline(LPOP, LPOP_BYTES, key0);
+    return (ListenableFuture<BulkReply>) pipeline(LPOP, LPOP_BYTES, key0);
   }
 
   // Prepend one or multiple values to a list
-  public Future<IntegerReply> lpush(Object key0, Object... value1) throws RedisException {
+  public ListenableFuture<IntegerReply> lpush(Object key0, Object... value1) throws RedisException {
     if (version < LPUSH_VERSION) throw new RedisException("Server does not support LPUSH");
-    return (Future<IntegerReply>) pipeline(LPUSH, LPUSH_BYTES, key0, value1);
+    return (ListenableFuture<IntegerReply>) pipeline(LPUSH, LPUSH_BYTES, key0, value1);
   }
 
   // Prepend a value to a list, only if the list exists
-  public Future<IntegerReply> lpushx(Object key0, Object value1) throws RedisException {
+  public ListenableFuture<IntegerReply> lpushx(Object key0, Object value1) throws RedisException {
     if (version < LPUSHX_VERSION) throw new RedisException("Server does not support LPUSHX");
-    return (Future<IntegerReply>) pipeline(LPUSHX, LPUSHX_BYTES, key0, value1);
+    return (ListenableFuture<IntegerReply>) pipeline(LPUSHX, LPUSHX_BYTES, key0, value1);
   }
 
   // Get a range of elements from a list
-  public Future<MultiBulkReply> lrange(Object key0, Object start1, Object stop2) throws RedisException {
+  public ListenableFuture<MultiBulkReply> lrange(Object key0, Object start1, Object stop2) throws RedisException {
     if (version < LRANGE_VERSION) throw new RedisException("Server does not support LRANGE");
-    return (Future<MultiBulkReply>) pipeline(LRANGE, LRANGE_BYTES, key0, start1, stop2);
+    return (ListenableFuture<MultiBulkReply>) pipeline(LRANGE, LRANGE_BYTES, key0, start1, stop2);
   }
 
   // Remove elements from a list
-  public Future<IntegerReply> lrem(Object key0, Object count1, Object value2) throws RedisException {
+  public ListenableFuture<IntegerReply> lrem(Object key0, Object count1, Object value2) throws RedisException {
     if (version < LREM_VERSION) throw new RedisException("Server does not support LREM");
-    return (Future<IntegerReply>) pipeline(LREM, LREM_BYTES, key0, count1, value2);
+    return (ListenableFuture<IntegerReply>) pipeline(LREM, LREM_BYTES, key0, count1, value2);
   }
 
   // Set the value of an element in a list by its index
-  public Future<StatusReply> lset(Object key0, Object index1, Object value2) throws RedisException {
+  public ListenableFuture<StatusReply> lset(Object key0, Object index1, Object value2) throws RedisException {
     if (version < LSET_VERSION) throw new RedisException("Server does not support LSET");
-    return (Future<StatusReply>) pipeline(LSET, LSET_BYTES, key0, index1, value2);
+    return (ListenableFuture<StatusReply>) pipeline(LSET, LSET_BYTES, key0, index1, value2);
   }
 
   // Trim a list to the specified range
-  public Future<StatusReply> ltrim(Object key0, Object start1, Object stop2) throws RedisException {
+  public ListenableFuture<StatusReply> ltrim(Object key0, Object start1, Object stop2) throws RedisException {
     if (version < LTRIM_VERSION) throw new RedisException("Server does not support LTRIM");
-    return (Future<StatusReply>) pipeline(LTRIM, LTRIM_BYTES, key0, start1, stop2);
+    return (ListenableFuture<StatusReply>) pipeline(LTRIM, LTRIM_BYTES, key0, start1, stop2);
   }
 
   // Get the values of all the given keys
-  public Future<MultiBulkReply> mget(Object... key0) throws RedisException {
+  public ListenableFuture<MultiBulkReply> mget(Object... key0) throws RedisException {
     if (version < MGET_VERSION) throw new RedisException("Server does not support MGET");
-    return (Future<MultiBulkReply>) pipeline(MGET, MGET_BYTES, key0);
+    return (ListenableFuture<MultiBulkReply>) pipeline(MGET, MGET_BYTES, key0);
   }
 
   // Listen for all requests received by the server in real time
-  public Future<Reply> monitor() throws RedisException {
+  public ListenableFuture<Reply> monitor() throws RedisException {
     if (version < MONITOR_VERSION) throw new RedisException("Server does not support MONITOR");
-    return (Future<Reply>) pipeline(MONITOR, MONITOR_BYTES);
+    return (ListenableFuture<Reply>) pipeline(MONITOR, MONITOR_BYTES);
   }
 
   // Move a key to another database
-  public Future<IntegerReply> move(Object key0, Object db1) throws RedisException {
+  public ListenableFuture<IntegerReply> move(Object key0, Object db1) throws RedisException {
     if (version < MOVE_VERSION) throw new RedisException("Server does not support MOVE");
-    return (Future<IntegerReply>) pipeline(MOVE, MOVE_BYTES, key0, db1);
+    return (ListenableFuture<IntegerReply>) pipeline(MOVE, MOVE_BYTES, key0, db1);
   }
 
   // Set multiple keys to multiple values
-  public Future<StatusReply> mset(Object... key_or_value0) throws RedisException {
+  public ListenableFuture<StatusReply> mset(Object... key_or_value0) throws RedisException {
     if (version < MSET_VERSION) throw new RedisException("Server does not support MSET");
-    return (Future<StatusReply>) pipeline(MSET, MSET_BYTES, key_or_value0);
+    return (ListenableFuture<StatusReply>) pipeline(MSET, MSET_BYTES, key_or_value0);
   }
 
   // Set multiple keys to multiple values, only if none of the keys exist
-  public Future<IntegerReply> msetnx(Object... key_or_value0) throws RedisException {
+  public ListenableFuture<IntegerReply> msetnx(Object... key_or_value0) throws RedisException {
     if (version < MSETNX_VERSION) throw new RedisException("Server does not support MSETNX");
-    return (Future<IntegerReply>) pipeline(MSETNX, MSETNX_BYTES, key_or_value0);
+    return (ListenableFuture<IntegerReply>) pipeline(MSETNX, MSETNX_BYTES, key_or_value0);
   }
 
   // Mark the start of a transaction block
-  public Future<StatusReply> multi() throws RedisException {
+  public ListenableFuture<StatusReply> multi() throws RedisException {
     if (version < MULTI_VERSION) throw new RedisException("Server does not support MULTI");
-    return (Future<StatusReply>) pipeline(MULTI, MULTI_BYTES);
+    return (ListenableFuture<StatusReply>) pipeline(MULTI, MULTI_BYTES);
   }
 
   // Inspect the internals of Redis objects
-  public Future<Reply> object(Object subcommand0, Object... arguments1) throws RedisException {
+  public ListenableFuture<Reply> object(Object subcommand0, Object... arguments1) throws RedisException {
     if (version < OBJECT_VERSION) throw new RedisException("Server does not support OBJECT");
-    return (Future<Reply>) pipeline(OBJECT, OBJECT_BYTES, subcommand0, arguments1);
+    return (ListenableFuture<Reply>) pipeline(OBJECT, OBJECT_BYTES, subcommand0, arguments1);
   }
 
   // Remove the expiration from a key
-  public Future<IntegerReply> persist(Object key0) throws RedisException {
+  public ListenableFuture<IntegerReply> persist(Object key0) throws RedisException {
     if (version < PERSIST_VERSION) throw new RedisException("Server does not support PERSIST");
-    return (Future<IntegerReply>) pipeline(PERSIST, PERSIST_BYTES, key0);
+    return (ListenableFuture<IntegerReply>) pipeline(PERSIST, PERSIST_BYTES, key0);
   }
 
   // Ping the server
-  public Future<StatusReply> ping() throws RedisException {
+  public ListenableFuture<StatusReply> ping() throws RedisException {
     if (version < PING_VERSION) throw new RedisException("Server does not support PING");
-    return (Future<StatusReply>) pipeline(PING, PING_BYTES);
+    return (ListenableFuture<StatusReply>) pipeline(PING, PING_BYTES);
   }
 
   // Listen for messages published to channels matching the given patterns
-  public Future<Reply> psubscribe(Object... pattern0) throws RedisException {
+  public ListenableFuture<Reply> psubscribe(Object... pattern0) throws RedisException {
     if (version < PSUBSCRIBE_VERSION) throw new RedisException("Server does not support PSUBSCRIBE");
-    return (Future<Reply>) pipeline(PSUBSCRIBE, PSUBSCRIBE_BYTES, pattern0);
+    return (ListenableFuture<Reply>) pipeline(PSUBSCRIBE, PSUBSCRIBE_BYTES, pattern0);
   }
 
   // Post a message to a channel
-  public Future<IntegerReply> publish(Object channel0, Object message1) throws RedisException {
+  public ListenableFuture<IntegerReply> publish(Object channel0, Object message1) throws RedisException {
     if (version < PUBLISH_VERSION) throw new RedisException("Server does not support PUBLISH");
-    return (Future<IntegerReply>) pipeline(PUBLISH, PUBLISH_BYTES, channel0, message1);
+    return (ListenableFuture<IntegerReply>) pipeline(PUBLISH, PUBLISH_BYTES, channel0, message1);
   }
 
   // Stop listening for messages posted to channels matching the given patterns
-  public Future<Reply> punsubscribe(Object... pattern0) throws RedisException {
+  public ListenableFuture<Reply> punsubscribe(Object... pattern0) throws RedisException {
     if (version < PUNSUBSCRIBE_VERSION) throw new RedisException("Server does not support PUNSUBSCRIBE");
-    return (Future<Reply>) pipeline(PUNSUBSCRIBE, PUNSUBSCRIBE_BYTES, pattern0);
+    return (ListenableFuture<Reply>) pipeline(PUNSUBSCRIBE, PUNSUBSCRIBE_BYTES, pattern0);
   }
 
   // Close the connection
-  public Future<StatusReply> quit() throws RedisException {
+  public ListenableFuture<StatusReply> quit() throws RedisException {
     if (version < QUIT_VERSION) throw new RedisException("Server does not support QUIT");
-    return (Future<StatusReply>) pipeline(QUIT, QUIT_BYTES);
+    return (ListenableFuture<StatusReply>) pipeline(QUIT, QUIT_BYTES);
   }
 
   // Return a random key from the keyspace
-  public Future<BulkReply> randomkey() throws RedisException {
+  public ListenableFuture<BulkReply> randomkey() throws RedisException {
     if (version < RANDOMKEY_VERSION) throw new RedisException("Server does not support RANDOMKEY");
-    return (Future<BulkReply>) pipeline(RANDOMKEY, RANDOMKEY_BYTES);
+    return (ListenableFuture<BulkReply>) pipeline(RANDOMKEY, RANDOMKEY_BYTES);
   }
 
   // Rename a key
-  public Future<StatusReply> rename(Object key0, Object newkey1) throws RedisException {
+  public ListenableFuture<StatusReply> rename(Object key0, Object newkey1) throws RedisException {
     if (version < RENAME_VERSION) throw new RedisException("Server does not support RENAME");
-    return (Future<StatusReply>) pipeline(RENAME, RENAME_BYTES, key0, newkey1);
+    return (ListenableFuture<StatusReply>) pipeline(RENAME, RENAME_BYTES, key0, newkey1);
   }
 
   // Rename a key, only if the new key does not exist
-  public Future<IntegerReply> renamenx(Object key0, Object newkey1) throws RedisException {
+  public ListenableFuture<IntegerReply> renamenx(Object key0, Object newkey1) throws RedisException {
     if (version < RENAMENX_VERSION) throw new RedisException("Server does not support RENAMENX");
-    return (Future<IntegerReply>) pipeline(RENAMENX, RENAMENX_BYTES, key0, newkey1);
+    return (ListenableFuture<IntegerReply>) pipeline(RENAMENX, RENAMENX_BYTES, key0, newkey1);
   }
 
   // Remove and get the last element in a list
-  public Future<BulkReply> rpop(Object key0) throws RedisException {
+  public ListenableFuture<BulkReply> rpop(Object key0) throws RedisException {
     if (version < RPOP_VERSION) throw new RedisException("Server does not support RPOP");
-    return (Future<BulkReply>) pipeline(RPOP, RPOP_BYTES, key0);
+    return (ListenableFuture<BulkReply>) pipeline(RPOP, RPOP_BYTES, key0);
   }
 
   // Remove the last element in a list, append it to another list and return it
-  public Future<BulkReply> rpoplpush(Object source0, Object destination1) throws RedisException {
+  public ListenableFuture<BulkReply> rpoplpush(Object source0, Object destination1) throws RedisException {
     if (version < RPOPLPUSH_VERSION) throw new RedisException("Server does not support RPOPLPUSH");
-    return (Future<BulkReply>) pipeline(RPOPLPUSH, RPOPLPUSH_BYTES, source0, destination1);
+    return (ListenableFuture<BulkReply>) pipeline(RPOPLPUSH, RPOPLPUSH_BYTES, source0, destination1);
   }
 
   // Append one or multiple values to a list
-  public Future<IntegerReply> rpush(Object key0, Object... value1) throws RedisException {
+  public ListenableFuture<IntegerReply> rpush(Object key0, Object... value1) throws RedisException {
     if (version < RPUSH_VERSION) throw new RedisException("Server does not support RPUSH");
-    return (Future<IntegerReply>) pipeline(RPUSH, RPUSH_BYTES, key0, value1);
+    return (ListenableFuture<IntegerReply>) pipeline(RPUSH, RPUSH_BYTES, key0, value1);
   }
 
   // Append a value to a list, only if the list exists
-  public Future<IntegerReply> rpushx(Object key0, Object value1) throws RedisException {
+  public ListenableFuture<IntegerReply> rpushx(Object key0, Object value1) throws RedisException {
     if (version < RPUSHX_VERSION) throw new RedisException("Server does not support RPUSHX");
-    return (Future<IntegerReply>) pipeline(RPUSHX, RPUSHX_BYTES, key0, value1);
+    return (ListenableFuture<IntegerReply>) pipeline(RPUSHX, RPUSHX_BYTES, key0, value1);
   }
 
   // Add one or more members to a set
-  public Future<IntegerReply> sadd(Object key0, Object... member1) throws RedisException {
+  public ListenableFuture<IntegerReply> sadd(Object key0, Object... member1) throws RedisException {
     if (version < SADD_VERSION) throw new RedisException("Server does not support SADD");
-    return (Future<IntegerReply>) pipeline(SADD, SADD_BYTES, key0, member1);
+    return (ListenableFuture<IntegerReply>) pipeline(SADD, SADD_BYTES, key0, member1);
   }
 
   // Synchronously save the dataset to disk
-  public Future<Reply> save() throws RedisException {
+  public ListenableFuture<Reply> save() throws RedisException {
     if (version < SAVE_VERSION) throw new RedisException("Server does not support SAVE");
-    return (Future<Reply>) pipeline(SAVE, SAVE_BYTES);
+    return (ListenableFuture<Reply>) pipeline(SAVE, SAVE_BYTES);
   }
 
   // Get the number of members in a set
-  public Future<IntegerReply> scard(Object key0) throws RedisException {
+  public ListenableFuture<IntegerReply> scard(Object key0) throws RedisException {
     if (version < SCARD_VERSION) throw new RedisException("Server does not support SCARD");
-    return (Future<IntegerReply>) pipeline(SCARD, SCARD_BYTES, key0);
+    return (ListenableFuture<IntegerReply>) pipeline(SCARD, SCARD_BYTES, key0);
   }
 
   // Subtract multiple sets
-  public Future<MultiBulkReply> sdiff(Object... key0) throws RedisException {
+  public ListenableFuture<MultiBulkReply> sdiff(Object... key0) throws RedisException {
     if (version < SDIFF_VERSION) throw new RedisException("Server does not support SDIFF");
-    return (Future<MultiBulkReply>) pipeline(SDIFF, SDIFF_BYTES, key0);
+    return (ListenableFuture<MultiBulkReply>) pipeline(SDIFF, SDIFF_BYTES, key0);
   }
 
   // Subtract multiple sets and store the resulting set in a key
-  public Future<IntegerReply> sdiffstore(Object destination0, Object... key1) throws RedisException {
+  public ListenableFuture<IntegerReply> sdiffstore(Object destination0, Object... key1) throws RedisException {
     if (version < SDIFFSTORE_VERSION) throw new RedisException("Server does not support SDIFFSTORE");
-    return (Future<IntegerReply>) pipeline(SDIFFSTORE, SDIFFSTORE_BYTES, destination0, key1);
+    return (ListenableFuture<IntegerReply>) pipeline(SDIFFSTORE, SDIFFSTORE_BYTES, destination0, key1);
   }
 
   // Change the selected database for the current connection
-  public Future<StatusReply> select(Object index0) throws RedisException {
+  public ListenableFuture<StatusReply> select(Object index0) throws RedisException {
     if (version < SELECT_VERSION) throw new RedisException("Server does not support SELECT");
-    return (Future<StatusReply>) pipeline(SELECT, SELECT_BYTES, index0);
+    return (ListenableFuture<StatusReply>) pipeline(SELECT, SELECT_BYTES, index0);
   }
 
   // Set the string value of a key
-  public Future<StatusReply> set(Object key0, Object value1) throws RedisException {
+  public ListenableFuture<StatusReply> set(Object key0, Object value1) throws RedisException {
     if (version < SET_VERSION) throw new RedisException("Server does not support SET");
-    return (Future<StatusReply>) pipeline(SET, SET_BYTES, key0, value1);
+    return (ListenableFuture<StatusReply>) pipeline(SET, SET_BYTES, key0, value1);
   }
 
   // Sets or clears the bit at offset in the string value stored at key
-  public Future<IntegerReply> setbit(Object key0, Object offset1, Object value2) throws RedisException {
+  public ListenableFuture<IntegerReply> setbit(Object key0, Object offset1, Object value2) throws RedisException {
     if (version < SETBIT_VERSION) throw new RedisException("Server does not support SETBIT");
-    return (Future<IntegerReply>) pipeline(SETBIT, SETBIT_BYTES, key0, offset1, value2);
+    return (ListenableFuture<IntegerReply>) pipeline(SETBIT, SETBIT_BYTES, key0, offset1, value2);
   }
 
   // Set the value and expiration of a key
-  public Future<StatusReply> setex(Object key0, Object seconds1, Object value2) throws RedisException {
+  public ListenableFuture<StatusReply> setex(Object key0, Object seconds1, Object value2) throws RedisException {
     if (version < SETEX_VERSION) throw new RedisException("Server does not support SETEX");
-    return (Future<StatusReply>) pipeline(SETEX, SETEX_BYTES, key0, seconds1, value2);
+    return (ListenableFuture<StatusReply>) pipeline(SETEX, SETEX_BYTES, key0, seconds1, value2);
   }
 
   // Set the value of a key, only if the key does not exist
-  public Future<IntegerReply> setnx(Object key0, Object value1) throws RedisException {
+  public ListenableFuture<IntegerReply> setnx(Object key0, Object value1) throws RedisException {
     if (version < SETNX_VERSION) throw new RedisException("Server does not support SETNX");
-    return (Future<IntegerReply>) pipeline(SETNX, SETNX_BYTES, key0, value1);
+    return (ListenableFuture<IntegerReply>) pipeline(SETNX, SETNX_BYTES, key0, value1);
   }
 
   // Overwrite part of a string at key starting at the specified offset
-  public Future<IntegerReply> setrange(Object key0, Object offset1, Object value2) throws RedisException {
+  public ListenableFuture<IntegerReply> setrange(Object key0, Object offset1, Object value2) throws RedisException {
     if (version < SETRANGE_VERSION) throw new RedisException("Server does not support SETRANGE");
-    return (Future<IntegerReply>) pipeline(SETRANGE, SETRANGE_BYTES, key0, offset1, value2);
+    return (ListenableFuture<IntegerReply>) pipeline(SETRANGE, SETRANGE_BYTES, key0, offset1, value2);
   }
 
   // Synchronously save the dataset to disk and then shut down the server
-  public Future<StatusReply> shutdown() throws RedisException {
+  public ListenableFuture<StatusReply> shutdown() throws RedisException {
     if (version < SHUTDOWN_VERSION) throw new RedisException("Server does not support SHUTDOWN");
-    return (Future<StatusReply>) pipeline(SHUTDOWN, SHUTDOWN_BYTES);
+    return (ListenableFuture<StatusReply>) pipeline(SHUTDOWN, SHUTDOWN_BYTES);
   }
 
   // Intersect multiple sets
-  public Future<MultiBulkReply> sinter(Object... key0) throws RedisException {
+  public ListenableFuture<MultiBulkReply> sinter(Object... key0) throws RedisException {
     if (version < SINTER_VERSION) throw new RedisException("Server does not support SINTER");
-    return (Future<MultiBulkReply>) pipeline(SINTER, SINTER_BYTES, key0);
+    return (ListenableFuture<MultiBulkReply>) pipeline(SINTER, SINTER_BYTES, key0);
   }
 
   // Intersect multiple sets and store the resulting set in a key
-  public Future<IntegerReply> sinterstore(Object destination0, Object... key1) throws RedisException {
+  public ListenableFuture<IntegerReply> sinterstore(Object destination0, Object... key1) throws RedisException {
     if (version < SINTERSTORE_VERSION) throw new RedisException("Server does not support SINTERSTORE");
-    return (Future<IntegerReply>) pipeline(SINTERSTORE, SINTERSTORE_BYTES, destination0, key1);
+    return (ListenableFuture<IntegerReply>) pipeline(SINTERSTORE, SINTERSTORE_BYTES, destination0, key1);
   }
 
   // Determine if a given value is a member of a set
-  public Future<IntegerReply> sismember(Object key0, Object member1) throws RedisException {
+  public ListenableFuture<IntegerReply> sismember(Object key0, Object member1) throws RedisException {
     if (version < SISMEMBER_VERSION) throw new RedisException("Server does not support SISMEMBER");
-    return (Future<IntegerReply>) pipeline(SISMEMBER, SISMEMBER_BYTES, key0, member1);
+    return (ListenableFuture<IntegerReply>) pipeline(SISMEMBER, SISMEMBER_BYTES, key0, member1);
   }
 
   // Make the server a slave of another instance, or promote it as master
-  public Future<StatusReply> slaveof(Object host0, Object port1) throws RedisException {
+  public ListenableFuture<StatusReply> slaveof(Object host0, Object port1) throws RedisException {
     if (version < SLAVEOF_VERSION) throw new RedisException("Server does not support SLAVEOF");
-    return (Future<StatusReply>) pipeline(SLAVEOF, SLAVEOF_BYTES, host0, port1);
+    return (ListenableFuture<StatusReply>) pipeline(SLAVEOF, SLAVEOF_BYTES, host0, port1);
   }
 
   // Manages the Redis slow queries log
-  public Future<Reply> slowlog(Object subcommand0, Object argument1) throws RedisException {
+  public ListenableFuture<Reply> slowlog(Object subcommand0, Object argument1) throws RedisException {
     if (version < SLOWLOG_VERSION) throw new RedisException("Server does not support SLOWLOG");
-    return (Future<Reply>) pipeline(SLOWLOG, SLOWLOG_BYTES, subcommand0, argument1);
+    return (ListenableFuture<Reply>) pipeline(SLOWLOG, SLOWLOG_BYTES, subcommand0, argument1);
   }
 
   // Get all the members in a set
-  public Future<MultiBulkReply> smembers(Object key0) throws RedisException {
+  public ListenableFuture<MultiBulkReply> smembers(Object key0) throws RedisException {
     if (version < SMEMBERS_VERSION) throw new RedisException("Server does not support SMEMBERS");
-    return (Future<MultiBulkReply>) pipeline(SMEMBERS, SMEMBERS_BYTES, key0);
+    return (ListenableFuture<MultiBulkReply>) pipeline(SMEMBERS, SMEMBERS_BYTES, key0);
   }
 
   // Move a member from one set to another
-  public Future<IntegerReply> smove(Object source0, Object destination1, Object member2) throws RedisException {
+  public ListenableFuture<IntegerReply> smove(Object source0, Object destination1, Object member2) throws RedisException {
     if (version < SMOVE_VERSION) throw new RedisException("Server does not support SMOVE");
-    return (Future<IntegerReply>) pipeline(SMOVE, SMOVE_BYTES, source0, destination1, member2);
+    return (ListenableFuture<IntegerReply>) pipeline(SMOVE, SMOVE_BYTES, source0, destination1, member2);
   }
 
   // Sort the elements in a list, set or sorted set
-  public Future<MultiBulkReply> sort(Object key0, Object pattern1, Object offset_or_count2, Object... pattern3) throws RedisException {
+  public ListenableFuture<MultiBulkReply> sort(Object key0, Object pattern1, Object offset_or_count2, Object... pattern3) throws RedisException {
     if (version < SORT_VERSION) throw new RedisException("Server does not support SORT");
-    return (Future<MultiBulkReply>) pipeline(SORT, SORT_BYTES, key0, pattern1, offset_or_count2, pattern3);
+    return (ListenableFuture<MultiBulkReply>) pipeline(SORT, SORT_BYTES, key0, pattern1, offset_or_count2, pattern3);
   }
 
   // Remove and return a random member from a set
-  public Future<BulkReply> spop(Object key0) throws RedisException {
+  public ListenableFuture<BulkReply> spop(Object key0) throws RedisException {
     if (version < SPOP_VERSION) throw new RedisException("Server does not support SPOP");
-    return (Future<BulkReply>) pipeline(SPOP, SPOP_BYTES, key0);
+    return (ListenableFuture<BulkReply>) pipeline(SPOP, SPOP_BYTES, key0);
   }
 
   // Get a random member from a set
-  public Future<BulkReply> srandmember(Object key0) throws RedisException {
+  public ListenableFuture<BulkReply> srandmember(Object key0) throws RedisException {
     if (version < SRANDMEMBER_VERSION) throw new RedisException("Server does not support SRANDMEMBER");
-    return (Future<BulkReply>) pipeline(SRANDMEMBER, SRANDMEMBER_BYTES, key0);
+    return (ListenableFuture<BulkReply>) pipeline(SRANDMEMBER, SRANDMEMBER_BYTES, key0);
   }
 
   // Remove one or more members from a set
-  public Future<IntegerReply> srem(Object key0, Object... member1) throws RedisException {
+  public ListenableFuture<IntegerReply> srem(Object key0, Object... member1) throws RedisException {
     if (version < SREM_VERSION) throw new RedisException("Server does not support SREM");
-    return (Future<IntegerReply>) pipeline(SREM, SREM_BYTES, key0, member1);
+    return (ListenableFuture<IntegerReply>) pipeline(SREM, SREM_BYTES, key0, member1);
   }
 
   // Get the length of the value stored in a key
-  public Future<IntegerReply> strlen(Object key0) throws RedisException {
+  public ListenableFuture<IntegerReply> strlen(Object key0) throws RedisException {
     if (version < STRLEN_VERSION) throw new RedisException("Server does not support STRLEN");
-    return (Future<IntegerReply>) pipeline(STRLEN, STRLEN_BYTES, key0);
+    return (ListenableFuture<IntegerReply>) pipeline(STRLEN, STRLEN_BYTES, key0);
   }
 
   // Listen for messages published to the given channels
-  public Future<Reply> subscribe(Object... channel0) throws RedisException {
+  public ListenableFuture<Reply> subscribe(Object... channel0) throws RedisException {
     if (version < SUBSCRIBE_VERSION) throw new RedisException("Server does not support SUBSCRIBE");
-    return (Future<Reply>) pipeline(SUBSCRIBE, SUBSCRIBE_BYTES, channel0);
+    return (ListenableFuture<Reply>) pipeline(SUBSCRIBE, SUBSCRIBE_BYTES, channel0);
   }
 
   // Add multiple sets
-  public Future<MultiBulkReply> sunion(Object... key0) throws RedisException {
+  public ListenableFuture<MultiBulkReply> sunion(Object... key0) throws RedisException {
     if (version < SUNION_VERSION) throw new RedisException("Server does not support SUNION");
-    return (Future<MultiBulkReply>) pipeline(SUNION, SUNION_BYTES, key0);
+    return (ListenableFuture<MultiBulkReply>) pipeline(SUNION, SUNION_BYTES, key0);
   }
 
   // Add multiple sets and store the resulting set in a key
-  public Future<IntegerReply> sunionstore(Object destination0, Object... key1) throws RedisException {
+  public ListenableFuture<IntegerReply> sunionstore(Object destination0, Object... key1) throws RedisException {
     if (version < SUNIONSTORE_VERSION) throw new RedisException("Server does not support SUNIONSTORE");
-    return (Future<IntegerReply>) pipeline(SUNIONSTORE, SUNIONSTORE_BYTES, destination0, key1);
+    return (ListenableFuture<IntegerReply>) pipeline(SUNIONSTORE, SUNIONSTORE_BYTES, destination0, key1);
   }
 
   // Internal command used for replication
-  public Future<Reply> sync() throws RedisException {
+  public ListenableFuture<Reply> sync() throws RedisException {
     if (version < SYNC_VERSION) throw new RedisException("Server does not support SYNC");
-    return (Future<Reply>) pipeline(SYNC, SYNC_BYTES);
+    return (ListenableFuture<Reply>) pipeline(SYNC, SYNC_BYTES);
   }
 
   // Get the time to live for a key
-  public Future<IntegerReply> ttl(Object key0) throws RedisException {
+  public ListenableFuture<IntegerReply> ttl(Object key0) throws RedisException {
     if (version < TTL_VERSION) throw new RedisException("Server does not support TTL");
-    return (Future<IntegerReply>) pipeline(TTL, TTL_BYTES, key0);
+    return (ListenableFuture<IntegerReply>) pipeline(TTL, TTL_BYTES, key0);
   }
 
   // Determine the type stored at key
-  public Future<StatusReply> type(Object key0) throws RedisException {
+  public ListenableFuture<StatusReply> type(Object key0) throws RedisException {
     if (version < TYPE_VERSION) throw new RedisException("Server does not support TYPE");
-    return (Future<StatusReply>) pipeline(TYPE, TYPE_BYTES, key0);
+    return (ListenableFuture<StatusReply>) pipeline(TYPE, TYPE_BYTES, key0);
   }
 
   // Stop listening for messages posted to the given channels
-  public Future<Reply> unsubscribe(Object... channel0) throws RedisException {
+  public ListenableFuture<Reply> unsubscribe(Object... channel0) throws RedisException {
     if (version < UNSUBSCRIBE_VERSION) throw new RedisException("Server does not support UNSUBSCRIBE");
-    return (Future<Reply>) pipeline(UNSUBSCRIBE, UNSUBSCRIBE_BYTES, channel0);
+    return (ListenableFuture<Reply>) pipeline(UNSUBSCRIBE, UNSUBSCRIBE_BYTES, channel0);
   }
 
   // Forget about all watched keys
-  public Future<StatusReply> unwatch() throws RedisException {
+  public ListenableFuture<StatusReply> unwatch() throws RedisException {
     if (version < UNWATCH_VERSION) throw new RedisException("Server does not support UNWATCH");
-    return (Future<StatusReply>) pipeline(UNWATCH, UNWATCH_BYTES);
+    return (ListenableFuture<StatusReply>) pipeline(UNWATCH, UNWATCH_BYTES);
   }
 
   // Watch the given keys to determine execution of the MULTI/EXEC block
-  public Future<StatusReply> watch(Object... key0) throws RedisException {
+  public ListenableFuture<StatusReply> watch(Object... key0) throws RedisException {
     if (version < WATCH_VERSION) throw new RedisException("Server does not support WATCH");
-    return (Future<StatusReply>) pipeline(WATCH, WATCH_BYTES, key0);
+    return (ListenableFuture<StatusReply>) pipeline(WATCH, WATCH_BYTES, key0);
   }
 
   // Add one or more members to a sorted set, or update its score if it already exists
-  public Future<IntegerReply> zadd(Object key0, Object score1, Object member2, Object score3, Object member4) throws RedisException {
+  public ListenableFuture<IntegerReply> zadd(Object key0, Object score1, Object member2, Object score3, Object member4) throws RedisException {
     if (version < ZADD_VERSION) throw new RedisException("Server does not support ZADD");
-    return (Future<IntegerReply>) pipeline(ZADD, ZADD_BYTES, key0, score1, member2, score3, member4);
+    return (ListenableFuture<IntegerReply>) pipeline(ZADD, ZADD_BYTES, key0, score1, member2, score3, member4);
   }
 
   // Get the number of members in a sorted set
-  public Future<IntegerReply> zcard(Object key0) throws RedisException {
+  public ListenableFuture<IntegerReply> zcard(Object key0) throws RedisException {
     if (version < ZCARD_VERSION) throw new RedisException("Server does not support ZCARD");
-    return (Future<IntegerReply>) pipeline(ZCARD, ZCARD_BYTES, key0);
+    return (ListenableFuture<IntegerReply>) pipeline(ZCARD, ZCARD_BYTES, key0);
   }
 
   // Count the members in a sorted set with scores within the given values
-  public Future<IntegerReply> zcount(Object key0, Object min1, Object max2) throws RedisException {
+  public ListenableFuture<IntegerReply> zcount(Object key0, Object min1, Object max2) throws RedisException {
     if (version < ZCOUNT_VERSION) throw new RedisException("Server does not support ZCOUNT");
-    return (Future<IntegerReply>) pipeline(ZCOUNT, ZCOUNT_BYTES, key0, min1, max2);
+    return (ListenableFuture<IntegerReply>) pipeline(ZCOUNT, ZCOUNT_BYTES, key0, min1, max2);
   }
 
   // Increment the score of a member in a sorted set
-  public Future<BulkReply> zincrby(Object key0, Object increment1, Object member2) throws RedisException {
+  public ListenableFuture<BulkReply> zincrby(Object key0, Object increment1, Object member2) throws RedisException {
     if (version < ZINCRBY_VERSION) throw new RedisException("Server does not support ZINCRBY");
-    return (Future<BulkReply>) pipeline(ZINCRBY, ZINCRBY_BYTES, key0, increment1, member2);
+    return (ListenableFuture<BulkReply>) pipeline(ZINCRBY, ZINCRBY_BYTES, key0, increment1, member2);
   }
 
   // Intersect multiple sorted sets and store the resulting sorted set in a new key
-  public Future<IntegerReply> zinterstore(Object destination0, Object numkeys1, Object... key2) throws RedisException {
+  public ListenableFuture<IntegerReply> zinterstore(Object destination0, Object numkeys1, Object... key2) throws RedisException {
     if (version < ZINTERSTORE_VERSION) throw new RedisException("Server does not support ZINTERSTORE");
-    return (Future<IntegerReply>) pipeline(ZINTERSTORE, ZINTERSTORE_BYTES, destination0, numkeys1, key2);
+    return (ListenableFuture<IntegerReply>) pipeline(ZINTERSTORE, ZINTERSTORE_BYTES, destination0, numkeys1, key2);
   }
 
   // Return a range of members in a sorted set, by index
-  public Future<MultiBulkReply> zrange(Object key0, Object start1, Object stop2, Object withscores3) throws RedisException {
+  public ListenableFuture<MultiBulkReply> zrange(Object key0, Object start1, Object stop2, Object withscores3) throws RedisException {
     if (version < ZRANGE_VERSION) throw new RedisException("Server does not support ZRANGE");
-    return (Future<MultiBulkReply>) pipeline(ZRANGE, ZRANGE_BYTES, key0, start1, stop2, withscores3);
+    return (ListenableFuture<MultiBulkReply>) pipeline(ZRANGE, ZRANGE_BYTES, key0, start1, stop2, withscores3);
   }
 
   // Return a range of members in a sorted set, by score
-  public Future<MultiBulkReply> zrangebyscore(Object key0, Object min1, Object max2, Object withscores3, Object offset_or_count4) throws RedisException {
+  public ListenableFuture<MultiBulkReply> zrangebyscore(Object key0, Object min1, Object max2, Object withscores3, Object offset_or_count4) throws RedisException {
     if (version < ZRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZRANGEBYSCORE");
-    return (Future<MultiBulkReply>) pipeline(ZRANGEBYSCORE, ZRANGEBYSCORE_BYTES, key0, min1, max2, withscores3, offset_or_count4);
+    return (ListenableFuture<MultiBulkReply>) pipeline(ZRANGEBYSCORE, ZRANGEBYSCORE_BYTES, key0, min1, max2, withscores3, offset_or_count4);
   }
 
   // Determine the index of a member in a sorted set
-  public Future<IntegerReply> zrank(Object key0, Object member1) throws RedisException {
+  public ListenableFuture<IntegerReply> zrank(Object key0, Object member1) throws RedisException {
     if (version < ZRANK_VERSION) throw new RedisException("Server does not support ZRANK");
-    return (Future<IntegerReply>) pipeline(ZRANK, ZRANK_BYTES, key0, member1);
+    return (ListenableFuture<IntegerReply>) pipeline(ZRANK, ZRANK_BYTES, key0, member1);
   }
 
   // Remove one or more members from a sorted set
-  public Future<IntegerReply> zrem(Object key0, Object... member1) throws RedisException {
+  public ListenableFuture<IntegerReply> zrem(Object key0, Object... member1) throws RedisException {
     if (version < ZREM_VERSION) throw new RedisException("Server does not support ZREM");
-    return (Future<IntegerReply>) pipeline(ZREM, ZREM_BYTES, key0, member1);
+    return (ListenableFuture<IntegerReply>) pipeline(ZREM, ZREM_BYTES, key0, member1);
   }
 
   // Remove all members in a sorted set within the given indexes
-  public Future<IntegerReply> zremrangebyrank(Object key0, Object start1, Object stop2) throws RedisException {
+  public ListenableFuture<IntegerReply> zremrangebyrank(Object key0, Object start1, Object stop2) throws RedisException {
     if (version < ZREMRANGEBYRANK_VERSION) throw new RedisException("Server does not support ZREMRANGEBYRANK");
-    return (Future<IntegerReply>) pipeline(ZREMRANGEBYRANK, ZREMRANGEBYRANK_BYTES, key0, start1, stop2);
+    return (ListenableFuture<IntegerReply>) pipeline(ZREMRANGEBYRANK, ZREMRANGEBYRANK_BYTES, key0, start1, stop2);
   }
 
   // Remove all members in a sorted set within the given scores
-  public Future<IntegerReply> zremrangebyscore(Object key0, Object min1, Object max2) throws RedisException {
+  public ListenableFuture<IntegerReply> zremrangebyscore(Object key0, Object min1, Object max2) throws RedisException {
     if (version < ZREMRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZREMRANGEBYSCORE");
-    return (Future<IntegerReply>) pipeline(ZREMRANGEBYSCORE, ZREMRANGEBYSCORE_BYTES, key0, min1, max2);
+    return (ListenableFuture<IntegerReply>) pipeline(ZREMRANGEBYSCORE, ZREMRANGEBYSCORE_BYTES, key0, min1, max2);
   }
 
   // Return a range of members in a sorted set, by index, with scores ordered from high to low
-  public Future<MultiBulkReply> zrevrange(Object key0, Object start1, Object stop2, Object withscores3) throws RedisException {
+  public ListenableFuture<MultiBulkReply> zrevrange(Object key0, Object start1, Object stop2, Object withscores3) throws RedisException {
     if (version < ZREVRANGE_VERSION) throw new RedisException("Server does not support ZREVRANGE");
-    return (Future<MultiBulkReply>) pipeline(ZREVRANGE, ZREVRANGE_BYTES, key0, start1, stop2, withscores3);
+    return (ListenableFuture<MultiBulkReply>) pipeline(ZREVRANGE, ZREVRANGE_BYTES, key0, start1, stop2, withscores3);
   }
 
   // Return a range of members in a sorted set, by score, with scores ordered from high to low
-  public Future<MultiBulkReply> zrevrangebyscore(Object key0, Object max1, Object min2, Object withscores3, Object offset_or_count4) throws RedisException {
+  public ListenableFuture<MultiBulkReply> zrevrangebyscore(Object key0, Object max1, Object min2, Object withscores3, Object offset_or_count4) throws RedisException {
     if (version < ZREVRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZREVRANGEBYSCORE");
-    return (Future<MultiBulkReply>) pipeline(ZREVRANGEBYSCORE, ZREVRANGEBYSCORE_BYTES, key0, max1, min2, withscores3, offset_or_count4);
+    return (ListenableFuture<MultiBulkReply>) pipeline(ZREVRANGEBYSCORE, ZREVRANGEBYSCORE_BYTES, key0, max1, min2, withscores3, offset_or_count4);
   }
 
   // Determine the index of a member in a sorted set, with scores ordered from high to low
-  public Future<IntegerReply> zrevrank(Object key0, Object member1) throws RedisException {
+  public ListenableFuture<IntegerReply> zrevrank(Object key0, Object member1) throws RedisException {
     if (version < ZREVRANK_VERSION) throw new RedisException("Server does not support ZREVRANK");
-    return (Future<IntegerReply>) pipeline(ZREVRANK, ZREVRANK_BYTES, key0, member1);
+    return (ListenableFuture<IntegerReply>) pipeline(ZREVRANK, ZREVRANK_BYTES, key0, member1);
   }
 
   // Get the score associated with the given member in a sorted set
-  public Future<BulkReply> zscore(Object key0, Object member1) throws RedisException {
+  public ListenableFuture<BulkReply> zscore(Object key0, Object member1) throws RedisException {
     if (version < ZSCORE_VERSION) throw new RedisException("Server does not support ZSCORE");
-    return (Future<BulkReply>) pipeline(ZSCORE, ZSCORE_BYTES, key0, member1);
+    return (ListenableFuture<BulkReply>) pipeline(ZSCORE, ZSCORE_BYTES, key0, member1);
   }
 
   // Add multiple sorted sets and store the resulting sorted set in a new key
-  public Future<IntegerReply> zunionstore(Object destination0, Object numkeys1, Object... key2) throws RedisException {
+  public ListenableFuture<IntegerReply> zunionstore(Object destination0, Object numkeys1, Object... key2) throws RedisException {
     if (version < ZUNIONSTORE_VERSION) throw new RedisException("Server does not support ZUNIONSTORE");
-    return (Future<IntegerReply>) pipeline(ZUNIONSTORE, ZUNIONSTORE_BYTES, destination0, numkeys1, key2);
+    return (ListenableFuture<IntegerReply>) pipeline(ZUNIONSTORE, ZUNIONSTORE_BYTES, destination0, numkeys1, key2);
   }
 
   // Execute a Lua script server side
-  public Future<Reply> eval(Object script0, Object numkeys1, Object... key2) throws RedisException {
+  public ListenableFuture<Reply> eval(Object script0, Object numkeys1, Object... key2) throws RedisException {
     if (version < EVAL_VERSION) throw new RedisException("Server does not support EVAL");
-    return (Future<Reply>) pipeline(EVAL, EVAL_BYTES, script0, numkeys1, key2);
+    return (ListenableFuture<Reply>) pipeline(EVAL, EVAL_BYTES, script0, numkeys1, key2);
   }
   }
 }

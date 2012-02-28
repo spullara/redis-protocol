@@ -17,6 +17,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
+
 /**
  * TODO: Edit this
  * <p/>
@@ -26,7 +30,8 @@ import java.util.regex.Pattern;
  */
 public class RedisClientBase {
   // Single threaded pipelining
-  private ExecutorService es = Executors.newSingleThreadExecutor();
+  private ListeningExecutorService es = MoreExecutors.listeningDecorator(
+          Executors.newSingleThreadExecutor());
   protected RedisProtocol redisProtocol;
   private static final Pattern versionMatcher = Pattern.compile("([0-9]+)\\.([0-9]+)(\\.([0-9]+))?");
   private AtomicInteger pipelined = new AtomicInteger(0);
@@ -66,7 +71,7 @@ public class RedisClientBase {
     return version;
   }
 
-  protected synchronized Future<? extends Reply> pipeline(String name, Command command) throws RedisException {
+  protected synchronized ListenableFuture<? extends Reply> pipeline(String name, Command command) throws RedisException {
     try {
       redisProtocol.sendAsync(command);
     } catch (IOException e) {
@@ -89,7 +94,7 @@ public class RedisClientBase {
     });
   }
 
-  protected synchronized Future<? extends Reply> pipeline(String name, Object... objects) throws RedisException {
+  protected synchronized ListenableFuture<? extends Reply> pipeline(String name, Object... objects) throws RedisException {
     try {
       redisProtocol.sendAsync(objects);
     } catch (IOException e) {

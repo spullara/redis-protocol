@@ -5,7 +5,7 @@ import redis.Command;
 import redis.reply.*;
 
 import java.io.IOException;
-import java.util.concurrent.Future;
+import com.google.common.util.concurrent.ListenableFuture;
 
 public class RedisClient extends RedisClientBase {
   protected Pipeline pipeline = new Pipeline();
@@ -32,7 +32,7 @@ public class RedisClient extends RedisClientBase {
     {{#commands}}
 
     {{<method}}
-      {{$return}}Future<{{reply}}>{{/return}}
+      {{$return}}ListenableFuture<{{reply}}>{{/return}}
       {{$method}}pipeline{{/method}}
     {{/method}}
     {{/commands}}
