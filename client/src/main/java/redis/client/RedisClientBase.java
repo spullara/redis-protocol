@@ -1,5 +1,8 @@
 package redis.client;
 
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
 import redis.Command;
 import redis.RedisProtocol;
 import redis.reply.BulkReply;
@@ -10,16 +13,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
 
 /**
  * TODO: Edit this
@@ -31,7 +28,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 public class RedisClientBase {
   // Single threaded pipelining
   private ListeningExecutorService es = MoreExecutors.listeningDecorator(
-          Executors.newSingleThreadExecutor());
+      Executors.newSingleThreadExecutor());
   protected RedisProtocol redisProtocol;
   private static final Pattern versionMatcher = Pattern.compile("([0-9]+)\\.([0-9]+)(\\.([0-9]+))?");
   private AtomicInteger pipelined = new AtomicInteger(0);
@@ -71,7 +68,7 @@ public class RedisClientBase {
     return version;
   }
 
-  protected synchronized ListenableFuture<? extends Reply> pipeline(String name, Command command) throws RedisException {
+  public synchronized ListenableFuture<? extends Reply> pipeline(String name, Command command) throws RedisException {
     try {
       redisProtocol.sendAsync(command);
     } catch (IOException e) {
@@ -94,7 +91,7 @@ public class RedisClientBase {
     });
   }
 
-  protected synchronized ListenableFuture<? extends Reply> pipeline(String name, Object... objects) throws RedisException {
+  public synchronized ListenableFuture<? extends Reply> pipeline(String name, Object... objects) throws RedisException {
     try {
       redisProtocol.sendAsync(objects);
     } catch (IOException e) {
@@ -117,7 +114,7 @@ public class RedisClientBase {
     });
   }
 
-  protected synchronized Reply execute(String name, Command command) throws RedisException {
+  public synchronized Reply execute(String name, Command command) throws RedisException {
     try {
       if (pipelined.get() == 0) {
         return redisProtocol.send(command);
@@ -140,5 +137,9 @@ public class RedisClientBase {
     } catch (Exception e) {
       throw new RedisException("Failed to execute: " + name, e);
     }
+  }
+
+  public RedisProtocol getRedisProtocol() {
+    return redisProtocol;
   }
 }

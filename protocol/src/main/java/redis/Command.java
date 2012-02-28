@@ -29,6 +29,7 @@ public class Command {
 
   public Command(byte[]... arguments) {
     this.arguments = arguments;
+    this.objects = arguments;
   }
 
   public byte[][] getArguments() {

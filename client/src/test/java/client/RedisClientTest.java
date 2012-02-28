@@ -28,7 +28,7 @@ import static junit.framework.Assert.assertEquals;
 public class RedisClientTest {
 
   private static final byte[] VALUE = "value".getBytes(Charsets.UTF_8);
-  private static final int CALLS = 1000000;
+  private static final int CALLS = 100000;
 
   @Test
   public void testIt() throws IOException, ExecutionException, InterruptedException {
@@ -45,26 +45,24 @@ public class RedisClientTest {
   
   @Test
   public void benchmark() throws IOException {
-    int CALLS = 1000000;
     long start = System.currentTimeMillis();
     RedisClient redisClient = new RedisClient(new SocketPool("localhost", 6379));
     for (int i = 0; i < CALLS; i++) {
       redisClient.set(Command.numToBytes(i, false), VALUE);
     }
     long end = System.currentTimeMillis();
-    System.out.println(CALLS * 1000 / (end - start) + " calls per second");
+    System.out.println("Blocking: " + CALLS * 1000 / (end - start) + " calls per second");
   }
 
   @Test
   public void benchmarkFutureGet() throws IOException, ExecutionException, InterruptedException {
-    int CALLS = 1000000;
     long start = System.currentTimeMillis();
     RedisClient.Pipeline redisClient = new RedisClient(new SocketPool("localhost", 6379)).pipeline();
     for (int i = 0; i < CALLS; i++) {
       redisClient.set(Command.numToBytes(i, false), VALUE).get();
     }
     long end = System.currentTimeMillis();
-    System.out.println(CALLS * 1000 / (end - start) + " calls per second");
+    System.out.println("Future: " + CALLS * 1000 / (end - start) + " calls per second");
   }
 
   @Test
@@ -79,7 +77,7 @@ public class RedisClientTest {
       public void run() {
         if (total.decrementAndGet() == 0) {
           long end = System.currentTimeMillis();
-          System.out.println(CALLS * 1000 / (end - start) + " calls per second");
+          System.out.println("ListenableFuture: " + CALLS * 1000 / (end - start) + " calls per second");
           countDownLatch.countDown();
         } else {
           redisClient.set(Command.numToBytes(total.intValue(), false), VALUE).addListener(this, es);
@@ -92,13 +90,12 @@ public class RedisClientTest {
 
   @Test
   public void benchmarkPipeline() throws IOException, ExecutionException, InterruptedException {
-    int CALLS = 1000000;
     long start = System.currentTimeMillis();
     RedisClient redisClient = new RedisClient(new SocketPool("localhost", 6379));
     RedisClient.Pipeline pipeline = redisClient.pipeline();
     int PIPELINE_CALLS = 50;
     Future<StatusReply>[] replies = new Future[PIPELINE_CALLS];
-    for (int i = 0; i < CALLS / PIPELINE_CALLS; i++) {
+    for (int i = 0; i < CALLS * 10 / PIPELINE_CALLS; i++) {
       for (int j = 0; j < PIPELINE_CALLS; j++) {
         replies[j] = pipeline.set(Command.numToBytes(i, false), VALUE);
       }
@@ -107,6 +104,6 @@ public class RedisClientTest {
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println(CALLS * 1000 / (end - start) + " calls per second");
+    System.out.println("Pipelined: " + CALLS * 10 * 1000 / (end - start) + " calls per second");
   }
 }
