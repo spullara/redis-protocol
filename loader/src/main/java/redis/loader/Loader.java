@@ -6,16 +6,30 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
+
 import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import redis.RedisProtocol;
 
 public class Loader {
+
+  @Argument
+  private static Boolean hdfs = false;
 
   @Argument(alias = "r", description = "Regular expression to parse lines", required = true)
   private static String regex;
@@ -61,7 +75,25 @@ public class Loader {
         public int read(char[] cbuf, int off, int len) throws IOException {
           if (reader == null) {
             if (files.hasNext()) {
-              reader = new FileReader(files.next());
+              String next = files.next();
+              if (hdfs || next.startsWith("hdfs://")) {
+                Configuration conf = new Configuration();
+                FileSystem fs = FileSystem.get(conf);
+                FileStatus[] fileStatuses = fs.globStatus(new Path(next));
+                if (fileStatuses.length > 1) {
+                  files = Iterators.concat(Iterables.transform(Arrays.asList(fileStatuses), new Function<FileStatus, String>() {
+                    @Override
+                    public String apply(FileStatus input) {
+                      return input.getPath().toString();
+                    }
+                  }).iterator(), files);
+                  next = files.next();
+                }
+                FSDataInputStream open = fs.open(new Path(next));
+                reader = new BufferedReader(new InputStreamReader(open));
+              } else {
+                reader = new FileReader(next);
+              }
             } else {
               return -1;
             }
