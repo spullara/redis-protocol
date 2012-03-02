@@ -80,7 +80,7 @@ public class Loader {
                 Configuration conf = new Configuration();
                 FileSystem fs = FileSystem.get(conf);
                 FileStatus[] fileStatuses = fs.globStatus(new Path(next));
-                if (fileStatuses.length > 1) {
+                if (fileStatuses.length > 0) {
                   files = Iterators.concat(Iterables.transform(Arrays.asList(fileStatuses), new Function<FileStatus, String>() {
                     @Override
                     public String apply(FileStatus input) {
@@ -88,9 +88,9 @@ public class Loader {
                     }
                   }).iterator(), files);
                   next = files.next();
+                  FSDataInputStream open = fs.open(new Path(next));
+                  reader = new BufferedReader(new InputStreamReader(open));
                 }
-                FSDataInputStream open = fs.open(new Path(next));
-                reader = new BufferedReader(new InputStreamReader(open));
               } else {
                 reader = new FileReader(next);
               }
