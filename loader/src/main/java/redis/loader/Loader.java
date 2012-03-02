@@ -84,7 +84,7 @@ public class Loader {
 
     RedisProtocol redisProtocol = new RedisProtocol(new Socket(host, port));
 
-
+    int total = 0;
     String line;
     while ((line = br.readLine()) != null) {
       Matcher matcher = pattern.matcher(line);
@@ -98,8 +98,13 @@ public class Loader {
           objects[2 + i*2 + 1] = matcher.group(Integer.parseInt(columns[i]));
         }
         redisProtocol.sendAsync(objects);
+        total++;
+        if (total % 10000 == 0) {
+          System.out.println(total);
+        }
       }
     }
+    System.out.println(total);
 
   }
 }
