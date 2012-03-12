@@ -10,6 +10,7 @@ import redis.reply.StatusReply;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -55,17 +56,21 @@ public class RedisProtocol {
   }
 
   public static int readInteger(InputStream is) throws IOException {
-    int size = 0;
-    int sign = 1;
+    int sign;
     int read = is.read();
     if (read == '-') {
       read = is.read();
       sign = -1;
+    } else {
+      sign = 1;
     }
+    int size = 0;
     do {
-      if (read == CR) {
+      if (read == -1) {
+        throw new EOFException("Unexpected end of stream");
+      } else if (read == CR) {
         if (is.read() == LF) {
-          break;
+          return size * sign;
         }
       }
       int value = read - ZERO;
@@ -77,7 +82,6 @@ public class RedisProtocol {
       }
       read = is.read();
     } while (true);
-    return size * sign;
   }
 
   public static Reply receive(InputStream is) throws IOException {
