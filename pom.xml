@@ -11,7 +11,6 @@
     <module>client</module>
     <module>clientgen</module>
     <module>native</module>
-    <module>netty</module>
     <module>finagle</module>
     <module>loader</module>
   </modules>

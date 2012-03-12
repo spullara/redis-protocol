@@ -1,6 +1,6 @@
 package redis.finagle
 
-import redis.netty.{RedisDecoder, RedisEncoder, Reply, Command}
+import org.jboss.netty.handler.codec.redis.{RedisDecoder, RedisEncoder, Reply, Command}
 import org.jboss.netty.channel.{ChannelPipelineFactory, Channels}
 import com.twitter.finagle.tracing.ClientRequestTracingFilter
 import com.twitter.util.Future

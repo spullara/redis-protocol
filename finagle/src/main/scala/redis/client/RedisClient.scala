@@ -6,7 +6,7 @@ import com.twitter.finagle.Service
 import com.twitter.finagle.builder.ClientBuilder
 
 import redis.finagle._
-import redis.netty._
+import org.jboss.netty.handler.codec.redis._
 
 object RedisClient {
 
@@ -413,7 +413,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def append(key0: Object, value1: Object) = {
     service(new Command(RedisClient.APPEND_BYTES, key0, value1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -423,7 +423,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def auth(password0: Object) = {
     service(new Command(RedisClient.AUTH_BYTES, password0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -433,7 +433,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def bgrewriteaof() = {
     service(new Command(RedisClient.BGREWRITEAOF_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -443,7 +443,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def bgsave() = {
     service(new Command(RedisClient.BGSAVE_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -453,7 +453,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def blpop(key0: Object*) = {
     service(new Command(RedisClient.BLPOP_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: MultiBulkReply => reply
       }
     }
@@ -463,7 +463,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def brpop(key0: Object*) = {
     service(new Command(RedisClient.BRPOP_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: MultiBulkReply => reply
       }
     }
@@ -473,7 +473,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def brpoplpush(source0: Object, destination1: Object, timeout2: Object) = {
     service(new Command(RedisClient.BRPOPLPUSH_BYTES, source0, destination1, timeout2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: BulkReply => reply
       }
     }
@@ -483,7 +483,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def config_get(parameter0: Object) = {
     service(new Command(RedisClient.CONFIG_GET_BYTES, parameter0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: Reply => reply
       }
     }
@@ -493,7 +493,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def config_set(parameter0: Object, value1: Object) = {
     service(new Command(RedisClient.CONFIG_SET_BYTES, parameter0, value1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: Reply => reply
       }
     }
@@ -503,7 +503,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def config_resetstat() = {
     service(new Command(RedisClient.CONFIG_RESETSTAT_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: Reply => reply
       }
     }
@@ -513,7 +513,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def dbsize() = {
     service(new Command(RedisClient.DBSIZE_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -523,7 +523,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def debug_object(key0: Object) = {
     service(new Command(RedisClient.DEBUG_OBJECT_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: Reply => reply
       }
     }
@@ -533,7 +533,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def debug_segfault() = {
     service(new Command(RedisClient.DEBUG_SEGFAULT_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: Reply => reply
       }
     }
@@ -543,7 +543,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def decr(key0: Object) = {
     service(new Command(RedisClient.DECR_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -553,7 +553,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def decrby(key0: Object, decrement1: Object) = {
     service(new Command(RedisClient.DECRBY_BYTES, key0, decrement1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -563,7 +563,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def del(key0: Object*) = {
     service(new Command(RedisClient.DEL_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -573,7 +573,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def discard() = {
     service(new Command(RedisClient.DISCARD_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -583,7 +583,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def echo(message0: Object) = {
     service(new Command(RedisClient.ECHO_BYTES, message0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: BulkReply => reply
       }
     }
@@ -593,7 +593,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def exec() = {
     service(new Command(RedisClient.EXEC_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: MultiBulkReply => reply
       }
     }
@@ -603,7 +603,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def exists(key0: Object) = {
     service(new Command(RedisClient.EXISTS_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -613,7 +613,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def expire(key0: Object, seconds1: Object) = {
     service(new Command(RedisClient.EXPIRE_BYTES, key0, seconds1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -623,7 +623,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def expireat(key0: Object, timestamp1: Object) = {
     service(new Command(RedisClient.EXPIREAT_BYTES, key0, timestamp1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -633,7 +633,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def flushall() = {
     service(new Command(RedisClient.FLUSHALL_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -643,7 +643,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def flushdb() = {
     service(new Command(RedisClient.FLUSHDB_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -653,7 +653,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def get(key0: Object) = {
     service(new Command(RedisClient.GET_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: BulkReply => reply
       }
     }
@@ -663,7 +663,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def getbit(key0: Object, offset1: Object) = {
     service(new Command(RedisClient.GETBIT_BYTES, key0, offset1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -673,7 +673,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def getrange(key0: Object, start1: Object, end2: Object) = {
     service(new Command(RedisClient.GETRANGE_BYTES, key0, start1, end2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: BulkReply => reply
       }
     }
@@ -683,7 +683,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def getset(key0: Object, value1: Object) = {
     service(new Command(RedisClient.GETSET_BYTES, key0, value1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: BulkReply => reply
       }
     }
@@ -693,7 +693,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def hdel(key0: Object, field1: Object*) = {
     service(new Command(RedisClient.HDEL_BYTES, key0, field1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -703,7 +703,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def hexists(key0: Object, field1: Object) = {
     service(new Command(RedisClient.HEXISTS_BYTES, key0, field1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -713,7 +713,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def hget(key0: Object, field1: Object) = {
     service(new Command(RedisClient.HGET_BYTES, key0, field1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: BulkReply => reply
       }
     }
@@ -723,7 +723,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def hgetall(key0: Object) = {
     service(new Command(RedisClient.HGETALL_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: MultiBulkReply => reply
       }
     }
@@ -733,7 +733,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def hincrby(key0: Object, field1: Object, increment2: Object) = {
     service(new Command(RedisClient.HINCRBY_BYTES, key0, field1, increment2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -743,7 +743,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def hkeys(key0: Object) = {
     service(new Command(RedisClient.HKEYS_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: MultiBulkReply => reply
       }
     }
@@ -753,7 +753,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def hlen(key0: Object) = {
     service(new Command(RedisClient.HLEN_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -763,7 +763,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def hmget(key0: Object, field1: Object*) = {
     service(new Command(RedisClient.HMGET_BYTES, key0, field1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: MultiBulkReply => reply
       }
     }
@@ -773,7 +773,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def hmset(key0: Object, field_or_value1: Object*) = {
     service(new Command(RedisClient.HMSET_BYTES, key0, field_or_value1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -783,7 +783,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def hset(key0: Object, field1: Object, value2: Object) = {
     service(new Command(RedisClient.HSET_BYTES, key0, field1, value2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -793,7 +793,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def hsetnx(key0: Object, field1: Object, value2: Object) = {
     service(new Command(RedisClient.HSETNX_BYTES, key0, field1, value2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -803,7 +803,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def hvals(key0: Object) = {
     service(new Command(RedisClient.HVALS_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: MultiBulkReply => reply
       }
     }
@@ -813,7 +813,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def incr(key0: Object) = {
     service(new Command(RedisClient.INCR_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -823,7 +823,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def incrby(key0: Object, increment1: Object) = {
     service(new Command(RedisClient.INCRBY_BYTES, key0, increment1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -833,7 +833,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def info() = {
     service(new Command(RedisClient.INFO_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: BulkReply => reply
       }
     }
@@ -843,7 +843,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def keys(pattern0: Object) = {
     service(new Command(RedisClient.KEYS_BYTES, pattern0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: MultiBulkReply => reply
       }
     }
@@ -853,7 +853,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def lastsave() = {
     service(new Command(RedisClient.LASTSAVE_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -863,7 +863,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def lindex(key0: Object, index1: Object) = {
     service(new Command(RedisClient.LINDEX_BYTES, key0, index1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: BulkReply => reply
       }
     }
@@ -873,7 +873,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def linsert(key0: Object, where1: Object, pivot2: Object, value3: Object) = {
     service(new Command(RedisClient.LINSERT_BYTES, key0, where1, pivot2, value3)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -883,7 +883,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def llen(key0: Object) = {
     service(new Command(RedisClient.LLEN_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -893,7 +893,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def lpop(key0: Object) = {
     service(new Command(RedisClient.LPOP_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: BulkReply => reply
       }
     }
@@ -903,7 +903,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def lpush(key0: Object, value1: Object*) = {
     service(new Command(RedisClient.LPUSH_BYTES, key0, value1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -913,7 +913,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def lpushx(key0: Object, value1: Object) = {
     service(new Command(RedisClient.LPUSHX_BYTES, key0, value1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -923,7 +923,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def lrange(key0: Object, start1: Object, stop2: Object) = {
     service(new Command(RedisClient.LRANGE_BYTES, key0, start1, stop2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: MultiBulkReply => reply
       }
     }
@@ -933,7 +933,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def lrem(key0: Object, count1: Object, value2: Object) = {
     service(new Command(RedisClient.LREM_BYTES, key0, count1, value2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -943,7 +943,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def lset(key0: Object, index1: Object, value2: Object) = {
     service(new Command(RedisClient.LSET_BYTES, key0, index1, value2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -953,7 +953,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def ltrim(key0: Object, start1: Object, stop2: Object) = {
     service(new Command(RedisClient.LTRIM_BYTES, key0, start1, stop2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -963,7 +963,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def mget(key0: Object*) = {
     service(new Command(RedisClient.MGET_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: MultiBulkReply => reply
       }
     }
@@ -973,7 +973,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def monitor() = {
     service(new Command(RedisClient.MONITOR_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: Reply => reply
       }
     }
@@ -983,7 +983,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def move(key0: Object, db1: Object) = {
     service(new Command(RedisClient.MOVE_BYTES, key0, db1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -993,7 +993,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def mset(key_or_value0: Object*) = {
     service(new Command(RedisClient.MSET_BYTES, key_or_value0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -1003,7 +1003,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def msetnx(key_or_value0: Object*) = {
     service(new Command(RedisClient.MSETNX_BYTES, key_or_value0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1013,7 +1013,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def multi() = {
     service(new Command(RedisClient.MULTI_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -1023,7 +1023,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def `object`(subcommand0: Object, arguments1: Object*) = {
     service(new Command(RedisClient.OBJECT_BYTES, subcommand0, arguments1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: Reply => reply
       }
     }
@@ -1033,7 +1033,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def persist(key0: Object) = {
     service(new Command(RedisClient.PERSIST_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1043,7 +1043,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def ping() = {
     service(new Command(RedisClient.PING_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -1053,7 +1053,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def psubscribe(pattern0: Object*) = {
     service(new Command(RedisClient.PSUBSCRIBE_BYTES, pattern0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: Reply => reply
       }
     }
@@ -1063,7 +1063,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def publish(channel0: Object, message1: Object) = {
     service(new Command(RedisClient.PUBLISH_BYTES, channel0, message1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1073,7 +1073,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def punsubscribe(pattern0: Object*) = {
     service(new Command(RedisClient.PUNSUBSCRIBE_BYTES, pattern0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: Reply => reply
       }
     }
@@ -1083,7 +1083,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def quit() = {
     service(new Command(RedisClient.QUIT_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -1093,7 +1093,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def randomkey() = {
     service(new Command(RedisClient.RANDOMKEY_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: BulkReply => reply
       }
     }
@@ -1103,7 +1103,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def rename(key0: Object, newkey1: Object) = {
     service(new Command(RedisClient.RENAME_BYTES, key0, newkey1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -1113,7 +1113,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def renamenx(key0: Object, newkey1: Object) = {
     service(new Command(RedisClient.RENAMENX_BYTES, key0, newkey1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1123,7 +1123,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def rpop(key0: Object) = {
     service(new Command(RedisClient.RPOP_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: BulkReply => reply
       }
     }
@@ -1133,7 +1133,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def rpoplpush(source0: Object, destination1: Object) = {
     service(new Command(RedisClient.RPOPLPUSH_BYTES, source0, destination1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: BulkReply => reply
       }
     }
@@ -1143,7 +1143,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def rpush(key0: Object, value1: Object*) = {
     service(new Command(RedisClient.RPUSH_BYTES, key0, value1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1153,7 +1153,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def rpushx(key0: Object, value1: Object) = {
     service(new Command(RedisClient.RPUSHX_BYTES, key0, value1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1163,7 +1163,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def sadd(key0: Object, member1: Object*) = {
     service(new Command(RedisClient.SADD_BYTES, key0, member1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1173,7 +1173,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def save() = {
     service(new Command(RedisClient.SAVE_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: Reply => reply
       }
     }
@@ -1183,7 +1183,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def scard(key0: Object) = {
     service(new Command(RedisClient.SCARD_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1193,7 +1193,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def sdiff(key0: Object*) = {
     service(new Command(RedisClient.SDIFF_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: MultiBulkReply => reply
       }
     }
@@ -1203,7 +1203,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def sdiffstore(destination0: Object, key1: Object*) = {
     service(new Command(RedisClient.SDIFFSTORE_BYTES, destination0, key1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1213,7 +1213,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def select(index0: Object) = {
     service(new Command(RedisClient.SELECT_BYTES, index0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -1223,7 +1223,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def set(key0: Object, value1: Object) = {
     service(new Command(RedisClient.SET_BYTES, key0, value1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -1233,7 +1233,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def setbit(key0: Object, offset1: Object, value2: Object) = {
     service(new Command(RedisClient.SETBIT_BYTES, key0, offset1, value2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1243,7 +1243,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def setex(key0: Object, seconds1: Object, value2: Object) = {
     service(new Command(RedisClient.SETEX_BYTES, key0, seconds1, value2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -1253,7 +1253,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def setnx(key0: Object, value1: Object) = {
     service(new Command(RedisClient.SETNX_BYTES, key0, value1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1263,7 +1263,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def setrange(key0: Object, offset1: Object, value2: Object) = {
     service(new Command(RedisClient.SETRANGE_BYTES, key0, offset1, value2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1273,7 +1273,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def shutdown() = {
     service(new Command(RedisClient.SHUTDOWN_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -1283,7 +1283,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def sinter(key0: Object*) = {
     service(new Command(RedisClient.SINTER_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: MultiBulkReply => reply
       }
     }
@@ -1293,7 +1293,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def sinterstore(destination0: Object, key1: Object*) = {
     service(new Command(RedisClient.SINTERSTORE_BYTES, destination0, key1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1303,7 +1303,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def sismember(key0: Object, member1: Object) = {
     service(new Command(RedisClient.SISMEMBER_BYTES, key0, member1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1313,7 +1313,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def slaveof(host0: Object, port1: Object) = {
     service(new Command(RedisClient.SLAVEOF_BYTES, host0, port1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -1323,7 +1323,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def slowlog(subcommand0: Object, argument1: Object) = {
     service(new Command(RedisClient.SLOWLOG_BYTES, subcommand0, argument1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: Reply => reply
       }
     }
@@ -1333,7 +1333,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def smembers(key0: Object) = {
     service(new Command(RedisClient.SMEMBERS_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: MultiBulkReply => reply
       }
     }
@@ -1343,7 +1343,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def smove(source0: Object, destination1: Object, member2: Object) = {
     service(new Command(RedisClient.SMOVE_BYTES, source0, destination1, member2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1353,7 +1353,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def sort(key0: Object, pattern1: Object, offset_or_count2: Object, pattern3: Object*) = {
     service(new Command(RedisClient.SORT_BYTES, key0, pattern1, offset_or_count2, pattern3)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: MultiBulkReply => reply
       }
     }
@@ -1363,7 +1363,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def spop(key0: Object) = {
     service(new Command(RedisClient.SPOP_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: BulkReply => reply
       }
     }
@@ -1373,7 +1373,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def srandmember(key0: Object) = {
     service(new Command(RedisClient.SRANDMEMBER_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: BulkReply => reply
       }
     }
@@ -1383,7 +1383,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def srem(key0: Object, member1: Object*) = {
     service(new Command(RedisClient.SREM_BYTES, key0, member1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1393,7 +1393,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def strlen(key0: Object) = {
     service(new Command(RedisClient.STRLEN_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1403,7 +1403,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def subscribe(channel0: Object*) = {
     service(new Command(RedisClient.SUBSCRIBE_BYTES, channel0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: Reply => reply
       }
     }
@@ -1413,7 +1413,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def sunion(key0: Object*) = {
     service(new Command(RedisClient.SUNION_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: MultiBulkReply => reply
       }
     }
@@ -1423,7 +1423,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def sunionstore(destination0: Object, key1: Object*) = {
     service(new Command(RedisClient.SUNIONSTORE_BYTES, destination0, key1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1433,7 +1433,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def sync() = {
     service(new Command(RedisClient.SYNC_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: Reply => reply
       }
     }
@@ -1443,7 +1443,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def ttl(key0: Object) = {
     service(new Command(RedisClient.TTL_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1453,7 +1453,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def `type`(key0: Object) = {
     service(new Command(RedisClient.TYPE_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -1463,7 +1463,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def unsubscribe(channel0: Object*) = {
     service(new Command(RedisClient.UNSUBSCRIBE_BYTES, channel0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: Reply => reply
       }
     }
@@ -1473,7 +1473,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def unwatch() = {
     service(new Command(RedisClient.UNWATCH_BYTES)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -1483,7 +1483,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def watch(key0: Object*) = {
     service(new Command(RedisClient.WATCH_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: StatusReply => reply
       }
     }
@@ -1493,7 +1493,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def zadd(key0: Object, score1: Object, member2: Object, score3: Object, member4: Object) = {
     service(new Command(RedisClient.ZADD_BYTES, key0, score1, member2, score3, member4)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1503,7 +1503,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def zcard(key0: Object) = {
     service(new Command(RedisClient.ZCARD_BYTES, key0)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1513,7 +1513,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def zcount(key0: Object, min1: Object, max2: Object) = {
     service(new Command(RedisClient.ZCOUNT_BYTES, key0, min1, max2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1523,7 +1523,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def zincrby(key0: Object, increment1: Object, member2: Object) = {
     service(new Command(RedisClient.ZINCRBY_BYTES, key0, increment1, member2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: BulkReply => reply
       }
     }
@@ -1533,7 +1533,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def zinterstore(destination0: Object, numkeys1: Object, key2: Object*) = {
     service(new Command(RedisClient.ZINTERSTORE_BYTES, destination0, numkeys1, key2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1543,7 +1543,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def zrange(key0: Object, start1: Object, stop2: Object, withscores3: Object) = {
     service(new Command(RedisClient.ZRANGE_BYTES, key0, start1, stop2, withscores3)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: MultiBulkReply => reply
       }
     }
@@ -1553,7 +1553,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def zrangebyscore(key0: Object, min1: Object, max2: Object, withscores3: Object, offset_or_count4: Object) = {
     service(new Command(RedisClient.ZRANGEBYSCORE_BYTES, key0, min1, max2, withscores3, offset_or_count4)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: MultiBulkReply => reply
       }
     }
@@ -1563,7 +1563,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def zrank(key0: Object, member1: Object) = {
     service(new Command(RedisClient.ZRANK_BYTES, key0, member1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1573,7 +1573,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def zrem(key0: Object, member1: Object*) = {
     service(new Command(RedisClient.ZREM_BYTES, key0, member1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1583,7 +1583,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def zremrangebyrank(key0: Object, start1: Object, stop2: Object) = {
     service(new Command(RedisClient.ZREMRANGEBYRANK_BYTES, key0, start1, stop2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1593,7 +1593,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def zremrangebyscore(key0: Object, min1: Object, max2: Object) = {
     service(new Command(RedisClient.ZREMRANGEBYSCORE_BYTES, key0, min1, max2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1603,7 +1603,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def zrevrange(key0: Object, start1: Object, stop2: Object, withscores3: Object) = {
     service(new Command(RedisClient.ZREVRANGE_BYTES, key0, start1, stop2, withscores3)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: MultiBulkReply => reply
       }
     }
@@ -1613,7 +1613,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def zrevrangebyscore(key0: Object, max1: Object, min2: Object, withscores3: Object, offset_or_count4: Object) = {
     service(new Command(RedisClient.ZREVRANGEBYSCORE_BYTES, key0, max1, min2, withscores3, offset_or_count4)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: MultiBulkReply => reply
       }
     }
@@ -1623,7 +1623,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def zrevrank(key0: Object, member1: Object) = {
     service(new Command(RedisClient.ZREVRANK_BYTES, key0, member1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1633,7 +1633,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def zscore(key0: Object, member1: Object) = {
     service(new Command(RedisClient.ZSCORE_BYTES, key0, member1)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: BulkReply => reply
       }
     }
@@ -1643,7 +1643,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def zunionstore(destination0: Object, numkeys1: Object, key2: Object*) = {
     service(new Command(RedisClient.ZUNIONSTORE_BYTES, destination0, numkeys1, key2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: IntegerReply => reply
       }
     }
@@ -1653,7 +1653,7 @@ class RedisClient(service: Service[Command, Reply]) {
   def eval(script0: Object, numkeys1: Object, key2: Object*) = {
     service(new Command(RedisClient.EVAL_BYTES, script0, numkeys1, key2)) map {
       _ match {
-        case error: ErrorReply => throw new RedisException(error.error)
+        case error: ErrorReply => throw new RedisException(error.error.toString(Charsets.US_ASCII))
         case reply: Reply => reply
       }
     }
