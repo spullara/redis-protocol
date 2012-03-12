@@ -122,8 +122,8 @@ public class RedisProtocol {
   public void sendAsync(Command command) throws IOException {
     synchronized (os) {
       command.write(os);
-      os.flush();
     }
+    os.flush();
   }
 
   public Command receive() throws IOException {
@@ -135,21 +135,21 @@ public class RedisProtocol {
   public void send(Reply reply) throws IOException {
     synchronized (os) {
       reply.write(os);
-      os.flush();
     }
+    os.flush();
   }
 
   public void write(byte[] bytes) throws IOException {
     synchronized (os) {
       os.write(bytes);
-      os.flush();
     }
+    os.flush();
   }
 
   public void sendAsync(Object[] objects) throws IOException {
     synchronized (os) {
       Command.writeDirect(os, objects);
-      os.flush();
     }
+    os.flush();
   }
 }
