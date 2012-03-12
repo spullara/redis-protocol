@@ -35,7 +35,7 @@ class RedisTest extends Specification {
       val CALLS = 1000000;
       var i = 0;
       val promise = new Promise[String]()
-      def call(): Unit = {
+      def call() {
         client.set(String.valueOf(CALLS), value) onSuccess { reply =>
           i = i + 1
           if (i == CALLS) {
