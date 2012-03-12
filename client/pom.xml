@@ -10,7 +10,7 @@
   <artifactId>client</artifactId>
   <packaging>jar</packaging>
 
-  <name>redis.client</name>
+  <name>client</name>
   <url>http://maven.apache.org</url>
 
   <properties>

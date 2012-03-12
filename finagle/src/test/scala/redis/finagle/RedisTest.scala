@@ -3,6 +3,7 @@ package redis.finagle
 import org.specs.Specification
 import com.twitter.finagle.builder.ClientBuilder
 import redis.client.RedisClient
+import com.twitter.util.Promise
 
 class RedisTest extends Specification {
   "The redis client" should {
@@ -15,7 +16,7 @@ class RedisTest extends Specification {
         .codec(new RedisCodecFactory)
         .hosts(RedisCluster.hostAddresses())
         .hostConnectionLimit(1)
-        .build()
+        .buildFactory().make()()
       client = RedisClient(service)
     }
 
@@ -29,13 +30,24 @@ class RedisTest extends Specification {
     }
 
     "benchmark" in {
-      val CALLS = 1000000;
+      val value = "value".getBytes
       val start = System.currentTimeMillis();
-      for (i <- 0 to CALLS) {
-        client.set(String.valueOf(i), "value")()
+      val CALLS = 1000000;
+      var i = 0;
+      val promise = new Promise[String]()
+      def call(): Unit = {
+        client.set(String.valueOf(CALLS), value) onSuccess { reply =>
+          i = i + 1
+          if (i == CALLS) {
+            val end = System.currentTimeMillis()
+            promise.setValue(CALLS * 1000 / (end - start) + " calls per second")
+          } else {
+            call();
+          }
+        }
       }
-      val end = System.currentTimeMillis();
-      System.out.println(CALLS * 1000 / (end - start) + " calls per second");
+      call()
+      println(promise.get())
     }
   }
 }
