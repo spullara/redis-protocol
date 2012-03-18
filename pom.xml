@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.github.spullara.redis</groupId>
@@ -20,12 +20,46 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
-  <repositories>
+  <developers>
+    <developer>
+      <id>spullara</id>
+      <name>Sam Pullara</name>
+      <email>spullara@yahoo.com</email>
+      <url>http://javarants.com</url>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>-8</timezone>
+      <properties>
+      </properties>
+    </developer>
+  </developers>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:git://github.com/spullara/redis-protocol.git</connection>
+    <developerConnection>scm:git:git://github.com/spullara/redis-protocol.git</developerConnection>
+    <url>scm:git:git://github.com/spullara/redis-protocol.git</url>
+  </scm>
+
+  <distributionManagement>
     <repository>
-      <id>twitter</id>
-      <url>http://maven.twttr.com/</url>
+      <id>sonatype-nexus-staging</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
     </repository>
-  </repositories>
+    <snapshotRepository>
+      <id>sonatype-nexus-snapshots</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+  </distributionManagement>
 
   <dependencies>
     <!-- Guava -->
@@ -59,8 +93,21 @@
         <configuration>
           <source>1.6</source>
           <target>1.6</target>
-            <encoding>UTF-8</encoding>
+          <encoding>UTF-8</encoding>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
