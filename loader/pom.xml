@@ -19,11 +19,6 @@
       <version>0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>com.github.spullara.cli-parser</groupId>
-      <artifactId>cli-parser</artifactId>
-      <version>1.0.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
       <groupId>org.apache.hadoop</groupId>
       <artifactId>hadoop-core</artifactId>
       <version>0.20.3-append-r964955-1240</version>
