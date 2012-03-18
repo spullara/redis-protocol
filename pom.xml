@@ -10,6 +10,7 @@
     <module>client</module>
     <module>clientgen</module>
     <module>loader</module>
+    <module>benchmark</module>
   </modules>
   <packaging>pom</packaging>
 

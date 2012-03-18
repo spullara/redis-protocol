@@ -27,9 +27,9 @@ public class Benchmark {
       " -h <hostname>      Server hostname (default 127.0.0.1)\n" +
       " -p <port>          Server port (default 6379)\n" +
       " -c <clients>       Number of parallel connections (default 50)\n" +
-      " -P <outstanding>   Number of outstanding pipeline requests (defaults 1)" +
       " -n <requests>      Total number of requests (default 10000)\n" +
-      " -d <size>          Data size of SET/GET value in bytes (default 2)\n";
+      " -P <outstanding>   Number of outstanding pipeline requests (defaults 1)" +
+      " -d <size>          Data size of SET/GET value in bytes (default 3)\n";
 
   @Argument
   private static String h = "127.0.0.1";
@@ -72,17 +72,24 @@ public class Benchmark {
           final Semaphore semaphore = new Semaphore(P);
           for (int i = 0; i < n / c; i++) {
             final long commandstart = System.nanoTime();
-            semaphore.acquire(1);
-            ListenableFuture<? extends Reply> pipeline = redisClient.pipeline(title, command);
-            pipeline.addListener(new Runnable() {
-              @Override
-              public void run() {
-                long commandend = System.nanoTime();
-                int bin = (int) ((commandend - commandstart) / NANOS_PER_MILLI);
-                bins.get(bin).incrementAndGet();
-                semaphore.release();
-              }
-            }, es);
+            if (P == 1) {
+              redisClient.execute(title, command);
+              long commandend = System.nanoTime();
+              int bin = (int) ((commandend - commandstart) / NANOS_PER_MILLI);
+              bins.get(bin).incrementAndGet();
+            } else {
+              semaphore.acquire(1);
+              ListenableFuture<? extends Reply> pipeline = redisClient.pipeline(title, command);
+              pipeline.addListener(new Runnable() {
+                @Override
+                public void run() {
+                  long commandend = System.nanoTime();
+                  int bin = (int) ((commandend - commandstart) / NANOS_PER_MILLI);
+                  bins.get(bin).incrementAndGet();
+                  semaphore.release();
+                }
+              }, es);
+            }
           }
           semaphore.acquire(P);
           redisClient.close();
