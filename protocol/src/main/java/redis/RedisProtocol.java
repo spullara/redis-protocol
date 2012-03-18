@@ -152,4 +152,9 @@ public class RedisProtocol {
     }
     os.flush();
   }
+
+  public void close() throws IOException {
+    is.close();
+    os.close();
+  }
 }

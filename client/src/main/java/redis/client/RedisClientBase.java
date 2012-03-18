@@ -142,4 +142,9 @@ public class RedisClientBase {
   public RedisProtocol getRedisProtocol() {
     return redisProtocol;
   }
+
+  public void close() throws IOException {
+    redisProtocol.close();
+    es.shutdown();
+  }
 }
