@@ -23,16 +23,6 @@
       <artifactId>protocol</artifactId>
       <version>0.1-SNAPSHOT</version>
     </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>11.0</version>
-    </dependency>
-    <dependency>
-      <groupId>com.github.spullara.cli-parser</groupId>
-      <artifactId>cli-parser</artifactId>
-      <version>1.1</version>
-    </dependency>
   </dependencies>
 
   <build>

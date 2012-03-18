@@ -19,7 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * TODO: Edit this
+ * The lowest layer that talks directly with the redis protocol.
  * <p/>
  * User: sam
  * Date: 11/5/11
