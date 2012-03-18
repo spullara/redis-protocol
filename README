@@ -12,18 +12,30 @@ Copyright 2012 Sam Pullara
    See the License for the specific language governing permissions and
    limitations under the License.
 
-A very fast Redis client.
+A very fast Redis client for Java.
 
 Description of each module:
 
 client/
   Leverages the protocol module for encoding and decoding. Supports both synchronous
   and asynchronous pipelined requests from the RedisClient.
-clientgen/
-  Scrapes the redis.io/commands page and produces the typed Java client and the
-  Finagle-based Scala client.
 protocol/
   Redis protocol encoder / decoder based on input/outputstreams. This is the
   fastest implementation if blocking i/o is ok for your use case.
+
+benchmark/
+  A redis-benchmark clone that uses this Java client for comparison testing.
+
+clientgen/
+  Scrapes the redis.io/commands page and produces the typed Java client and the
+  Finagle-based Scala client.
 loader/
   Utility to parse HDFS line-oriented files and load them into Redis
+
+Maven dependency:
+
+    <dependency>
+      <groupId>com.github.spullara.redis</groupId>
+      <artifactId>client</artifactId>
+      <version>0.1</version>
+    </dependency>
