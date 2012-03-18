@@ -14,7 +14,8 @@
   <packaging>pom</packaging>
 
   <name>redis</name>
-  <url>http://maven.apache.org</url>
+  <url>http://github.com/spullara/redis-protocol</url>
+  <description>A very fast Java redis client.</description>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
