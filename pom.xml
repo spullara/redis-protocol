@@ -3,7 +3,7 @@
 
   <groupId>com.github.spullara.redis</groupId>
   <artifactId>redis</artifactId>
-  <version>0.2-SNAPSHOT</version>
+  <version>0.1-SNAPSHOT</version>
   <modules>
     <module>protocol</module>
     <module>client</module>
