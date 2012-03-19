@@ -46,6 +46,9 @@ public class Main {
   @Argument(alias = "l")
   private static String language = "java";
 
+  @Argument(alias = "p")
+  private static String pkg = "redis.client";
+
   @Argument(alias = "d", required = true)
   private static File dest;
 
@@ -144,7 +147,7 @@ public class Main {
 
     Scope ctx = new Scope();
     ctx.put("commands", commands);
-    File base = new File(dest, "redis/client");
+    File base = new File(dest, pkg.replace(".", "/"));
     base.mkdirs();
     Writer writer = new FileWriter(new File(base, "RedisClient." + language));
     mustache.execute(writer, ctx);

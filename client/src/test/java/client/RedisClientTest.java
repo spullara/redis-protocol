@@ -15,6 +15,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -28,7 +29,7 @@ import static junit.framework.Assert.assertEquals;
 public class RedisClientTest {
 
   private static final byte[] VALUE = "value".getBytes(Charsets.UTF_8);
-  private static final int CALLS = 100000;
+  private static final long CALLS = 1000000l;
 
   @Test
   public void testIt() throws IOException, ExecutionException, InterruptedException {
@@ -51,7 +52,7 @@ public class RedisClientTest {
       redisClient.set(Command.numToBytes(i, false), VALUE);
     }
     long end = System.currentTimeMillis();
-    System.out.println("Blocking: " + CALLS * 1000 / (end - start) + " calls per second");
+    System.out.println("Blocking: " + (CALLS * 1000) / (end - start) + " calls per second");
   }
 
   @Test
@@ -62,13 +63,13 @@ public class RedisClientTest {
       redisClient.set(Command.numToBytes(i, false), VALUE).get();
     }
     long end = System.currentTimeMillis();
-    System.out.println("Future: " + CALLS * 1000 / (end - start) + " calls per second");
+    System.out.println("Future: " + (CALLS * 1000) / (end - start) + " calls per second");
   }
 
   @Test
   public void benchmarkListenFuture() throws IOException, InterruptedException {
     final ExecutorService es = Executors.newSingleThreadExecutor();
-    final AtomicInteger total = new AtomicInteger(CALLS);
+    final AtomicLong total = new AtomicLong(CALLS);
     final long start = System.currentTimeMillis();
     final RedisClient.Pipeline redisClient = new RedisClient(new SocketPool("localhost", 6379)).pipeline();
     final CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -77,7 +78,7 @@ public class RedisClientTest {
       public void run() {
         if (total.decrementAndGet() == 0) {
           long end = System.currentTimeMillis();
-          System.out.println("ListenableFuture: " + CALLS * 1000 / (end - start) + " calls per second");
+          System.out.println("ListenableFuture: " + (CALLS * 1000) / (end - start) + " calls per second");
           countDownLatch.countDown();
         } else {
           redisClient.set(Command.numToBytes(total.intValue(), false), VALUE).addListener(this, es);
@@ -104,6 +105,6 @@ public class RedisClientTest {
       }
     }
     long end = System.currentTimeMillis();
-    System.out.println("Pipelined: " + CALLS * 10 * 1000 / (end - start) + " calls per second");
+    System.out.println("Pipelined: " + (CALLS * 10 * 1000) / (end - start) + " calls per second");
   }
 }
