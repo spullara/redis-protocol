@@ -101,10 +101,14 @@ public class Main {
         String comment = commandNode.get("summary").getTextValue();
         String reply = finalReply.equals("") ? "Reply" : finalReply;
         String version = commandNode.get("since").getTextValue();
+        boolean usearray = false;
         List<Object> arguments = new ArrayList<Object>();
         {
           JsonNode argumentArray = commandNode.get("arguments");
           if (argumentArray != null) {
+            if (argumentArray.size() > 3) {
+              usearray = true;
+            }
             boolean first = true;
             int argNum = 0;
             for (final JsonNode argumentNode : argumentArray) {
@@ -134,6 +138,9 @@ public class Main {
                 String typename = "Object";
                 String name = (argName + finalArgNum).replace(" ", "_");
               });
+              if (isMultiple) {
+                usearray = true;
+              }
               first = false;
               argNum++;
               if (isMultiple) break;
