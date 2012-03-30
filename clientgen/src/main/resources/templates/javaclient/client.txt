@@ -1,6 +1,7 @@
 package redis.client;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -14,8 +15,8 @@ import redis.reply.StatusReply;
 public class RedisClient extends RedisClientBase {
   protected Pipeline pipeline = new Pipeline();
 
-  public RedisClient(SocketPool socketPool) throws IOException {
-    super(socketPool);
+  public RedisClient(String host, int port, ExecutorService es) throws IOException {
+    super(host, port, es);
   }
 
   public Pipeline pipeline() {

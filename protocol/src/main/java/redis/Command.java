@@ -1,11 +1,11 @@
 package redis;
 
-import com.google.common.base.Charsets;
-
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import com.google.common.base.Charsets;
 
 /**
  * Command serialization.
@@ -24,51 +24,47 @@ public class Command {
   public static final char LF = '\n';
   public static final char CR = '\r';
 
-  private byte[][] arguments;
   private Object[] objects;
-
-  public Command(byte[]... arguments) {
-    this.arguments = arguments;
-    this.objects = arguments;
-  }
-
-  public byte[][] getArguments() {
-    return arguments;
-  }
+  private byte[] byteName;
 
   public Command(Object... objects) {
     this.objects = objects;
   }
 
+  public Command(byte[] byteName, Object... objects) {
+    this(objects);
+    this.byteName = byteName;
+  }
+
   public void write(OutputStream os) throws IOException {
-    writeDirect(os, objects);
+    writeDirect(os, byteName, objects);
   }
 
-  public static void writeDirect(OutputStream os, Object... objects) throws IOException {
+  public static void writeDirect(OutputStream os, byte[] byteName, Object... objects) throws IOException {
     int length = objects.length;
-    byte[][] arguments = new byte[length][];
-    for (int i = 0; i < length; i++) {
-      Object object = objects[i];
-      if (object == null) {
-        arguments[i] = EMPTY_BYTES;
-      } else if (object instanceof byte[]) {
-        arguments[i] = (byte[]) object;
-      } else {
-        arguments[i] = object.toString().getBytes(Charsets.UTF_8);
-      }
+    os.write(ARGS_PREFIX);
+    os.write(Command.numToBytes(length + (byteName == null ? 0 : 1), true));
+    if (byteName != null) {
+      writeArgument(os, byteName);
     }
-    writeDirect(os, arguments);
+    for (Object object : objects) {
+      byte[] argument;
+      if (object == null) {
+        argument = EMPTY_BYTES;
+      } else if (object instanceof byte[]) {
+        argument = (byte[]) object;
+      } else {
+        argument = object.toString().getBytes(Charsets.UTF_8);
+      }
+      writeArgument(os, argument);
+    }
   }
 
-  private static void writeDirect(OutputStream os, byte[][] arguments) throws IOException {
-    os.write(ARGS_PREFIX);
-    os.write(Command.numToBytes(arguments.length, true));
-    for (byte[] argument : arguments) {
-      os.write(BYTES_PREFIX);
-      os.write(Command.numToBytes(argument.length, true));
-      os.write(argument);
-      os.write(CRLF);
-    }
+  private static void writeArgument(OutputStream os, byte[] argument) throws IOException {
+    os.write(BYTES_PREFIX);
+    os.write(Command.numToBytes(argument.length, true));
+    os.write(argument);
+    os.write(CRLF);
   }
 
   public static Command read(InputStream is) throws IOException {
@@ -117,12 +113,15 @@ public class Command {
 
   private static final int NUM_MAP_LENGTH = 256;
   private static byte[][] numMap = new byte[NUM_MAP_LENGTH][];
+
   static {
     for (int i = 0; i < NUM_MAP_LENGTH; i++) {
       numMap[i] = convert(i, false);
     }
   }
+
   private static byte[][] numMapWithCRLF = new byte[NUM_MAP_LENGTH][];
+
   static {
     for (int i = 0; i < NUM_MAP_LENGTH; i++) {
       numMapWithCRLF[i] = convert(i, true);

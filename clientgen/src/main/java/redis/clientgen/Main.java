@@ -118,7 +118,8 @@ public class Main {
                     sb.append("_or_");
                   }
                   f = false;
-                  sb.append(nameNode.getTextValue());
+                  String textValue = nameNode.getTextValue();
+                  sb.append(textValue);
                 }
                 argName = sb.toString();
               } else {
@@ -131,7 +132,7 @@ public class Main {
                 boolean first = finalFirst;
                 boolean multiple = isMultiple;
                 String typename = "Object";
-                String name = argName + finalArgNum;
+                String name = (argName + finalArgNum).replace(" ", "_");
               });
               first = false;
               argNum++;

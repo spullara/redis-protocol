@@ -50,8 +50,7 @@ public class Benchmark {
 
   private static void benchmark(final String title, final Command command) throws IOException, InterruptedException, ExecutionException {
     System.out.println("====== " + title + " ======");
-    final SocketPool socketPool = new SocketPool(h, p);
-    final ArrayList<AtomicInteger> bins = new ArrayList<AtomicInteger>() {
+   final ArrayList<AtomicInteger> bins = new ArrayList<AtomicInteger>() {
       @Override
       public synchronized AtomicInteger get(int index) {
         if (index > size() - 1) {
@@ -68,7 +67,7 @@ public class Benchmark {
       benchmarks.add(new Callable<Void>() {
         @Override
         public Void call() throws IOException, InterruptedException {
-          RedisClient redisClient = new RedisClient(socketPool);
+          RedisClient redisClient = new RedisClient(h, p, es);
           final Semaphore semaphore = new Semaphore(P);
           for (int i = 0; i < n / c; i++) {
             final long commandstart = System.nanoTime();
@@ -145,7 +144,7 @@ public class Benchmark {
           objects[i + 1] = data;
         }
         // Delete it all
-        RedisClient redisClient = new RedisClient(new SocketPool(h, p));
+        RedisClient redisClient = new RedisClient(h, p, es);
         redisClient.del(key, counter, list, set);
         redisClient.close();
 

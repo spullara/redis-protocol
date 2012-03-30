@@ -74,5 +74,4 @@ public class CommandTest {
       start = end;
     }
   }
-
 }

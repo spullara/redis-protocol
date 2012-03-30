@@ -1,6 +1,7 @@
 package redis.client;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutorService;
 
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -14,8 +15,8 @@ import redis.reply.StatusReply;
 public class RedisClient extends RedisClientBase {
   protected Pipeline pipeline = new Pipeline();
 
-  public RedisClient(SocketPool socketPool) throws IOException {
-    super(socketPool);
+  public RedisClient(String host, int port, ExecutorService es) throws IOException {
+    super(host, port, es);
   }
 
   public Pipeline pipeline() {
@@ -24,7 +25,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String APPEND = "APPEND";
   private static final byte[] APPEND_BYTES = APPEND.getBytes(Charsets.US_ASCII);
-  private static final int APPEND_VERSION = parseVersion("1.3.3");
+  private static final int APPEND_VERSION = parseVersion("2.0.0");
 
   // Append a value to a key
   public IntegerReply append(Object key0, Object value1) throws RedisException {
@@ -34,7 +35,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String AUTH = "AUTH";
   private static final byte[] AUTH_BYTES = AUTH.getBytes(Charsets.US_ASCII);
-  private static final int AUTH_VERSION = parseVersion("0.08");
+  private static final int AUTH_VERSION = parseVersion("1.0.0");
 
   // Authenticate to the server
   public StatusReply auth(Object password0) throws RedisException {
@@ -44,7 +45,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String BGREWRITEAOF = "BGREWRITEAOF";
   private static final byte[] BGREWRITEAOF_BYTES = BGREWRITEAOF.getBytes(Charsets.US_ASCII);
-  private static final int BGREWRITEAOF_VERSION = parseVersion("1.07");
+  private static final int BGREWRITEAOF_VERSION = parseVersion("1.0.0");
 
   // Asynchronously rewrite the append-only file
   public StatusReply bgrewriteaof() throws RedisException {
@@ -54,7 +55,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String BGSAVE = "BGSAVE";
   private static final byte[] BGSAVE_BYTES = BGSAVE.getBytes(Charsets.US_ASCII);
-  private static final int BGSAVE_VERSION = parseVersion("0.07");
+  private static final int BGSAVE_VERSION = parseVersion("1.0.0");
 
   // Asynchronously save the dataset to disk
   public StatusReply bgsave() throws RedisException {
@@ -64,7 +65,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String BLPOP = "BLPOP";
   private static final byte[] BLPOP_BYTES = BLPOP.getBytes(Charsets.US_ASCII);
-  private static final int BLPOP_VERSION = parseVersion("1.3.1");
+  private static final int BLPOP_VERSION = parseVersion("2.0.0");
 
   // Remove and get the first element in a list, or block until one is available
   public MultiBulkReply blpop(Object... key0) throws RedisException {
@@ -74,7 +75,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String BRPOP = "BRPOP";
   private static final byte[] BRPOP_BYTES = BRPOP.getBytes(Charsets.US_ASCII);
-  private static final int BRPOP_VERSION = parseVersion("1.3.1");
+  private static final int BRPOP_VERSION = parseVersion("2.0.0");
 
   // Remove and get the last element in a list, or block until one is available
   public MultiBulkReply brpop(Object... key0) throws RedisException {
@@ -84,7 +85,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String BRPOPLPUSH = "BRPOPLPUSH";
   private static final byte[] BRPOPLPUSH_BYTES = BRPOPLPUSH.getBytes(Charsets.US_ASCII);
-  private static final int BRPOPLPUSH_VERSION = parseVersion("2.1.7");
+  private static final int BRPOPLPUSH_VERSION = parseVersion("2.2.0");
 
   // Pop a value from a list, push it to another list and return it; or block until one is available
   public BulkReply brpoplpush(Object source0, Object destination1, Object timeout2) throws RedisException {
@@ -94,7 +95,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String CONFIG_GET = "CONFIG_GET";
   private static final byte[] CONFIG_GET_BYTES = CONFIG_GET.getBytes(Charsets.US_ASCII);
-  private static final int CONFIG_GET_VERSION = parseVersion("2.0");
+  private static final int CONFIG_GET_VERSION = parseVersion("2.0.0");
 
   // Get the value of a configuration parameter
   public Reply config_get(Object parameter0) throws RedisException {
@@ -104,7 +105,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String CONFIG_SET = "CONFIG_SET";
   private static final byte[] CONFIG_SET_BYTES = CONFIG_SET.getBytes(Charsets.US_ASCII);
-  private static final int CONFIG_SET_VERSION = parseVersion("2.0");
+  private static final int CONFIG_SET_VERSION = parseVersion("2.0.0");
 
   // Set a configuration parameter to the given value
   public Reply config_set(Object parameter0, Object value1) throws RedisException {
@@ -114,7 +115,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String CONFIG_RESETSTAT = "CONFIG_RESETSTAT";
   private static final byte[] CONFIG_RESETSTAT_BYTES = CONFIG_RESETSTAT.getBytes(Charsets.US_ASCII);
-  private static final int CONFIG_RESETSTAT_VERSION = parseVersion("2.0");
+  private static final int CONFIG_RESETSTAT_VERSION = parseVersion("2.0.0");
 
   // Reset the stats returned by INFO
   public Reply config_resetstat() throws RedisException {
@@ -124,7 +125,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String DBSIZE = "DBSIZE";
   private static final byte[] DBSIZE_BYTES = DBSIZE.getBytes(Charsets.US_ASCII);
-  private static final int DBSIZE_VERSION = parseVersion("0.07");
+  private static final int DBSIZE_VERSION = parseVersion("1.0.0");
 
   // Return the number of keys in the selected database
   public IntegerReply dbsize() throws RedisException {
@@ -134,7 +135,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String DEBUG_OBJECT = "DEBUG_OBJECT";
   private static final byte[] DEBUG_OBJECT_BYTES = DEBUG_OBJECT.getBytes(Charsets.US_ASCII);
-  private static final int DEBUG_OBJECT_VERSION = parseVersion("0.101");
+  private static final int DEBUG_OBJECT_VERSION = parseVersion("1.0.0");
 
   // Get debugging information about a key
   public Reply debug_object(Object key0) throws RedisException {
@@ -144,7 +145,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String DEBUG_SEGFAULT = "DEBUG_SEGFAULT";
   private static final byte[] DEBUG_SEGFAULT_BYTES = DEBUG_SEGFAULT.getBytes(Charsets.US_ASCII);
-  private static final int DEBUG_SEGFAULT_VERSION = parseVersion("0.101");
+  private static final int DEBUG_SEGFAULT_VERSION = parseVersion("1.0.0");
 
   // Make the server crash
   public Reply debug_segfault() throws RedisException {
@@ -154,7 +155,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String DECR = "DECR";
   private static final byte[] DECR_BYTES = DECR.getBytes(Charsets.US_ASCII);
-  private static final int DECR_VERSION = parseVersion("0.07");
+  private static final int DECR_VERSION = parseVersion("1.0.0");
 
   // Decrement the integer value of a key by one
   public IntegerReply decr(Object key0) throws RedisException {
@@ -164,7 +165,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String DECRBY = "DECRBY";
   private static final byte[] DECRBY_BYTES = DECRBY.getBytes(Charsets.US_ASCII);
-  private static final int DECRBY_VERSION = parseVersion("0.07");
+  private static final int DECRBY_VERSION = parseVersion("1.0.0");
 
   // Decrement the integer value of a key by the given number
   public IntegerReply decrby(Object key0, Object decrement1) throws RedisException {
@@ -174,7 +175,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String DEL = "DEL";
   private static final byte[] DEL_BYTES = DEL.getBytes(Charsets.US_ASCII);
-  private static final int DEL_VERSION = parseVersion("0.07");
+  private static final int DEL_VERSION = parseVersion("1.0.0");
 
   // Delete a key
   public IntegerReply del(Object... key0) throws RedisException {
@@ -184,7 +185,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String DISCARD = "DISCARD";
   private static final byte[] DISCARD_BYTES = DISCARD.getBytes(Charsets.US_ASCII);
-  private static final int DISCARD_VERSION = parseVersion("1.3.3");
+  private static final int DISCARD_VERSION = parseVersion("2.0.0");
 
   // Discard all commands issued after MULTI
   public StatusReply discard() throws RedisException {
@@ -194,7 +195,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String ECHO = "ECHO";
   private static final byte[] ECHO_BYTES = ECHO.getBytes(Charsets.US_ASCII);
-  private static final int ECHO_VERSION = parseVersion("0.07");
+  private static final int ECHO_VERSION = parseVersion("1.0.0");
 
   // Echo the given string
   public BulkReply echo(Object message0) throws RedisException {
@@ -202,9 +203,19 @@ public class RedisClient extends RedisClientBase {
     return (BulkReply) execute(ECHO, ECHO_BYTES, message0);
   }
   
+  private static final String EVAL = "EVAL";
+  private static final byte[] EVAL_BYTES = EVAL.getBytes(Charsets.US_ASCII);
+  private static final int EVAL_VERSION = parseVersion("2.6.0");
+
+  // Execute a Lua script server side
+  public Reply eval(Object script0, Object numkeys1, Object... key2) throws RedisException {
+    if (version < EVAL_VERSION) throw new RedisException("Server does not support EVAL");
+    return (Reply) execute(EVAL, EVAL_BYTES, script0, numkeys1, key2);
+  }
+  
   private static final String EXEC = "EXEC";
   private static final byte[] EXEC_BYTES = EXEC.getBytes(Charsets.US_ASCII);
-  private static final int EXEC_VERSION = parseVersion("1.1.95");
+  private static final int EXEC_VERSION = parseVersion("1.2.0");
 
   // Execute all commands issued after MULTI
   public MultiBulkReply exec() throws RedisException {
@@ -214,7 +225,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String EXISTS = "EXISTS";
   private static final byte[] EXISTS_BYTES = EXISTS.getBytes(Charsets.US_ASCII);
-  private static final int EXISTS_VERSION = parseVersion("0.07");
+  private static final int EXISTS_VERSION = parseVersion("1.0.0");
 
   // Determine if a key exists
   public IntegerReply exists(Object key0) throws RedisException {
@@ -224,7 +235,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String EXPIRE = "EXPIRE";
   private static final byte[] EXPIRE_BYTES = EXPIRE.getBytes(Charsets.US_ASCII);
-  private static final int EXPIRE_VERSION = parseVersion("0.09");
+  private static final int EXPIRE_VERSION = parseVersion("1.0.0");
 
   // Set a key's time to live in seconds
   public IntegerReply expire(Object key0, Object seconds1) throws RedisException {
@@ -234,7 +245,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String EXPIREAT = "EXPIREAT";
   private static final byte[] EXPIREAT_BYTES = EXPIREAT.getBytes(Charsets.US_ASCII);
-  private static final int EXPIREAT_VERSION = parseVersion("1.1");
+  private static final int EXPIREAT_VERSION = parseVersion("1.2.0");
 
   // Set the expiration for a key as a UNIX timestamp
   public IntegerReply expireat(Object key0, Object timestamp1) throws RedisException {
@@ -244,7 +255,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String FLUSHALL = "FLUSHALL";
   private static final byte[] FLUSHALL_BYTES = FLUSHALL.getBytes(Charsets.US_ASCII);
-  private static final int FLUSHALL_VERSION = parseVersion("0.07");
+  private static final int FLUSHALL_VERSION = parseVersion("1.0.0");
 
   // Remove all keys from all databases
   public StatusReply flushall() throws RedisException {
@@ -254,7 +265,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String FLUSHDB = "FLUSHDB";
   private static final byte[] FLUSHDB_BYTES = FLUSHDB.getBytes(Charsets.US_ASCII);
-  private static final int FLUSHDB_VERSION = parseVersion("0.07");
+  private static final int FLUSHDB_VERSION = parseVersion("1.0.0");
 
   // Remove all keys from the current database
   public StatusReply flushdb() throws RedisException {
@@ -264,7 +275,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String GET = "GET";
   private static final byte[] GET_BYTES = GET.getBytes(Charsets.US_ASCII);
-  private static final int GET_VERSION = parseVersion("0.07");
+  private static final int GET_VERSION = parseVersion("1.0.0");
 
   // Get the value of a key
   public BulkReply get(Object key0) throws RedisException {
@@ -274,7 +285,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String GETBIT = "GETBIT";
   private static final byte[] GETBIT_BYTES = GETBIT.getBytes(Charsets.US_ASCII);
-  private static final int GETBIT_VERSION = parseVersion("2.1.8");
+  private static final int GETBIT_VERSION = parseVersion("2.2.0");
 
   // Returns the bit value at offset in the string value stored at key
   public IntegerReply getbit(Object key0, Object offset1) throws RedisException {
@@ -284,7 +295,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String GETRANGE = "GETRANGE";
   private static final byte[] GETRANGE_BYTES = GETRANGE.getBytes(Charsets.US_ASCII);
-  private static final int GETRANGE_VERSION = parseVersion("1.3.4");
+  private static final int GETRANGE_VERSION = parseVersion("2.4.0");
 
   // Get a substring of the string stored at a key
   public BulkReply getrange(Object key0, Object start1, Object end2) throws RedisException {
@@ -294,7 +305,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String GETSET = "GETSET";
   private static final byte[] GETSET_BYTES = GETSET.getBytes(Charsets.US_ASCII);
-  private static final int GETSET_VERSION = parseVersion("0.091");
+  private static final int GETSET_VERSION = parseVersion("1.0.0");
 
   // Set the string value of a key and return its old value
   public BulkReply getset(Object key0, Object value1) throws RedisException {
@@ -304,7 +315,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String HDEL = "HDEL";
   private static final byte[] HDEL_BYTES = HDEL.getBytes(Charsets.US_ASCII);
-  private static final int HDEL_VERSION = parseVersion("1.3.10");
+  private static final int HDEL_VERSION = parseVersion("2.0.0");
 
   // Delete one or more hash fields
   public IntegerReply hdel(Object key0, Object... field1) throws RedisException {
@@ -314,7 +325,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String HEXISTS = "HEXISTS";
   private static final byte[] HEXISTS_BYTES = HEXISTS.getBytes(Charsets.US_ASCII);
-  private static final int HEXISTS_VERSION = parseVersion("1.3.10");
+  private static final int HEXISTS_VERSION = parseVersion("2.0.0");
 
   // Determine if a hash field exists
   public IntegerReply hexists(Object key0, Object field1) throws RedisException {
@@ -324,7 +335,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String HGET = "HGET";
   private static final byte[] HGET_BYTES = HGET.getBytes(Charsets.US_ASCII);
-  private static final int HGET_VERSION = parseVersion("1.3.10");
+  private static final int HGET_VERSION = parseVersion("2.0.0");
 
   // Get the value of a hash field
   public BulkReply hget(Object key0, Object field1) throws RedisException {
@@ -334,7 +345,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String HGETALL = "HGETALL";
   private static final byte[] HGETALL_BYTES = HGETALL.getBytes(Charsets.US_ASCII);
-  private static final int HGETALL_VERSION = parseVersion("1.3.10");
+  private static final int HGETALL_VERSION = parseVersion("2.0.0");
 
   // Get all the fields and values in a hash
   public MultiBulkReply hgetall(Object key0) throws RedisException {
@@ -344,7 +355,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String HINCRBY = "HINCRBY";
   private static final byte[] HINCRBY_BYTES = HINCRBY.getBytes(Charsets.US_ASCII);
-  private static final int HINCRBY_VERSION = parseVersion("1.3.10");
+  private static final int HINCRBY_VERSION = parseVersion("2.0.0");
 
   // Increment the integer value of a hash field by the given number
   public IntegerReply hincrby(Object key0, Object field1, Object increment2) throws RedisException {
@@ -352,9 +363,19 @@ public class RedisClient extends RedisClientBase {
     return (IntegerReply) execute(HINCRBY, HINCRBY_BYTES, key0, field1, increment2);
   }
   
+  private static final String HINCRBYFLOAT = "HINCRBYFLOAT";
+  private static final byte[] HINCRBYFLOAT_BYTES = HINCRBYFLOAT.getBytes(Charsets.US_ASCII);
+  private static final int HINCRBYFLOAT_VERSION = parseVersion("2.6.0");
+
+  // Increment the float value of a hash field by the given amount
+  public BulkReply hincrbyfloat(Object key0, Object field1, Object increment2) throws RedisException {
+    if (version < HINCRBYFLOAT_VERSION) throw new RedisException("Server does not support HINCRBYFLOAT");
+    return (BulkReply) execute(HINCRBYFLOAT, HINCRBYFLOAT_BYTES, key0, field1, increment2);
+  }
+  
   private static final String HKEYS = "HKEYS";
   private static final byte[] HKEYS_BYTES = HKEYS.getBytes(Charsets.US_ASCII);
-  private static final int HKEYS_VERSION = parseVersion("1.3.10");
+  private static final int HKEYS_VERSION = parseVersion("2.0.0");
 
   // Get all the fields in a hash
   public MultiBulkReply hkeys(Object key0) throws RedisException {
@@ -364,7 +385,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String HLEN = "HLEN";
   private static final byte[] HLEN_BYTES = HLEN.getBytes(Charsets.US_ASCII);
-  private static final int HLEN_VERSION = parseVersion("1.3.10");
+  private static final int HLEN_VERSION = parseVersion("2.0.0");
 
   // Get the number of fields in a hash
   public IntegerReply hlen(Object key0) throws RedisException {
@@ -374,7 +395,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String HMGET = "HMGET";
   private static final byte[] HMGET_BYTES = HMGET.getBytes(Charsets.US_ASCII);
-  private static final int HMGET_VERSION = parseVersion("1.3.10");
+  private static final int HMGET_VERSION = parseVersion("2.0.0");
 
   // Get the values of all the given hash fields
   public MultiBulkReply hmget(Object key0, Object... field1) throws RedisException {
@@ -384,7 +405,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String HMSET = "HMSET";
   private static final byte[] HMSET_BYTES = HMSET.getBytes(Charsets.US_ASCII);
-  private static final int HMSET_VERSION = parseVersion("1.3.8");
+  private static final int HMSET_VERSION = parseVersion("2.0.0");
 
   // Set multiple hash fields to multiple values
   public StatusReply hmset(Object key0, Object... field_or_value1) throws RedisException {
@@ -394,7 +415,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String HSET = "HSET";
   private static final byte[] HSET_BYTES = HSET.getBytes(Charsets.US_ASCII);
-  private static final int HSET_VERSION = parseVersion("1.3.10");
+  private static final int HSET_VERSION = parseVersion("2.0.0");
 
   // Set the string value of a hash field
   public IntegerReply hset(Object key0, Object field1, Object value2) throws RedisException {
@@ -404,7 +425,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String HSETNX = "HSETNX";
   private static final byte[] HSETNX_BYTES = HSETNX.getBytes(Charsets.US_ASCII);
-  private static final int HSETNX_VERSION = parseVersion("1.3.8");
+  private static final int HSETNX_VERSION = parseVersion("2.0.0");
 
   // Set the value of a hash field, only if the field does not exist
   public IntegerReply hsetnx(Object key0, Object field1, Object value2) throws RedisException {
@@ -414,7 +435,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String HVALS = "HVALS";
   private static final byte[] HVALS_BYTES = HVALS.getBytes(Charsets.US_ASCII);
-  private static final int HVALS_VERSION = parseVersion("1.3.10");
+  private static final int HVALS_VERSION = parseVersion("2.0.0");
 
   // Get all the values in a hash
   public MultiBulkReply hvals(Object key0) throws RedisException {
@@ -424,7 +445,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String INCR = "INCR";
   private static final byte[] INCR_BYTES = INCR.getBytes(Charsets.US_ASCII);
-  private static final int INCR_VERSION = parseVersion("0.07");
+  private static final int INCR_VERSION = parseVersion("1.0.0");
 
   // Increment the integer value of a key by one
   public IntegerReply incr(Object key0) throws RedisException {
@@ -434,17 +455,27 @@ public class RedisClient extends RedisClientBase {
   
   private static final String INCRBY = "INCRBY";
   private static final byte[] INCRBY_BYTES = INCRBY.getBytes(Charsets.US_ASCII);
-  private static final int INCRBY_VERSION = parseVersion("0.07");
+  private static final int INCRBY_VERSION = parseVersion("1.0.0");
 
-  // Increment the integer value of a key by the given number
+  // Increment the integer value of a key by the given amount
   public IntegerReply incrby(Object key0, Object increment1) throws RedisException {
     if (version < INCRBY_VERSION) throw new RedisException("Server does not support INCRBY");
     return (IntegerReply) execute(INCRBY, INCRBY_BYTES, key0, increment1);
   }
   
+  private static final String INCRBYFLOAT = "INCRBYFLOAT";
+  private static final byte[] INCRBYFLOAT_BYTES = INCRBYFLOAT.getBytes(Charsets.US_ASCII);
+  private static final int INCRBYFLOAT_VERSION = parseVersion("2.6.0");
+
+  // Increment the float value of a key by the given amount
+  public BulkReply incrbyfloat(Object key0, Object increment1) throws RedisException {
+    if (version < INCRBYFLOAT_VERSION) throw new RedisException("Server does not support INCRBYFLOAT");
+    return (BulkReply) execute(INCRBYFLOAT, INCRBYFLOAT_BYTES, key0, increment1);
+  }
+  
   private static final String INFO = "INFO";
   private static final byte[] INFO_BYTES = INFO.getBytes(Charsets.US_ASCII);
-  private static final int INFO_VERSION = parseVersion("0.07");
+  private static final int INFO_VERSION = parseVersion("1.0.0");
 
   // Get information and statistics about the server
   public BulkReply info() throws RedisException {
@@ -454,7 +485,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String KEYS = "KEYS";
   private static final byte[] KEYS_BYTES = KEYS.getBytes(Charsets.US_ASCII);
-  private static final int KEYS_VERSION = parseVersion("0.07");
+  private static final int KEYS_VERSION = parseVersion("1.0.0");
 
   // Find all keys matching the given pattern
   public MultiBulkReply keys(Object pattern0) throws RedisException {
@@ -464,7 +495,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String LASTSAVE = "LASTSAVE";
   private static final byte[] LASTSAVE_BYTES = LASTSAVE.getBytes(Charsets.US_ASCII);
-  private static final int LASTSAVE_VERSION = parseVersion("0.07");
+  private static final int LASTSAVE_VERSION = parseVersion("1.0.0");
 
   // Get the UNIX time stamp of the last successful save to disk
   public IntegerReply lastsave() throws RedisException {
@@ -474,7 +505,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String LINDEX = "LINDEX";
   private static final byte[] LINDEX_BYTES = LINDEX.getBytes(Charsets.US_ASCII);
-  private static final int LINDEX_VERSION = parseVersion("0.07");
+  private static final int LINDEX_VERSION = parseVersion("1.0.0");
 
   // Get an element from a list by its index
   public BulkReply lindex(Object key0, Object index1) throws RedisException {
@@ -484,7 +515,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String LINSERT = "LINSERT";
   private static final byte[] LINSERT_BYTES = LINSERT.getBytes(Charsets.US_ASCII);
-  private static final int LINSERT_VERSION = parseVersion("2.1.1");
+  private static final int LINSERT_VERSION = parseVersion("2.2.0");
 
   // Insert an element before or after another element in a list
   public IntegerReply linsert(Object key0, Object where1, Object pivot2, Object value3) throws RedisException {
@@ -494,7 +525,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String LLEN = "LLEN";
   private static final byte[] LLEN_BYTES = LLEN.getBytes(Charsets.US_ASCII);
-  private static final int LLEN_VERSION = parseVersion("0.07");
+  private static final int LLEN_VERSION = parseVersion("1.0.0");
 
   // Get the length of a list
   public IntegerReply llen(Object key0) throws RedisException {
@@ -504,7 +535,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String LPOP = "LPOP";
   private static final byte[] LPOP_BYTES = LPOP.getBytes(Charsets.US_ASCII);
-  private static final int LPOP_VERSION = parseVersion("0.07");
+  private static final int LPOP_VERSION = parseVersion("1.0.0");
 
   // Remove and get the first element in a list
   public BulkReply lpop(Object key0) throws RedisException {
@@ -514,7 +545,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String LPUSH = "LPUSH";
   private static final byte[] LPUSH_BYTES = LPUSH.getBytes(Charsets.US_ASCII);
-  private static final int LPUSH_VERSION = parseVersion("0.07");
+  private static final int LPUSH_VERSION = parseVersion("1.0.0");
 
   // Prepend one or multiple values to a list
   public IntegerReply lpush(Object key0, Object... value1) throws RedisException {
@@ -524,7 +555,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String LPUSHX = "LPUSHX";
   private static final byte[] LPUSHX_BYTES = LPUSHX.getBytes(Charsets.US_ASCII);
-  private static final int LPUSHX_VERSION = parseVersion("2.1.1");
+  private static final int LPUSHX_VERSION = parseVersion("2.2.0");
 
   // Prepend a value to a list, only if the list exists
   public IntegerReply lpushx(Object key0, Object value1) throws RedisException {
@@ -534,7 +565,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String LRANGE = "LRANGE";
   private static final byte[] LRANGE_BYTES = LRANGE.getBytes(Charsets.US_ASCII);
-  private static final int LRANGE_VERSION = parseVersion("0.07");
+  private static final int LRANGE_VERSION = parseVersion("1.0.0");
 
   // Get a range of elements from a list
   public MultiBulkReply lrange(Object key0, Object start1, Object stop2) throws RedisException {
@@ -544,7 +575,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String LREM = "LREM";
   private static final byte[] LREM_BYTES = LREM.getBytes(Charsets.US_ASCII);
-  private static final int LREM_VERSION = parseVersion("0.07");
+  private static final int LREM_VERSION = parseVersion("1.0.0");
 
   // Remove elements from a list
   public IntegerReply lrem(Object key0, Object count1, Object value2) throws RedisException {
@@ -554,7 +585,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String LSET = "LSET";
   private static final byte[] LSET_BYTES = LSET.getBytes(Charsets.US_ASCII);
-  private static final int LSET_VERSION = parseVersion("0.07");
+  private static final int LSET_VERSION = parseVersion("1.0.0");
 
   // Set the value of an element in a list by its index
   public StatusReply lset(Object key0, Object index1, Object value2) throws RedisException {
@@ -564,7 +595,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String LTRIM = "LTRIM";
   private static final byte[] LTRIM_BYTES = LTRIM.getBytes(Charsets.US_ASCII);
-  private static final int LTRIM_VERSION = parseVersion("0.07");
+  private static final int LTRIM_VERSION = parseVersion("1.0.0");
 
   // Trim a list to the specified range
   public StatusReply ltrim(Object key0, Object start1, Object stop2) throws RedisException {
@@ -574,7 +605,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String MGET = "MGET";
   private static final byte[] MGET_BYTES = MGET.getBytes(Charsets.US_ASCII);
-  private static final int MGET_VERSION = parseVersion("0.07");
+  private static final int MGET_VERSION = parseVersion("1.0.0");
 
   // Get the values of all the given keys
   public MultiBulkReply mget(Object... key0) throws RedisException {
@@ -584,7 +615,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String MONITOR = "MONITOR";
   private static final byte[] MONITOR_BYTES = MONITOR.getBytes(Charsets.US_ASCII);
-  private static final int MONITOR_VERSION = parseVersion("0.07");
+  private static final int MONITOR_VERSION = parseVersion("1.0.0");
 
   // Listen for all requests received by the server in real time
   public Reply monitor() throws RedisException {
@@ -594,7 +625,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String MOVE = "MOVE";
   private static final byte[] MOVE_BYTES = MOVE.getBytes(Charsets.US_ASCII);
-  private static final int MOVE_VERSION = parseVersion("0.07");
+  private static final int MOVE_VERSION = parseVersion("1.0.0");
 
   // Move a key to another database
   public IntegerReply move(Object key0, Object db1) throws RedisException {
@@ -604,7 +635,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String MSET = "MSET";
   private static final byte[] MSET_BYTES = MSET.getBytes(Charsets.US_ASCII);
-  private static final int MSET_VERSION = parseVersion("1.001");
+  private static final int MSET_VERSION = parseVersion("1.0.1");
 
   // Set multiple keys to multiple values
   public StatusReply mset(Object... key_or_value0) throws RedisException {
@@ -614,7 +645,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String MSETNX = "MSETNX";
   private static final byte[] MSETNX_BYTES = MSETNX.getBytes(Charsets.US_ASCII);
-  private static final int MSETNX_VERSION = parseVersion("1.001");
+  private static final int MSETNX_VERSION = parseVersion("1.0.1");
 
   // Set multiple keys to multiple values, only if none of the keys exist
   public IntegerReply msetnx(Object... key_or_value0) throws RedisException {
@@ -624,7 +655,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String MULTI = "MULTI";
   private static final byte[] MULTI_BYTES = MULTI.getBytes(Charsets.US_ASCII);
-  private static final int MULTI_VERSION = parseVersion("1.1.95");
+  private static final int MULTI_VERSION = parseVersion("1.2.0");
 
   // Mark the start of a transaction block
   public StatusReply multi() throws RedisException {
@@ -644,7 +675,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String PERSIST = "PERSIST";
   private static final byte[] PERSIST_BYTES = PERSIST.getBytes(Charsets.US_ASCII);
-  private static final int PERSIST_VERSION = parseVersion("2.1.2");
+  private static final int PERSIST_VERSION = parseVersion("2.2.0");
 
   // Remove the expiration from a key
   public IntegerReply persist(Object key0) throws RedisException {
@@ -652,9 +683,29 @@ public class RedisClient extends RedisClientBase {
     return (IntegerReply) execute(PERSIST, PERSIST_BYTES, key0);
   }
   
+  private static final String PEXPIRE = "PEXPIRE";
+  private static final byte[] PEXPIRE_BYTES = PEXPIRE.getBytes(Charsets.US_ASCII);
+  private static final int PEXPIRE_VERSION = parseVersion("2.6.0");
+
+  // Set a key's time to live in milliseconds
+  public IntegerReply pexpire(Object key0, Object milliseconds1) throws RedisException {
+    if (version < PEXPIRE_VERSION) throw new RedisException("Server does not support PEXPIRE");
+    return (IntegerReply) execute(PEXPIRE, PEXPIRE_BYTES, key0, milliseconds1);
+  }
+  
+  private static final String PEXPIREAT = "PEXPIREAT";
+  private static final byte[] PEXPIREAT_BYTES = PEXPIREAT.getBytes(Charsets.US_ASCII);
+  private static final int PEXPIREAT_VERSION = parseVersion("2.6.0");
+
+  // Set the expiration for a key as a UNIX timestamp specified in milliseconds
+  public IntegerReply pexpireat(Object key0, Object milliseconds_timestamp1) throws RedisException {
+    if (version < PEXPIREAT_VERSION) throw new RedisException("Server does not support PEXPIREAT");
+    return (IntegerReply) execute(PEXPIREAT, PEXPIREAT_BYTES, key0, milliseconds_timestamp1);
+  }
+  
   private static final String PING = "PING";
   private static final byte[] PING_BYTES = PING.getBytes(Charsets.US_ASCII);
-  private static final int PING_VERSION = parseVersion("0.07");
+  private static final int PING_VERSION = parseVersion("1.0.0");
 
   // Ping the server
   public StatusReply ping() throws RedisException {
@@ -662,9 +713,19 @@ public class RedisClient extends RedisClientBase {
     return (StatusReply) execute(PING, PING_BYTES);
   }
   
+  private static final String PSETEX = "PSETEX";
+  private static final byte[] PSETEX_BYTES = PSETEX.getBytes(Charsets.US_ASCII);
+  private static final int PSETEX_VERSION = parseVersion("2.6.0");
+
+  // Set the value and expiration in milliseconds of a key
+  public Reply psetex(Object key0, Object milliseconds1, Object value2) throws RedisException {
+    if (version < PSETEX_VERSION) throw new RedisException("Server does not support PSETEX");
+    return (Reply) execute(PSETEX, PSETEX_BYTES, key0, milliseconds1, value2);
+  }
+  
   private static final String PSUBSCRIBE = "PSUBSCRIBE";
   private static final byte[] PSUBSCRIBE_BYTES = PSUBSCRIBE.getBytes(Charsets.US_ASCII);
-  private static final int PSUBSCRIBE_VERSION = parseVersion("1.3.8");
+  private static final int PSUBSCRIBE_VERSION = parseVersion("2.0.0");
 
   // Listen for messages published to channels matching the given patterns
   public Reply psubscribe(Object... pattern0) throws RedisException {
@@ -672,9 +733,19 @@ public class RedisClient extends RedisClientBase {
     return (Reply) execute(PSUBSCRIBE, PSUBSCRIBE_BYTES, pattern0);
   }
   
+  private static final String PTTL = "PTTL";
+  private static final byte[] PTTL_BYTES = PTTL.getBytes(Charsets.US_ASCII);
+  private static final int PTTL_VERSION = parseVersion("2.6.0");
+
+  // Get the time to live for a key in milliseconds
+  public IntegerReply pttl(Object key0) throws RedisException {
+    if (version < PTTL_VERSION) throw new RedisException("Server does not support PTTL");
+    return (IntegerReply) execute(PTTL, PTTL_BYTES, key0);
+  }
+  
   private static final String PUBLISH = "PUBLISH";
   private static final byte[] PUBLISH_BYTES = PUBLISH.getBytes(Charsets.US_ASCII);
-  private static final int PUBLISH_VERSION = parseVersion("1.3.8");
+  private static final int PUBLISH_VERSION = parseVersion("2.0.0");
 
   // Post a message to a channel
   public IntegerReply publish(Object channel0, Object message1) throws RedisException {
@@ -684,7 +755,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String PUNSUBSCRIBE = "PUNSUBSCRIBE";
   private static final byte[] PUNSUBSCRIBE_BYTES = PUNSUBSCRIBE.getBytes(Charsets.US_ASCII);
-  private static final int PUNSUBSCRIBE_VERSION = parseVersion("1.3.8");
+  private static final int PUNSUBSCRIBE_VERSION = parseVersion("2.0.0");
 
   // Stop listening for messages posted to channels matching the given patterns
   public Reply punsubscribe(Object... pattern0) throws RedisException {
@@ -694,7 +765,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String QUIT = "QUIT";
   private static final byte[] QUIT_BYTES = QUIT.getBytes(Charsets.US_ASCII);
-  private static final int QUIT_VERSION = parseVersion("0.07");
+  private static final int QUIT_VERSION = parseVersion("1.0.0");
 
   // Close the connection
   public StatusReply quit() throws RedisException {
@@ -704,7 +775,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String RANDOMKEY = "RANDOMKEY";
   private static final byte[] RANDOMKEY_BYTES = RANDOMKEY.getBytes(Charsets.US_ASCII);
-  private static final int RANDOMKEY_VERSION = parseVersion("0.07");
+  private static final int RANDOMKEY_VERSION = parseVersion("1.0.0");
 
   // Return a random key from the keyspace
   public BulkReply randomkey() throws RedisException {
@@ -714,7 +785,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String RENAME = "RENAME";
   private static final byte[] RENAME_BYTES = RENAME.getBytes(Charsets.US_ASCII);
-  private static final int RENAME_VERSION = parseVersion("0.07");
+  private static final int RENAME_VERSION = parseVersion("1.0.0");
 
   // Rename a key
   public StatusReply rename(Object key0, Object newkey1) throws RedisException {
@@ -724,7 +795,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String RENAMENX = "RENAMENX";
   private static final byte[] RENAMENX_BYTES = RENAMENX.getBytes(Charsets.US_ASCII);
-  private static final int RENAMENX_VERSION = parseVersion("0.07");
+  private static final int RENAMENX_VERSION = parseVersion("1.0.0");
 
   // Rename a key, only if the new key does not exist
   public IntegerReply renamenx(Object key0, Object newkey1) throws RedisException {
@@ -734,7 +805,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String RPOP = "RPOP";
   private static final byte[] RPOP_BYTES = RPOP.getBytes(Charsets.US_ASCII);
-  private static final int RPOP_VERSION = parseVersion("0.07");
+  private static final int RPOP_VERSION = parseVersion("1.0.0");
 
   // Remove and get the last element in a list
   public BulkReply rpop(Object key0) throws RedisException {
@@ -744,7 +815,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String RPOPLPUSH = "RPOPLPUSH";
   private static final byte[] RPOPLPUSH_BYTES = RPOPLPUSH.getBytes(Charsets.US_ASCII);
-  private static final int RPOPLPUSH_VERSION = parseVersion("1.1");
+  private static final int RPOPLPUSH_VERSION = parseVersion("1.2.0");
 
   // Remove the last element in a list, append it to another list and return it
   public BulkReply rpoplpush(Object source0, Object destination1) throws RedisException {
@@ -754,7 +825,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String RPUSH = "RPUSH";
   private static final byte[] RPUSH_BYTES = RPUSH.getBytes(Charsets.US_ASCII);
-  private static final int RPUSH_VERSION = parseVersion("0.07");
+  private static final int RPUSH_VERSION = parseVersion("1.0.0");
 
   // Append one or multiple values to a list
   public IntegerReply rpush(Object key0, Object... value1) throws RedisException {
@@ -764,7 +835,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String RPUSHX = "RPUSHX";
   private static final byte[] RPUSHX_BYTES = RPUSHX.getBytes(Charsets.US_ASCII);
-  private static final int RPUSHX_VERSION = parseVersion("2.1.1");
+  private static final int RPUSHX_VERSION = parseVersion("2.2.0");
 
   // Append a value to a list, only if the list exists
   public IntegerReply rpushx(Object key0, Object value1) throws RedisException {
@@ -774,7 +845,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SADD = "SADD";
   private static final byte[] SADD_BYTES = SADD.getBytes(Charsets.US_ASCII);
-  private static final int SADD_VERSION = parseVersion("0.07");
+  private static final int SADD_VERSION = parseVersion("1.0.0");
 
   // Add one or more members to a set
   public IntegerReply sadd(Object key0, Object... member1) throws RedisException {
@@ -784,7 +855,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SAVE = "SAVE";
   private static final byte[] SAVE_BYTES = SAVE.getBytes(Charsets.US_ASCII);
-  private static final int SAVE_VERSION = parseVersion("0.07");
+  private static final int SAVE_VERSION = parseVersion("1.0.0");
 
   // Synchronously save the dataset to disk
   public Reply save() throws RedisException {
@@ -794,7 +865,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SCARD = "SCARD";
   private static final byte[] SCARD_BYTES = SCARD.getBytes(Charsets.US_ASCII);
-  private static final int SCARD_VERSION = parseVersion("0.07");
+  private static final int SCARD_VERSION = parseVersion("1.0.0");
 
   // Get the number of members in a set
   public IntegerReply scard(Object key0) throws RedisException {
@@ -802,9 +873,49 @@ public class RedisClient extends RedisClientBase {
     return (IntegerReply) execute(SCARD, SCARD_BYTES, key0);
   }
   
+  private static final String SCRIPT_EXISTS = "SCRIPT_EXISTS";
+  private static final byte[] SCRIPT_EXISTS_BYTES = SCRIPT_EXISTS.getBytes(Charsets.US_ASCII);
+  private static final int SCRIPT_EXISTS_VERSION = parseVersion("2.6.0");
+
+  // Check existence of scripts in the script cache.
+  public Reply script_exists(Object... script0) throws RedisException {
+    if (version < SCRIPT_EXISTS_VERSION) throw new RedisException("Server does not support SCRIPT_EXISTS");
+    return (Reply) execute(SCRIPT_EXISTS, SCRIPT_EXISTS_BYTES, script0);
+  }
+  
+  private static final String SCRIPT_FLUSH = "SCRIPT_FLUSH";
+  private static final byte[] SCRIPT_FLUSH_BYTES = SCRIPT_FLUSH.getBytes(Charsets.US_ASCII);
+  private static final int SCRIPT_FLUSH_VERSION = parseVersion("2.6.0");
+
+  // Remove all the scripts from the script cache.
+  public Reply script_flush() throws RedisException {
+    if (version < SCRIPT_FLUSH_VERSION) throw new RedisException("Server does not support SCRIPT_FLUSH");
+    return (Reply) execute(SCRIPT_FLUSH, SCRIPT_FLUSH_BYTES);
+  }
+  
+  private static final String SCRIPT_KILL = "SCRIPT_KILL";
+  private static final byte[] SCRIPT_KILL_BYTES = SCRIPT_KILL.getBytes(Charsets.US_ASCII);
+  private static final int SCRIPT_KILL_VERSION = parseVersion("2.6.0");
+
+  // Kill the script currently in execution.
+  public Reply script_kill() throws RedisException {
+    if (version < SCRIPT_KILL_VERSION) throw new RedisException("Server does not support SCRIPT_KILL");
+    return (Reply) execute(SCRIPT_KILL, SCRIPT_KILL_BYTES);
+  }
+  
+  private static final String SCRIPT_LOAD = "SCRIPT_LOAD";
+  private static final byte[] SCRIPT_LOAD_BYTES = SCRIPT_LOAD.getBytes(Charsets.US_ASCII);
+  private static final int SCRIPT_LOAD_VERSION = parseVersion("2.6.0");
+
+  // Load the specified Lua script into the script cache.
+  public Reply script_load(Object script0) throws RedisException {
+    if (version < SCRIPT_LOAD_VERSION) throw new RedisException("Server does not support SCRIPT_LOAD");
+    return (Reply) execute(SCRIPT_LOAD, SCRIPT_LOAD_BYTES, script0);
+  }
+  
   private static final String SDIFF = "SDIFF";
   private static final byte[] SDIFF_BYTES = SDIFF.getBytes(Charsets.US_ASCII);
-  private static final int SDIFF_VERSION = parseVersion("0.100");
+  private static final int SDIFF_VERSION = parseVersion("1.0.0");
 
   // Subtract multiple sets
   public MultiBulkReply sdiff(Object... key0) throws RedisException {
@@ -814,7 +925,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SDIFFSTORE = "SDIFFSTORE";
   private static final byte[] SDIFFSTORE_BYTES = SDIFFSTORE.getBytes(Charsets.US_ASCII);
-  private static final int SDIFFSTORE_VERSION = parseVersion("0.100");
+  private static final int SDIFFSTORE_VERSION = parseVersion("1.0.0");
 
   // Subtract multiple sets and store the resulting set in a key
   public IntegerReply sdiffstore(Object destination0, Object... key1) throws RedisException {
@@ -824,7 +935,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SELECT = "SELECT";
   private static final byte[] SELECT_BYTES = SELECT.getBytes(Charsets.US_ASCII);
-  private static final int SELECT_VERSION = parseVersion("0.07");
+  private static final int SELECT_VERSION = parseVersion("1.0.0");
 
   // Change the selected database for the current connection
   public StatusReply select(Object index0) throws RedisException {
@@ -834,7 +945,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SET = "SET";
   private static final byte[] SET_BYTES = SET.getBytes(Charsets.US_ASCII);
-  private static final int SET_VERSION = parseVersion("0.07");
+  private static final int SET_VERSION = parseVersion("1.0.0");
 
   // Set the string value of a key
   public StatusReply set(Object key0, Object value1) throws RedisException {
@@ -844,7 +955,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SETBIT = "SETBIT";
   private static final byte[] SETBIT_BYTES = SETBIT.getBytes(Charsets.US_ASCII);
-  private static final int SETBIT_VERSION = parseVersion("2.1.8");
+  private static final int SETBIT_VERSION = parseVersion("2.2.0");
 
   // Sets or clears the bit at offset in the string value stored at key
   public IntegerReply setbit(Object key0, Object offset1, Object value2) throws RedisException {
@@ -854,7 +965,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SETEX = "SETEX";
   private static final byte[] SETEX_BYTES = SETEX.getBytes(Charsets.US_ASCII);
-  private static final int SETEX_VERSION = parseVersion("1.3.10");
+  private static final int SETEX_VERSION = parseVersion("2.0.0");
 
   // Set the value and expiration of a key
   public StatusReply setex(Object key0, Object seconds1, Object value2) throws RedisException {
@@ -864,7 +975,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SETNX = "SETNX";
   private static final byte[] SETNX_BYTES = SETNX.getBytes(Charsets.US_ASCII);
-  private static final int SETNX_VERSION = parseVersion("0.07");
+  private static final int SETNX_VERSION = parseVersion("1.0.0");
 
   // Set the value of a key, only if the key does not exist
   public IntegerReply setnx(Object key0, Object value1) throws RedisException {
@@ -874,7 +985,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SETRANGE = "SETRANGE";
   private static final byte[] SETRANGE_BYTES = SETRANGE.getBytes(Charsets.US_ASCII);
-  private static final int SETRANGE_VERSION = parseVersion("2.1.8");
+  private static final int SETRANGE_VERSION = parseVersion("2.2.0");
 
   // Overwrite part of a string at key starting at the specified offset
   public IntegerReply setrange(Object key0, Object offset1, Object value2) throws RedisException {
@@ -884,17 +995,17 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SHUTDOWN = "SHUTDOWN";
   private static final byte[] SHUTDOWN_BYTES = SHUTDOWN.getBytes(Charsets.US_ASCII);
-  private static final int SHUTDOWN_VERSION = parseVersion("0.07");
+  private static final int SHUTDOWN_VERSION = parseVersion("1.0.0");
 
   // Synchronously save the dataset to disk and then shut down the server
-  public StatusReply shutdown() throws RedisException {
+  public StatusReply shutdown(Object NOSAVE0, Object SAVE1) throws RedisException {
     if (version < SHUTDOWN_VERSION) throw new RedisException("Server does not support SHUTDOWN");
-    return (StatusReply) execute(SHUTDOWN, SHUTDOWN_BYTES);
+    return (StatusReply) execute(SHUTDOWN, SHUTDOWN_BYTES, NOSAVE0, SAVE1);
   }
   
   private static final String SINTER = "SINTER";
   private static final byte[] SINTER_BYTES = SINTER.getBytes(Charsets.US_ASCII);
-  private static final int SINTER_VERSION = parseVersion("0.07");
+  private static final int SINTER_VERSION = parseVersion("1.0.0");
 
   // Intersect multiple sets
   public MultiBulkReply sinter(Object... key0) throws RedisException {
@@ -904,7 +1015,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SINTERSTORE = "SINTERSTORE";
   private static final byte[] SINTERSTORE_BYTES = SINTERSTORE.getBytes(Charsets.US_ASCII);
-  private static final int SINTERSTORE_VERSION = parseVersion("0.07");
+  private static final int SINTERSTORE_VERSION = parseVersion("1.0.0");
 
   // Intersect multiple sets and store the resulting set in a key
   public IntegerReply sinterstore(Object destination0, Object... key1) throws RedisException {
@@ -914,7 +1025,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SISMEMBER = "SISMEMBER";
   private static final byte[] SISMEMBER_BYTES = SISMEMBER.getBytes(Charsets.US_ASCII);
-  private static final int SISMEMBER_VERSION = parseVersion("0.07");
+  private static final int SISMEMBER_VERSION = parseVersion("1.0.0");
 
   // Determine if a given value is a member of a set
   public IntegerReply sismember(Object key0, Object member1) throws RedisException {
@@ -924,7 +1035,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SLAVEOF = "SLAVEOF";
   private static final byte[] SLAVEOF_BYTES = SLAVEOF.getBytes(Charsets.US_ASCII);
-  private static final int SLAVEOF_VERSION = parseVersion("0.100");
+  private static final int SLAVEOF_VERSION = parseVersion("1.0.0");
 
   // Make the server a slave of another instance, or promote it as master
   public StatusReply slaveof(Object host0, Object port1) throws RedisException {
@@ -944,7 +1055,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SMEMBERS = "SMEMBERS";
   private static final byte[] SMEMBERS_BYTES = SMEMBERS.getBytes(Charsets.US_ASCII);
-  private static final int SMEMBERS_VERSION = parseVersion("0.07");
+  private static final int SMEMBERS_VERSION = parseVersion("1.0.0");
 
   // Get all the members in a set
   public MultiBulkReply smembers(Object key0) throws RedisException {
@@ -954,7 +1065,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SMOVE = "SMOVE";
   private static final byte[] SMOVE_BYTES = SMOVE.getBytes(Charsets.US_ASCII);
-  private static final int SMOVE_VERSION = parseVersion("0.091");
+  private static final int SMOVE_VERSION = parseVersion("1.0.0");
 
   // Move a member from one set to another
   public IntegerReply smove(Object source0, Object destination1, Object member2) throws RedisException {
@@ -964,7 +1075,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SORT = "SORT";
   private static final byte[] SORT_BYTES = SORT.getBytes(Charsets.US_ASCII);
-  private static final int SORT_VERSION = parseVersion("0.07");
+  private static final int SORT_VERSION = parseVersion("1.0.0");
 
   // Sort the elements in a list, set or sorted set
   public MultiBulkReply sort(Object key0, Object pattern1, Object offset_or_count2, Object... pattern3) throws RedisException {
@@ -974,7 +1085,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SPOP = "SPOP";
   private static final byte[] SPOP_BYTES = SPOP.getBytes(Charsets.US_ASCII);
-  private static final int SPOP_VERSION = parseVersion("0.101");
+  private static final int SPOP_VERSION = parseVersion("1.0.0");
 
   // Remove and return a random member from a set
   public BulkReply spop(Object key0) throws RedisException {
@@ -984,7 +1095,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SRANDMEMBER = "SRANDMEMBER";
   private static final byte[] SRANDMEMBER_BYTES = SRANDMEMBER.getBytes(Charsets.US_ASCII);
-  private static final int SRANDMEMBER_VERSION = parseVersion("1.001");
+  private static final int SRANDMEMBER_VERSION = parseVersion("1.0.0");
 
   // Get a random member from a set
   public BulkReply srandmember(Object key0) throws RedisException {
@@ -994,7 +1105,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SREM = "SREM";
   private static final byte[] SREM_BYTES = SREM.getBytes(Charsets.US_ASCII);
-  private static final int SREM_VERSION = parseVersion("0.07");
+  private static final int SREM_VERSION = parseVersion("1.0.0");
 
   // Remove one or more members from a set
   public IntegerReply srem(Object key0, Object... member1) throws RedisException {
@@ -1004,7 +1115,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String STRLEN = "STRLEN";
   private static final byte[] STRLEN_BYTES = STRLEN.getBytes(Charsets.US_ASCII);
-  private static final int STRLEN_VERSION = parseVersion("2.1.2");
+  private static final int STRLEN_VERSION = parseVersion("2.2.0");
 
   // Get the length of the value stored in a key
   public IntegerReply strlen(Object key0) throws RedisException {
@@ -1014,7 +1125,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SUBSCRIBE = "SUBSCRIBE";
   private static final byte[] SUBSCRIBE_BYTES = SUBSCRIBE.getBytes(Charsets.US_ASCII);
-  private static final int SUBSCRIBE_VERSION = parseVersion("1.3.8");
+  private static final int SUBSCRIBE_VERSION = parseVersion("2.0.0");
 
   // Listen for messages published to the given channels
   public Reply subscribe(Object... channel0) throws RedisException {
@@ -1024,7 +1135,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SUNION = "SUNION";
   private static final byte[] SUNION_BYTES = SUNION.getBytes(Charsets.US_ASCII);
-  private static final int SUNION_VERSION = parseVersion("0.091");
+  private static final int SUNION_VERSION = parseVersion("1.0.0");
 
   // Add multiple sets
   public MultiBulkReply sunion(Object... key0) throws RedisException {
@@ -1034,7 +1145,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SUNIONSTORE = "SUNIONSTORE";
   private static final byte[] SUNIONSTORE_BYTES = SUNIONSTORE.getBytes(Charsets.US_ASCII);
-  private static final int SUNIONSTORE_VERSION = parseVersion("0.091");
+  private static final int SUNIONSTORE_VERSION = parseVersion("1.0.0");
 
   // Add multiple sets and store the resulting set in a key
   public IntegerReply sunionstore(Object destination0, Object... key1) throws RedisException {
@@ -1044,7 +1155,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String SYNC = "SYNC";
   private static final byte[] SYNC_BYTES = SYNC.getBytes(Charsets.US_ASCII);
-  private static final int SYNC_VERSION = parseVersion("0.07");
+  private static final int SYNC_VERSION = parseVersion("1.0.0");
 
   // Internal command used for replication
   public Reply sync() throws RedisException {
@@ -1052,9 +1163,19 @@ public class RedisClient extends RedisClientBase {
     return (Reply) execute(SYNC, SYNC_BYTES);
   }
   
+  private static final String TIME = "TIME";
+  private static final byte[] TIME_BYTES = TIME.getBytes(Charsets.US_ASCII);
+  private static final int TIME_VERSION = parseVersion("2.6.0");
+
+  // Return the current server time
+  public MultiBulkReply time() throws RedisException {
+    if (version < TIME_VERSION) throw new RedisException("Server does not support TIME");
+    return (MultiBulkReply) execute(TIME, TIME_BYTES);
+  }
+  
   private static final String TTL = "TTL";
   private static final byte[] TTL_BYTES = TTL.getBytes(Charsets.US_ASCII);
-  private static final int TTL_VERSION = parseVersion("0.100");
+  private static final int TTL_VERSION = parseVersion("1.0.0");
 
   // Get the time to live for a key
   public IntegerReply ttl(Object key0) throws RedisException {
@@ -1064,7 +1185,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String TYPE = "TYPE";
   private static final byte[] TYPE_BYTES = TYPE.getBytes(Charsets.US_ASCII);
-  private static final int TYPE_VERSION = parseVersion("0.07");
+  private static final int TYPE_VERSION = parseVersion("1.0.0");
 
   // Determine the type stored at key
   public StatusReply type(Object key0) throws RedisException {
@@ -1074,7 +1195,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String UNSUBSCRIBE = "UNSUBSCRIBE";
   private static final byte[] UNSUBSCRIBE_BYTES = UNSUBSCRIBE.getBytes(Charsets.US_ASCII);
-  private static final int UNSUBSCRIBE_VERSION = parseVersion("1.3.8");
+  private static final int UNSUBSCRIBE_VERSION = parseVersion("2.0.0");
 
   // Stop listening for messages posted to the given channels
   public Reply unsubscribe(Object... channel0) throws RedisException {
@@ -1084,7 +1205,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String UNWATCH = "UNWATCH";
   private static final byte[] UNWATCH_BYTES = UNWATCH.getBytes(Charsets.US_ASCII);
-  private static final int UNWATCH_VERSION = parseVersion("2.1.0");
+  private static final int UNWATCH_VERSION = parseVersion("2.2.0");
 
   // Forget about all watched keys
   public StatusReply unwatch() throws RedisException {
@@ -1094,7 +1215,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String WATCH = "WATCH";
   private static final byte[] WATCH_BYTES = WATCH.getBytes(Charsets.US_ASCII);
-  private static final int WATCH_VERSION = parseVersion("2.1.0");
+  private static final int WATCH_VERSION = parseVersion("2.2.0");
 
   // Watch the given keys to determine execution of the MULTI/EXEC block
   public StatusReply watch(Object... key0) throws RedisException {
@@ -1104,7 +1225,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String ZADD = "ZADD";
   private static final byte[] ZADD_BYTES = ZADD.getBytes(Charsets.US_ASCII);
-  private static final int ZADD_VERSION = parseVersion("1.1");
+  private static final int ZADD_VERSION = parseVersion("1.2.0");
 
   // Add one or more members to a sorted set, or update its score if it already exists
   public IntegerReply zadd(Object key0, Object score1, Object member2, Object score3, Object member4) throws RedisException {
@@ -1114,7 +1235,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String ZCARD = "ZCARD";
   private static final byte[] ZCARD_BYTES = ZCARD.getBytes(Charsets.US_ASCII);
-  private static final int ZCARD_VERSION = parseVersion("1.1");
+  private static final int ZCARD_VERSION = parseVersion("1.2.0");
 
   // Get the number of members in a sorted set
   public IntegerReply zcard(Object key0) throws RedisException {
@@ -1124,7 +1245,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String ZCOUNT = "ZCOUNT";
   private static final byte[] ZCOUNT_BYTES = ZCOUNT.getBytes(Charsets.US_ASCII);
-  private static final int ZCOUNT_VERSION = parseVersion("1.3.3");
+  private static final int ZCOUNT_VERSION = parseVersion("2.0.0");
 
   // Count the members in a sorted set with scores within the given values
   public IntegerReply zcount(Object key0, Object min1, Object max2) throws RedisException {
@@ -1134,7 +1255,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String ZINCRBY = "ZINCRBY";
   private static final byte[] ZINCRBY_BYTES = ZINCRBY.getBytes(Charsets.US_ASCII);
-  private static final int ZINCRBY_VERSION = parseVersion("1.1");
+  private static final int ZINCRBY_VERSION = parseVersion("1.2.0");
 
   // Increment the score of a member in a sorted set
   public BulkReply zincrby(Object key0, Object increment1, Object member2) throws RedisException {
@@ -1144,7 +1265,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String ZINTERSTORE = "ZINTERSTORE";
   private static final byte[] ZINTERSTORE_BYTES = ZINTERSTORE.getBytes(Charsets.US_ASCII);
-  private static final int ZINTERSTORE_VERSION = parseVersion("1.3.10");
+  private static final int ZINTERSTORE_VERSION = parseVersion("2.0.0");
 
   // Intersect multiple sorted sets and store the resulting sorted set in a new key
   public IntegerReply zinterstore(Object destination0, Object numkeys1, Object... key2) throws RedisException {
@@ -1154,7 +1275,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String ZRANGE = "ZRANGE";
   private static final byte[] ZRANGE_BYTES = ZRANGE.getBytes(Charsets.US_ASCII);
-  private static final int ZRANGE_VERSION = parseVersion("1.1");
+  private static final int ZRANGE_VERSION = parseVersion("1.2.0");
 
   // Return a range of members in a sorted set, by index
   public MultiBulkReply zrange(Object key0, Object start1, Object stop2, Object withscores3) throws RedisException {
@@ -1164,7 +1285,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String ZRANGEBYSCORE = "ZRANGEBYSCORE";
   private static final byte[] ZRANGEBYSCORE_BYTES = ZRANGEBYSCORE.getBytes(Charsets.US_ASCII);
-  private static final int ZRANGEBYSCORE_VERSION = parseVersion("1.050");
+  private static final int ZRANGEBYSCORE_VERSION = parseVersion("1.0.5");
 
   // Return a range of members in a sorted set, by score
   public MultiBulkReply zrangebyscore(Object key0, Object min1, Object max2, Object withscores3, Object offset_or_count4) throws RedisException {
@@ -1174,7 +1295,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String ZRANK = "ZRANK";
   private static final byte[] ZRANK_BYTES = ZRANK.getBytes(Charsets.US_ASCII);
-  private static final int ZRANK_VERSION = parseVersion("1.3.4");
+  private static final int ZRANK_VERSION = parseVersion("2.0.0");
 
   // Determine the index of a member in a sorted set
   public IntegerReply zrank(Object key0, Object member1) throws RedisException {
@@ -1184,7 +1305,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String ZREM = "ZREM";
   private static final byte[] ZREM_BYTES = ZREM.getBytes(Charsets.US_ASCII);
-  private static final int ZREM_VERSION = parseVersion("1.1");
+  private static final int ZREM_VERSION = parseVersion("1.2.0");
 
   // Remove one or more members from a sorted set
   public IntegerReply zrem(Object key0, Object... member1) throws RedisException {
@@ -1194,7 +1315,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String ZREMRANGEBYRANK = "ZREMRANGEBYRANK";
   private static final byte[] ZREMRANGEBYRANK_BYTES = ZREMRANGEBYRANK.getBytes(Charsets.US_ASCII);
-  private static final int ZREMRANGEBYRANK_VERSION = parseVersion("1.3.4");
+  private static final int ZREMRANGEBYRANK_VERSION = parseVersion("2.0.0");
 
   // Remove all members in a sorted set within the given indexes
   public IntegerReply zremrangebyrank(Object key0, Object start1, Object stop2) throws RedisException {
@@ -1204,7 +1325,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String ZREMRANGEBYSCORE = "ZREMRANGEBYSCORE";
   private static final byte[] ZREMRANGEBYSCORE_BYTES = ZREMRANGEBYSCORE.getBytes(Charsets.US_ASCII);
-  private static final int ZREMRANGEBYSCORE_VERSION = parseVersion("1.1");
+  private static final int ZREMRANGEBYSCORE_VERSION = parseVersion("1.2.0");
 
   // Remove all members in a sorted set within the given scores
   public IntegerReply zremrangebyscore(Object key0, Object min1, Object max2) throws RedisException {
@@ -1214,7 +1335,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String ZREVRANGE = "ZREVRANGE";
   private static final byte[] ZREVRANGE_BYTES = ZREVRANGE.getBytes(Charsets.US_ASCII);
-  private static final int ZREVRANGE_VERSION = parseVersion("1.1");
+  private static final int ZREVRANGE_VERSION = parseVersion("1.2.0");
 
   // Return a range of members in a sorted set, by index, with scores ordered from high to low
   public MultiBulkReply zrevrange(Object key0, Object start1, Object stop2, Object withscores3) throws RedisException {
@@ -1224,7 +1345,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String ZREVRANGEBYSCORE = "ZREVRANGEBYSCORE";
   private static final byte[] ZREVRANGEBYSCORE_BYTES = ZREVRANGEBYSCORE.getBytes(Charsets.US_ASCII);
-  private static final int ZREVRANGEBYSCORE_VERSION = parseVersion("2.1.6");
+  private static final int ZREVRANGEBYSCORE_VERSION = parseVersion("2.2.0");
 
   // Return a range of members in a sorted set, by score, with scores ordered from high to low
   public MultiBulkReply zrevrangebyscore(Object key0, Object max1, Object min2, Object withscores3, Object offset_or_count4) throws RedisException {
@@ -1234,7 +1355,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String ZREVRANK = "ZREVRANK";
   private static final byte[] ZREVRANK_BYTES = ZREVRANK.getBytes(Charsets.US_ASCII);
-  private static final int ZREVRANK_VERSION = parseVersion("1.3.4");
+  private static final int ZREVRANK_VERSION = parseVersion("2.0.0");
 
   // Determine the index of a member in a sorted set, with scores ordered from high to low
   public IntegerReply zrevrank(Object key0, Object member1) throws RedisException {
@@ -1244,7 +1365,7 @@ public class RedisClient extends RedisClientBase {
   
   private static final String ZSCORE = "ZSCORE";
   private static final byte[] ZSCORE_BYTES = ZSCORE.getBytes(Charsets.US_ASCII);
-  private static final int ZSCORE_VERSION = parseVersion("1.1");
+  private static final int ZSCORE_VERSION = parseVersion("1.2.0");
 
   // Get the score associated with the given member in a sorted set
   public BulkReply zscore(Object key0, Object member1) throws RedisException {
@@ -1254,22 +1375,12 @@ public class RedisClient extends RedisClientBase {
   
   private static final String ZUNIONSTORE = "ZUNIONSTORE";
   private static final byte[] ZUNIONSTORE_BYTES = ZUNIONSTORE.getBytes(Charsets.US_ASCII);
-  private static final int ZUNIONSTORE_VERSION = parseVersion("1.3.10");
+  private static final int ZUNIONSTORE_VERSION = parseVersion("2.0.0");
 
   // Add multiple sorted sets and store the resulting sorted set in a new key
   public IntegerReply zunionstore(Object destination0, Object numkeys1, Object... key2) throws RedisException {
     if (version < ZUNIONSTORE_VERSION) throw new RedisException("Server does not support ZUNIONSTORE");
     return (IntegerReply) execute(ZUNIONSTORE, ZUNIONSTORE_BYTES, destination0, numkeys1, key2);
-  }
-  
-  private static final String EVAL = "EVAL";
-  private static final byte[] EVAL_BYTES = EVAL.getBytes(Charsets.US_ASCII);
-  private static final int EVAL_VERSION = parseVersion("2.6.0");
-
-  // Execute a Lua script server side
-  public Reply eval(Object script0, Object numkeys1, Object... key2) throws RedisException {
-    if (version < EVAL_VERSION) throw new RedisException("Server does not support EVAL");
-    return (Reply) execute(EVAL, EVAL_BYTES, script0, numkeys1, key2);
   }
 
   public class Pipeline {
@@ -1382,6 +1493,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<BulkReply>) pipeline(ECHO, ECHO_BYTES, message0);
   }
 
+  // Execute a Lua script server side
+  public ListenableFuture<Reply> eval(Object script0, Object numkeys1, Object... key2) throws RedisException {
+    if (version < EVAL_VERSION) throw new RedisException("Server does not support EVAL");
+    return (ListenableFuture<Reply>) pipeline(EVAL, EVAL_BYTES, script0, numkeys1, key2);
+  }
+
   // Execute all commands issued after MULTI
   public ListenableFuture<MultiBulkReply> exec() throws RedisException {
     if (version < EXEC_VERSION) throw new RedisException("Server does not support EXEC");
@@ -1472,6 +1589,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<IntegerReply>) pipeline(HINCRBY, HINCRBY_BYTES, key0, field1, increment2);
   }
 
+  // Increment the float value of a hash field by the given amount
+  public ListenableFuture<BulkReply> hincrbyfloat(Object key0, Object field1, Object increment2) throws RedisException {
+    if (version < HINCRBYFLOAT_VERSION) throw new RedisException("Server does not support HINCRBYFLOAT");
+    return (ListenableFuture<BulkReply>) pipeline(HINCRBYFLOAT, HINCRBYFLOAT_BYTES, key0, field1, increment2);
+  }
+
   // Get all the fields in a hash
   public ListenableFuture<MultiBulkReply> hkeys(Object key0) throws RedisException {
     if (version < HKEYS_VERSION) throw new RedisException("Server does not support HKEYS");
@@ -1520,10 +1643,16 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<IntegerReply>) pipeline(INCR, INCR_BYTES, key0);
   }
 
-  // Increment the integer value of a key by the given number
+  // Increment the integer value of a key by the given amount
   public ListenableFuture<IntegerReply> incrby(Object key0, Object increment1) throws RedisException {
     if (version < INCRBY_VERSION) throw new RedisException("Server does not support INCRBY");
     return (ListenableFuture<IntegerReply>) pipeline(INCRBY, INCRBY_BYTES, key0, increment1);
+  }
+
+  // Increment the float value of a key by the given amount
+  public ListenableFuture<BulkReply> incrbyfloat(Object key0, Object increment1) throws RedisException {
+    if (version < INCRBYFLOAT_VERSION) throw new RedisException("Server does not support INCRBYFLOAT");
+    return (ListenableFuture<BulkReply>) pipeline(INCRBYFLOAT, INCRBYFLOAT_BYTES, key0, increment1);
   }
 
   // Get information and statistics about the server
@@ -1652,16 +1781,40 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<IntegerReply>) pipeline(PERSIST, PERSIST_BYTES, key0);
   }
 
+  // Set a key's time to live in milliseconds
+  public ListenableFuture<IntegerReply> pexpire(Object key0, Object milliseconds1) throws RedisException {
+    if (version < PEXPIRE_VERSION) throw new RedisException("Server does not support PEXPIRE");
+    return (ListenableFuture<IntegerReply>) pipeline(PEXPIRE, PEXPIRE_BYTES, key0, milliseconds1);
+  }
+
+  // Set the expiration for a key as a UNIX timestamp specified in milliseconds
+  public ListenableFuture<IntegerReply> pexpireat(Object key0, Object milliseconds_timestamp1) throws RedisException {
+    if (version < PEXPIREAT_VERSION) throw new RedisException("Server does not support PEXPIREAT");
+    return (ListenableFuture<IntegerReply>) pipeline(PEXPIREAT, PEXPIREAT_BYTES, key0, milliseconds_timestamp1);
+  }
+
   // Ping the server
   public ListenableFuture<StatusReply> ping() throws RedisException {
     if (version < PING_VERSION) throw new RedisException("Server does not support PING");
     return (ListenableFuture<StatusReply>) pipeline(PING, PING_BYTES);
   }
 
+  // Set the value and expiration in milliseconds of a key
+  public ListenableFuture<Reply> psetex(Object key0, Object milliseconds1, Object value2) throws RedisException {
+    if (version < PSETEX_VERSION) throw new RedisException("Server does not support PSETEX");
+    return (ListenableFuture<Reply>) pipeline(PSETEX, PSETEX_BYTES, key0, milliseconds1, value2);
+  }
+
   // Listen for messages published to channels matching the given patterns
   public ListenableFuture<Reply> psubscribe(Object... pattern0) throws RedisException {
     if (version < PSUBSCRIBE_VERSION) throw new RedisException("Server does not support PSUBSCRIBE");
     return (ListenableFuture<Reply>) pipeline(PSUBSCRIBE, PSUBSCRIBE_BYTES, pattern0);
+  }
+
+  // Get the time to live for a key in milliseconds
+  public ListenableFuture<IntegerReply> pttl(Object key0) throws RedisException {
+    if (version < PTTL_VERSION) throw new RedisException("Server does not support PTTL");
+    return (ListenableFuture<IntegerReply>) pipeline(PTTL, PTTL_BYTES, key0);
   }
 
   // Post a message to a channel
@@ -1742,6 +1895,30 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<IntegerReply>) pipeline(SCARD, SCARD_BYTES, key0);
   }
 
+  // Check existence of scripts in the script cache.
+  public ListenableFuture<Reply> script_exists(Object... script0) throws RedisException {
+    if (version < SCRIPT_EXISTS_VERSION) throw new RedisException("Server does not support SCRIPT_EXISTS");
+    return (ListenableFuture<Reply>) pipeline(SCRIPT_EXISTS, SCRIPT_EXISTS_BYTES, script0);
+  }
+
+  // Remove all the scripts from the script cache.
+  public ListenableFuture<Reply> script_flush() throws RedisException {
+    if (version < SCRIPT_FLUSH_VERSION) throw new RedisException("Server does not support SCRIPT_FLUSH");
+    return (ListenableFuture<Reply>) pipeline(SCRIPT_FLUSH, SCRIPT_FLUSH_BYTES);
+  }
+
+  // Kill the script currently in execution.
+  public ListenableFuture<Reply> script_kill() throws RedisException {
+    if (version < SCRIPT_KILL_VERSION) throw new RedisException("Server does not support SCRIPT_KILL");
+    return (ListenableFuture<Reply>) pipeline(SCRIPT_KILL, SCRIPT_KILL_BYTES);
+  }
+
+  // Load the specified Lua script into the script cache.
+  public ListenableFuture<Reply> script_load(Object script0) throws RedisException {
+    if (version < SCRIPT_LOAD_VERSION) throw new RedisException("Server does not support SCRIPT_LOAD");
+    return (ListenableFuture<Reply>) pipeline(SCRIPT_LOAD, SCRIPT_LOAD_BYTES, script0);
+  }
+
   // Subtract multiple sets
   public ListenableFuture<MultiBulkReply> sdiff(Object... key0) throws RedisException {
     if (version < SDIFF_VERSION) throw new RedisException("Server does not support SDIFF");
@@ -1791,9 +1968,9 @@ public class RedisClient extends RedisClientBase {
   }
 
   // Synchronously save the dataset to disk and then shut down the server
-  public ListenableFuture<StatusReply> shutdown() throws RedisException {
+  public ListenableFuture<StatusReply> shutdown(Object NOSAVE0, Object SAVE1) throws RedisException {
     if (version < SHUTDOWN_VERSION) throw new RedisException("Server does not support SHUTDOWN");
-    return (ListenableFuture<StatusReply>) pipeline(SHUTDOWN, SHUTDOWN_BYTES);
+    return (ListenableFuture<StatusReply>) pipeline(SHUTDOWN, SHUTDOWN_BYTES, NOSAVE0, SAVE1);
   }
 
   // Intersect multiple sets
@@ -1890,6 +2067,12 @@ public class RedisClient extends RedisClientBase {
   public ListenableFuture<Reply> sync() throws RedisException {
     if (version < SYNC_VERSION) throw new RedisException("Server does not support SYNC");
     return (ListenableFuture<Reply>) pipeline(SYNC, SYNC_BYTES);
+  }
+
+  // Return the current server time
+  public ListenableFuture<MultiBulkReply> time() throws RedisException {
+    if (version < TIME_VERSION) throw new RedisException("Server does not support TIME");
+    return (ListenableFuture<MultiBulkReply>) pipeline(TIME, TIME_BYTES);
   }
 
   // Get the time to live for a key
@@ -2016,12 +2199,6 @@ public class RedisClient extends RedisClientBase {
   public ListenableFuture<IntegerReply> zunionstore(Object destination0, Object numkeys1, Object... key2) throws RedisException {
     if (version < ZUNIONSTORE_VERSION) throw new RedisException("Server does not support ZUNIONSTORE");
     return (ListenableFuture<IntegerReply>) pipeline(ZUNIONSTORE, ZUNIONSTORE_BYTES, destination0, numkeys1, key2);
-  }
-
-  // Execute a Lua script server side
-  public ListenableFuture<Reply> eval(Object script0, Object numkeys1, Object... key2) throws RedisException {
-    if (version < EVAL_VERSION) throw new RedisException("Server does not support EVAL");
-    return (ListenableFuture<Reply>) pipeline(EVAL, EVAL_BYTES, script0, numkeys1, key2);
   }
   }
 }

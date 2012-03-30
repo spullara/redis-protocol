@@ -12,8 +12,9 @@ import redis.reply.Reply;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.Socket;
 import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -27,16 +28,15 @@ import java.util.regex.Pattern;
  */
 public class RedisClientBase {
   // Single threaded pipelining
-  private ListeningExecutorService es = MoreExecutors.listeningDecorator(
-      Executors.newSingleThreadExecutor());
+  private ListeningExecutorService es;
   protected RedisProtocol redisProtocol;
   private static final Pattern versionMatcher = Pattern.compile("([0-9]+)\\.([0-9]+)(\\.([0-9]+))?");
   private AtomicInteger pipelined = new AtomicInteger(0);
   protected int version;
 
-  protected RedisClientBase(SocketPool socketPool) throws RedisException {
+  protected RedisClientBase(String host, int port, ExecutorService executorService) throws RedisException {
     try {
-      redisProtocol = new RedisProtocol(socketPool.get());
+      redisProtocol = new RedisProtocol(new Socket(host, port));
       BulkReply info = (BulkReply) redisProtocol.send(new Command("info"));
       BufferedReader br = new BufferedReader(new StringReader(new String(info.bytes)));
       String line;
@@ -51,6 +51,7 @@ public class RedisClientBase {
     } catch (IOException e) {
       throw new RedisException("Could not connect", e);
     }
+    es = MoreExecutors.listeningDecorator(executorService);
   }
 
   public static int parseVersion(String value) {
@@ -91,9 +92,9 @@ public class RedisClientBase {
     });
   }
 
-  public synchronized ListenableFuture<? extends Reply> pipeline(String name, Object... objects) throws RedisException {
+  public synchronized ListenableFuture<? extends Reply> pipeline(String name, byte[] byteName, Object... objects) throws RedisException {
     try {
-      redisProtocol.sendAsync(objects);
+      redisProtocol.sendAsync(byteName, objects);
     } catch (IOException e) {
       throw new RedisException("Failed to execute: " + name, e);
     }
@@ -126,13 +127,13 @@ public class RedisClientBase {
     }
   }
 
-  protected synchronized Reply execute(String name, Object... objects) throws RedisException {
+  protected synchronized Reply execute(String name, byte[] byteName, Object... objects) throws RedisException {
     try {
       if (pipelined.get() == 0) {
-        redisProtocol.sendAsync(objects);
+        redisProtocol.sendAsync(byteName, objects);
         return redisProtocol.receiveAsync();
       } else {
-        return pipeline(name, objects).get();
+        return pipeline(name, byteName, objects).get();
       }
     } catch (Exception e) {
       throw new RedisException("Failed to execute: " + name, e);
@@ -145,6 +146,5 @@ public class RedisClientBase {
 
   public void close() throws IOException {
     redisProtocol.close();
-    es.shutdown();
   }
 }

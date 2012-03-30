@@ -15,7 +15,6 @@ import java.util.regex.Pattern;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 
 import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
@@ -129,7 +128,7 @@ public class Loader {
           objects[2 + i*2] = names[i];
           objects[2 + i*2 + 1] = matcher.group(Integer.parseInt(columns[i]));
         }
-        redisProtocol.sendAsync(objects);
+        redisProtocol.sendAsync(null, objects);
         total++;
         if (total % 10000 == 0) {
           System.out.println(total);
