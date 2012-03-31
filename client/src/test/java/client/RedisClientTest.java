@@ -1,6 +1,7 @@
 package client;
 
 import com.google.common.base.Charsets;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -8,6 +9,7 @@ import org.junit.Test;
 import redis.Command;
 import redis.client.RedisClient;
 import redis.reply.BulkReply;
+import redis.reply.IntegerReply;
 import redis.reply.StatusReply;
 
 import java.io.IOException;
@@ -19,6 +21,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.fail;
 
 /**
  * Test the boilerplate
@@ -43,6 +46,39 @@ public class RedisClientTest {
     p.incr("increment");
     p.incr("increment");
     assertEquals(3, redisClient.incr("increment").integer);
+  }
+
+  @Test
+  public void testTx() throws IOException, ExecutionException, InterruptedException {
+    RedisClient redisClient1 = new RedisClient("localhost", 6379);
+    RedisClient redisClient2 = new RedisClient("localhost", 6379);
+
+    {
+      redisClient1.set("txincr", 0);
+      redisClient1.watch(new Object[]{"txincr"});
+      redisClient1.get("txincr");
+      redisClient1.multi();
+      RedisClient.Pipeline p = redisClient1.pipeline();
+      ListenableFuture<IntegerReply> txincr1 = p.incr("txincr");
+      ListenableFuture<IntegerReply> txincr2 = p.incr("txincr");
+      redisClient1.exec();
+      assertEquals(2, txincr2.get().integer);
+      assertEquals(1, txincr1.get().integer);
+    }
+
+    {
+      redisClient1.set("txincr", 0);
+      redisClient1.watch(new Object[]{"txincr"});
+      redisClient1.get("txincr");
+      redisClient1.multi();
+      redisClient2.set("txincr", 1);
+      RedisClient.Pipeline p = redisClient1.pipeline();
+      ListenableFuture<IntegerReply> txincr1 = p.incr("txincr");
+      ListenableFuture<IntegerReply> txincr2 = p.incr("txincr");
+      if (redisClient1.exec().get()) {
+        fail("This should have failed");
+      }
+    }
   }
 
   @Test
