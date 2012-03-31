@@ -110,5 +110,6 @@ public class RedisClientBase {
 
   public void close() throws IOException {
     redisProtocol.close();
+    es.shutdownNow();
   }
 }

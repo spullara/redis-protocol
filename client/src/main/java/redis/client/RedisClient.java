@@ -227,16 +227,6 @@ public class RedisClient extends RedisClientBase {
     return (Reply) execute(EVAL, new Command(EVAL_BYTES, list.toArray(new Object[list.size()])));
   }
   
-  private static final String EXEC = "EXEC";
-  private static final byte[] EXEC_BYTES = EXEC.getBytes(Charsets.US_ASCII);
-  private static final int EXEC_VERSION = parseVersion("1.2.0");
-
-  // Execute all commands issued after MULTI
-  public MultiBulkReply exec() throws RedisException {
-    if (version < EXEC_VERSION) throw new RedisException("Server does not support EXEC");
-    return (MultiBulkReply) execute(EXEC, new Command(EXEC_BYTES));
-  }
-  
   private static final String EXISTS = "EXISTS";
   private static final byte[] EXISTS_BYTES = EXISTS.getBytes(Charsets.US_ASCII);
   private static final int EXISTS_VERSION = parseVersion("1.0.0");
@@ -688,16 +678,6 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     Collections.addAll(list, key_or_value0);
     return (IntegerReply) execute(MSETNX, new Command(MSETNX_BYTES, list.toArray(new Object[list.size()])));
-  }
-  
-  private static final String MULTI = "MULTI";
-  private static final byte[] MULTI_BYTES = MULTI.getBytes(Charsets.US_ASCII);
-  private static final int MULTI_VERSION = parseVersion("1.2.0");
-
-  // Mark the start of a transaction block
-  public StatusReply multi() throws RedisException {
-    if (version < MULTI_VERSION) throw new RedisException("Server does not support MULTI");
-    return (StatusReply) execute(MULTI, new Command(MULTI_BYTES));
   }
   
   private static final String OBJECT = "OBJECT";
@@ -1292,18 +1272,6 @@ public class RedisClient extends RedisClientBase {
     return (StatusReply) execute(UNWATCH, new Command(UNWATCH_BYTES));
   }
   
-  private static final String WATCH = "WATCH";
-  private static final byte[] WATCH_BYTES = WATCH.getBytes(Charsets.US_ASCII);
-  private static final int WATCH_VERSION = parseVersion("2.2.0");
-
-  // Watch the given keys to determine execution of the MULTI/EXEC block
-  public StatusReply watch(Object[] key0) throws RedisException {
-    if (version < WATCH_VERSION) throw new RedisException("Server does not support WATCH");
-    List list = new ArrayList();
-    Collections.addAll(list, key0);
-    return (StatusReply) execute(WATCH, new Command(WATCH_BYTES, list.toArray(new Object[list.size()])));
-  }
-  
   private static final String ZADD = "ZADD";
   private static final byte[] ZADD_BYTES = ZADD.getBytes(Charsets.US_ASCII);
   private static final int ZADD_VERSION = parseVersion("1.2.0");
@@ -1629,12 +1597,6 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<Reply>) pipeline(EVAL, new Command(EVAL_BYTES, list.toArray(new Object[list.size()])));
   }
 
-  // Execute all commands issued after MULTI
-  public ListenableFuture<MultiBulkReply> exec() throws RedisException {
-    if (version < EXEC_VERSION) throw new RedisException("Server does not support EXEC");
-    return (ListenableFuture<MultiBulkReply>) pipeline(EXEC, new Command(EXEC_BYTES));
-  }
-
   // Determine if a key exists
   public ListenableFuture<IntegerReply> exists(Object key0) throws RedisException {
     if (version < EXISTS_VERSION) throw new RedisException("Server does not support EXISTS");
@@ -1914,12 +1876,6 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     Collections.addAll(list, key_or_value0);
     return (ListenableFuture<IntegerReply>) pipeline(MSETNX, new Command(MSETNX_BYTES, list.toArray(new Object[list.size()])));
-  }
-
-  // Mark the start of a transaction block
-  public ListenableFuture<StatusReply> multi() throws RedisException {
-    if (version < MULTI_VERSION) throw new RedisException("Server does not support MULTI");
-    return (ListenableFuture<StatusReply>) pipeline(MULTI, new Command(MULTI_BYTES));
   }
 
   // Inspect the internals of Redis objects
@@ -2292,14 +2248,6 @@ public class RedisClient extends RedisClientBase {
   public ListenableFuture<StatusReply> unwatch() throws RedisException {
     if (version < UNWATCH_VERSION) throw new RedisException("Server does not support UNWATCH");
     return (ListenableFuture<StatusReply>) pipeline(UNWATCH, new Command(UNWATCH_BYTES));
-  }
-
-  // Watch the given keys to determine execution of the MULTI/EXEC block
-  public ListenableFuture<StatusReply> watch(Object[] key0) throws RedisException {
-    if (version < WATCH_VERSION) throw new RedisException("Server does not support WATCH");
-    List list = new ArrayList();
-    Collections.addAll(list, key0);
-    return (ListenableFuture<StatusReply>) pipeline(WATCH, new Command(WATCH_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Add one or more members to a sorted set, or update its score if it already exists

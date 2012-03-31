@@ -27,6 +27,7 @@ import java.io.Writer;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -79,6 +80,7 @@ public class Main {
       cache.load(new FileInputStream(cacheFile));
     }
 
+    Set<String> unsupported = new HashSet<String>(Arrays.asList("MULTI", "EXEC", "WATCH"));
     JsonFactory jf = new MappingJsonFactory();
     JsonParser jsonParser = jf.createJsonParser(new URL("https://raw.github.com/antirez/redis-doc/master/commands.json"));
     final JsonNode commandNodes = jsonParser.readValueAsTree();
@@ -86,6 +88,7 @@ public class Main {
     List<Object> commands = new ArrayList<Object>();
     while (fieldNames.hasNext()) {
       final String command = fieldNames.next();
+      if (unsupported.contains(command)) continue;
       final String safeCommand = command.replace(" ", "_");
       String cacheReply = cache.getProperty(command.toLowerCase());
       if (cacheReply == null) {
