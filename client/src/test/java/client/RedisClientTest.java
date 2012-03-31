@@ -35,7 +35,7 @@ public class RedisClientTest {
 
   @BeforeClass
   public static void setup() {
-    es = Executors.newCachedThreadPool();
+    es = Executors.newSingleThreadExecutor();
   }
 
   @AfterClass
