@@ -157,21 +157,11 @@ public class RedisClientBase {
    * Transaction support
    */
 
-  private static final byte[] WATCH = "WATCH".getBytes();
-  private static final Command UNWATCH = new Command("UNWATCH".getBytes());
   private static final Command MULTI = new Command("MULTI".getBytes());
   private static final Command EXEC = new Command("EXEC".getBytes());
   private static final Command DISCARD = new Command("DISCARD".getBytes());
 
   private boolean tx;
-
-  public synchronized StatusReply watch(Object[] objects) {
-    return (StatusReply) execute("WATCH", new Command(WATCH, objects));
-  }
-
-  public synchronized StatusReply unwatch() {
-    return (StatusReply) execute("UNWATCH", UNWATCH);
-  }
 
   public synchronized StatusReply multi() {
     if (tx) {

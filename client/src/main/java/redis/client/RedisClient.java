@@ -193,16 +193,6 @@ public class RedisClient extends RedisClientBase {
     return (IntegerReply) execute(DEL, new Command(DEL_BYTES, list.toArray(new Object[list.size()])));
   }
   
-  private static final String DISCARD = "DISCARD";
-  private static final byte[] DISCARD_BYTES = DISCARD.getBytes(Charsets.US_ASCII);
-  private static final int DISCARD_VERSION = parseVersion("2.0.0");
-
-  // Discard all commands issued after MULTI
-  public StatusReply discard() throws RedisException {
-    if (version < DISCARD_VERSION) throw new RedisException("Server does not support DISCARD");
-    return (StatusReply) execute(DISCARD, new Command(DISCARD_BYTES));
-  }
-  
   private static final String ECHO = "ECHO";
   private static final byte[] ECHO_BYTES = ECHO.getBytes(Charsets.US_ASCII);
   private static final int ECHO_VERSION = parseVersion("1.0.0");
@@ -1272,6 +1262,18 @@ public class RedisClient extends RedisClientBase {
     return (StatusReply) execute(UNWATCH, new Command(UNWATCH_BYTES));
   }
   
+  private static final String WATCH = "WATCH";
+  private static final byte[] WATCH_BYTES = WATCH.getBytes(Charsets.US_ASCII);
+  private static final int WATCH_VERSION = parseVersion("2.2.0");
+
+  // Watch the given keys to determine execution of the MULTI/EXEC block
+  public StatusReply watch(Object[] key0) throws RedisException {
+    if (version < WATCH_VERSION) throw new RedisException("Server does not support WATCH");
+    List list = new ArrayList();
+    Collections.addAll(list, key0);
+    return (StatusReply) execute(WATCH, new Command(WATCH_BYTES, list.toArray(new Object[list.size()])));
+  }
+  
   private static final String ZADD = "ZADD";
   private static final byte[] ZADD_BYTES = ZADD.getBytes(Charsets.US_ASCII);
   private static final int ZADD_VERSION = parseVersion("1.2.0");
@@ -1573,12 +1575,6 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     Collections.addAll(list, key0);
     return (ListenableFuture<IntegerReply>) pipeline(DEL, new Command(DEL_BYTES, list.toArray(new Object[list.size()])));
-  }
-
-  // Discard all commands issued after MULTI
-  public ListenableFuture<StatusReply> discard() throws RedisException {
-    if (version < DISCARD_VERSION) throw new RedisException("Server does not support DISCARD");
-    return (ListenableFuture<StatusReply>) pipeline(DISCARD, new Command(DISCARD_BYTES));
   }
 
   // Echo the given string
@@ -2248,6 +2244,14 @@ public class RedisClient extends RedisClientBase {
   public ListenableFuture<StatusReply> unwatch() throws RedisException {
     if (version < UNWATCH_VERSION) throw new RedisException("Server does not support UNWATCH");
     return (ListenableFuture<StatusReply>) pipeline(UNWATCH, new Command(UNWATCH_BYTES));
+  }
+
+  // Watch the given keys to determine execution of the MULTI/EXEC block
+  public ListenableFuture<StatusReply> watch(Object[] key0) throws RedisException {
+    if (version < WATCH_VERSION) throw new RedisException("Server does not support WATCH");
+    List list = new ArrayList();
+    Collections.addAll(list, key0);
+    return (ListenableFuture<StatusReply>) pipeline(WATCH, new Command(WATCH_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Add one or more members to a sorted set, or update its score if it already exists
