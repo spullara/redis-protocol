@@ -23,6 +23,7 @@ import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import redis.Command;
 import redis.RedisProtocol;
 
 public class Loader {
@@ -128,7 +129,7 @@ public class Loader {
           objects[2 + i*2] = names[i];
           objects[2 + i*2 + 1] = matcher.group(Integer.parseInt(columns[i]));
         }
-        redisProtocol.sendAsync(null, objects);
+        redisProtocol.sendAsync(new Command(objects));
         total++;
         if (total % 10000 == 0) {
           System.out.println(total);

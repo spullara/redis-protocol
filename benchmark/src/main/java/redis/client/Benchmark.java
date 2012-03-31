@@ -67,7 +67,7 @@ public class Benchmark {
       benchmarks.add(new Callable<Void>() {
         @Override
         public Void call() throws IOException, InterruptedException {
-          RedisClient redisClient = new RedisClient(h, p, es);
+          RedisClient redisClient = new RedisClient(h, p);
           final Semaphore semaphore = new Semaphore(P);
           for (int i = 0; i < n / c; i++) {
             final long commandstart = System.nanoTime();
@@ -144,8 +144,8 @@ public class Benchmark {
           objects[i + 1] = data;
         }
         // Delete it all
-        RedisClient redisClient = new RedisClient(h, p, es);
-        redisClient.del(key, counter, list, set);
+        RedisClient redisClient = new RedisClient(h, p);
+        redisClient.del(new Object[] { key, counter, list, set });
         redisClient.close();
 
         benchmark("PING (warmup)", new Command(new Object[]{"PING".getBytes()}));
