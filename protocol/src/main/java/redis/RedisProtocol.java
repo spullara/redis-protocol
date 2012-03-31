@@ -146,13 +146,6 @@ public class RedisProtocol {
     os.flush();
   }
 
-  public void sendAsync(byte[] byteName, Object[] objects) throws IOException {
-    synchronized (os) {
-      Command.writeDirect(os, byteName, objects);
-    }
-    os.flush();
-  }
-
   public void close() throws IOException {
     is.close();
     os.close();

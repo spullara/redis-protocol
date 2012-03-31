@@ -31,21 +31,10 @@ public class RedisClientTest {
 
   private static final byte[] VALUE = "value".getBytes(Charsets.UTF_8);
   private static final long CALLS = 100000l;
-  private static ExecutorService es;
-
-  @BeforeClass
-  public static void setup() {
-    es = Executors.newSingleThreadExecutor();
-  }
-
-  @AfterClass
-  public static void done() {
-    es.shutdown();
-  }
 
   @Test
   public void testIt() throws IOException, ExecutionException, InterruptedException {
-    RedisClient redisClient = new RedisClient("localhost", 6379, es);
+    RedisClient redisClient = new RedisClient("localhost", 6379);
     redisClient.set("test", "value");
     BulkReply test = redisClient.get("test");
     assertEquals("value", new String(test.bytes));
@@ -58,16 +47,16 @@ public class RedisClientTest {
 
   @Test
   public void testAPI() throws IOException {
-    RedisClient rc = new RedisClient("localhost", 6379, es);
+    RedisClient rc = new RedisClient("localhost", 6379);
     rc.set("test1".getBytes(), "value".getBytes());
     rc.set("test2".getBytes(), "value");
-    assertEquals("value", new String((byte[]) rc.mget("test1".getBytes()).byteArrays[0]));
+    assertEquals("value", new String((byte[]) rc.mget(new Object[] { "test1".getBytes() }).byteArrays[0]));
   }
   
   @Test
   public void benchmark() throws IOException {
     long start = System.currentTimeMillis();
-    RedisClient redisClient = new RedisClient("localhost", 6379, es);
+    RedisClient redisClient = new RedisClient("localhost", 6379);
     for (int i = 0; i < CALLS; i++) {
       redisClient.set(Command.numToBytes(i, false), VALUE);
     }
@@ -78,7 +67,7 @@ public class RedisClientTest {
   @Test
   public void benchmarkFutureGet() throws IOException, ExecutionException, InterruptedException {
     long start = System.currentTimeMillis();
-    RedisClient.Pipeline redisClient = new RedisClient("localhost", 6379, es).pipeline();
+    RedisClient.Pipeline redisClient = new RedisClient("localhost", 6379).pipeline();
     for (int i = 0; i < CALLS; i++) {
       redisClient.set(Command.numToBytes(i, false), VALUE).get();
     }
@@ -91,7 +80,7 @@ public class RedisClientTest {
     final ExecutorService es = Executors.newSingleThreadExecutor();
     final AtomicLong total = new AtomicLong(CALLS);
     final long start = System.currentTimeMillis();
-    final RedisClient.Pipeline redisClient = new RedisClient("localhost", 6379, es).pipeline();
+    final RedisClient.Pipeline redisClient = new RedisClient("localhost", 6379).pipeline();
     final CountDownLatch countDownLatch = new CountDownLatch(1);
     new Runnable() {
       @Override
@@ -112,7 +101,7 @@ public class RedisClientTest {
   @Test
   public void benchmarkPipeline() throws IOException, ExecutionException, InterruptedException {
     long start = System.currentTimeMillis();
-    RedisClient redisClient = new RedisClient("localhost", 6379, es);
+    RedisClient redisClient = new RedisClient("localhost", 6379);
     RedisClient.Pipeline pipeline = redisClient.pipeline();
     int PIPELINE_CALLS = 50;
     Future<StatusReply>[] replies = new Future[PIPELINE_CALLS];

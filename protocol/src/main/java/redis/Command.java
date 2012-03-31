@@ -24,40 +24,75 @@ public class Command {
   public static final char LF = '\n';
   public static final char CR = '\r';
 
-  private Object[] objects;
-  private byte[] byteName;
+  private final Object name;
+  private final Object[] objects;
+  private final Object object1;
+  private final Object object2;
+  private final Object object3;
 
-  public Command(Object... objects) {
+  public Command(Object[] objects) {
+    this(null, null, null, null, objects);
+  }
+
+  public Command(Object name) {
+    this(name, null, null, null, null);
+  }
+
+  public Command(Object name, Object[] objects) {
+    this(name, null, null, null, objects);
+  }
+
+  public Command(Object name, Object object1) {
+    this(name, object1, null, null, null);
+  }
+
+  public Command(Object name, Object object1, Object object2) {
+    this(name, object1, object2, null, null);
+  }
+
+  public Command(Object name, Object object1, Object object2, Object object3) {
+    this(name, object1, object2, object3, null);
+  }
+
+  private Command(Object name, Object object1, Object object2, Object object3, Object[] objects) {
+    this.name = name;
+    this.object1 = object1;
+    this.object2 = object2;
+    this.object3 = object3;
     this.objects = objects;
   }
 
-  public Command(byte[] byteName, Object... objects) {
-    this(objects);
-    this.byteName = byteName;
-  }
-
   public void write(OutputStream os) throws IOException {
-    writeDirect(os, byteName, objects);
+    writeDirect(os, name, object1, object2, object3, objects);
   }
 
-  public static void writeDirect(OutputStream os, byte[] byteName, Object... objects) throws IOException {
-    int length = objects.length;
+  public static void writeDirect(OutputStream os, Object name, Object object1, Object object2, Object object3, Object[] objects) throws IOException {
+    int others = (object1 == null ? 0 : 1) + (object2 == null ? 0 : 1) +
+            (object3 == null ? 0 : 1) + (name == null ? 0 : 1);
+    int length = objects == null ? 0 : objects.length;
     os.write(ARGS_PREFIX);
-    os.write(Command.numToBytes(length + (byteName == null ? 0 : 1), true));
-    if (byteName != null) {
-      writeArgument(os, byteName);
-    }
-    for (Object object : objects) {
-      byte[] argument;
-      if (object == null) {
-        argument = EMPTY_BYTES;
-      } else if (object instanceof byte[]) {
-        argument = (byte[]) object;
-      } else {
-        argument = object.toString().getBytes(Charsets.UTF_8);
+    os.write(Command.numToBytes(length + others, true));
+    if (name != null) writeObject(os, name);
+    if (object1 != null) writeObject(os, object1);
+    if (object2 != null) writeObject(os, object2);
+    if (object3 != null) writeObject(os, object3);
+    if (objects != null) {
+      for (Object object : objects) {
+        writeObject(os, object);
       }
-      writeArgument(os, argument);
     }
+  }
+
+  private static void writeObject(OutputStream os, Object object) throws IOException {
+    byte[] argument;
+    if (object == null) {
+      argument = EMPTY_BYTES;
+    } else if (object instanceof byte[]) {
+      argument = (byte[]) object;
+    } else {
+      argument = object.toString().getBytes(Charsets.UTF_8);
+    }
+    writeArgument(os, argument);
   }
 
   private static void writeArgument(OutputStream os, byte[] argument) throws IOException {

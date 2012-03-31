@@ -92,48 +92,12 @@ public class RedisClientBase {
     });
   }
 
-  public synchronized ListenableFuture<? extends Reply> pipeline(String name, byte[] byteName, Object... objects) throws RedisException {
-    try {
-      redisProtocol.sendAsync(byteName, objects);
-    } catch (IOException e) {
-      throw new RedisException("Failed to execute: " + name, e);
-    }
-    pipelined.incrementAndGet();
-    return es.submit(new Callable<Reply>() {
-      @Override
-      public Reply call() throws Exception {
-        try {
-          Reply reply = redisProtocol.receiveAsync();
-          if (reply instanceof ErrorReply) {
-            throw new RedisException(((ErrorReply) reply).error);
-          }
-          return reply;
-        } finally {
-          pipelined.decrementAndGet();
-        }
-      }
-    });
-  }
-
   public synchronized Reply execute(String name, Command command) throws RedisException {
     try {
       if (pipelined.get() == 0) {
         return redisProtocol.send(command);
       } else {
         return pipeline(name, command).get();
-      }
-    } catch (Exception e) {
-      throw new RedisException("Failed to execute: " + name, e);
-    }
-  }
-
-  protected synchronized Reply execute(String name, byte[] byteName, Object... objects) throws RedisException {
-    try {
-      if (pipelined.get() == 0) {
-        redisProtocol.sendAsync(byteName, objects);
-        return redisProtocol.receiveAsync();
-      } else {
-        return pipeline(name, byteName, objects).get();
       }
     } catch (Exception e) {
       throw new RedisException("Failed to execute: " + name, e);

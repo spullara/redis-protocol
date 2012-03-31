@@ -1,5 +1,19 @@
   // {{comment}}
-  public {{$return}}{{reply}}{{/return}} {{methodname}}({{#arguments}}{{^first}}, {{/first}}{{typename}}{{#multiple}}...{{/multiple}} {{name}}{{/arguments}}) throws RedisException {
+  public {{$return}}{{reply}}{{/return}} {{methodname}}({{#arguments}}{{^first}}, {{/first}}{{typename}}{{#multiple}}[]{{/multiple}} {{name}}{{/arguments}}) throws RedisException {
     if (version < {{name}}_VERSION) throw new RedisException("Server does not support {{name}}");
-    return ({{$return}}{{reply}}{{/return}}) {{$method}}method{{/method}}({{name}}, {{name}}_BYTES{{#arguments}}, {{name}}{{/arguments}});
+    {{#usearray}}
+    List list = new ArrayList();
+    {{#arguments}}
+    {{#multiple}}
+    Collections.addAll(list, {{name}});
+    {{/multiple}}
+    {{^multiple}}
+    list.add({{name}});
+    {{/multiple}}
+    {{/arguments}}
+    return ({{$return}}{{reply}}{{/return}}) {{$method}}method{{/method}}({{name}}, new Command({{name}}_BYTES, list.toArray(new Object[list.size()])));
+    {{/usearray}}
+    {{^usearray}}
+    return ({{$return}}{{reply}}{{/return}}) {{$method}}method{{/method}}({{name}}, new Command({{name}}_BYTES{{#arguments}}, {{name}}{{/arguments}}));
+    {{/usearray}}
   }

@@ -1,11 +1,15 @@
 package redis.client;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.concurrent.Executors;
 
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import redis.Command;
 import redis.reply.BulkReply;
 import redis.reply.IntegerReply;
 import redis.reply.MultiBulkReply;
@@ -15,8 +19,8 @@ import redis.reply.StatusReply;
 public class RedisClient extends RedisClientBase {
   protected Pipeline pipeline = new Pipeline();
 
-  public RedisClient(String host, int port, ExecutorService es) throws IOException {
-    super(host, port, es);
+  public RedisClient(String host, int port) throws IOException {
+    super(host, port, Executors.newSingleThreadExecutor());
   }
 
   public Pipeline pipeline() {
