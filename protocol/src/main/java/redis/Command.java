@@ -1,11 +1,11 @@
 package redis;
 
+import com.google.common.base.Charsets;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
-import com.google.common.base.Charsets;
 
 /**
  * Command serialization.
@@ -105,8 +105,11 @@ public class Command {
   public static Command read(InputStream is) throws IOException {
     int read = is.read();
     if (read == ARGS_PREFIX[0]) {
-      int numArgs = RedisProtocol.readInteger(is);
-      byte[][] byteArrays = new byte[numArgs][];
+      long numArgs = RedisProtocol.readLong(is);
+      if (numArgs < 0 || numArgs > Integer.MAX_VALUE) {
+        throw new IllegalArgumentException("Invalid size: " + numArgs);
+      }
+      byte[][] byteArrays = new byte[(int) numArgs][];
       for (int i = 0; i < numArgs; i++) {
         if (is.read() == BYTES_PREFIX[0]) {
           byteArrays[i] = RedisProtocol.readBytes(is);

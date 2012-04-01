@@ -43,7 +43,7 @@ public class RedisClientBase {
   protected RedisClientBase(String host, int port, ExecutorService executorService) throws RedisException {
     try {
       redisProtocol = new RedisProtocol(new Socket(host, port));
-      BulkReply info = (BulkReply) redisProtocol.send(new Command("info"));
+      BulkReply info = (BulkReply) execute("INFO", new Command("INFO"));
       BufferedReader br = new BufferedReader(new StringReader(new String(info.data())));
       String line;
       while ((line = br.readLine()) != null) {
@@ -133,7 +133,8 @@ public class RedisClientBase {
     }
     try {
       if (pipelined.get() == 0) {
-        return redisProtocol.send(command);
+        redisProtocol.sendAsync(command);
+        return redisProtocol.receiveAsync();
       } else {
         return pipeline(name, command).get();
       }

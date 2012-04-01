@@ -13,22 +13,25 @@ import java.util.Map;
 import java.util.Set;
 
 /**
-* Created by IntelliJ IDEA.
-* User: sam
-* Date: 7/29/11
-* Time: 10:23 AM
-* To change this template use File | Settings | File Templates.
-*/
+ * Nested replies.
+ * <p/>
+ * User: sam
+ * Date: 7/29/11
+ * Time: 10:23 AM
+ */
 public class MultiBulkReply implements Reply<Reply[]> {
   public static final char MARKER = '*';
   private final Reply[] replies;
 
   public MultiBulkReply(InputStream is) throws IOException {
-    int size = RedisProtocol.readInteger(is);
+    long size = RedisProtocol.readLong(is);
     if (size == -1) {
       replies = null;
     } else {
-      replies = new Reply[size];
+      if (size > Integer.MAX_VALUE || size < 0) {
+        throw new IllegalArgumentException("Invalid size: " + size);
+      }
+      replies = new Reply[(int) size];
       for (int i = 0; i < size; i++) {
         replies[i] = RedisProtocol.receive(is);
       }
