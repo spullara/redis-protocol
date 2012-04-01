@@ -1,8 +1,5 @@
 package redis.reply;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 /**
  * TODO: Edit this
  * <p/>
@@ -16,8 +13,4 @@ public class PUnsubscribeReply extends UnsubscribeReply {
     super(patterns);
   }
 
-  @Override
-  public void write(OutputStream os) throws IOException {
-    
-  }
 }

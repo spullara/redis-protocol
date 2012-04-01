@@ -1,8 +1,5 @@
 package redis.reply;
 
-import java.io.IOException;
-import java.io.OutputStream;
-
 /**
  * TODO: Edit this
  * <p/>
@@ -10,7 +7,7 @@ import java.io.OutputStream;
  * Date: 7/31/11
  * Time: 3:32 PM
  */
-public class SubscribeReply extends Reply {
+public class SubscribeReply implements Reply<byte[][]> {
 
   private final byte[][] patterns;
 
@@ -18,11 +15,8 @@ public class SubscribeReply extends Reply {
     this.patterns = patterns;
   }
 
-  public byte[][] getPatterns() {
-    return patterns;
-  }
-
   @Override
-  public void write(OutputStream os) throws IOException {
+  public byte[][] data() {
+    return patterns;
   }
 }

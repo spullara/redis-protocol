@@ -1,10 +1,5 @@
 package redis.reply;
 
-import com.google.common.base.Charsets;
-
-import java.io.IOException;
-import java.io.OutputStream;
-
 /**
 * Replies.
 * User: sam
@@ -12,8 +7,6 @@ import java.io.OutputStream;
 * Time: 3:04 PM
 * To change this template use File | Settings | File Templates.
 */
-public abstract class Reply {
-
-  public abstract void write(OutputStream os) throws IOException;
-
+public interface Reply<T> {
+  T data();
 }

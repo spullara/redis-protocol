@@ -1,5 +1,17 @@
 package redis.client;
 
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.SettableFuture;
+import redis.Command;
+import redis.RedisProtocol;
+import redis.reply.BulkReply;
+import redis.reply.ErrorReply;
+import redis.reply.MultiBulkReply;
+import redis.reply.Reply;
+import redis.reply.StatusReply;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -12,20 +24,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
-import com.google.common.util.concurrent.SettableFuture;
-
-import redis.Command;
-import redis.RedisProtocol;
-import redis.reply.BulkReply;
-import redis.reply.ErrorReply;
-import redis.reply.IntegerReply;
-import redis.reply.MultiBulkReply;
-import redis.reply.Reply;
-import redis.reply.StatusReply;
 
 /**
  * The lowest layer that talks directly with the redis protocol.
@@ -46,7 +44,7 @@ public class RedisClientBase {
     try {
       redisProtocol = new RedisProtocol(new Socket(host, port));
       BulkReply info = (BulkReply) redisProtocol.send(new Command("info"));
-      BufferedReader br = new BufferedReader(new StringReader(new String(info.bytes)));
+      BufferedReader br = new BufferedReader(new StringReader(new String(info.data())));
       String line;
       while ((line = br.readLine()) != null) {
         int index = line.indexOf(':');
@@ -94,10 +92,10 @@ public class RedisClientBase {
           try {
             Reply reply = redisProtocol.receiveAsync();
             if (reply instanceof ErrorReply) {
-              set.setException(new RedisException(((ErrorReply) reply).error));
+              set.setException(new RedisException(((ErrorReply) reply).data()));
             }
             if (reply instanceof StatusReply) {
-              if ("QUEUED".equals(((StatusReply) reply).status)) {
+              if ("QUEUED".equals(((StatusReply) reply).data())) {
                 txReplies.offer(set);
                 return;
               }
@@ -118,7 +116,7 @@ public class RedisClientBase {
           try {
             Reply reply = redisProtocol.receiveAsync();
             if (reply instanceof ErrorReply) {
-              throw new RedisException(((ErrorReply) reply).error);
+              throw new RedisException(((ErrorReply) reply).data());
             }
             return reply;
           } finally {
@@ -188,27 +186,15 @@ public class RedisClientBase {
         @Override
         public Boolean call() throws Exception {
           MultiBulkReply execReply = (MultiBulkReply) redisProtocol.receiveAsync();
-          if (execReply.byteArrays == null) {
+          if (execReply.data() == null) {
             for (SettableFuture<Reply> txReply : txReplies) {
               txReply.setException(new RedisException("Transaction failed"));
             }
             return false;
           }
-          for (Object reply : execReply.byteArrays) {
+          for (Reply reply : execReply.data()) {
             SettableFuture<Reply> poll = txReplies.poll();
-            if (reply instanceof ErrorReply) {
-              poll.setException(new RedisException(((ErrorReply) reply).error));
-            } else if (reply instanceof Reply) {
-              poll.set((Reply) reply);
-            } else if (reply instanceof Integer) {
-              Integer i = (Integer) reply;
-              poll.set(new IntegerReply(i));
-            } else if (reply instanceof byte[]) {
-              byte[] bytes = (byte[]) reply;
-              poll.set(new BulkReply(bytes));
-            } else {
-              throw new RedisException("Unexpected result: " + reply);
-            }
+            poll.set(reply);
           }
           return true;
         }

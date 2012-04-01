@@ -2,6 +2,7 @@ package redis;
 
 import com.google.common.base.Charsets;
 import org.junit.Test;
+import redis.reply.BulkReply;
 import redis.reply.MultiBulkReply;
 
 import java.io.ByteArrayInputStream;
@@ -57,11 +58,13 @@ public class CommandTest {
   @Test
   public void freelsBench() throws IOException {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    byte[][] replies = new byte[100][];
-    for (int i = 0; i < replies.length; i++) {
-      replies[i] = "foobar".getBytes();
+    baos.write(MultiBulkReply.MARKER);
+    baos.write("100\r\n".getBytes());
+    for (int i = 0; i < 100; i++) {
+      baos.write(BulkReply.MARKER);
+      baos.write("6\r\n".getBytes());
+      baos.write("foobar\r\n".getBytes());
     }
-    new MultiBulkReply(replies).write(baos);
     byte[] multiBulkReply = baos.toByteArray();
     long start = System.currentTimeMillis();
     for (int i = 0; i < 10; i++) {

@@ -2,17 +2,16 @@ package client;
 
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ListenableFuture;
-
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import redis.Command;
 import redis.client.RedisClient;
 import redis.reply.BulkReply;
 import redis.reply.IntegerReply;
+import redis.reply.MultiBulkReply;
 import redis.reply.StatusReply;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -40,12 +39,32 @@ public class RedisClientTest {
     RedisClient redisClient = new RedisClient("localhost", 6379);
     redisClient.set("test", "value");
     BulkReply test = redisClient.get("test");
-    assertEquals("value", new String(test.bytes));
+    assertEquals("value", test.asAsciiString());
+    assertEquals("value", test.asUTF8String());
     RedisClient.Pipeline p = redisClient.pipeline();
     p.set("increment", 0);
     p.incr("increment");
     p.incr("increment");
-    assertEquals(3, redisClient.incr("increment").integer);
+    assertEquals(3, (long) redisClient.incr("increment").data());
+
+    redisClient.del(new Object[] { "hash" });
+    redisClient.hset("hash", "field1", "value1");
+    redisClient.hset("hash", "field2", "value2");
+    redisClient.hset("hash", "field3", "value1");
+    MultiBulkReply hash = redisClient.hgetall("hash");
+    assertEquals("value2", hash.asStringMap(Charsets.UTF_8).get("field2"));
+    assertEquals(6, hash.asStringList(Charsets.UTF_8).size());
+    assertEquals(5, hash.asStringSet(Charsets.UTF_8).size());
+
+    Object[] keys = {"test1", "test2", "test3"};
+    redisClient.del(keys);
+    redisClient.set("test1", "value1");
+    redisClient.set("test2", "value2");
+    redisClient.set("test3", "value3");
+    MultiBulkReply values = redisClient.mget(keys);
+    List<String> strings = values.asStringList(Charsets.UTF_8);
+    assertEquals(3, strings.size());
+    assertEquals("value2", strings.get(1));
   }
 
   @Test
@@ -62,8 +81,8 @@ public class RedisClientTest {
       ListenableFuture<IntegerReply> txincr1 = p.incr("txincr");
       ListenableFuture<IntegerReply> txincr2 = p.incr("txincr");
       redisClient1.exec();
-      assertEquals(2, txincr2.get().integer);
-      assertEquals(1, txincr1.get().integer);
+      assertEquals(2l, (long) txincr2.get().data());
+      assertEquals(1l, (long) txincr1.get().data());
     }
 
     {
@@ -86,7 +105,7 @@ public class RedisClientTest {
     RedisClient rc = new RedisClient("localhost", 6379);
     rc.set("test1".getBytes(), "value".getBytes());
     rc.set("test2".getBytes(), "value");
-    assertEquals("value", new String((byte[]) rc.mget(new Object[] { "test1".getBytes() }).byteArrays[0]));
+    assertEquals("value", ((BulkReply)(rc.mget(new Object[] { "test1".getBytes() }).data()[0])).asAsciiString());
   }
   
   @Test

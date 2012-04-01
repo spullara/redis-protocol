@@ -132,13 +132,6 @@ public class RedisProtocol {
     }
   }
 
-  public void send(Reply reply) throws IOException {
-    synchronized (os) {
-      reply.write(os);
-    }
-    os.flush();
-  }
-
   public void write(byte[] bytes) throws IOException {
     synchronized (os) {
       os.write(bytes);

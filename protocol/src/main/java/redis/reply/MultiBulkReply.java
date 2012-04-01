@@ -1,12 +1,16 @@
 package redis.reply;
 
-import com.sun.org.apache.xpath.internal.operations.Mult;
-import redis.Command;
 import redis.RedisProtocol;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
 * Created by IntelliJ IDEA.
@@ -15,57 +19,73 @@ import java.io.OutputStream;
 * Time: 10:23 AM
 * To change this template use File | Settings | File Templates.
 */
-public class MultiBulkReply extends Reply {
+public class MultiBulkReply implements Reply<Reply[]> {
   public static final char MARKER = '*';
-  public final Object[] byteArrays;
+  private final Reply[] replies;
 
   public MultiBulkReply(InputStream is) throws IOException {
     int size = RedisProtocol.readInteger(is);
     if (size == -1) {
-      byteArrays = null;
+      replies = null;
     } else {
-      byteArrays = new Object[size];
+      replies = new Reply[size];
       for (int i = 0; i < size; i++) {
-        int read = is.read();
-        if (read == BulkReply.MARKER) {
-          byteArrays[i] = RedisProtocol.readBytes(is);
-        } else if (read == IntegerReply.MARKER) {
-          byteArrays[i] = RedisProtocol.readInteger(is);
-        } else if (read == MultiBulkReply.MARKER) {
-          byteArrays[i] = new MultiBulkReply(is);
+        replies[i] = RedisProtocol.receive(is);
+      }
+    }
+  }
+
+  @Override
+  public Reply[] data() {
+    return replies;
+  }
+
+  public List<String> asStringList(Charset charset) {
+    if (replies == null) return null;
+    List<String> strings = new ArrayList<String>(replies.length);
+    for (Reply reply : replies) {
+      if (reply instanceof BulkReply) {
+        strings.add(((BulkReply) reply).asString(charset));
+      } else {
+        throw new IllegalArgumentException("Could not convert " + reply + " to a string");
+      }
+    }
+    return strings;
+  }
+
+  public Set<String> asStringSet(Charset charset) {
+    if (replies == null) return null;
+    Set<String> strings = new HashSet<String>(replies.length);
+    for (Reply reply : replies) {
+      if (reply instanceof BulkReply) {
+        strings.add(((BulkReply) reply).asString(charset));
+      } else {
+        throw new IllegalArgumentException("Could not convert " + reply + " to a string");
+      }
+    }
+    return strings;
+  }
+
+  public Map<String, String> asStringMap(Charset charset) {
+    if (replies == null) return null;
+    int length = replies.length;
+    Map<String, String> map = new HashMap<String, String>(length);
+    if (length % 2 != 0) {
+      throw new IllegalArgumentException("Odd number of replies");
+    }
+    for (int i = 0; i < length; i += 2) {
+      Reply key = replies[i];
+      Reply value = replies[i + 1];
+      if (key instanceof BulkReply) {
+        if (value instanceof BulkReply) {
+          map.put(((BulkReply) key).asString(charset), ((BulkReply) value).asString(charset));
         } else {
-          throw new IOException("Unexpected character in stream: " + read);
+          throw new IllegalArgumentException("Could not convert value: " + value + " to a string");
         }
+      } else {
+        throw new IllegalArgumentException("Could not convert key: " + key + " to a string");
       }
     }
-  }
-
-  public MultiBulkReply(Object... values) {
-    this.byteArrays = values;
-  }
-
-  public void write(OutputStream os) throws IOException {
-    os.write(MARKER);
-    if (byteArrays == null) {
-      os.write(Command.NEG_ONE_WITH_CRLF);
-    } else {
-      os.write(Command.numToBytes(byteArrays.length, true));
-      for (Object value : byteArrays) {
-        if (value == null) {
-          os.write(BulkReply.MARKER);
-          os.write(Command.NEG_ONE_WITH_CRLF);
-        } else if (value instanceof byte[]) {
-          byte[] bytes = (byte[]) value;
-          os.write(BulkReply.MARKER);
-          int length = bytes.length;
-          os.write(Command.numToBytes(length, true));
-          os.write(bytes);
-          os.write(Command.CRLF);
-        } else if (value instanceof Number) {
-          os.write(IntegerReply.MARKER);
-          os.write(Command.numToBytes(((Number) value).longValue(), true));
-        }
-      }
-    }
+    return map;
   }
 }
