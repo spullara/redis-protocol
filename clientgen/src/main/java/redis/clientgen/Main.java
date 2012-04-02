@@ -80,7 +80,13 @@ public class Main {
       cache.load(new FileInputStream(cacheFile));
     }
 
-    Set<String> unsupported = new HashSet<String>(Arrays.asList("MULTI", "EXEC", "DISCARD"));
+    Set<String> unsupported = new HashSet<String>(
+            Arrays.asList(
+                    "MULTI", "EXEC", "DISCARD", // Transactions
+                    "ZRANK", // Two different return values
+                    "PSUBSCRIBE", "SUBSCRIBE", "UNSUBSCRIBE", "PUNSUBSCRIBE" // subscriptions
+            )
+    );
     JsonFactory jf = new MappingJsonFactory();
     JsonParser jsonParser = jf.createJsonParser(new URL("https://raw.github.com/antirez/redis-doc/master/commands.json"));
     final JsonNode commandNodes = jsonParser.readValueAsTree();

@@ -1,5 +1,6 @@
 package redis.client;
 
+import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -8,6 +9,7 @@ import redis.Command;
 import redis.RedisProtocol;
 import redis.reply.BulkReply;
 import redis.reply.ErrorReply;
+import redis.reply.IntegerReply;
 import redis.reply.MultiBulkReply;
 import redis.reply.Reply;
 import redis.reply.StatusReply;
@@ -134,7 +136,11 @@ public class RedisClientBase {
     try {
       if (pipelined.get() == 0) {
         redisProtocol.sendAsync(command);
-        return redisProtocol.receiveAsync();
+        Reply reply = redisProtocol.receiveAsync();
+        if (reply instanceof ErrorReply) {
+          throw new RedisException(((ErrorReply) reply).data());
+        }
+        return reply;
       } else {
         return pipeline(name, command).get();
       }
@@ -205,4 +211,13 @@ public class RedisClientBase {
     }
   }
 
+  private static final String ZRANK = "ZRANK";
+  private static final byte[] ZRANK_BYTES = ZRANK.getBytes(Charsets.US_ASCII);
+  private static final int ZRANK_VERSION = parseVersion("2.0.0");
+
+  // Determine the index of a member in a sorted set
+  public Reply zrank(Object key, Object member) throws RedisException {
+    if (version < ZRANK_VERSION) throw new RedisException("Server does not support ZRANK");
+    return execute(ZRANK, new Command(ZRANK_BYTES, key, member));
+  }
 }
