@@ -138,7 +138,7 @@ public class Benchmark {
         byte[] set = "myset".getBytes();
         byte[] data = new byte[d];
         Object[] objects = new Object[21];
-        objects[0] = key;
+        objects[0] = "MSET";
         for (int i = 1; i < objects.length - 1; i += 2) {
           objects[i] = key;
           objects[i + 1] = data;
@@ -150,7 +150,7 @@ public class Benchmark {
 
         benchmark("PING (warmup)", new Command(new Object[]{"PING".getBytes()}));
         benchmark("PING", new Command(new Object[]{"PING".getBytes()}));
-        benchmark("MSET", new Command("MSET".getBytes(), objects));
+        benchmark("MSET", new Command(objects));
         benchmark("SET", new Command("SET".getBytes(), key, data));
         benchmark("GET", new Command("GET".getBytes(), key));
         benchmark("INCR", new Command("INCR".getBytes(), counter));
