@@ -92,9 +92,40 @@ public class AllCommandsTest {
 
   @Test
   public void eval() {
+    // Commenting out for now until I upgrade my Redis
 //    eq(a("key1", "key2", "first", "second"),
 //            (MultiBulkReply) rc.eval("return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}", 2,
 //                    a("key1", "key2", "first", "second")));
+  }
+
+  @Test
+  public void exists() {
+    rc.del_("key1", "key2");
+    eq("OK", rc.set("key1", "value"));
+    eq(1, rc.exists("key1"));
+    eq(0, rc.exists("key2"));
+  }
+
+  @Test
+  public void get() {
+    rc.del_("key");
+    eq("OK", rc.set("key", "value"));
+    eq("value", rc.get("key"));
+  }
+
+  @Test
+  public void sort() {
+    rc.del_("list");
+    eq(5, rc.lpush_("list", "a", "b", "c", "ab", "bc"));
+    eq(a("a", "ab", "b", "bc", "c"), (MultiBulkReply) rc.sort_("list", ALPHA));
+    eq(a("a", "ab", "b"), (MultiBulkReply) rc.sort_("list", ALPHA, LIMIT, 0, 3));
+    eq(a("c", "bc", "b", "ab", "a"), (MultiBulkReply) rc.sort_("list", ALPHA, DESC));
+    eq("OK", rc.mset_("w_a", 1, "w_b", 2, "w_c", 3, "w_ab", 4, "w_bc", 5));
+    eq(a("a", "b", "c", "ab", "bc"), (MultiBulkReply) rc.sort_("list", BY, "w_*"));
+    eq("OK", rc.mset_("o_a", 1, "o_b", 2, "o_c", 3, "o_ab", 4, "o_bc", 5));
+    eq(a("1", "2", "3", "4", "5"), (MultiBulkReply) rc.sort_("list", BY, "w_*", "GET", "o_*"));
+    eq(5, (IntegerReply) rc.sort_("list", ALPHA, STORE, "result"));
+    eq(a("a", "ab", "b", "bc", "c"), rc.lrange("result", 0, 10));
   }
 
   @Test

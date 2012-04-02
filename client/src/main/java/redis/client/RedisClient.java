@@ -1830,22 +1830,22 @@ public class RedisClient extends RedisClientBase {
    * @param pattern1
    * @param offset_or_count2
    * @param pattern3
-   * @return MultiBulkReply
+   * @return Reply
    */
-  public MultiBulkReply sort(Object key0, Object pattern1, Object offset_or_count2, Object[] pattern3) throws RedisException {
+  public Reply sort(Object key0, Object pattern1, Object offset_or_count2, Object[] pattern3) throws RedisException {
     if (version < SORT_VERSION) throw new RedisException("Server does not support SORT");
     List list = new ArrayList();
     list.add(key0);
     if (pattern1 != null) list.add(pattern1);
     if (offset_or_count2 != null) list.add(offset_or_count2);
     Collections.addAll(list, pattern3);
-    return (MultiBulkReply) execute(SORT, new Command(SORT_BYTES, list.toArray(new Object[list.size()])));
+    return (Reply) execute(SORT, new Command(SORT_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public MultiBulkReply sort_(Object... arguments) throws RedisException {
+  public Reply sort_(Object... arguments) throws RedisException {
     if (version < SORT_VERSION) throw new RedisException("Server does not support SORT");
-    return (MultiBulkReply) execute(SORT, new Command(SORT_BYTES, arguments));
+    return (Reply) execute(SORT, new Command(SORT_BYTES, arguments));
   }
   
   private static final String SPOP = "SPOP";
@@ -3787,22 +3787,22 @@ public class RedisClient extends RedisClientBase {
    * @param pattern1
    * @param offset_or_count2
    * @param pattern3
-   * @return MultiBulkReply
+   * @return Reply
    */
-  public ListenableFuture<MultiBulkReply> sort(Object key0, Object pattern1, Object offset_or_count2, Object[] pattern3) throws RedisException {
+  public ListenableFuture<Reply> sort(Object key0, Object pattern1, Object offset_or_count2, Object[] pattern3) throws RedisException {
     if (version < SORT_VERSION) throw new RedisException("Server does not support SORT");
     List list = new ArrayList();
     list.add(key0);
     if (pattern1 != null) list.add(pattern1);
     if (offset_or_count2 != null) list.add(offset_or_count2);
     Collections.addAll(list, pattern3);
-    return (ListenableFuture<MultiBulkReply>) pipeline(SORT, new Command(SORT_BYTES, list.toArray(new Object[list.size()])));
+    return (ListenableFuture<Reply>) pipeline(SORT, new Command(SORT_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> sort_(Object... arguments) throws RedisException {
+  public ListenableFuture<Reply> sort_(Object... arguments) throws RedisException {
     if (version < SORT_VERSION) throw new RedisException("Server does not support SORT");
-    return (ListenableFuture<MultiBulkReply>) pipeline(SORT, new Command(SORT_BYTES, arguments));
+    return (ListenableFuture<Reply>) pipeline(SORT, new Command(SORT_BYTES, arguments));
   }
 
   /**

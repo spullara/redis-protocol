@@ -43,6 +43,11 @@ public class RedisClientBase {
   private static final Comparator<byte[]> BYTES = SignedBytes.lexicographicalComparator();
   public static final String WEIGHTS = "WEIGHTS";
   public static final String WITHSCORES = "WITHSCORES";
+  public static final String ALPHA = "ALPHA";
+  public static final String LIMIT = "LIMIT";
+  public static final String DESC = "DESC";
+  public static final String BY = "BY";
+  public static final String STORE = "STORE";
   // Single threaded pipelining
   private ListeningExecutorService es;
   protected RedisProtocol redisProtocol;

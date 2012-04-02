@@ -87,6 +87,7 @@ public class Main {
             )
     );
     final Set<String> genericReply = new HashSet<String>(Arrays.asList(
+            "SORT", // Can return an integer reply
             "ZRANK", "ZREVRANK" // Two different return values
     ));
     final Set<String> multiples = new HashSet<String>(Arrays.asList(
