@@ -146,9 +146,21 @@ public class AllCommandsTest {
     eq(1, rc.zadd(a("myzset", "1", "one")));
     eq(1, rc.zadd(a("myzset", "2", "two")));
     eq(1, rc.zadd(a("myzset", "3", "three")));
-    eq(a("one", "two", "three"), rc.zrange("myzset", "0", "-1", null));
-    eq(a("three"), rc.zrange("myzset", "2", "3", null));
-    eq(a("two", "three"), rc.zrange("myzset", "-2", "-1", null));
+    eq(a("one", "two", "three"), rc.zrange_("myzset", "0", "-1"));
+    eq(a("three"), rc.zrange_("myzset", "2", "3"));
+    eq(a("two", "three"), rc.zrange_("myzset", "-2", "-1"));
+  }
+
+  @Test
+  public void zrangebyscore() {
+    rc.del(a("myzset"));
+    eq(1, rc.zadd(a("myzset", "1", "one")));
+    eq(1, rc.zadd(a("myzset", "2", "two")));
+    eq(1, rc.zadd(a("myzset", "3", "three")));
+    eq(a("one", "two", "three"), rc.zrangebyscore_("myzset", "-inf", "inf"));
+    eq(a("one", "two"), rc.zrangebyscore_("myzset", "1", "2"));
+    eq(a("two"), rc.zrangebyscore_("myzset", "(1", "2"));
+    eq(a(), rc.zrangebyscore_("myzset", "(1", "(2"));
   }
 
   private void eq(String exepcted, StatusReply actual) {
