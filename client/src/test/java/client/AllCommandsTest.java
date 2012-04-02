@@ -2,8 +2,10 @@ package client;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 
 import com.google.common.base.Charsets;
+import com.google.common.util.concurrent.ListenableFuture;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -23,11 +25,13 @@ import static redis.client.RedisClientBase.*;
 public class AllCommandsTest {
 
   private static RedisClient rc;
+  private static RedisClient.Pipeline p;
   private static RedisClient rc2;
 
   @BeforeClass
   public static void setup() throws IOException {
     rc = new RedisClient("localhost", 6379);
+    p = rc.pipeline();
     rc2 = new RedisClient("localhost", 6379);
   }
 
@@ -246,7 +250,8 @@ public class AllCommandsTest {
   }
 
   @Test
-  public void zunionstore() {
+  public void zunionstore() throws ExecutionException, InterruptedException {
+    RedisClient.Pipeline rc = p;
     rc.del(a("zset1", "zset2"));
     eq(1, rc.zadd(a("zset1", "1", "one")));
     eq(1, rc.zadd(a("zset1", "2", "two")));
@@ -255,6 +260,14 @@ public class AllCommandsTest {
     eq(1, rc.zadd(a("zset2", "3", "three")));
     eq(3, rc.zunionstore_("out", 2, "zset1", "zset2", WEIGHTS, 2, 3));
     eq(a("one", "5", "three", "9", "two", "10"), rc.zrange_("out", 0, -1, WITHSCORES));
+  }
+
+  private void eq(Object[] a, ListenableFuture<MultiBulkReply> out) throws ExecutionException, InterruptedException {
+    eq(a, out.get());
+  }
+
+  private void eq(int i, ListenableFuture<IntegerReply> zadd) throws ExecutionException, InterruptedException {
+    eq(i, zadd.get());
   }
 
   private void eq(String exepcted, StatusReply actual) {
