@@ -2,9 +2,14 @@ package client;
 
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.SettableFuture;
+
 import org.junit.Test;
 import redis.Command;
+import redis.client.MessageListener;
 import redis.client.RedisClient;
+import redis.client.RedisException;
+import redis.client.ReplyListener;
 import redis.reply.BulkReply;
 import redis.reply.IntegerReply;
 import redis.reply.MultiBulkReply;
@@ -18,6 +23,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
@@ -98,6 +104,54 @@ public class RedisClientTest {
         fail("This should have failed");
       }
     }
+    redisClient1.close();
+    redisClient2.close();
+  }
+
+  @Test
+  public void testSubscriptions() throws IOException, ExecutionException, InterruptedException {
+    RedisClient redisClient1 = new RedisClient("localhost", 6379);
+    RedisClient redisClient2 = new RedisClient("localhost", 6379);
+    final SettableFuture<String> messaged = SettableFuture.create();
+    final SettableFuture<String> subscribed = SettableFuture.create();
+    final SettableFuture<String> psubscribed = SettableFuture.create();
+    final SettableFuture<String> unsubscribed = SettableFuture.create();
+    final SettableFuture<String> punsubscribed = SettableFuture.create();
+    redisClient2.addListener(new ReplyListener() {
+      public void subscribed(byte[] name, int channels) {
+        subscribed.set(new String(name));
+      }
+      public void psubscribed(byte[] name, int channels) {
+        psubscribed.set(new String(name));
+      }
+      public void unsubscribed(byte[] name, int channels) {
+        unsubscribed.set(new String(name));
+      }
+      public void punsubscribed(byte[] name, int channels) {
+        punsubscribed.set(new String(name));
+      }
+      public void message(byte[] channel, byte[] message) {
+        messaged.set(new String(channel) + " " + new String(message));
+      }
+    });
+    redisClient2.subscribe("subscribe");
+    redisClient1.publish("subscribe", "hello, world!");
+    assertEquals("subscribe hello, world!", messaged.get());
+    redisClient2.unsubscribe("subscribe");
+    redisClient2.psubscribe("subscribe*");
+    redisClient2.punsubscribe("subscribe*");
+    assertEquals("subscribe", subscribed.get());
+    assertEquals("subscribe", unsubscribed.get());
+    assertEquals("subscribe*", psubscribed.get());
+    assertEquals("subscribe*", punsubscribed.get());
+    try {
+      redisClient2.set("test", "fail");
+      fail("Should have failed");
+    } catch (RedisException e) {
+      // fails
+    }
+    redisClient1.close();
+    redisClient2.close();
   }
 
   @Test
@@ -170,5 +224,30 @@ public class RedisClientTest {
     }
     long end = System.currentTimeMillis();
     System.out.println("Pipelined: " + (CALLS * 10 * 1000) / (end - start) + " calls per second");
+  }
+
+  @Test
+  public void benchmarkPubsub() throws IOException, ExecutionException, InterruptedException {
+    long start = System.currentTimeMillis();
+    byte[] hello = "hello".getBytes();
+    byte[] test = "test".getBytes();
+    RedisClient subscriberClient = new RedisClient("localhost", 6379);
+    final AtomicReference<SettableFuture> futureRef = new AtomicReference<SettableFuture>();
+    subscriberClient.addListener(new MessageListener() {
+      @Override
+      public void message(byte[] channel, byte[] message) {
+        futureRef.get().set(null);
+      }
+    });
+    subscriberClient.subscribe("test");
+    RedisClient publisherClient = new RedisClient("localhost", 6379);
+    for (int i = 0; i < CALLS; i++) {
+      SettableFuture<Object> future = SettableFuture.create();
+      futureRef.set(future);
+      publisherClient.publish(test, hello);
+      future.get();
+    }
+    long end = System.currentTimeMillis();
+    System.out.println("Pub/sub: " + (CALLS * 1000) / (end - start) + " calls per second");
   }
 }

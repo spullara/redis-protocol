@@ -1105,23 +1105,6 @@ public class RedisClient extends RedisClientBase {
     return (Reply) execute(PSETEX, new Command(PSETEX_BYTES, key0, milliseconds1, value2));
   }
   
-  private static final String PSUBSCRIBE = "PSUBSCRIBE";
-  private static final byte[] PSUBSCRIBE_BYTES = PSUBSCRIBE.getBytes(Charsets.US_ASCII);
-  private static final int PSUBSCRIBE_VERSION = parseVersion("2.0.0");
-
-  /**
-   * Listen for messages published to channels matching the given patterns
-   *
-   * @param pattern0
-   * @return Reply
-   */
-  public Reply psubscribe(Object[] pattern0) throws RedisException {
-    if (version < PSUBSCRIBE_VERSION) throw new RedisException("Server does not support PSUBSCRIBE");
-    List list = new ArrayList();
-    Collections.addAll(list, pattern0);
-    return (Reply) execute(PSUBSCRIBE, new Command(PSUBSCRIBE_BYTES, list.toArray(new Object[list.size()])));
-  }
-  
   private static final String PTTL = "PTTL";
   private static final byte[] PTTL_BYTES = PTTL.getBytes(Charsets.US_ASCII);
   private static final int PTTL_VERSION = parseVersion("2.6.0");
@@ -1151,23 +1134,6 @@ public class RedisClient extends RedisClientBase {
   public IntegerReply publish(Object channel0, Object message1) throws RedisException {
     if (version < PUBLISH_VERSION) throw new RedisException("Server does not support PUBLISH");
     return (IntegerReply) execute(PUBLISH, new Command(PUBLISH_BYTES, channel0, message1));
-  }
-  
-  private static final String PUNSUBSCRIBE = "PUNSUBSCRIBE";
-  private static final byte[] PUNSUBSCRIBE_BYTES = PUNSUBSCRIBE.getBytes(Charsets.US_ASCII);
-  private static final int PUNSUBSCRIBE_VERSION = parseVersion("2.0.0");
-
-  /**
-   * Stop listening for messages posted to channels matching the given patterns
-   *
-   * @param pattern0
-   * @return Reply
-   */
-  public Reply punsubscribe(Object[] pattern0) throws RedisException {
-    if (version < PUNSUBSCRIBE_VERSION) throw new RedisException("Server does not support PUNSUBSCRIBE");
-    List list = new ArrayList();
-    Collections.addAll(list, pattern0);
-    return (Reply) execute(PUNSUBSCRIBE, new Command(PUNSUBSCRIBE_BYTES, list.toArray(new Object[list.size()])));
   }
   
   private static final String QUIT = "QUIT";
@@ -1757,23 +1723,6 @@ public class RedisClient extends RedisClientBase {
     return (IntegerReply) execute(STRLEN, new Command(STRLEN_BYTES, key0));
   }
   
-  private static final String SUBSCRIBE = "SUBSCRIBE";
-  private static final byte[] SUBSCRIBE_BYTES = SUBSCRIBE.getBytes(Charsets.US_ASCII);
-  private static final int SUBSCRIBE_VERSION = parseVersion("2.0.0");
-
-  /**
-   * Listen for messages published to the given channels
-   *
-   * @param channel0
-   * @return Reply
-   */
-  public Reply subscribe(Object[] channel0) throws RedisException {
-    if (version < SUBSCRIBE_VERSION) throw new RedisException("Server does not support SUBSCRIBE");
-    List list = new ArrayList();
-    Collections.addAll(list, channel0);
-    return (Reply) execute(SUBSCRIBE, new Command(SUBSCRIBE_BYTES, list.toArray(new Object[list.size()])));
-  }
-  
   private static final String SUNION = "SUNION";
   private static final byte[] SUNION_BYTES = SUNION.getBytes(Charsets.US_ASCII);
   private static final int SUNION_VERSION = parseVersion("1.0.0");
@@ -1866,23 +1815,6 @@ public class RedisClient extends RedisClientBase {
   public StatusReply type(Object key0) throws RedisException {
     if (version < TYPE_VERSION) throw new RedisException("Server does not support TYPE");
     return (StatusReply) execute(TYPE, new Command(TYPE_BYTES, key0));
-  }
-  
-  private static final String UNSUBSCRIBE = "UNSUBSCRIBE";
-  private static final byte[] UNSUBSCRIBE_BYTES = UNSUBSCRIBE.getBytes(Charsets.US_ASCII);
-  private static final int UNSUBSCRIBE_VERSION = parseVersion("2.0.0");
-
-  /**
-   * Stop listening for messages posted to the given channels
-   *
-   * @param channel0
-   * @return Reply
-   */
-  public Reply unsubscribe(Object[] channel0) throws RedisException {
-    if (version < UNSUBSCRIBE_VERSION) throw new RedisException("Server does not support UNSUBSCRIBE");
-    List list = new ArrayList();
-    Collections.addAll(list, channel0);
-    return (Reply) execute(UNSUBSCRIBE, new Command(UNSUBSCRIBE_BYTES, list.toArray(new Object[list.size()])));
   }
   
   private static final String UNWATCH = "UNWATCH";
@@ -3026,19 +2958,6 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Listen for messages published to channels matching the given patterns
-   *
-   * @param pattern0
-   * @return Reply
-   */
-  public ListenableFuture<Reply> psubscribe(Object[] pattern0) throws RedisException {
-    if (version < PSUBSCRIBE_VERSION) throw new RedisException("Server does not support PSUBSCRIBE");
-    List list = new ArrayList();
-    Collections.addAll(list, pattern0);
-    return (ListenableFuture<Reply>) pipeline(PSUBSCRIBE, new Command(PSUBSCRIBE_BYTES, list.toArray(new Object[list.size()])));
-  }
-
-  /**
    * Get the time to live for a key in milliseconds
    *
    * @param key0
@@ -3059,19 +2978,6 @@ public class RedisClient extends RedisClientBase {
   public ListenableFuture<IntegerReply> publish(Object channel0, Object message1) throws RedisException {
     if (version < PUBLISH_VERSION) throw new RedisException("Server does not support PUBLISH");
     return (ListenableFuture<IntegerReply>) pipeline(PUBLISH, new Command(PUBLISH_BYTES, channel0, message1));
-  }
-
-  /**
-   * Stop listening for messages posted to channels matching the given patterns
-   *
-   * @param pattern0
-   * @return Reply
-   */
-  public ListenableFuture<Reply> punsubscribe(Object[] pattern0) throws RedisException {
-    if (version < PUNSUBSCRIBE_VERSION) throw new RedisException("Server does not support PUNSUBSCRIBE");
-    List list = new ArrayList();
-    Collections.addAll(list, pattern0);
-    return (ListenableFuture<Reply>) pipeline(PUNSUBSCRIBE, new Command(PUNSUBSCRIBE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   /**
@@ -3518,19 +3424,6 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Listen for messages published to the given channels
-   *
-   * @param channel0
-   * @return Reply
-   */
-  public ListenableFuture<Reply> subscribe(Object[] channel0) throws RedisException {
-    if (version < SUBSCRIBE_VERSION) throw new RedisException("Server does not support SUBSCRIBE");
-    List list = new ArrayList();
-    Collections.addAll(list, channel0);
-    return (ListenableFuture<Reply>) pipeline(SUBSCRIBE, new Command(SUBSCRIBE_BYTES, list.toArray(new Object[list.size()])));
-  }
-
-  /**
    * Add multiple sets
    *
    * @param key0
@@ -3598,19 +3491,6 @@ public class RedisClient extends RedisClientBase {
   public ListenableFuture<StatusReply> type(Object key0) throws RedisException {
     if (version < TYPE_VERSION) throw new RedisException("Server does not support TYPE");
     return (ListenableFuture<StatusReply>) pipeline(TYPE, new Command(TYPE_BYTES, key0));
-  }
-
-  /**
-   * Stop listening for messages posted to the given channels
-   *
-   * @param channel0
-   * @return Reply
-   */
-  public ListenableFuture<Reply> unsubscribe(Object[] channel0) throws RedisException {
-    if (version < UNSUBSCRIBE_VERSION) throw new RedisException("Server does not support UNSUBSCRIBE");
-    List list = new ArrayList();
-    Collections.addAll(list, channel0);
-    return (ListenableFuture<Reply>) pipeline(UNSUBSCRIBE, new Command(UNSUBSCRIBE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   /**

@@ -1,31 +1,37 @@
 package redis.client;
 
-import com.google.common.base.Charsets;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
-import com.google.common.util.concurrent.SettableFuture;
-import redis.Command;
-import redis.RedisProtocol;
-import redis.reply.BulkReply;
-import redis.reply.ErrorReply;
-import redis.reply.IntegerReply;
-import redis.reply.MultiBulkReply;
-import redis.reply.Reply;
-import redis.reply.StatusReply;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.google.common.base.Charsets;
+import com.google.common.primitives.Bytes;
+import com.google.common.primitives.SignedBytes;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.SettableFuture;
+
+import redis.Command;
+import redis.RedisProtocol;
+import redis.reply.BulkReply;
+import redis.reply.ErrorReply;
+import redis.reply.MultiBulkReply;
+import redis.reply.Reply;
+import redis.reply.StatusReply;
 
 /**
  * The lowest layer that talks directly with the redis protocol.
@@ -35,6 +41,7 @@ import java.util.regex.Pattern;
  * Time: 10:24 PM
  */
 public class RedisClientBase {
+  private static final Comparator<byte[]> BYTES = SignedBytes.lexicographicalComparator();
   // Single threaded pipelining
   private ListeningExecutorService es;
   protected RedisProtocol redisProtocol;
@@ -80,6 +87,9 @@ public class RedisClientBase {
   private Queue<SettableFuture<Reply>> txReplies = new ConcurrentLinkedQueue<SettableFuture<Reply>>();
 
   public synchronized ListenableFuture<? extends Reply> pipeline(String name, Command command) throws RedisException {
+    if (subscribed) {
+      throw new RedisException("You can only issue subscription commands once subscribed");
+    }
     try {
       redisProtocol.sendAsync(command);
     } catch (IOException e) {
@@ -133,6 +143,9 @@ public class RedisClientBase {
     if (tx) {
       throw new RedisException("Use the pipeline API when using transactions");
     }
+    if (subscribed) {
+      throw new RedisException("You can only issue subscription commands once subscribed");
+    }
     try {
       if (pipelined.get() == 0) {
         redisProtocol.sendAsync(command);
@@ -172,12 +185,18 @@ public class RedisClientBase {
     if (tx) {
       throw new RedisException("Already in a transaction");
     }
+    if (subscribed) {
+      throw new RedisException("You can only issue subscription commands once subscribed");
+    }
     StatusReply multi = (StatusReply) execute("MULTI", MULTI);
     tx = true;
     return multi;
   }
 
   public synchronized StatusReply discard() {
+    if (subscribed) {
+      throw new RedisException("You can only issue subscription commands once subscribed");
+    }
     tx = false;
     for (SettableFuture<Reply> txReply : txReplies) {
       txReply.setException(new RedisException("Discarded"));
@@ -186,6 +205,9 @@ public class RedisClientBase {
   }
 
   public synchronized Future<Boolean> exec() {
+    if (subscribed) {
+      throw new RedisException("You can only issue subscription commands once subscribed");
+    }
     tx = false;
     try {
       redisProtocol.sendAsync(EXEC);
@@ -215,9 +237,133 @@ public class RedisClientBase {
   private static final byte[] ZRANK_BYTES = ZRANK.getBytes(Charsets.US_ASCII);
   private static final int ZRANK_VERSION = parseVersion("2.0.0");
 
-  // Determine the index of a member in a sorted set
+  /**
+   * Determine the index of a member in a sorted set
+   *
+   * @param key
+   * @param member
+   * @return reply Either an IntegerReply or a BulkReply
+   */
   public Reply zrank(Object key, Object member) throws RedisException {
     if (version < ZRANK_VERSION) throw new RedisException("Server does not support ZRANK");
     return execute(ZRANK, new Command(ZRANK_BYTES, key, member));
+  }
+
+  private List<ReplyListener> replyListeners;
+  private boolean subscribed;
+
+  /**
+   * Add a reply listener to this client for subscriptions.
+   */
+  public synchronized void addListener(ReplyListener replyListener) {
+    if (replyListeners == null) {
+      replyListeners = new CopyOnWriteArrayList<ReplyListener>();
+    }
+    replyListeners.add(replyListener);
+  }
+
+  private static final byte[] MESSAGE = "message".getBytes();
+  private static final byte[] SUBSCRIBE = "subscribe".getBytes();
+  private static final byte[] UNSUBSCRIBE = "unsubscribe".getBytes();
+  private static final byte[] PSUBSCRIBE = "psubscribe".getBytes();
+  private static final byte[] PUNSUBSCRIBE = "punsubscribe".getBytes();
+
+  /**
+   * Subscribes the client to the specified channels.
+   *
+   * @param subscriptions
+   */
+  public synchronized void subscribe(Object... subscriptions) {
+    subscribe();
+    try {
+      redisProtocol.sendAsync(new Command(SUBSCRIBE, subscriptions));
+    } catch (IOException e) {
+      throw new RedisException("Failed to subscribe", e);
+    }
+  }
+
+  /**
+   * Subscribes the client to the specified patterns.
+   *
+   * @param subscriptions
+   */
+  public synchronized void psubscribe(Object... subscriptions) {
+    subscribe();
+    try {
+      redisProtocol.sendAsync(new Command(PSUBSCRIBE, subscriptions));
+    } catch (IOException e) {
+      throw new RedisException("Failed to subscribe", e);
+    }
+  }
+
+  /**
+   * Unsubscribes the client to the specified channels.
+   *
+   * @param subscriptions
+   */
+  public synchronized void unsubscribe(Object... subscriptions) {
+    subscribe();
+    try {
+      redisProtocol.sendAsync(new Command(UNSUBSCRIBE, subscriptions));
+    } catch (IOException e) {
+      throw new RedisException("Failed to subscribe", e);
+    }
+  }
+
+  /**
+   * Unsubscribes the client to the specified patterns.
+   *
+   * @param subscriptions
+   */
+  public synchronized void punsubscribe(Object... subscriptions) {
+    subscribe();
+    try {
+      redisProtocol.sendAsync(new Command(PUNSUBSCRIBE, subscriptions));
+    } catch (IOException e) {
+      throw new RedisException("Failed to subscribe", e);
+    }
+  }
+
+  private void subscribe() {
+    if (!subscribed) {
+      subscribed = true;
+      // Start up the listener, only subscription commands
+      // are accepted past this point
+      es.submit(new SubscriptionsDispatcher());
+    }
+  }
+
+  private class SubscriptionsDispatcher implements Runnable {
+    @Override
+    public void run() {
+      try {
+        while (true) {
+          MultiBulkReply reply = (MultiBulkReply) redisProtocol.receiveAsync();
+          Reply[] data = reply.data();
+          if (data.length != 3) {
+            throw new RedisException("Invalid subscription messsage");
+          }
+          for (ReplyListener replyListener : replyListeners) {
+            byte[] type = (byte[]) data[0].data();
+            byte[] channel = (byte[]) data[1].data();
+            if (BYTES.compare(type, SUBSCRIBE) == 0) {
+              replyListener.subscribed(channel, ((Number) data[2].data()).intValue());
+            } else if (BYTES.compare(type, PSUBSCRIBE) == 0) {
+              replyListener.psubscribed(channel, ((Number) data[2].data()).intValue());
+            } else if (BYTES.compare(type, UNSUBSCRIBE) == 0) {
+              replyListener.unsubscribed(channel, ((Number) data[2].data()).intValue());
+            } else if (BYTES.compare(type, PUNSUBSCRIBE) == 0) {
+              replyListener.punsubscribed(channel, ((Number) data[2].data()).intValue());
+            } else if (BYTES.compare(type, MESSAGE) == 0) {
+              replyListener.message(channel, (byte[]) data[2].data());
+            } else {
+              throw new RedisException("Invalid subscription messsage");
+            }
+          }
+        }
+      } catch (IOException e) {
+        // Ignore, probably closed
+      }
+    }
   }
 }
