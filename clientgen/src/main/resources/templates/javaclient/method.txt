@@ -29,3 +29,11 @@
     return ({{$return}}{{reply}}{{/return}}) {{$method}}method{{/method}}({{name}}, new Command({{name}}_BYTES{{#arguments}}, {{name}}{{/arguments}}));
     {{/usearray}}
   }
+  {{#varargs}}
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public {{$return}}{{reply}}{{/return}} {{methodname}}_(Object... arguments) throws RedisException {
+    if (version < {{name}}_VERSION) throw new RedisException("Server does not support {{name}}");
+    return ({{$return}}{{reply}}{{/return}}) {{$method}}method{{/method}}({{name}}, new Command({{name}}_BYTES, arguments));
+  }
+  {{/varargs}}

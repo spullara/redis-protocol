@@ -115,6 +115,10 @@ public class Main {
         String comment = commandNode.get("summary").getTextValue();
         String reply = (finalReply.equals("") || genericReply.contains(name)) ? "Reply" : finalReply;
         String version = commandNode.get("since").getTextValue();
+        boolean hasOptional = false;
+        boolean varargs() {
+          return (multiples.contains(name) || hasOptional);
+        }
         boolean usearray = false;
         List<Object> arguments = new ArrayList<Object>();
         {
@@ -154,12 +158,14 @@ public class Main {
                 final boolean finalFirst = first;
                 final int finalArgNum = argNum;
                 final boolean isMultiple = argumentNode.get("multiple") != null ;
+                final boolean isOptional = argumentNode.get("optional") != null;
+                if (isOptional) hasOptional = true;
                 arguments.add(new Object() {
                   boolean first = finalFirst;
                   boolean multiple = isMultiple;
                   String typename = "Object";
                   String name = (argName + finalArgNum).replace(" ", "_");
-                  Boolean optional = (argumentNode.get("optional") != null);
+                  Boolean optional = isOptional;
                 });
                 if (isMultiple) {
                   usearray = true;

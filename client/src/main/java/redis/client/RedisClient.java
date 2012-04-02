@@ -1066,6 +1066,12 @@ public class RedisClient extends RedisClientBase {
     Collections.addAll(list, arguments1);
     return (Reply) execute(OBJECT, new Command(OBJECT_BYTES, list.toArray(new Object[list.size()])));
   }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public Reply object_(Object... arguments) throws RedisException {
+    if (version < OBJECT_VERSION) throw new RedisException("Server does not support OBJECT");
+    return (Reply) execute(OBJECT, new Command(OBJECT_BYTES, arguments));
+  }
   
   private static final String PERSIST = "PERSIST";
   private static final byte[] PERSIST_BYTES = PERSIST.getBytes(Charsets.US_ASCII);
@@ -1576,6 +1582,12 @@ public class RedisClient extends RedisClientBase {
     if (version < SHUTDOWN_VERSION) throw new RedisException("Server does not support SHUTDOWN");
     return (StatusReply) execute(SHUTDOWN, new Command(SHUTDOWN_BYTES, NOSAVE0, SAVE1));
   }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public StatusReply shutdown_(Object... arguments) throws RedisException {
+    if (version < SHUTDOWN_VERSION) throw new RedisException("Server does not support SHUTDOWN");
+    return (StatusReply) execute(SHUTDOWN, new Command(SHUTDOWN_BYTES, arguments));
+  }
   
   private static final String SINTER = "SINTER";
   private static final byte[] SINTER_BYTES = SINTER.getBytes(Charsets.US_ASCII);
@@ -1660,6 +1672,12 @@ public class RedisClient extends RedisClientBase {
     if (version < SLOWLOG_VERSION) throw new RedisException("Server does not support SLOWLOG");
     return (Reply) execute(SLOWLOG, new Command(SLOWLOG_BYTES, subcommand0, argument1));
   }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public Reply slowlog_(Object... arguments) throws RedisException {
+    if (version < SLOWLOG_VERSION) throw new RedisException("Server does not support SLOWLOG");
+    return (Reply) execute(SLOWLOG, new Command(SLOWLOG_BYTES, arguments));
+  }
   
   private static final String SMEMBERS = "SMEMBERS";
   private static final byte[] SMEMBERS_BYTES = SMEMBERS.getBytes(Charsets.US_ASCII);
@@ -1714,6 +1732,12 @@ public class RedisClient extends RedisClientBase {
     if (offset_or_count2 != null) list.add(offset_or_count2);
     Collections.addAll(list, pattern3);
     return (MultiBulkReply) execute(SORT, new Command(SORT_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public MultiBulkReply sort_(Object... arguments) throws RedisException {
+    if (version < SORT_VERSION) throw new RedisException("Server does not support SORT");
+    return (MultiBulkReply) execute(SORT, new Command(SORT_BYTES, arguments));
   }
   
   private static final String SPOP = "SPOP";
@@ -1921,6 +1945,12 @@ public class RedisClient extends RedisClientBase {
     Collections.addAll(list, args);
     return (IntegerReply) execute(ZADD, new Command(ZADD_BYTES, list.toArray(new Object[list.size()])));
   }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public IntegerReply zadd_(Object... arguments) throws RedisException {
+    if (version < ZADD_VERSION) throw new RedisException("Server does not support ZADD");
+    return (IntegerReply) execute(ZADD, new Command(ZADD_BYTES, arguments));
+  }
   
   private static final String ZCARD = "ZCARD";
   private static final byte[] ZCARD_BYTES = ZCARD.getBytes(Charsets.US_ASCII);
@@ -1987,6 +2017,12 @@ public class RedisClient extends RedisClientBase {
     Collections.addAll(list, args);
     return (IntegerReply) execute(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public IntegerReply zinterstore_(Object... arguments) throws RedisException {
+    if (version < ZINTERSTORE_VERSION) throw new RedisException("Server does not support ZINTERSTORE");
+    return (IntegerReply) execute(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, arguments));
+  }
   
   private static final String ZRANGE = "ZRANGE";
   private static final byte[] ZRANGE_BYTES = ZRANGE.getBytes(Charsets.US_ASCII);
@@ -2009,6 +2045,12 @@ public class RedisClient extends RedisClientBase {
     list.add(stop2);
     if (withscores3 != null) list.add(withscores3);
     return (MultiBulkReply) execute(ZRANGE, new Command(ZRANGE_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public MultiBulkReply zrange_(Object... arguments) throws RedisException {
+    if (version < ZRANGE_VERSION) throw new RedisException("Server does not support ZRANGE");
+    return (MultiBulkReply) execute(ZRANGE, new Command(ZRANGE_BYTES, arguments));
   }
   
   private static final String ZRANGEBYSCORE = "ZRANGEBYSCORE";
@@ -2034,6 +2076,12 @@ public class RedisClient extends RedisClientBase {
     if (withscores3 != null) list.add(withscores3);
     if (offset_or_count4 != null) list.add(offset_or_count4);
     return (MultiBulkReply) execute(ZRANGEBYSCORE, new Command(ZRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public MultiBulkReply zrangebyscore_(Object... arguments) throws RedisException {
+    if (version < ZRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZRANGEBYSCORE");
+    return (MultiBulkReply) execute(ZRANGEBYSCORE, new Command(ZRANGEBYSCORE_BYTES, arguments));
   }
   
   private static final String ZRANK = "ZRANK";
@@ -2127,6 +2175,12 @@ public class RedisClient extends RedisClientBase {
     if (withscores3 != null) list.add(withscores3);
     return (MultiBulkReply) execute(ZREVRANGE, new Command(ZREVRANGE_BYTES, list.toArray(new Object[list.size()])));
   }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public MultiBulkReply zrevrange_(Object... arguments) throws RedisException {
+    if (version < ZREVRANGE_VERSION) throw new RedisException("Server does not support ZREVRANGE");
+    return (MultiBulkReply) execute(ZREVRANGE, new Command(ZREVRANGE_BYTES, arguments));
+  }
   
   private static final String ZREVRANGEBYSCORE = "ZREVRANGEBYSCORE";
   private static final byte[] ZREVRANGEBYSCORE_BYTES = ZREVRANGEBYSCORE.getBytes(Charsets.US_ASCII);
@@ -2151,6 +2205,12 @@ public class RedisClient extends RedisClientBase {
     if (withscores3 != null) list.add(withscores3);
     if (offset_or_count4 != null) list.add(offset_or_count4);
     return (MultiBulkReply) execute(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public MultiBulkReply zrevrangebyscore_(Object... arguments) throws RedisException {
+    if (version < ZREVRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZREVRANGEBYSCORE");
+    return (MultiBulkReply) execute(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, arguments));
   }
   
   private static final String ZREVRANK = "ZREVRANK";
@@ -2992,6 +3052,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<Reply>) pipeline(OBJECT, new Command(OBJECT_BYTES, list.toArray(new Object[list.size()])));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<Reply> object_(Object... arguments) throws RedisException {
+    if (version < OBJECT_VERSION) throw new RedisException("Server does not support OBJECT");
+    return (ListenableFuture<Reply>) pipeline(OBJECT, new Command(OBJECT_BYTES, arguments));
+  }
+
   /**
    * Remove the expiration from a key
    *
@@ -3374,6 +3440,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<StatusReply>) pipeline(SHUTDOWN, new Command(SHUTDOWN_BYTES, NOSAVE0, SAVE1));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<StatusReply> shutdown_(Object... arguments) throws RedisException {
+    if (version < SHUTDOWN_VERSION) throw new RedisException("Server does not support SHUTDOWN");
+    return (ListenableFuture<StatusReply>) pipeline(SHUTDOWN, new Command(SHUTDOWN_BYTES, arguments));
+  }
+
   /**
    * Intersect multiple sets
    *
@@ -3438,6 +3510,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<Reply>) pipeline(SLOWLOG, new Command(SLOWLOG_BYTES, subcommand0, argument1));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<Reply> slowlog_(Object... arguments) throws RedisException {
+    if (version < SLOWLOG_VERSION) throw new RedisException("Server does not support SLOWLOG");
+    return (ListenableFuture<Reply>) pipeline(SLOWLOG, new Command(SLOWLOG_BYTES, arguments));
+  }
+
   /**
    * Get all the members in a set
    *
@@ -3479,6 +3557,12 @@ public class RedisClient extends RedisClientBase {
     if (offset_or_count2 != null) list.add(offset_or_count2);
     Collections.addAll(list, pattern3);
     return (ListenableFuture<MultiBulkReply>) pipeline(SORT, new Command(SORT_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<MultiBulkReply> sort_(Object... arguments) throws RedisException {
+    if (version < SORT_VERSION) throw new RedisException("Server does not support SORT");
+    return (ListenableFuture<MultiBulkReply>) pipeline(SORT, new Command(SORT_BYTES, arguments));
   }
 
   /**
@@ -3635,6 +3719,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<IntegerReply>) pipeline(ZADD, new Command(ZADD_BYTES, list.toArray(new Object[list.size()])));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<IntegerReply> zadd_(Object... arguments) throws RedisException {
+    if (version < ZADD_VERSION) throw new RedisException("Server does not support ZADD");
+    return (ListenableFuture<IntegerReply>) pipeline(ZADD, new Command(ZADD_BYTES, arguments));
+  }
+
   /**
    * Get the number of members in a sorted set
    *
@@ -3685,6 +3775,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<IntegerReply>) pipeline(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<IntegerReply> zinterstore_(Object... arguments) throws RedisException {
+    if (version < ZINTERSTORE_VERSION) throw new RedisException("Server does not support ZINTERSTORE");
+    return (ListenableFuture<IntegerReply>) pipeline(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, arguments));
+  }
+
   /**
    * Return a range of members in a sorted set, by index
    *
@@ -3702,6 +3798,12 @@ public class RedisClient extends RedisClientBase {
     list.add(stop2);
     if (withscores3 != null) list.add(withscores3);
     return (ListenableFuture<MultiBulkReply>) pipeline(ZRANGE, new Command(ZRANGE_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<MultiBulkReply> zrange_(Object... arguments) throws RedisException {
+    if (version < ZRANGE_VERSION) throw new RedisException("Server does not support ZRANGE");
+    return (ListenableFuture<MultiBulkReply>) pipeline(ZRANGE, new Command(ZRANGE_BYTES, arguments));
   }
 
   /**
@@ -3723,6 +3825,12 @@ public class RedisClient extends RedisClientBase {
     if (withscores3 != null) list.add(withscores3);
     if (offset_or_count4 != null) list.add(offset_or_count4);
     return (ListenableFuture<MultiBulkReply>) pipeline(ZRANGEBYSCORE, new Command(ZRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<MultiBulkReply> zrangebyscore_(Object... arguments) throws RedisException {
+    if (version < ZRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZRANGEBYSCORE");
+    return (ListenableFuture<MultiBulkReply>) pipeline(ZRANGEBYSCORE, new Command(ZRANGEBYSCORE_BYTES, arguments));
   }
 
   /**
@@ -3797,6 +3905,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<MultiBulkReply>) pipeline(ZREVRANGE, new Command(ZREVRANGE_BYTES, list.toArray(new Object[list.size()])));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<MultiBulkReply> zrevrange_(Object... arguments) throws RedisException {
+    if (version < ZREVRANGE_VERSION) throw new RedisException("Server does not support ZREVRANGE");
+    return (ListenableFuture<MultiBulkReply>) pipeline(ZREVRANGE, new Command(ZREVRANGE_BYTES, arguments));
+  }
+
   /**
    * Return a range of members in a sorted set, by score, with scores ordered from high to low
    *
@@ -3816,6 +3930,12 @@ public class RedisClient extends RedisClientBase {
     if (withscores3 != null) list.add(withscores3);
     if (offset_or_count4 != null) list.add(offset_or_count4);
     return (ListenableFuture<MultiBulkReply>) pipeline(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<MultiBulkReply> zrevrangebyscore_(Object... arguments) throws RedisException {
+    if (version < ZREVRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZREVRANGEBYSCORE");
+    return (ListenableFuture<MultiBulkReply>) pipeline(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, arguments));
   }
 
   /**
