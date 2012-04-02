@@ -9,6 +9,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import redis.client.RedisClient;
+import redis.client.RedisClientBase;
 import redis.client.RedisException;
 import redis.reply.BulkReply;
 import redis.reply.IntegerReply;
@@ -17,6 +18,7 @@ import redis.reply.StatusReply;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
+import static redis.client.RedisClientBase.*;
 
 public class AllCommandsTest {
 
@@ -98,7 +100,7 @@ public class AllCommandsTest {
     eq(1, rc.zadd(a("myzset", "1", "uno")));
     eq(1, rc.zadd(a("myzset", "2", "two")));
     eq(0, rc.zadd(a("myzset", "3", "two")));
-    eq(a("one", "1", "uno", "1", "two", "3"), rc.zrange("myzset", "0", "-1", "WITHSCORES"));
+    eq(a("one", "1", "uno", "1", "two", "3"), rc.zrange("myzset", "0", "-1", WITHSCORES));
   }
 
   @Test
@@ -125,7 +127,7 @@ public class AllCommandsTest {
     eq(1, rc.zadd(a("myzset", "1", "one")));
     eq(1, rc.zadd(a("myzset", "2", "two")));
     eq("3", rc.zincrby("myzset", "2", "one"));
-    eq(a("two", "2", "one", "3"), rc.zrange("myzset", "0", "-1", "WITHSCORES"));
+    eq(a("two", "2", "one", "3"), rc.zrange("myzset", "0", "-1", WITHSCORES));
   }
 
   @Test
@@ -136,8 +138,8 @@ public class AllCommandsTest {
     eq(1, rc.zadd(a("zset2", "1", "one")));
     eq(1, rc.zadd(a("zset2", "2", "two")));
     eq(1, rc.zadd(a("zset2", "3", "three")));
-    eq(2, rc.zinterstore(a("out", "2", "zset1", "zset2", "WEIGHTS", "2", "3")));
-    eq(a("one", "5", "two", "10"), rc.zrange("out", "0", "-1", "WITHSCORES"));
+    eq(2, rc.zinterstore(a("out", "2", "zset1", "zset2", WEIGHTS, "2", "3")));
+    eq(a("one", "5", "two", "10"), rc.zrange("out", "0", "-1", WITHSCORES));
   }
 
   @Test
@@ -161,6 +163,98 @@ public class AllCommandsTest {
     eq(a("one", "two"), rc.zrangebyscore_("myzset", "1", "2"));
     eq(a("two"), rc.zrangebyscore_("myzset", "(1", "2"));
     eq(a(), rc.zrangebyscore_("myzset", "(1", "(2"));
+  }
+
+  @Test
+  public void zrank() {
+    rc.del(a("myzset"));
+    eq(1, rc.zadd(a("myzset", "1", "one")));
+    eq(1, rc.zadd(a("myzset", "2", "two")));
+    eq(1, rc.zadd(a("myzset", "3", "three")));
+    eq(2, (IntegerReply) rc.zrank("myzset", "three"));
+    eq(null, (BulkReply) rc.zrank("myzset", "four"));
+  }
+
+  @Test
+  public void zrem() {
+    rc.del(a("myzset"));
+    eq(1, rc.zadd(a("myzset", "1", "one")));
+    eq(1, rc.zadd(a("myzset", "2", "two")));
+    eq(1, rc.zadd(a("myzset", "3", "three")));
+    eq(1, rc.zrem_("myzset", "two"));
+    eq(a("one", "1", "three", "3"), rc.zrange("myzset", "0", "-1", WITHSCORES));
+  }
+
+  @Test
+  public void zremrangebyrank() {
+    rc.del(a("myzset"));
+    eq(1, rc.zadd(a("myzset", "1", "one")));
+    eq(1, rc.zadd(a("myzset", "2", "two")));
+    eq(1, rc.zadd(a("myzset", "3", "three")));
+    eq(2, rc.zremrangebyrank("myzset", "0", "1"));
+    eq(a("three", "3"), rc.zrange("myzset", "0", "-1", WITHSCORES));
+  }
+
+  @Test
+  public void zremrangebyscore() {
+    rc.del(a("myzset"));
+    eq(1, rc.zadd(a("myzset", "1", "one")));
+    eq(1, rc.zadd(a("myzset", "2", "two")));
+    eq(1, rc.zadd(a("myzset", "3", "three")));
+    eq(1, rc.zremrangebyscore("myzset", "-inf", "(2"));
+    eq(a("two", "2", "three", "3"), rc.zrange("myzset", "0", "-1", WITHSCORES));
+  }
+
+  @Test
+  public void zrevrange() {
+    rc.del(a("myzset"));
+    eq(1, rc.zadd(a("myzset", "1", "one")));
+    eq(1, rc.zadd(a("myzset", "2", "two")));
+    eq(1, rc.zadd(a("myzset", "3", "three")));
+    eq(a("three", "two", "one"), rc.zrevrange_("myzset", 0, -1));
+    eq(a("one"), rc.zrevrange_("myzset", 2, 3));
+    eq(a("two", "one"), rc.zrevrange_("myzset", -2, -1));
+  }
+
+  @Test
+  public void zrevrangebyscore() {
+    rc.del(a("myzset"));
+    eq(1, rc.zadd(a("myzset", "1", "one")));
+    eq(1, rc.zadd(a("myzset", "2", "two")));
+    eq(1, rc.zadd(a("myzset", "3", "three")));
+    eq(a("three", "two", "one"), rc.zrevrangebyscore_("myzset", "+inf", "-inf"));
+    eq(a("two", "one"), rc.zrevrangebyscore_("myzset", 2, 1));
+    eq(a("two"), rc.zrevrangebyscore_("myzset", 2, "(1"));
+    eq(a(), rc.zrevrangebyscore_("myzset", "(2", "(1"));
+  }
+
+  @Test
+  public void zrevrank() {
+    rc.del(a("myzset"));
+    eq(1, rc.zadd(a("myzset", "1", "one")));
+    eq(1, rc.zadd(a("myzset", "2", "two")));
+    eq(1, rc.zadd(a("myzset", "3", "three")));
+    eq(2, (IntegerReply) rc.zrevrank("myzset", "one"));
+    eq(null, (BulkReply) rc.zrevrank("myzset", "four"));
+  }
+
+  @Test
+  public void zscore() {
+    rc.del(a("myzset"));
+    eq(1, rc.zadd(a("myzset", "1", "one")));
+    eq("1", rc.zscore("myzset", "one"));
+  }
+
+  @Test
+  public void zunionstore() {
+    rc.del(a("zset1", "zset2"));
+    eq(1, rc.zadd(a("zset1", "1", "one")));
+    eq(1, rc.zadd(a("zset1", "2", "two")));
+    eq(1, rc.zadd(a("zset2", "1", "one")));
+    eq(1, rc.zadd(a("zset2", "2", "two")));
+    eq(1, rc.zadd(a("zset2", "3", "three")));
+    eq(3, rc.zunionstore_("out", 2, "zset1", "zset2", WEIGHTS, 2, 3));
+    eq(a("one", "5", "three", "9", "two", "10"), rc.zrange_("out", 0, -1, WITHSCORES));
   }
 
   private void eq(String exepcted, StatusReply actual) {

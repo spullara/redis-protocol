@@ -102,6 +102,12 @@ public class RedisClient extends RedisClientBase {
     Collections.addAll(list, key0);
     return (MultiBulkReply) execute(BLPOP, new Command(BLPOP_BYTES, list.toArray(new Object[list.size()])));
   }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public MultiBulkReply blpop_(Object... arguments) throws RedisException {
+    if (version < BLPOP_VERSION) throw new RedisException("Server does not support BLPOP");
+    return (MultiBulkReply) execute(BLPOP, new Command(BLPOP_BYTES, arguments));
+  }
   
   private static final String BRPOP = "BRPOP";
   private static final byte[] BRPOP_BYTES = BRPOP.getBytes(Charsets.US_ASCII);
@@ -118,6 +124,12 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     Collections.addAll(list, key0);
     return (MultiBulkReply) execute(BRPOP, new Command(BRPOP_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public MultiBulkReply brpop_(Object... arguments) throws RedisException {
+    if (version < BRPOP_VERSION) throw new RedisException("Server does not support BRPOP");
+    return (MultiBulkReply) execute(BRPOP, new Command(BRPOP_BYTES, arguments));
   }
   
   private static final String BRPOPLPUSH = "BRPOPLPUSH";
@@ -272,6 +284,12 @@ public class RedisClient extends RedisClientBase {
     Collections.addAll(list, key0);
     return (IntegerReply) execute(DEL, new Command(DEL_BYTES, list.toArray(new Object[list.size()])));
   }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public IntegerReply del_(Object... arguments) throws RedisException {
+    if (version < DEL_VERSION) throw new RedisException("Server does not support DEL");
+    return (IntegerReply) execute(DEL, new Command(DEL_BYTES, arguments));
+  }
   
   private static final String DUMP = "DUMP";
   private static final byte[] DUMP_BYTES = DUMP.getBytes(Charsets.US_ASCII);
@@ -322,6 +340,12 @@ public class RedisClient extends RedisClientBase {
     list.add(numkeys1);
     Collections.addAll(list, key2);
     return (Reply) execute(EVAL, new Command(EVAL_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public Reply eval_(Object... arguments) throws RedisException {
+    if (version < EVAL_VERSION) throw new RedisException("Server does not support EVAL");
+    return (Reply) execute(EVAL, new Command(EVAL_BYTES, arguments));
   }
   
   private static final String EXISTS = "EXISTS";
@@ -481,6 +505,12 @@ public class RedisClient extends RedisClientBase {
     Collections.addAll(list, field1);
     return (IntegerReply) execute(HDEL, new Command(HDEL_BYTES, list.toArray(new Object[list.size()])));
   }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public IntegerReply hdel_(Object... arguments) throws RedisException {
+    if (version < HDEL_VERSION) throw new RedisException("Server does not support HDEL");
+    return (IntegerReply) execute(HDEL, new Command(HDEL_BYTES, arguments));
+  }
   
   private static final String HEXISTS = "HEXISTS";
   private static final byte[] HEXISTS_BYTES = HEXISTS.getBytes(Charsets.US_ASCII);
@@ -611,6 +641,12 @@ public class RedisClient extends RedisClientBase {
     Collections.addAll(list, field1);
     return (MultiBulkReply) execute(HMGET, new Command(HMGET_BYTES, list.toArray(new Object[list.size()])));
   }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public MultiBulkReply hmget_(Object... arguments) throws RedisException {
+    if (version < HMGET_VERSION) throw new RedisException("Server does not support HMGET");
+    return (MultiBulkReply) execute(HMGET, new Command(HMGET_BYTES, arguments));
+  }
   
   private static final String HMSET = "HMSET";
   private static final byte[] HMSET_BYTES = HMSET.getBytes(Charsets.US_ASCII);
@@ -629,6 +665,12 @@ public class RedisClient extends RedisClientBase {
     list.add(key0);
     Collections.addAll(list, field_or_value1);
     return (StatusReply) execute(HMSET, new Command(HMSET_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public StatusReply hmset_(Object... arguments) throws RedisException {
+    if (version < HMSET_VERSION) throw new RedisException("Server does not support HMSET");
+    return (StatusReply) execute(HMSET, new Command(HMSET_BYTES, arguments));
   }
   
   private static final String HSET = "HSET";
@@ -857,6 +899,12 @@ public class RedisClient extends RedisClientBase {
     Collections.addAll(list, value1);
     return (IntegerReply) execute(LPUSH, new Command(LPUSH_BYTES, list.toArray(new Object[list.size()])));
   }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public IntegerReply lpush_(Object... arguments) throws RedisException {
+    if (version < LPUSH_VERSION) throw new RedisException("Server does not support LPUSH");
+    return (IntegerReply) execute(LPUSH, new Command(LPUSH_BYTES, arguments));
+  }
   
   private static final String LPUSHX = "LPUSHX";
   private static final byte[] LPUSHX_BYTES = LPUSHX.getBytes(Charsets.US_ASCII);
@@ -958,6 +1006,12 @@ public class RedisClient extends RedisClientBase {
     Collections.addAll(list, key0);
     return (MultiBulkReply) execute(MGET, new Command(MGET_BYTES, list.toArray(new Object[list.size()])));
   }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public MultiBulkReply mget_(Object... arguments) throws RedisException {
+    if (version < MGET_VERSION) throw new RedisException("Server does not support MGET");
+    return (MultiBulkReply) execute(MGET, new Command(MGET_BYTES, arguments));
+  }
   
   private static final String MIGRATE = "MIGRATE";
   private static final byte[] MIGRATE_BYTES = MIGRATE.getBytes(Charsets.US_ASCII);
@@ -1030,6 +1084,12 @@ public class RedisClient extends RedisClientBase {
     Collections.addAll(list, key_or_value0);
     return (StatusReply) execute(MSET, new Command(MSET_BYTES, list.toArray(new Object[list.size()])));
   }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public StatusReply mset_(Object... arguments) throws RedisException {
+    if (version < MSET_VERSION) throw new RedisException("Server does not support MSET");
+    return (StatusReply) execute(MSET, new Command(MSET_BYTES, arguments));
+  }
   
   private static final String MSETNX = "MSETNX";
   private static final byte[] MSETNX_BYTES = MSETNX.getBytes(Charsets.US_ASCII);
@@ -1046,6 +1106,12 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     Collections.addAll(list, key_or_value0);
     return (IntegerReply) execute(MSETNX, new Command(MSETNX_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public IntegerReply msetnx_(Object... arguments) throws RedisException {
+    if (version < MSETNX_VERSION) throw new RedisException("Server does not support MSETNX");
+    return (IntegerReply) execute(MSETNX, new Command(MSETNX_BYTES, arguments));
   }
   
   private static final String OBJECT = "OBJECT";
@@ -1308,6 +1374,12 @@ public class RedisClient extends RedisClientBase {
     Collections.addAll(list, value1);
     return (IntegerReply) execute(RPUSH, new Command(RPUSH_BYTES, list.toArray(new Object[list.size()])));
   }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public IntegerReply rpush_(Object... arguments) throws RedisException {
+    if (version < RPUSH_VERSION) throw new RedisException("Server does not support RPUSH");
+    return (IntegerReply) execute(RPUSH, new Command(RPUSH_BYTES, arguments));
+  }
   
   private static final String RPUSHX = "RPUSHX";
   private static final byte[] RPUSHX_BYTES = RPUSHX.getBytes(Charsets.US_ASCII);
@@ -1342,6 +1414,12 @@ public class RedisClient extends RedisClientBase {
     list.add(key0);
     Collections.addAll(list, member1);
     return (IntegerReply) execute(SADD, new Command(SADD_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public IntegerReply sadd_(Object... arguments) throws RedisException {
+    if (version < SADD_VERSION) throw new RedisException("Server does not support SADD");
+    return (IntegerReply) execute(SADD, new Command(SADD_BYTES, arguments));
   }
   
   private static final String SAVE = "SAVE";
@@ -1388,6 +1466,12 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     Collections.addAll(list, script0);
     return (Reply) execute(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public Reply script_exists_(Object... arguments) throws RedisException {
+    if (version < SCRIPT_EXISTS_VERSION) throw new RedisException("Server does not support SCRIPT_EXISTS");
+    return (Reply) execute(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, arguments));
   }
   
   private static final String SCRIPT_FLUSH = "SCRIPT_FLUSH";
@@ -1449,6 +1533,12 @@ public class RedisClient extends RedisClientBase {
     Collections.addAll(list, key0);
     return (MultiBulkReply) execute(SDIFF, new Command(SDIFF_BYTES, list.toArray(new Object[list.size()])));
   }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public MultiBulkReply sdiff_(Object... arguments) throws RedisException {
+    if (version < SDIFF_VERSION) throw new RedisException("Server does not support SDIFF");
+    return (MultiBulkReply) execute(SDIFF, new Command(SDIFF_BYTES, arguments));
+  }
   
   private static final String SDIFFSTORE = "SDIFFSTORE";
   private static final byte[] SDIFFSTORE_BYTES = SDIFFSTORE.getBytes(Charsets.US_ASCII);
@@ -1467,6 +1557,12 @@ public class RedisClient extends RedisClientBase {
     list.add(destination0);
     Collections.addAll(list, key1);
     return (IntegerReply) execute(SDIFFSTORE, new Command(SDIFFSTORE_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public IntegerReply sdiffstore_(Object... arguments) throws RedisException {
+    if (version < SDIFFSTORE_VERSION) throw new RedisException("Server does not support SDIFFSTORE");
+    return (IntegerReply) execute(SDIFFSTORE, new Command(SDIFFSTORE_BYTES, arguments));
   }
   
   private static final String SELECT = "SELECT";
@@ -1605,6 +1701,12 @@ public class RedisClient extends RedisClientBase {
     Collections.addAll(list, key0);
     return (MultiBulkReply) execute(SINTER, new Command(SINTER_BYTES, list.toArray(new Object[list.size()])));
   }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public MultiBulkReply sinter_(Object... arguments) throws RedisException {
+    if (version < SINTER_VERSION) throw new RedisException("Server does not support SINTER");
+    return (MultiBulkReply) execute(SINTER, new Command(SINTER_BYTES, arguments));
+  }
   
   private static final String SINTERSTORE = "SINTERSTORE";
   private static final byte[] SINTERSTORE_BYTES = SINTERSTORE.getBytes(Charsets.US_ASCII);
@@ -1623,6 +1725,12 @@ public class RedisClient extends RedisClientBase {
     list.add(destination0);
     Collections.addAll(list, key1);
     return (IntegerReply) execute(SINTERSTORE, new Command(SINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public IntegerReply sinterstore_(Object... arguments) throws RedisException {
+    if (version < SINTERSTORE_VERSION) throw new RedisException("Server does not support SINTERSTORE");
+    return (IntegerReply) execute(SINTERSTORE, new Command(SINTERSTORE_BYTES, arguments));
   }
   
   private static final String SISMEMBER = "SISMEMBER";
@@ -1788,6 +1896,12 @@ public class RedisClient extends RedisClientBase {
     Collections.addAll(list, member1);
     return (IntegerReply) execute(SREM, new Command(SREM_BYTES, list.toArray(new Object[list.size()])));
   }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public IntegerReply srem_(Object... arguments) throws RedisException {
+    if (version < SREM_VERSION) throw new RedisException("Server does not support SREM");
+    return (IntegerReply) execute(SREM, new Command(SREM_BYTES, arguments));
+  }
   
   private static final String STRLEN = "STRLEN";
   private static final byte[] STRLEN_BYTES = STRLEN.getBytes(Charsets.US_ASCII);
@@ -1820,6 +1934,12 @@ public class RedisClient extends RedisClientBase {
     Collections.addAll(list, key0);
     return (MultiBulkReply) execute(SUNION, new Command(SUNION_BYTES, list.toArray(new Object[list.size()])));
   }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public MultiBulkReply sunion_(Object... arguments) throws RedisException {
+    if (version < SUNION_VERSION) throw new RedisException("Server does not support SUNION");
+    return (MultiBulkReply) execute(SUNION, new Command(SUNION_BYTES, arguments));
+  }
   
   private static final String SUNIONSTORE = "SUNIONSTORE";
   private static final byte[] SUNIONSTORE_BYTES = SUNIONSTORE.getBytes(Charsets.US_ASCII);
@@ -1838,6 +1958,12 @@ public class RedisClient extends RedisClientBase {
     list.add(destination0);
     Collections.addAll(list, key1);
     return (IntegerReply) execute(SUNIONSTORE, new Command(SUNIONSTORE_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public IntegerReply sunionstore_(Object... arguments) throws RedisException {
+    if (version < SUNIONSTORE_VERSION) throw new RedisException("Server does not support SUNIONSTORE");
+    return (IntegerReply) execute(SUNIONSTORE, new Command(SUNIONSTORE_BYTES, arguments));
   }
   
   private static final String SYNC = "SYNC";
@@ -1928,6 +2054,12 @@ public class RedisClient extends RedisClientBase {
     Collections.addAll(list, key0);
     return (StatusReply) execute(WATCH, new Command(WATCH_BYTES, list.toArray(new Object[list.size()])));
   }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public StatusReply watch_(Object... arguments) throws RedisException {
+    if (version < WATCH_VERSION) throw new RedisException("Server does not support WATCH");
+    return (StatusReply) execute(WATCH, new Command(WATCH_BYTES, arguments));
+  }
   
   private static final String ZADD = "ZADD";
   private static final byte[] ZADD_BYTES = ZADD.getBytes(Charsets.US_ASCII);
@@ -1944,12 +2076,6 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     Collections.addAll(list, args);
     return (IntegerReply) execute(ZADD, new Command(ZADD_BYTES, list.toArray(new Object[list.size()])));
-  }
-
-  // Varargs version to simplify commands with optional or multiple arguments
-  public IntegerReply zadd_(Object... arguments) throws RedisException {
-    if (version < ZADD_VERSION) throw new RedisException("Server does not support ZADD");
-    return (IntegerReply) execute(ZADD, new Command(ZADD_BYTES, arguments));
   }
   
   private static final String ZCARD = "ZCARD";
@@ -2016,12 +2142,6 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     Collections.addAll(list, args);
     return (IntegerReply) execute(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
-  }
-
-  // Varargs version to simplify commands with optional or multiple arguments
-  public IntegerReply zinterstore_(Object... arguments) throws RedisException {
-    if (version < ZINTERSTORE_VERSION) throw new RedisException("Server does not support ZINTERSTORE");
-    return (IntegerReply) execute(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, arguments));
   }
   
   private static final String ZRANGE = "ZRANGE";
@@ -2117,6 +2237,12 @@ public class RedisClient extends RedisClientBase {
     list.add(key0);
     Collections.addAll(list, member1);
     return (IntegerReply) execute(ZREM, new Command(ZREM_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public IntegerReply zrem_(Object... arguments) throws RedisException {
+    if (version < ZREM_VERSION) throw new RedisException("Server does not support ZREM");
+    return (IntegerReply) execute(ZREM, new Command(ZREM_BYTES, arguments));
   }
   
   private static final String ZREMRANGEBYRANK = "ZREMRANGEBYRANK";
@@ -2266,6 +2392,12 @@ public class RedisClient extends RedisClientBase {
     return (IntegerReply) execute(ZUNIONSTORE, new Command(ZUNIONSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public IntegerReply zunionstore_(Object... arguments) throws RedisException {
+    if (version < ZUNIONSTORE_VERSION) throw new RedisException("Server does not support ZUNIONSTORE");
+    return (IntegerReply) execute(ZUNIONSTORE, new Command(ZUNIONSTORE_BYTES, arguments));
+  }
+
   public class Pipeline {
 
   /**
@@ -2324,6 +2456,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<MultiBulkReply>) pipeline(BLPOP, new Command(BLPOP_BYTES, list.toArray(new Object[list.size()])));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<MultiBulkReply> blpop_(Object... arguments) throws RedisException {
+    if (version < BLPOP_VERSION) throw new RedisException("Server does not support BLPOP");
+    return (ListenableFuture<MultiBulkReply>) pipeline(BLPOP, new Command(BLPOP_BYTES, arguments));
+  }
+
   /**
    * Remove and get the last element in a list, or block until one is available
    *
@@ -2335,6 +2473,12 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     Collections.addAll(list, key0);
     return (ListenableFuture<MultiBulkReply>) pipeline(BRPOP, new Command(BRPOP_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<MultiBulkReply> brpop_(Object... arguments) throws RedisException {
+    if (version < BRPOP_VERSION) throw new RedisException("Server does not support BRPOP");
+    return (ListenableFuture<MultiBulkReply>) pipeline(BRPOP, new Command(BRPOP_BYTES, arguments));
   }
 
   /**
@@ -2450,6 +2594,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<IntegerReply>) pipeline(DEL, new Command(DEL_BYTES, list.toArray(new Object[list.size()])));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<IntegerReply> del_(Object... arguments) throws RedisException {
+    if (version < DEL_VERSION) throw new RedisException("Server does not support DEL");
+    return (ListenableFuture<IntegerReply>) pipeline(DEL, new Command(DEL_BYTES, arguments));
+  }
+
   /**
    * Return a serialized verison of the value stored at the specified key.
    *
@@ -2487,6 +2637,12 @@ public class RedisClient extends RedisClientBase {
     list.add(numkeys1);
     Collections.addAll(list, key2);
     return (ListenableFuture<Reply>) pipeline(EVAL, new Command(EVAL_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<Reply> eval_(Object... arguments) throws RedisException {
+    if (version < EVAL_VERSION) throw new RedisException("Server does not support EVAL");
+    return (ListenableFuture<Reply>) pipeline(EVAL, new Command(EVAL_BYTES, arguments));
   }
 
   /**
@@ -2607,6 +2763,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<IntegerReply>) pipeline(HDEL, new Command(HDEL_BYTES, list.toArray(new Object[list.size()])));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<IntegerReply> hdel_(Object... arguments) throws RedisException {
+    if (version < HDEL_VERSION) throw new RedisException("Server does not support HDEL");
+    return (ListenableFuture<IntegerReply>) pipeline(HDEL, new Command(HDEL_BYTES, arguments));
+  }
+
   /**
    * Determine if a hash field exists
    *
@@ -2705,6 +2867,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<MultiBulkReply>) pipeline(HMGET, new Command(HMGET_BYTES, list.toArray(new Object[list.size()])));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<MultiBulkReply> hmget_(Object... arguments) throws RedisException {
+    if (version < HMGET_VERSION) throw new RedisException("Server does not support HMGET");
+    return (ListenableFuture<MultiBulkReply>) pipeline(HMGET, new Command(HMGET_BYTES, arguments));
+  }
+
   /**
    * Set multiple hash fields to multiple values
    *
@@ -2718,6 +2886,12 @@ public class RedisClient extends RedisClientBase {
     list.add(key0);
     Collections.addAll(list, field_or_value1);
     return (ListenableFuture<StatusReply>) pipeline(HMSET, new Command(HMSET_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<StatusReply> hmset_(Object... arguments) throws RedisException {
+    if (version < HMSET_VERSION) throw new RedisException("Server does not support HMSET");
+    return (ListenableFuture<StatusReply>) pipeline(HMSET, new Command(HMSET_BYTES, arguments));
   }
 
   /**
@@ -2891,6 +3065,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<IntegerReply>) pipeline(LPUSH, new Command(LPUSH_BYTES, list.toArray(new Object[list.size()])));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<IntegerReply> lpush_(Object... arguments) throws RedisException {
+    if (version < LPUSH_VERSION) throw new RedisException("Server does not support LPUSH");
+    return (ListenableFuture<IntegerReply>) pipeline(LPUSH, new Command(LPUSH_BYTES, arguments));
+  }
+
   /**
    * Prepend a value to a list, only if the list exists
    *
@@ -2968,6 +3148,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<MultiBulkReply>) pipeline(MGET, new Command(MGET_BYTES, list.toArray(new Object[list.size()])));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<MultiBulkReply> mget_(Object... arguments) throws RedisException {
+    if (version < MGET_VERSION) throw new RedisException("Server does not support MGET");
+    return (ListenableFuture<MultiBulkReply>) pipeline(MGET, new Command(MGET_BYTES, arguments));
+  }
+
   /**
    * Atomically transfer a key from a Redis instance to another one.
    *
@@ -3024,6 +3210,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<StatusReply>) pipeline(MSET, new Command(MSET_BYTES, list.toArray(new Object[list.size()])));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<StatusReply> mset_(Object... arguments) throws RedisException {
+    if (version < MSET_VERSION) throw new RedisException("Server does not support MSET");
+    return (ListenableFuture<StatusReply>) pipeline(MSET, new Command(MSET_BYTES, arguments));
+  }
+
   /**
    * Set multiple keys to multiple values, only if none of the keys exist
    *
@@ -3035,6 +3227,12 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     Collections.addAll(list, key_or_value0);
     return (ListenableFuture<IntegerReply>) pipeline(MSETNX, new Command(MSETNX_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<IntegerReply> msetnx_(Object... arguments) throws RedisException {
+    if (version < MSETNX_VERSION) throw new RedisException("Server does not support MSETNX");
+    return (ListenableFuture<IntegerReply>) pipeline(MSETNX, new Command(MSETNX_BYTES, arguments));
   }
 
   /**
@@ -3234,6 +3432,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<IntegerReply>) pipeline(RPUSH, new Command(RPUSH_BYTES, list.toArray(new Object[list.size()])));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<IntegerReply> rpush_(Object... arguments) throws RedisException {
+    if (version < RPUSH_VERSION) throw new RedisException("Server does not support RPUSH");
+    return (ListenableFuture<IntegerReply>) pipeline(RPUSH, new Command(RPUSH_BYTES, arguments));
+  }
+
   /**
    * Append a value to a list, only if the list exists
    *
@@ -3259,6 +3463,12 @@ public class RedisClient extends RedisClientBase {
     list.add(key0);
     Collections.addAll(list, member1);
     return (ListenableFuture<IntegerReply>) pipeline(SADD, new Command(SADD_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<IntegerReply> sadd_(Object... arguments) throws RedisException {
+    if (version < SADD_VERSION) throw new RedisException("Server does not support SADD");
+    return (ListenableFuture<IntegerReply>) pipeline(SADD, new Command(SADD_BYTES, arguments));
   }
 
   /**
@@ -3293,6 +3503,12 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     Collections.addAll(list, script0);
     return (ListenableFuture<Reply>) pipeline(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<Reply> script_exists_(Object... arguments) throws RedisException {
+    if (version < SCRIPT_EXISTS_VERSION) throw new RedisException("Server does not support SCRIPT_EXISTS");
+    return (ListenableFuture<Reply>) pipeline(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, arguments));
   }
 
   /**
@@ -3339,6 +3555,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<MultiBulkReply>) pipeline(SDIFF, new Command(SDIFF_BYTES, list.toArray(new Object[list.size()])));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<MultiBulkReply> sdiff_(Object... arguments) throws RedisException {
+    if (version < SDIFF_VERSION) throw new RedisException("Server does not support SDIFF");
+    return (ListenableFuture<MultiBulkReply>) pipeline(SDIFF, new Command(SDIFF_BYTES, arguments));
+  }
+
   /**
    * Subtract multiple sets and store the resulting set in a key
    *
@@ -3352,6 +3574,12 @@ public class RedisClient extends RedisClientBase {
     list.add(destination0);
     Collections.addAll(list, key1);
     return (ListenableFuture<IntegerReply>) pipeline(SDIFFSTORE, new Command(SDIFFSTORE_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<IntegerReply> sdiffstore_(Object... arguments) throws RedisException {
+    if (version < SDIFFSTORE_VERSION) throw new RedisException("Server does not support SDIFFSTORE");
+    return (ListenableFuture<IntegerReply>) pipeline(SDIFFSTORE, new Command(SDIFFSTORE_BYTES, arguments));
   }
 
   /**
@@ -3459,6 +3687,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<MultiBulkReply>) pipeline(SINTER, new Command(SINTER_BYTES, list.toArray(new Object[list.size()])));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<MultiBulkReply> sinter_(Object... arguments) throws RedisException {
+    if (version < SINTER_VERSION) throw new RedisException("Server does not support SINTER");
+    return (ListenableFuture<MultiBulkReply>) pipeline(SINTER, new Command(SINTER_BYTES, arguments));
+  }
+
   /**
    * Intersect multiple sets and store the resulting set in a key
    *
@@ -3472,6 +3706,12 @@ public class RedisClient extends RedisClientBase {
     list.add(destination0);
     Collections.addAll(list, key1);
     return (ListenableFuture<IntegerReply>) pipeline(SINTERSTORE, new Command(SINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<IntegerReply> sinterstore_(Object... arguments) throws RedisException {
+    if (version < SINTERSTORE_VERSION) throw new RedisException("Server does not support SINTERSTORE");
+    return (ListenableFuture<IntegerReply>) pipeline(SINTERSTORE, new Command(SINTERSTORE_BYTES, arguments));
   }
 
   /**
@@ -3602,6 +3842,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<IntegerReply>) pipeline(SREM, new Command(SREM_BYTES, list.toArray(new Object[list.size()])));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<IntegerReply> srem_(Object... arguments) throws RedisException {
+    if (version < SREM_VERSION) throw new RedisException("Server does not support SREM");
+    return (ListenableFuture<IntegerReply>) pipeline(SREM, new Command(SREM_BYTES, arguments));
+  }
+
   /**
    * Get the length of the value stored in a key
    *
@@ -3626,6 +3872,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<MultiBulkReply>) pipeline(SUNION, new Command(SUNION_BYTES, list.toArray(new Object[list.size()])));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<MultiBulkReply> sunion_(Object... arguments) throws RedisException {
+    if (version < SUNION_VERSION) throw new RedisException("Server does not support SUNION");
+    return (ListenableFuture<MultiBulkReply>) pipeline(SUNION, new Command(SUNION_BYTES, arguments));
+  }
+
   /**
    * Add multiple sets and store the resulting set in a key
    *
@@ -3639,6 +3891,12 @@ public class RedisClient extends RedisClientBase {
     list.add(destination0);
     Collections.addAll(list, key1);
     return (ListenableFuture<IntegerReply>) pipeline(SUNIONSTORE, new Command(SUNIONSTORE_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<IntegerReply> sunionstore_(Object... arguments) throws RedisException {
+    if (version < SUNIONSTORE_VERSION) throw new RedisException("Server does not support SUNIONSTORE");
+    return (ListenableFuture<IntegerReply>) pipeline(SUNIONSTORE, new Command(SUNIONSTORE_BYTES, arguments));
   }
 
   /**
@@ -3706,6 +3964,12 @@ public class RedisClient extends RedisClientBase {
     return (ListenableFuture<StatusReply>) pipeline(WATCH, new Command(WATCH_BYTES, list.toArray(new Object[list.size()])));
   }
 
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<StatusReply> watch_(Object... arguments) throws RedisException {
+    if (version < WATCH_VERSION) throw new RedisException("Server does not support WATCH");
+    return (ListenableFuture<StatusReply>) pipeline(WATCH, new Command(WATCH_BYTES, arguments));
+  }
+
   /**
    * Add one or more members to a sorted set, or update its score if it already exists
    *
@@ -3717,12 +3981,6 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     Collections.addAll(list, args);
     return (ListenableFuture<IntegerReply>) pipeline(ZADD, new Command(ZADD_BYTES, list.toArray(new Object[list.size()])));
-  }
-
-  // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> zadd_(Object... arguments) throws RedisException {
-    if (version < ZADD_VERSION) throw new RedisException("Server does not support ZADD");
-    return (ListenableFuture<IntegerReply>) pipeline(ZADD, new Command(ZADD_BYTES, arguments));
   }
 
   /**
@@ -3773,12 +4031,6 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     Collections.addAll(list, args);
     return (ListenableFuture<IntegerReply>) pipeline(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
-  }
-
-  // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> zinterstore_(Object... arguments) throws RedisException {
-    if (version < ZINTERSTORE_VERSION) throw new RedisException("Server does not support ZINTERSTORE");
-    return (ListenableFuture<IntegerReply>) pipeline(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, arguments));
   }
 
   /**
@@ -3858,6 +4110,12 @@ public class RedisClient extends RedisClientBase {
     list.add(key0);
     Collections.addAll(list, member1);
     return (ListenableFuture<IntegerReply>) pipeline(ZREM, new Command(ZREM_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<IntegerReply> zrem_(Object... arguments) throws RedisException {
+    if (version < ZREM_VERSION) throw new RedisException("Server does not support ZREM");
+    return (ListenableFuture<IntegerReply>) pipeline(ZREM, new Command(ZREM_BYTES, arguments));
   }
 
   /**
@@ -3977,6 +4235,12 @@ public class RedisClient extends RedisClientBase {
     list.add(numkeys1);
     Collections.addAll(list, key2);
     return (ListenableFuture<IntegerReply>) pipeline(ZUNIONSTORE, new Command(ZUNIONSTORE_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<IntegerReply> zunionstore_(Object... arguments) throws RedisException {
+    if (version < ZUNIONSTORE_VERSION) throw new RedisException("Server does not support ZUNIONSTORE");
+    return (ListenableFuture<IntegerReply>) pipeline(ZUNIONSTORE, new Command(ZUNIONSTORE_BYTES, arguments));
   }
   }
 }

@@ -41,6 +41,8 @@ import redis.reply.StatusReply;
  */
 public class RedisClientBase {
   private static final Comparator<byte[]> BYTES = SignedBytes.lexicographicalComparator();
+  public static final String WEIGHTS = "WEIGHTS";
+  public static final String WITHSCORES = "WITHSCORES";
   // Single threaded pipelining
   private ListeningExecutorService es;
   protected RedisProtocol redisProtocol;

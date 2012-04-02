@@ -25,14 +25,17 @@ public class BulkReply implements Reply<byte[]> {
   }
 
   public String asAsciiString() {
+    if (bytes == null) return null;
     return new String(bytes, Charsets.US_ASCII);
   }
 
   public String asUTF8String() {
+    if (bytes == null) return null;
     return new String(bytes, Charsets.UTF_8);
   }
 
   public String asString(Charset charset) {
+    if (bytes == null) return null;
     return new String(bytes, charset);
   }
 }
