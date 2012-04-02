@@ -84,8 +84,8 @@ public class RedisClientTest {
       redisClient1.get("txincr");
       redisClient1.multi();
       RedisClient.Pipeline p = redisClient1.pipeline();
-      ListenableFuture<IntegerReply> txincr1 = p.incr("txincr");
-      ListenableFuture<IntegerReply> txincr2 = p.incr("txincr");
+      Future<IntegerReply> txincr1 = p.incr("txincr");
+      Future<IntegerReply> txincr2 = p.incr("txincr");
       redisClient1.exec();
       assertEquals(2l, (long) txincr2.get().data());
       assertEquals(1l, (long) txincr1.get().data());
@@ -98,8 +98,8 @@ public class RedisClientTest {
       redisClient1.multi();
       redisClient2.set("txincr", 1);
       RedisClient.Pipeline p = redisClient1.pipeline();
-      ListenableFuture<IntegerReply> txincr1 = p.incr("txincr");
-      ListenableFuture<IntegerReply> txincr2 = p.incr("txincr");
+      Future<IntegerReply> txincr1 = p.incr("txincr");
+      Future<IntegerReply> txincr2 = p.incr("txincr");
       if (redisClient1.exec().get()) {
         fail("This should have failed");
       }

@@ -16,7 +16,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.base.Charsets;
 import com.google.common.primitives.SignedBytes;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -27,7 +26,6 @@ import redis.Command;
 import redis.RedisProtocol;
 import redis.reply.BulkReply;
 import redis.reply.ErrorReply;
-import redis.reply.IntegerReply;
 import redis.reply.MultiBulkReply;
 import redis.reply.Reply;
 import redis.reply.StatusReply;
@@ -349,22 +347,40 @@ public class RedisClientBase {
             byte[] type = (byte[]) data[0].data();
             byte[] data1 = (byte[]) data[1].data();
             Object data2 = data[2].data();
-            if (BYTES.compare(type, SUBSCRIBE) == 0) {
-              replyListener.subscribed(data1, ((Number) data2).intValue());
-            } else if (BYTES.compare(type, PSUBSCRIBE) == 0) {
-              replyListener.psubscribed(data1, ((Number) data2).intValue());
-            } else if (BYTES.compare(type, UNSUBSCRIBE) == 0) {
-              replyListener.unsubscribed(data1, ((Number) data2).intValue());
-            } else if (BYTES.compare(type, PUNSUBSCRIBE) == 0) {
-              replyListener.punsubscribed(data1, ((Number) data2).intValue());
-            } else if (BYTES.compare(type, MESSAGE) == 0) {
-              replyListener.message(data1, (byte[]) data2);
-            } else if (BYTES.compare(type, PMESSAGE) == 0) {
-              replyListener.pmessage(data1, (byte[]) data2, (byte[]) data[3].data());
-            } else {
-              close();
-              throw new RedisException("Invalid subscription messsage");
+            switch (type.length) {
+              case 7:
+                if (BYTES.compare(type, MESSAGE) == 0) {
+                  replyListener.message(data1, (byte[]) data2);
+                  continue;
+                }
+              case 8:
+                if (BYTES.compare(type, PMESSAGE) == 0) {
+                  replyListener.pmessage(data1, (byte[]) data2, (byte[]) data[3].data());
+                  continue;
+                }
+              case 9:
+                if (BYTES.compare(type, SUBSCRIBE) == 0) {
+                  replyListener.subscribed(data1, ((Number) data2).intValue());
+                  continue;
+                }
+              case 10:
+                if (BYTES.compare(type, PSUBSCRIBE) == 0) {
+                  replyListener.psubscribed(data1, ((Number) data2).intValue());
+                  continue;
+                }
+              case 11:
+                if (BYTES.compare(type, UNSUBSCRIBE) == 0) {
+                  replyListener.unsubscribed(data1, ((Number) data2).intValue());
+                  continue;
+                }
+              case 12:
+                if (BYTES.compare(type, PUNSUBSCRIBE) == 0) {
+                  replyListener.punsubscribed(data1, ((Number) data2).intValue());
+                  continue;
+                }
             }
+            close();
+            throw new RedisException("Invalid subscription messsage");
           }
         }
       } catch (IOException e) {
