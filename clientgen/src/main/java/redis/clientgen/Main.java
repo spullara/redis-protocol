@@ -83,7 +83,7 @@ public class Main {
     Set<String> unsupported = new HashSet<String>(
             Arrays.asList(
                     "MULTI", "EXEC", "DISCARD", // Transactions
-                    "ZRANK", // Two different return values
+                    "ZRANK", "ZREVRANK", // Two different return values
                     "PSUBSCRIBE", "SUBSCRIBE", "UNSUBSCRIBE", "PUNSUBSCRIBE" // subscriptions
             )
     );

@@ -273,6 +273,21 @@ public class RedisClient extends RedisClientBase {
     return (IntegerReply) execute(DEL, new Command(DEL_BYTES, list.toArray(new Object[list.size()])));
   }
   
+  private static final String DUMP = "DUMP";
+  private static final byte[] DUMP_BYTES = DUMP.getBytes(Charsets.US_ASCII);
+  private static final int DUMP_VERSION = parseVersion("2.6.0");
+
+  /**
+   * Return a serialized verison of the value stored at the specified key.
+   *
+   * @param key0
+   * @return BulkReply
+   */
+  public BulkReply dump(Object key0) throws RedisException {
+    if (version < DUMP_VERSION) throw new RedisException("Server does not support DUMP");
+    return (BulkReply) execute(DUMP, new Command(DUMP_BYTES, key0));
+  }
+  
   private static final String ECHO = "ECHO";
   private static final byte[] ECHO_BYTES = ECHO.getBytes(Charsets.US_ASCII);
   private static final int ECHO_VERSION = parseVersion("1.0.0");
@@ -944,6 +959,31 @@ public class RedisClient extends RedisClientBase {
     return (MultiBulkReply) execute(MGET, new Command(MGET_BYTES, list.toArray(new Object[list.size()])));
   }
   
+  private static final String MIGRATE = "MIGRATE";
+  private static final byte[] MIGRATE_BYTES = MIGRATE.getBytes(Charsets.US_ASCII);
+  private static final int MIGRATE_VERSION = parseVersion("2.6.0");
+
+  /**
+   * Atomically transfer a key from a Redis instance to another one.
+   *
+   * @param host0
+   * @param port1
+   * @param key2
+   * @param destination_db3
+   * @param timeout4
+   * @return StatusReply
+   */
+  public StatusReply migrate(Object host0, Object port1, Object key2, Object destination_db3, Object timeout4) throws RedisException {
+    if (version < MIGRATE_VERSION) throw new RedisException("Server does not support MIGRATE");
+    List list = new ArrayList();
+    list.add(host0);
+    list.add(port1);
+    list.add(key2);
+    list.add(destination_db3);
+    list.add(timeout4);
+    return (StatusReply) execute(MIGRATE, new Command(MIGRATE_BYTES, list.toArray(new Object[list.size()])));
+  }
+  
   private static final String MONITOR = "MONITOR";
   private static final byte[] MONITOR_BYTES = MONITOR.getBytes(Charsets.US_ASCII);
   private static final int MONITOR_VERSION = parseVersion("1.0.0");
@@ -1194,6 +1234,23 @@ public class RedisClient extends RedisClientBase {
   public IntegerReply renamenx(Object key0, Object newkey1) throws RedisException {
     if (version < RENAMENX_VERSION) throw new RedisException("Server does not support RENAMENX");
     return (IntegerReply) execute(RENAMENX, new Command(RENAMENX_BYTES, key0, newkey1));
+  }
+  
+  private static final String RESTORE = "RESTORE";
+  private static final byte[] RESTORE_BYTES = RESTORE.getBytes(Charsets.US_ASCII);
+  private static final int RESTORE_VERSION = parseVersion("2.6.0");
+
+  /**
+   * Create a key using the provided serialized value, previously obtained using DUMP.
+   *
+   * @param key0
+   * @param ttl1
+   * @param serialized_value2
+   * @return StatusReply
+   */
+  public StatusReply restore(Object key0, Object ttl1, Object serialized_value2) throws RedisException {
+    if (version < RESTORE_VERSION) throw new RedisException("Server does not support RESTORE");
+    return (StatusReply) execute(RESTORE, new Command(RESTORE_BYTES, key0, ttl1, serialized_value2));
   }
   
   private static final String RPOP = "RPOP";
@@ -2092,22 +2149,6 @@ public class RedisClient extends RedisClientBase {
     return (MultiBulkReply) execute(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
   }
   
-  private static final String ZREVRANK = "ZREVRANK";
-  private static final byte[] ZREVRANK_BYTES = ZREVRANK.getBytes(Charsets.US_ASCII);
-  private static final int ZREVRANK_VERSION = parseVersion("2.0.0");
-
-  /**
-   * Determine the index of a member in a sorted set, with scores ordered from high to low
-   *
-   * @param key0
-   * @param member1
-   * @return IntegerReply
-   */
-  public IntegerReply zrevrank(Object key0, Object member1) throws RedisException {
-    if (version < ZREVRANK_VERSION) throw new RedisException("Server does not support ZREVRANK");
-    return (IntegerReply) execute(ZREVRANK, new Command(ZREVRANK_BYTES, key0, member1));
-  }
-  
   private static final String ZSCORE = "ZSCORE";
   private static final byte[] ZSCORE_BYTES = ZSCORE.getBytes(Charsets.US_ASCII);
   private static final int ZSCORE_VERSION = parseVersion("1.2.0");
@@ -2327,6 +2368,17 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     Collections.addAll(list, key0);
     return (ListenableFuture<IntegerReply>) pipeline(DEL, new Command(DEL_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  /**
+   * Return a serialized verison of the value stored at the specified key.
+   *
+   * @param key0
+   * @return BulkReply
+   */
+  public ListenableFuture<BulkReply> dump(Object key0) throws RedisException {
+    if (version < DUMP_VERSION) throw new RedisException("Server does not support DUMP");
+    return (ListenableFuture<BulkReply>) pipeline(DUMP, new Command(DUMP_BYTES, key0));
   }
 
   /**
@@ -2837,6 +2889,27 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
+   * Atomically transfer a key from a Redis instance to another one.
+   *
+   * @param host0
+   * @param port1
+   * @param key2
+   * @param destination_db3
+   * @param timeout4
+   * @return StatusReply
+   */
+  public ListenableFuture<StatusReply> migrate(Object host0, Object port1, Object key2, Object destination_db3, Object timeout4) throws RedisException {
+    if (version < MIGRATE_VERSION) throw new RedisException("Server does not support MIGRATE");
+    List list = new ArrayList();
+    list.add(host0);
+    list.add(port1);
+    list.add(key2);
+    list.add(destination_db3);
+    list.add(timeout4);
+    return (ListenableFuture<StatusReply>) pipeline(MIGRATE, new Command(MIGRATE_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  /**
    * Listen for all requests received by the server in real time
    *
    * @return Reply
@@ -3022,6 +3095,19 @@ public class RedisClient extends RedisClientBase {
   public ListenableFuture<IntegerReply> renamenx(Object key0, Object newkey1) throws RedisException {
     if (version < RENAMENX_VERSION) throw new RedisException("Server does not support RENAMENX");
     return (ListenableFuture<IntegerReply>) pipeline(RENAMENX, new Command(RENAMENX_BYTES, key0, newkey1));
+  }
+
+  /**
+   * Create a key using the provided serialized value, previously obtained using DUMP.
+   *
+   * @param key0
+   * @param ttl1
+   * @param serialized_value2
+   * @return StatusReply
+   */
+  public ListenableFuture<StatusReply> restore(Object key0, Object ttl1, Object serialized_value2) throws RedisException {
+    if (version < RESTORE_VERSION) throw new RedisException("Server does not support RESTORE");
+    return (ListenableFuture<StatusReply>) pipeline(RESTORE, new Command(RESTORE_BYTES, key0, ttl1, serialized_value2));
   }
 
   /**
@@ -3710,18 +3796,6 @@ public class RedisClient extends RedisClientBase {
     list.add(withscores3);
     list.add(offset_or_count4);
     return (ListenableFuture<MultiBulkReply>) pipeline(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
-  }
-
-  /**
-   * Determine the index of a member in a sorted set, with scores ordered from high to low
-   *
-   * @param key0
-   * @param member1
-   * @return IntegerReply
-   */
-  public ListenableFuture<IntegerReply> zrevrank(Object key0, Object member1) throws RedisException {
-    if (version < ZREVRANK_VERSION) throw new RedisException("Server does not support ZREVRANK");
-    return (ListenableFuture<IntegerReply>) pipeline(ZREVRANK, new Command(ZREVRANK_BYTES, key0, member1));
   }
 
   /**

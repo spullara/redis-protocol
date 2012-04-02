@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Queue;
@@ -18,7 +17,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.google.common.base.Charsets;
-import com.google.common.primitives.Bytes;
 import com.google.common.primitives.SignedBytes;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -29,6 +27,7 @@ import redis.Command;
 import redis.RedisProtocol;
 import redis.reply.BulkReply;
 import redis.reply.ErrorReply;
+import redis.reply.IntegerReply;
 import redis.reply.MultiBulkReply;
 import redis.reply.Reply;
 import redis.reply.StatusReply;
@@ -247,6 +246,22 @@ public class RedisClientBase {
   public Reply zrank(Object key, Object member) throws RedisException {
     if (version < ZRANK_VERSION) throw new RedisException("Server does not support ZRANK");
     return execute(ZRANK, new Command(ZRANK_BYTES, key, member));
+  }
+
+  private static final String ZREVRANK = "ZREVRANK";
+  private static final byte[] ZREVRANK_BYTES = ZREVRANK.getBytes(Charsets.US_ASCII);
+  private static final int ZREVRANK_VERSION = parseVersion("2.0.0");
+
+  /**
+   * Determine the index of a member in a sorted set, with scores ordered from high to low
+   *
+   * @param key
+   * @param member
+   * @return IntegerReply
+   */
+  public Reply zrevrank(Object key, Object member) throws RedisException {
+    if (version < ZREVRANK_VERSION) throw new RedisException("Server does not support ZREVRANK");
+    return execute(ZREVRANK, new Command(ZREVRANK_BYTES, key, member));
   }
 
   private List<ReplyListener> replyListeners;
