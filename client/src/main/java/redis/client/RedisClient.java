@@ -2048,6 +2048,22 @@ public class RedisClient extends RedisClientBase {
     return (MultiBulkReply) execute(ZRANGEBYSCORE, new Command(ZRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
   }
   
+  private static final String ZRANK = "ZRANK";
+  private static final byte[] ZRANK_BYTES = ZRANK.getBytes(Charsets.US_ASCII);
+  private static final int ZRANK_VERSION = parseVersion("2.0.0");
+
+  /**
+   * Determine the index of a member in a sorted set
+   *
+   * @param key0
+   * @param member1
+   * @return Reply
+   */
+  public Reply zrank(Object key0, Object member1) throws RedisException {
+    if (version < ZRANK_VERSION) throw new RedisException("Server does not support ZRANK");
+    return (Reply) execute(ZRANK, new Command(ZRANK_BYTES, key0, member1));
+  }
+  
   private static final String ZREM = "ZREM";
   private static final byte[] ZREM_BYTES = ZREM.getBytes(Charsets.US_ASCII);
   private static final int ZREM_VERSION = parseVersion("1.2.0");
@@ -2147,6 +2163,22 @@ public class RedisClient extends RedisClientBase {
     list.add(withscores3);
     list.add(offset_or_count4);
     return (MultiBulkReply) execute(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
+  }
+  
+  private static final String ZREVRANK = "ZREVRANK";
+  private static final byte[] ZREVRANK_BYTES = ZREVRANK.getBytes(Charsets.US_ASCII);
+  private static final int ZREVRANK_VERSION = parseVersion("2.0.0");
+
+  /**
+   * Determine the index of a member in a sorted set, with scores ordered from high to low
+   *
+   * @param key0
+   * @param member1
+   * @return Reply
+   */
+  public Reply zrevrank(Object key0, Object member1) throws RedisException {
+    if (version < ZREVRANK_VERSION) throw new RedisException("Server does not support ZREVRANK");
+    return (Reply) execute(ZREVRANK, new Command(ZREVRANK_BYTES, key0, member1));
   }
   
   private static final String ZSCORE = "ZSCORE";
@@ -3718,6 +3750,18 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
+   * Determine the index of a member in a sorted set
+   *
+   * @param key0
+   * @param member1
+   * @return Reply
+   */
+  public ListenableFuture<Reply> zrank(Object key0, Object member1) throws RedisException {
+    if (version < ZRANK_VERSION) throw new RedisException("Server does not support ZRANK");
+    return (ListenableFuture<Reply>) pipeline(ZRANK, new Command(ZRANK_BYTES, key0, member1));
+  }
+
+  /**
    * Remove one or more members from a sorted set
    *
    * @param key0
@@ -3796,6 +3840,18 @@ public class RedisClient extends RedisClientBase {
     list.add(withscores3);
     list.add(offset_or_count4);
     return (ListenableFuture<MultiBulkReply>) pipeline(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  /**
+   * Determine the index of a member in a sorted set, with scores ordered from high to low
+   *
+   * @param key0
+   * @param member1
+   * @return Reply
+   */
+  public ListenableFuture<Reply> zrevrank(Object key0, Object member1) throws RedisException {
+    if (version < ZREVRANK_VERSION) throw new RedisException("Server does not support ZREVRANK");
+    return (ListenableFuture<Reply>) pipeline(ZREVRANK, new Command(ZREVRANK_BYTES, key0, member1));
   }
 
   /**

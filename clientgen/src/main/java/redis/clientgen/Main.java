@@ -80,13 +80,15 @@ public class Main {
       cache.load(new FileInputStream(cacheFile));
     }
 
-    Set<String> unsupported = new HashSet<String>(
+    Set<String> ungenerated = new HashSet<String>(
             Arrays.asList(
                     "MULTI", "EXEC", "DISCARD", // Transactions
-                    "ZRANK", "ZREVRANK", // Two different return values
                     "PSUBSCRIBE", "SUBSCRIBE", "UNSUBSCRIBE", "PUNSUBSCRIBE" // subscriptions
             )
     );
+    final Set<String> generic = new HashSet<String>(Arrays.asList(
+            "ZRANK", "ZREVRANK" // Two different return values
+    ));
     JsonFactory jf = new MappingJsonFactory();
     JsonParser jsonParser = jf.createJsonParser(new URL("https://raw.github.com/antirez/redis-doc/master/commands.json"));
     final JsonNode commandNodes = jsonParser.readValueAsTree();
@@ -94,7 +96,7 @@ public class Main {
     List<Object> commands = new ArrayList<Object>();
     while (fieldNames.hasNext()) {
       final String command = fieldNames.next();
-      if (unsupported.contains(command)) continue;
+      if (ungenerated.contains(command)) continue;
       final String safeCommand = command.replace(" ", "_");
       String cacheReply = cache.getProperty(command.toLowerCase());
       if (cacheReply == null) {
@@ -108,7 +110,7 @@ public class Main {
       commands.add(new Object() {
         String name = safeCommand;
         String comment = commandNode.get("summary").getTextValue();
-        String reply = finalReply.equals("") ? "Reply" : finalReply;
+        String reply = (finalReply.equals("") || generic.contains(name)) ? "Reply" : finalReply;
         String version = commandNode.get("since").getTextValue();
         boolean usearray = false;
         List<Object> arguments = new ArrayList<Object>();
