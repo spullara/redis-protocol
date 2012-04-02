@@ -123,7 +123,7 @@ public class AllCommandsTest {
     eq("OK", rc.mset_("w_a", 1, "w_b", 2, "w_c", 3, "w_ab", 4, "w_bc", 5));
     eq(a("a", "b", "c", "ab", "bc"), (MultiBulkReply) rc.sort_("list", BY, "w_*"));
     eq("OK", rc.mset_("o_a", 1, "o_b", 2, "o_c", 3, "o_ab", 4, "o_bc", 5));
-    eq(a("1", "2", "3", "4", "5"), (MultiBulkReply) rc.sort_("list", BY, "w_*", "GET", "o_*"));
+    eq(a("1", "2", "3", "4", "5"), (MultiBulkReply) rc.sort_("list", BY, "w_*", GET, "o_*"));
     eq(5, (IntegerReply) rc.sort_("list", ALPHA, STORE, "result"));
     eq(a("a", "ab", "b", "bc", "c"), rc.lrange("result", 0, 10));
   }

@@ -41,13 +41,17 @@ import redis.reply.StatusReply;
  */
 public class RedisClientBase {
   private static final Comparator<byte[]> BYTES = SignedBytes.lexicographicalComparator();
-  public static final String WEIGHTS = "WEIGHTS";
-  public static final String WITHSCORES = "WITHSCORES";
-  public static final String ALPHA = "ALPHA";
-  public static final String LIMIT = "LIMIT";
-  public static final String DESC = "DESC";
-  public static final String BY = "BY";
-  public static final String STORE = "STORE";
+
+  // Standard values for use with some commands
+  public static final byte[] WEIGHTS = "WEIGHTS".getBytes();
+  public static final byte[] WITHSCORES = "WITHSCORES".getBytes();
+  public static final byte[] ALPHA = "ALPHA".getBytes();
+  public static final byte[] LIMIT = "LIMIT".getBytes();
+  public static final byte[] DESC = "DESC".getBytes();
+  public static final byte[] BY = "BY".getBytes();
+  public static final byte[] STORE = "STORE".getBytes();
+  public static final byte[] GET = "GET".getBytes();
+
   // Single threaded pipelining
   private ListeningExecutorService es;
   protected RedisProtocol redisProtocol;
@@ -256,10 +260,7 @@ public class RedisClientBase {
    * Remove a reply listener from this client.
    */
   public synchronized boolean removeListener(ReplyListener replyListener) {
-    if (replyListeners != null) {
-      return replyListeners.remove(replyListener);
-    }
-    return false;
+    return replyListeners != null && replyListeners.remove(replyListener);
   }
 
   private static final byte[] MESSAGE = "message".getBytes();
@@ -361,6 +362,7 @@ public class RedisClientBase {
             } else if (BYTES.compare(type, PMESSAGE) == 0) {
               replyListener.pmessage(data1, (byte[]) data2, (byte[]) data[3].data());
             } else {
+              close();
               throw new RedisException("Invalid subscription messsage");
             }
           }
