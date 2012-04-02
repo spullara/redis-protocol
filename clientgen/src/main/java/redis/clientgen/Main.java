@@ -90,7 +90,7 @@ public class Main {
             "ZRANK", "ZREVRANK" // Two different return values
     ));
     final Set<String> multiples = new HashSet<String>(Arrays.asList(
-            "ZADD"
+            "ZADD", "ZINTERSTORE"
     ));
     JsonFactory jf = new MappingJsonFactory();
     JsonParser jsonParser = jf.createJsonParser(new URL("https://raw.github.com/antirez/redis-doc/master/commands.json"));
@@ -159,6 +159,7 @@ public class Main {
                   boolean multiple = isMultiple;
                   String typename = "Object";
                   String name = (argName + finalArgNum).replace(" ", "_");
+                  Boolean optional = (argumentNode.get("optional") != null);
                 });
                 if (isMultiple) {
                   usearray = true;

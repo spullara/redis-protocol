@@ -15,7 +15,12 @@
     Collections.addAll(list, {{name}});
     {{/multiple}}
     {{^multiple}}
+    {{^optional}}
     list.add({{name}});
+    {{/optional}}
+    {{#optional}}
+    if ({{name}} != null) list.add({{name}});
+    {{/optional}}
     {{/multiple}}
     {{/arguments}}
     return ({{$return}}{{reply}}{{/return}}) {{$method}}method{{/method}}({{name}}, new Command({{name}}_BYTES, list.toArray(new Object[list.size()])));

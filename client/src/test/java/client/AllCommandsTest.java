@@ -37,7 +37,7 @@ public class AllCommandsTest {
 
   @Test
   public void append() {
-    rc.del($("mykey"));
+    rc.del(a("mykey"));
     eq(5, rc.append("mykey", "Hello"));
     eq(11, rc.append("mykey", " World"));
     eq("Hello World", rc.get("mykey"));
@@ -45,16 +45,16 @@ public class AllCommandsTest {
 
   @Test
   public void blpop() {
-    rc.del($("list1", "list2"));
-    eq(3, rc.rpush("list1", $("a", "b", "c")));
-    eq($("list1", "a"), rc.blpop($("list1", "list2", "0")));
+    rc.del(a("list1", "list2"));
+    eq(3, rc.rpush("list1", a("a", "b", "c")));
+    eq(a("list1", "a"), rc.blpop(a("list1", "list2", "0")));
   }
 
   @Test
   public void brpop() {
-    rc.del($("list1", "list2"));
-    eq(3, rc.rpush("list1", $("a", "b", "c")));
-    eq($("list1", "c"), rc.brpop($("list1", "list2", "0")));
+    rc.del(a("list1", "list2"));
+    eq(3, rc.rpush("list1", a("a", "b", "c")));
+    eq(a("list1", "c"), rc.brpop(a("list1", "list2", "0")));
   }
 
   @Test
@@ -78,27 +78,77 @@ public class AllCommandsTest {
 
   @Test
   public void del() {
-    rc.del($("key1", "key2", "key3"));
+    rc.del(a("key1", "key2", "key3"));
     eq("OK", rc.set("key1", "Hello"));
     eq("OK", rc.set("key2", "World"));
-    eq(2, rc.del($("key1", "key2", "key3")));
+    eq(2, rc.del(a("key1", "key2", "key3")));
   }
 
   @Test
   public void eval() {
-//    eq($("key1", "key2", "first", "second"),
+//    eq(a("key1", "key2", "first", "second"),
 //            (MultiBulkReply) rc.eval("return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}", 2,
-//                    $("key1", "key2", "first", "second")));
+//                    a("key1", "key2", "first", "second")));
+  }
+
+  @Test
+  public void zadd() {
+    rc.del(a("myzset"));
+    eq(1, rc.zadd(a("myzset", "1", "one")));
+    eq(1, rc.zadd(a("myzset", "1", "uno")));
+    eq(1, rc.zadd(a("myzset", "2", "two")));
+    eq(0, rc.zadd(a("myzset", "3", "two")));
+    eq(a("one", "1", "uno", "1", "two", "3"), rc.zrange("myzset", "0", "-1", "WITHSCORES"));
+  }
+
+  @Test
+  public void zcard() {
+    rc.del(a("myzset"));
+    eq(1, rc.zadd(a("myzset", "1", "one")));
+    eq(1, rc.zadd(a("myzset", "2", "two")));
+    eq(2, rc.zcard("myzset"));
+  }
+
+  @Test
+  public void zcount() {
+    rc.del(a("myzset"));
+    eq(1, rc.zadd(a("myzset", "1", "one")));
+    eq(1, rc.zadd(a("myzset", "2", "two")));
+    eq(1, rc.zadd(a("myzset", "3", "three")));
+    eq(3, rc.zcount("myzset", "-inf", "inf"));
+    eq(2, rc.zcount("myzset", "(1", "3"));
+  }
+
+  @Test
+  public void zincrby() {
+    rc.del(a("myzset"));
+    eq(1, rc.zadd(a("myzset", "1", "one")));
+    eq(1, rc.zadd(a("myzset", "2", "two")));
+    eq("3", rc.zincrby("myzset", "2", "one"));
+    eq(a("two", "2", "one", "3"), rc.zrange("myzset", "0", "-1", "WITHSCORES"));
+  }
+
+  @Test
+  public void zinterstore() {
+    rc.del(a("zset1", "zset2"));
+    eq(1, rc.zadd(a("zset1", "1", "one")));
+    eq(1, rc.zadd(a("zset1", "2", "two")));
+    eq(1, rc.zadd(a("zset2", "1", "one")));
+    eq(1, rc.zadd(a("zset2", "2", "two")));
+    eq(1, rc.zadd(a("zset2", "3", "three")));
+    eq(2, rc.zinterstore(a("out", "2", "zset1", "zset2", "WEIGHTS", "2", "3")));
+    eq(a("one", "5", "two", "10"), rc.zrange("out", "0", "-1", "WITHSCORES"));
   }
 
   @Test
   public void zrange() {
-    rc.del($("myzset"));
-    eq(1, rc.zadd($("myzset", "1", "one")));
-    eq(1, rc.zadd($("myzset", "1", "uno")));
-    eq(1, rc.zadd($("myzset", "2", "two")));
-    eq(0, rc.zadd($("myzset", "3", "two")));
-    eq($("one", "1", "uno", "1", "two", "3"), rc.zrange("myzset", "0", "-1", "WITHSCORES"));
+    rc.del(a("myzset"));
+    eq(1, rc.zadd(a("myzset", "1", "one")));
+    eq(1, rc.zadd(a("myzset", "2", "two")));
+    eq(1, rc.zadd(a("myzset", "3", "three")));
+    eq(a("one", "two", "three"), rc.zrange("myzset", "0", "-1", null));
+    eq(a("three"), rc.zrange("myzset", "2", "3", null));
+    eq(a("two", "three"), rc.zrange("myzset", "-2", "-1", null));
   }
 
   private void eq(String exepcted, StatusReply actual) {
@@ -117,7 +167,7 @@ public class AllCommandsTest {
     assertEquals(expected, (long) actual.data());
   }
 
-  private Object[] $(Object... args) {
+  private Object[] a(Object... args) {
     return args;
   }
 }

@@ -1710,8 +1710,8 @@ public class RedisClient extends RedisClientBase {
     if (version < SORT_VERSION) throw new RedisException("Server does not support SORT");
     List list = new ArrayList();
     list.add(key0);
-    list.add(pattern1);
-    list.add(offset_or_count2);
+    if (pattern1 != null) list.add(pattern1);
+    if (offset_or_count2 != null) list.add(offset_or_count2);
     Collections.addAll(list, pattern3);
     return (MultiBulkReply) execute(SORT, new Command(SORT_BYTES, list.toArray(new Object[list.size()])));
   }
@@ -1978,17 +1978,13 @@ public class RedisClient extends RedisClientBase {
   /**
    * Intersect multiple sorted sets and store the resulting sorted set in a new key
    *
-   * @param destination0
-   * @param numkeys1
-   * @param key2
+   * @param args
    * @return IntegerReply
    */
-  public IntegerReply zinterstore(Object destination0, Object numkeys1, Object[] key2) throws RedisException {
+  public IntegerReply zinterstore(Object[] args) throws RedisException {
     if (version < ZINTERSTORE_VERSION) throw new RedisException("Server does not support ZINTERSTORE");
     List list = new ArrayList();
-    list.add(destination0);
-    list.add(numkeys1);
-    Collections.addAll(list, key2);
+    Collections.addAll(list, args);
     return (IntegerReply) execute(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
   
@@ -2011,7 +2007,7 @@ public class RedisClient extends RedisClientBase {
     list.add(key0);
     list.add(start1);
     list.add(stop2);
-    list.add(withscores3);
+    if (withscores3 != null) list.add(withscores3);
     return (MultiBulkReply) execute(ZRANGE, new Command(ZRANGE_BYTES, list.toArray(new Object[list.size()])));
   }
   
@@ -2035,8 +2031,8 @@ public class RedisClient extends RedisClientBase {
     list.add(key0);
     list.add(min1);
     list.add(max2);
-    list.add(withscores3);
-    list.add(offset_or_count4);
+    if (withscores3 != null) list.add(withscores3);
+    if (offset_or_count4 != null) list.add(offset_or_count4);
     return (MultiBulkReply) execute(ZRANGEBYSCORE, new Command(ZRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
   }
   
@@ -2128,7 +2124,7 @@ public class RedisClient extends RedisClientBase {
     list.add(key0);
     list.add(start1);
     list.add(stop2);
-    list.add(withscores3);
+    if (withscores3 != null) list.add(withscores3);
     return (MultiBulkReply) execute(ZREVRANGE, new Command(ZREVRANGE_BYTES, list.toArray(new Object[list.size()])));
   }
   
@@ -2152,8 +2148,8 @@ public class RedisClient extends RedisClientBase {
     list.add(key0);
     list.add(max1);
     list.add(min2);
-    list.add(withscores3);
-    list.add(offset_or_count4);
+    if (withscores3 != null) list.add(withscores3);
+    if (offset_or_count4 != null) list.add(offset_or_count4);
     return (MultiBulkReply) execute(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
   }
   
@@ -3479,8 +3475,8 @@ public class RedisClient extends RedisClientBase {
     if (version < SORT_VERSION) throw new RedisException("Server does not support SORT");
     List list = new ArrayList();
     list.add(key0);
-    list.add(pattern1);
-    list.add(offset_or_count2);
+    if (pattern1 != null) list.add(pattern1);
+    if (offset_or_count2 != null) list.add(offset_or_count2);
     Collections.addAll(list, pattern3);
     return (ListenableFuture<MultiBulkReply>) pipeline(SORT, new Command(SORT_BYTES, list.toArray(new Object[list.size()])));
   }
@@ -3679,17 +3675,13 @@ public class RedisClient extends RedisClientBase {
   /**
    * Intersect multiple sorted sets and store the resulting sorted set in a new key
    *
-   * @param destination0
-   * @param numkeys1
-   * @param key2
+   * @param args
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> zinterstore(Object destination0, Object numkeys1, Object[] key2) throws RedisException {
+  public ListenableFuture<IntegerReply> zinterstore(Object[] args) throws RedisException {
     if (version < ZINTERSTORE_VERSION) throw new RedisException("Server does not support ZINTERSTORE");
     List list = new ArrayList();
-    list.add(destination0);
-    list.add(numkeys1);
-    Collections.addAll(list, key2);
+    Collections.addAll(list, args);
     return (ListenableFuture<IntegerReply>) pipeline(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
@@ -3708,7 +3700,7 @@ public class RedisClient extends RedisClientBase {
     list.add(key0);
     list.add(start1);
     list.add(stop2);
-    list.add(withscores3);
+    if (withscores3 != null) list.add(withscores3);
     return (ListenableFuture<MultiBulkReply>) pipeline(ZRANGE, new Command(ZRANGE_BYTES, list.toArray(new Object[list.size()])));
   }
 
@@ -3728,8 +3720,8 @@ public class RedisClient extends RedisClientBase {
     list.add(key0);
     list.add(min1);
     list.add(max2);
-    list.add(withscores3);
-    list.add(offset_or_count4);
+    if (withscores3 != null) list.add(withscores3);
+    if (offset_or_count4 != null) list.add(offset_or_count4);
     return (ListenableFuture<MultiBulkReply>) pipeline(ZRANGEBYSCORE, new Command(ZRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
@@ -3801,7 +3793,7 @@ public class RedisClient extends RedisClientBase {
     list.add(key0);
     list.add(start1);
     list.add(stop2);
-    list.add(withscores3);
+    if (withscores3 != null) list.add(withscores3);
     return (ListenableFuture<MultiBulkReply>) pipeline(ZREVRANGE, new Command(ZREVRANGE_BYTES, list.toArray(new Object[list.size()])));
   }
 
@@ -3821,8 +3813,8 @@ public class RedisClient extends RedisClientBase {
     list.add(key0);
     list.add(max1);
     list.add(min2);
-    list.add(withscores3);
-    list.add(offset_or_count4);
+    if (withscores3 != null) list.add(withscores3);
+    if (offset_or_count4 != null) list.add(offset_or_count4);
     return (ListenableFuture<MultiBulkReply>) pipeline(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
