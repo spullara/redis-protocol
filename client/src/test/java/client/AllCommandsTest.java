@@ -91,6 +91,16 @@ public class AllCommandsTest {
 //                    $("key1", "key2", "first", "second")));
   }
 
+  @Test
+  public void zrange() {
+    rc.del($("myzset"));
+    eq(1, rc.zadd($("myzset", "1", "one")));
+    eq(1, rc.zadd($("myzset", "1", "uno")));
+    eq(1, rc.zadd($("myzset", "2", "two")));
+    eq(0, rc.zadd($("myzset", "3", "two")));
+    eq($("one", "1", "uno", "1", "two", "3"), rc.zrange("myzset", "0", "-1", "WITHSCORES"));
+  }
+
   private void eq(String exepcted, StatusReply actual) {
     assertEquals(exepcted, actual.data());
   }

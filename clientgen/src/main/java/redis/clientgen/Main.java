@@ -86,8 +86,11 @@ public class Main {
                     "PSUBSCRIBE", "SUBSCRIBE", "UNSUBSCRIBE", "PUNSUBSCRIBE" // subscriptions
             )
     );
-    final Set<String> generic = new HashSet<String>(Arrays.asList(
+    final Set<String> genericReply = new HashSet<String>(Arrays.asList(
             "ZRANK", "ZREVRANK" // Two different return values
+    ));
+    final Set<String> multiples = new HashSet<String>(Arrays.asList(
+            "ZADD"
     ));
     JsonFactory jf = new MappingJsonFactory();
     JsonParser jsonParser = jf.createJsonParser(new URL("https://raw.github.com/antirez/redis-doc/master/commands.json"));
@@ -110,7 +113,7 @@ public class Main {
       commands.add(new Object() {
         String name = safeCommand;
         String comment = commandNode.get("summary").getTextValue();
-        String reply = (finalReply.equals("") || generic.contains(name)) ? "Reply" : finalReply;
+        String reply = (finalReply.equals("") || genericReply.contains(name)) ? "Reply" : finalReply;
         String version = commandNode.get("since").getTextValue();
         boolean usearray = false;
         List<Object> arguments = new ArrayList<Object>();
@@ -122,39 +125,48 @@ public class Main {
             }
             boolean first = true;
             int argNum = 0;
-            for (final JsonNode argumentNode : argumentArray) {
-              JsonNode nameNodes = argumentNode.get("name");
-              final String argName;
-              if (nameNodes.isArray()) {
-                boolean f = true;
-                StringBuilder sb = new StringBuilder();
-                for (JsonNode nameNode : nameNodes) {
-                  if (!f) {
-                    sb.append("_or_");
-                  }
-                  f = false;
-                  String textValue = nameNode.getTextValue();
-                  sb.append(textValue);
-                }
-                argName = sb.toString();
-              } else {
-                argName = nameNodes.getTextValue();
-              }
-              final boolean finalFirst = first;
-              final int finalArgNum = argNum;
-              final boolean isMultiple = argumentNode.get("multiple") != null;
+            if (multiples.contains(name)) {
               arguments.add(new Object() {
-                boolean first = finalFirst;
-                boolean multiple = isMultiple;
+                boolean first = true;
+                boolean multiple = true;
                 String typename = "Object";
-                String name = (argName + finalArgNum).replace(" ", "_");
+                String name = "args";
               });
-              if (isMultiple) {
-                usearray = true;
+            } else {
+              for (final JsonNode argumentNode : argumentArray) {
+                JsonNode nameNodes = argumentNode.get("name");
+                final String argName;
+                if (nameNodes.isArray()) {
+                  boolean f = true;
+                  StringBuilder sb = new StringBuilder();
+                  for (JsonNode nameNode : nameNodes) {
+                    if (!f) {
+                      sb.append("_or_");
+                    }
+                    f = false;
+                    String textValue = nameNode.getTextValue();
+                    sb.append(textValue);
+                  }
+                  argName = sb.toString();
+                } else {
+                  argName = nameNodes.getTextValue();
+                }
+                final boolean finalFirst = first;
+                final int finalArgNum = argNum;
+                final boolean isMultiple = argumentNode.get("multiple") != null ;
+                arguments.add(new Object() {
+                  boolean first = finalFirst;
+                  boolean multiple = isMultiple;
+                  String typename = "Object";
+                  String name = (argName + finalArgNum).replace(" ", "_");
+                });
+                if (isMultiple) {
+                  usearray = true;
+                }
+                first = false;
+                argNum++;
+                if (isMultiple) break;
               }
-              first = false;
-              argNum++;
-              if (isMultiple) break;
             }
           }
         }

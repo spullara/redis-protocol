@@ -1912,21 +1912,13 @@ public class RedisClient extends RedisClientBase {
   /**
    * Add one or more members to a sorted set, or update its score if it already exists
    *
-   * @param key0
-   * @param score1
-   * @param member2
-   * @param score3
-   * @param member4
+   * @param args
    * @return IntegerReply
    */
-  public IntegerReply zadd(Object key0, Object score1, Object member2, Object score3, Object member4) throws RedisException {
+  public IntegerReply zadd(Object[] args) throws RedisException {
     if (version < ZADD_VERSION) throw new RedisException("Server does not support ZADD");
     List list = new ArrayList();
-    list.add(key0);
-    list.add(score1);
-    list.add(member2);
-    list.add(score3);
-    list.add(member4);
+    Collections.addAll(list, args);
     return (IntegerReply) execute(ZADD, new Command(ZADD_BYTES, list.toArray(new Object[list.size()])));
   }
   
@@ -3637,21 +3629,13 @@ public class RedisClient extends RedisClientBase {
   /**
    * Add one or more members to a sorted set, or update its score if it already exists
    *
-   * @param key0
-   * @param score1
-   * @param member2
-   * @param score3
-   * @param member4
+   * @param args
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> zadd(Object key0, Object score1, Object member2, Object score3, Object member4) throws RedisException {
+  public ListenableFuture<IntegerReply> zadd(Object[] args) throws RedisException {
     if (version < ZADD_VERSION) throw new RedisException("Server does not support ZADD");
     List list = new ArrayList();
-    list.add(key0);
-    list.add(score1);
-    list.add(member2);
-    list.add(score3);
-    list.add(member4);
+    Collections.addAll(list, args);
     return (ListenableFuture<IntegerReply>) pipeline(ZADD, new Command(ZADD_BYTES, list.toArray(new Object[list.size()])));
   }
 
