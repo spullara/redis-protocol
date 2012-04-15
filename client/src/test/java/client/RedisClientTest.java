@@ -1,9 +1,7 @@
 package client;
 
 import com.google.common.base.Charsets;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
-
 import org.junit.Test;
 import redis.Command;
 import redis.client.MessageListener;
@@ -22,6 +20,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -260,4 +259,37 @@ public class RedisClientTest {
     long end = System.currentTimeMillis();
     System.out.println("Pub/sub: " + (CALLS * 1000) / (end - start) + " calls per second");
   }
+
+  @Test
+  public void benchmarkPubsubPipelined() throws IOException, ExecutionException, InterruptedException {
+    long start = System.currentTimeMillis();
+    byte[] hello = "hello".getBytes();
+    byte[] test = "test".getBytes();
+    RedisClient subscriberClient = new RedisClient("localhost", 6379);
+    final Semaphore semaphore = new Semaphore(50);
+    final AtomicReference<SettableFuture> futureRef = new AtomicReference<SettableFuture>();
+    subscriberClient.addListener(new MessageListener() {
+      @Override
+      public void message(byte[] channel, byte[] message) {
+        semaphore.release();
+      }
+
+      @Override
+      public void pmessage(byte[] pattern, byte[] channel, byte[] message) {
+        semaphore.release();
+      }
+    });
+    subscriberClient.subscribe("test");
+    RedisClient.Pipeline publisherClient = new RedisClient("localhost", 6379).pipeline();
+    for (int i = 0; i < CALLS * 10; i++) {
+      semaphore.acquire();
+      SettableFuture<Object> future = SettableFuture.create();
+      futureRef.set(future);
+      publisherClient.publish(test, hello);
+    }
+    semaphore.acquire(50);
+    long end = System.currentTimeMillis();
+    System.out.println("Pub/sub: " + (CALLS * 10 * 1000) / (end - start) + " calls per second");
+  }
+
 }
