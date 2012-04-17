@@ -9,6 +9,7 @@
     <module>client</module>
     <module>clientgen</module>
     <module>benchmark</module>
+    <module>proxy</module>
   </modules>
   <packaging>pom</packaging>
 
