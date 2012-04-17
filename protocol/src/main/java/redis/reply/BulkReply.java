@@ -2,7 +2,11 @@ package redis.reply;
 
 import com.google.common.base.Charsets;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
+
+import redis.RedisProtocol;
 
 /**
 * Created by IntelliJ IDEA.
@@ -37,5 +41,14 @@ public class BulkReply implements Reply<byte[]> {
   public String asString(Charset charset) {
     if (bytes == null) return null;
     return new String(bytes, charset);
+  }
+
+  @Override
+  public void write(OutputStream os) throws IOException {
+    os.write(MARKER);
+    os.write(RedisProtocol.toBytes(bytes.length));
+    os.write(CRLF);
+    os.write(bytes);
+    os.write(CRLF);
   }
 }

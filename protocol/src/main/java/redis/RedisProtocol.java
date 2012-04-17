@@ -22,8 +22,8 @@ import java.net.Socket;
  */
 public class RedisProtocol {
 
-  private static final char CR = '\r';
-  private static final char LF = '\n';
+  public static final char CR = '\r';
+  public static final char LF = '\n';
   private static final char ZERO = '0';
   private final BufferedInputStream is;
   private final OutputStream os;
@@ -138,6 +138,10 @@ public class RedisProtocol {
         throw new IOException("Unexpected character in stream: " + code);
       }
     }
+  }
+
+  public static byte[] toBytes(Number length) {
+    return length.toString().getBytes();
   }
 
   /**

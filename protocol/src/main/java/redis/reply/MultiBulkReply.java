@@ -1,9 +1,11 @@
 package redis.reply;
 
+import redis.Command;
 import redis.RedisProtocol;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,9 +40,27 @@ public class MultiBulkReply implements Reply<Reply[]> {
     }
   }
 
+  public MultiBulkReply(Reply[] replies) {
+    this.replies = replies;
+  }
+
   @Override
   public Reply[] data() {
     return replies;
+  }
+
+  @Override
+  public void write(OutputStream os) throws IOException {
+    os.write(MARKER);
+    if (replies == null) {
+      os.write(Command.NEG_ONE_WITH_CRLF);
+    } else {
+      os.write(RedisProtocol.toBytes(replies.length));
+      os.write(CRLF);
+      for (Reply reply : replies) {
+        reply.write(os);
+      }
+    }
   }
 
   public List<String> asStringList(Charset charset) {

@@ -1,5 +1,8 @@
 package redis.reply;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
 import com.google.common.base.Charsets;
 
 /**
@@ -21,5 +24,12 @@ public class ErrorReply implements Reply<String> {
   @Override
   public String data() {
     return error;
+  }
+
+  @Override
+  public void write(OutputStream os) throws IOException {
+    os.write(MARKER);
+    os.write(error.getBytes());
+    os.write(CRLF);
   }
 }

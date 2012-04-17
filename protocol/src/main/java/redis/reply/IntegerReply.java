@@ -1,5 +1,10 @@
 package redis.reply;
 
+import java.io.IOException;
+import java.io.OutputStream;
+
+import redis.RedisProtocol;
+
 /**
 * Created by IntelliJ IDEA.
 * User: sam
@@ -18,5 +23,12 @@ public class IntegerReply implements Reply<Long> {
   @Override
   public Long data() {
     return integer;
+  }
+
+  @Override
+  public void write(OutputStream os) throws IOException {
+    os.write(MARKER);
+    os.write(RedisProtocol.toBytes(integer));
+    os.write(CRLF);
   }
 }
