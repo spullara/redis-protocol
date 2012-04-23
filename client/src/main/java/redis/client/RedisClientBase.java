@@ -67,10 +67,12 @@ public class RedisClientBase {
       String line;
       while ((line = br.readLine()) != null) {
         int index = line.indexOf(':');
-        String name = line.substring(0, index);
-        String value = line.substring(index + 1);
-        if ("redis_version".equals(name)) {
-          this.version = parseVersion(value);
+        if (index != -1) {
+          String name = line.substring(0, index);
+          String value = line.substring(index + 1);
+          if ("redis_version".equals(name)) {
+            this.version = parseVersion(value);
+          }
         }
       }
     } catch (IOException e) {
