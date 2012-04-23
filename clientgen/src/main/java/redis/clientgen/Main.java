@@ -167,7 +167,7 @@ public class Main {
                   boolean first = finalFirst;
                   boolean multiple = isMultiple;
                   String typename = "Object";
-                  String name = (argName + finalArgNum).replace(" ", "_");
+                  String name = (argName + finalArgNum).replace(" ", "_").replace("-", "_");
                   Boolean optional = isOptional;
                 });
                 if (isMultiple) {

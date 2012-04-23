@@ -59,8 +59,9 @@ public class NonBlockingProxy {
 
     CountDownLatch done = new CountDownLatch(1);
 
+    AsynchronousServerSocketChannel open = AsynchronousServerSocketChannel.open();
     final AsynchronousServerSocketChannel listener =
-            AsynchronousServerSocketChannel.open().bind(new InetSocketAddress(NonBlockingProxy.port));
+            open.bind(new InetSocketAddress(NonBlockingProxy.port));
     final Queue<ByteBuffer> queue = new ConcurrentLinkedQueue<>();
 
     listener.accept(null, new CompletionHandler<AsynchronousSocketChannel,Void>() {

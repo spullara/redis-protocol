@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Queue;
@@ -53,13 +54,14 @@ public class RedisClientBase {
   // Single threaded pipelining
   private ListeningExecutorService es;
   protected RedisProtocol redisProtocol;
-  private static final Pattern versionMatcher = Pattern.compile("([0-9]+)\\.([0-9]+)(\\.([0-9]+))?");
+  private static final Pattern versionMatcher = Pattern.compile(
+          "([0-9]+)\\.([0-9]+)(\\.([0-9]+))?");
   protected AtomicInteger pipelined = new AtomicInteger(0);
   protected int version;
 
-  protected RedisClientBase(String host, int port, ExecutorService executorService) throws RedisException {
+  protected RedisClientBase(Socket socket, ExecutorService executorService) throws RedisException {
     try {
-      redisProtocol = new RedisProtocol(new Socket(host, port));
+      redisProtocol = new RedisProtocol(socket);
       BulkReply info = (BulkReply) execute("INFO", new Command("INFO"));
       BufferedReader br = new BufferedReader(new StringReader(new String(info.data())));
       String line;

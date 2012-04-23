@@ -1,6 +1,7 @@
 package redis.client;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
@@ -20,7 +21,11 @@ public class RedisClient extends RedisClientBase {
   protected Pipeline pipeline = new Pipeline();
 
   public RedisClient(String host, int port) throws IOException {
-    super(host, port, Executors.newSingleThreadExecutor());
+    this(new Socket(host, port));
+  }
+
+  public RedisClient(Socket socket) throws IOException {
+    super(socket, Executors.newSingleThreadExecutor());
   }
 
   public Pipeline pipeline() {
