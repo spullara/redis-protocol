@@ -5,6 +5,8 @@ import java.io.OutputStream;
 
 import com.google.common.base.Charsets;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+
 /**
 * Created by IntelliJ IDEA.
 * User: sam
@@ -14,7 +16,7 @@ import com.google.common.base.Charsets;
 */
 public class ErrorReply implements Reply<String> {
   public static final char MARKER = '-';
-  private static final byte[] ERR = "ERR ".getBytes(Charsets.UTF_8);
+  private static final byte[] ERR = "ERR ".getBytes();
   private final String error;
 
   public ErrorReply(String error) {
@@ -27,9 +29,9 @@ public class ErrorReply implements Reply<String> {
   }
 
   @Override
-  public void write(OutputStream os) throws IOException {
-    os.write(MARKER);
-    os.write(error.getBytes());
-    os.write(CRLF);
+  public void write(ChannelBuffer os) throws IOException {
+    os.writeByte(MARKER);
+    os.writeBytes(error.getBytes(Charsets.UTF_8));
+    os.writeBytes(CRLF);
   }
 }

@@ -1,5 +1,6 @@
 package redis.reply;
 
+import org.jboss.netty.buffer.ChannelBuffer;
 import redis.Command;
 import redis.RedisProtocol;
 
@@ -50,13 +51,13 @@ public class MultiBulkReply implements Reply<Reply[]> {
   }
 
   @Override
-  public void write(OutputStream os) throws IOException {
-    os.write(MARKER);
+  public void write(ChannelBuffer os) throws IOException {
+    os.writeByte(MARKER);
     if (replies == null) {
-      os.write(Command.NEG_ONE_WITH_CRLF);
+      os.writeBytes(Command.NEG_ONE_WITH_CRLF);
     } else {
-      os.write(RedisProtocol.toBytes(replies.length));
-      os.write(CRLF);
+      os.writeBytes(RedisProtocol.toBytes(replies.length));
+      os.writeBytes(CRLF);
       for (Reply reply : replies) {
         reply.write(os);
       }

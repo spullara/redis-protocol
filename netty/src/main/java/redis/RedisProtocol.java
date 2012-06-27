@@ -1,5 +1,7 @@
 package redis;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import redis.reply.BulkReply;
 import redis.reply.ErrorReply;
 import redis.reply.IntegerReply;
@@ -26,7 +28,7 @@ public class RedisProtocol {
   public static final char LF = '\n';
   private static final char ZERO = '0';
   private final BufferedInputStream is;
-  private final OutputStream os;
+  private final ChannelBuffer os;
 
   /**
    * Create a new RedisProtocol from a socket connection.
@@ -36,7 +38,7 @@ public class RedisProtocol {
    */
   public RedisProtocol(Socket socket) throws IOException {
     is = new BufferedInputStream(socket.getInputStream());
-    os = new BufferedOutputStream(socket.getOutputStream());
+    os = ChannelBuffers.dynamicBuffer();
   }
 
   /**
@@ -46,7 +48,7 @@ public class RedisProtocol {
    * @return
    * @throws IOException
    */
-  public static byte[] readBytes(InputStream is) throws IOException {
+  public static ChannelBuffer readBytes(InputStream is) throws IOException {
     long size = readLong(is);
     if (size > Integer.MAX_VALUE) {
       throw new IllegalArgumentException("Java only supports arrays up to " + Integer.MAX_VALUE + " in size");
@@ -71,7 +73,7 @@ public class RedisProtocol {
     if (cr != CR || lf != LF) {
       throw new IOException("Improper line ending: " + cr + ", " + lf);
     }
-    return bytes;
+    return ChannelBuffers.wrappedBuffer(bytes);
   }
 
   /**
@@ -169,7 +171,6 @@ public class RedisProtocol {
     synchronized (os) {
       command.write(os);
     }
-    os.flush();
   }
 
   /**
@@ -179,6 +180,5 @@ public class RedisProtocol {
    */
   public void close() throws IOException {
     is.close();
-    os.close();
   }
 }

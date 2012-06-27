@@ -48,7 +48,7 @@ public class BulkReply implements Reply<ChannelBuffer> {
   @Override
   public void write(ChannelBuffer os) throws IOException {
     os.writeByte(MARKER);
-    os.writeInt(bytes.capacity());
+    os.writeBytes(RedisProtocol.toBytes(bytes.capacity()));
     os.writeBytes(CRLF);
     os.writeBytes(bytes);
     os.writeBytes(CRLF);

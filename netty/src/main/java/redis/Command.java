@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.jboss.netty.buffer.ChannelBuffer;
+
 /**
  * Command serialization.
  * User: sam
@@ -62,16 +64,16 @@ public class Command {
     this.objects = objects;
   }
 
-  public void write(OutputStream os) throws IOException {
+  public void write(ChannelBuffer os) throws IOException {
     writeDirect(os, name, object1, object2, object3, objects);
   }
 
-  public static void writeDirect(OutputStream os, Object name, Object object1, Object object2, Object object3, Object[] objects) throws IOException {
+  public static void writeDirect(ChannelBuffer os, Object name, Object object1, Object object2, Object object3, Object[] objects) throws IOException {
     int others = (object1 == null ? 0 : 1) + (object2 == null ? 0 : 1) +
             (object3 == null ? 0 : 1) + (name == null ? 0 : 1);
     int length = objects == null ? 0 : objects.length;
-    os.write(ARGS_PREFIX);
-    os.write(Command.numToBytes(length + others, true));
+    os.writeBytes(ARGS_PREFIX);
+    os.writeBytes(Command.numToBytes(length + others, true));
     if (name != null) writeObject(os, name);
     if (object1 != null) writeObject(os, object1);
     if (object2 != null) writeObject(os, object2);
@@ -83,10 +85,13 @@ public class Command {
     }
   }
 
-  private static void writeObject(OutputStream os, Object object) throws IOException {
+  private static void writeObject(ChannelBuffer os, Object object) throws IOException {
     byte[] argument;
     if (object == null) {
       argument = EMPTY_BYTES;
+    } else if (object instanceof ChannelBuffer) {
+      writeArgument(os, (ChannelBuffer) object);
+      return;
     } else if (object instanceof byte[]) {
       argument = (byte[]) object;
     } else {
@@ -95,11 +100,18 @@ public class Command {
     writeArgument(os, argument);
   }
 
-  private static void writeArgument(OutputStream os, byte[] argument) throws IOException {
-    os.write(BYTES_PREFIX);
-    os.write(Command.numToBytes(argument.length, true));
-    os.write(argument);
-    os.write(CRLF);
+  private static void writeArgument(ChannelBuffer os, byte[] argument) throws IOException {
+    os.writeBytes(BYTES_PREFIX);
+    os.writeBytes(Command.numToBytes(argument.length, true));
+    os.writeBytes(argument);
+    os.writeBytes(CRLF);
+  }
+
+  private static void writeArgument(ChannelBuffer os, ChannelBuffer argument) throws IOException {
+    os.writeBytes(BYTES_PREFIX);
+    os.writeBytes(Command.numToBytes(argument.capacity(), true));
+    os.writeBytes(argument);
+    os.writeBytes(CRLF);
   }
 
   public static Command read(InputStream is) throws IOException {
@@ -109,7 +121,7 @@ public class Command {
       if (numArgs < 0 || numArgs > Integer.MAX_VALUE) {
         throw new IllegalArgumentException("Invalid size: " + numArgs);
       }
-      byte[][] byteArrays = new byte[(int) numArgs][];
+      ChannelBuffer[] byteArrays = new ChannelBuffer[(int) numArgs];
       for (int i = 0; i < numArgs; i++) {
         if (is.read() == BYTES_PREFIX[0]) {
           byteArrays[i] = RedisProtocol.readBytes(is);

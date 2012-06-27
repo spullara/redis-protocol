@@ -3,6 +3,7 @@ package redis.reply;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import org.jboss.netty.buffer.ChannelBuffer;
 import redis.RedisProtocol;
 
 import static redis.RedisProtocol.toBytes;
@@ -28,9 +29,9 @@ public class StatusReply implements Reply<String> {
   }
 
   @Override
-  public void write(OutputStream os) throws IOException {
-    os.write(MARKER);
-    os.write(status.getBytes());
-    os.write(CRLF);
+  public void write(ChannelBuffer os) throws IOException {
+    os.writeByte(MARKER);
+    os.writeBytes(status.getBytes());
+    os.writeBytes(CRLF);
   }
 }

@@ -6,11 +6,11 @@
   <version>0.3-SNAPSHOT</version>
   <modules>
     <module>protocol</module>
+    <module>netty</module>
     <module>client</module>
     <module>clientgen</module>
     <module>benchmark</module>
     <module>proxy</module>
-    <module>netty</module>
   </modules>
   <packaging>pom</packaging>
 
