@@ -10,6 +10,7 @@
     <module>clientgen</module>
     <module>benchmark</module>
     <module>proxy</module>
+    <module>netty</module>
   </modules>
   <packaging>pom</packaging>
 
