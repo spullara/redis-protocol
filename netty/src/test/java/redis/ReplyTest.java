@@ -1,7 +1,5 @@
 package redis;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import com.google.common.base.Charsets;
@@ -9,6 +7,7 @@ import com.google.common.base.Charsets;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Test;
+import redis.netty.RedisDecoder;
 import redis.reply.BulkReply;
 import redis.reply.ErrorReply;
 import redis.reply.IntegerReply;
@@ -27,11 +26,12 @@ public class ReplyTest {
   public void testReadWrite() throws IOException {
     ChannelBuffer os;
     Reply receive;
+    RedisDecoder redisDecoder = new RedisDecoder();
     {
       os = ChannelBuffers.dynamicBuffer();
       String message = "OK";
       new StatusReply(message).write(os);
-      receive = RedisProtocol.receive(new ByteArrayInputStream(os.array()));
+      receive = redisDecoder.receive(os);
       assertTrue(receive instanceof StatusReply);
       assertEquals(message, receive.data());
     }
@@ -39,7 +39,7 @@ public class ReplyTest {
       os = ChannelBuffers.dynamicBuffer();
       String message = "OK";
       new ErrorReply(message).write(os);
-      receive = RedisProtocol.receive(new ByteArrayInputStream(os.array()));
+      receive = redisDecoder.receive(os);
       assertTrue(receive instanceof ErrorReply);
       assertEquals(message, receive.data());
     }
@@ -47,7 +47,7 @@ public class ReplyTest {
       os = ChannelBuffers.dynamicBuffer();
       String message = "OK";
       new BulkReply(ChannelBuffers.wrappedBuffer(message.getBytes())).write(os);
-      receive = RedisProtocol.receive(new ByteArrayInputStream(os.array()));
+      receive = redisDecoder.receive(os);
       assertTrue(receive instanceof BulkReply);
       assertEquals(message, ((ChannelBuffer)receive.data()).toString(Charsets.US_ASCII));
     }
@@ -55,7 +55,7 @@ public class ReplyTest {
       os = ChannelBuffers.dynamicBuffer();
       long integer = 999;
       new IntegerReply(integer).write(os);
-      receive = RedisProtocol.receive(new ByteArrayInputStream(os.array()));
+      receive = redisDecoder.receive(os);
       assertTrue(receive instanceof IntegerReply);
       assertEquals(integer, receive.data());
     }
@@ -69,7 +69,7 @@ public class ReplyTest {
               new MultiBulkReply(new Reply[] { new StatusReply(message)}),
               new BulkReply(ChannelBuffers.wrappedBuffer(message.getBytes())),
               new IntegerReply(integer)}).write(os);
-      receive = RedisProtocol.receive(new ByteArrayInputStream(os.array()));
+      receive = redisDecoder.receive(os);
       assertTrue(receive instanceof MultiBulkReply);
       Reply[] data = (Reply[]) receive.data();
       assertEquals(message, data[0].data());

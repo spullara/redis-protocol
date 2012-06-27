@@ -114,53 +114,6 @@ public class Command {
     os.writeBytes(CRLF);
   }
 
-  public static Command read(InputStream is) throws IOException {
-    int read = is.read();
-    if (read == ARGS_PREFIX[0]) {
-      long numArgs = RedisProtocol.readLong(is);
-      if (numArgs < 0 || numArgs > Integer.MAX_VALUE) {
-        throw new IllegalArgumentException("Invalid size: " + numArgs);
-      }
-      ChannelBuffer[] byteArrays = new ChannelBuffer[(int) numArgs];
-      for (int i = 0; i < numArgs; i++) {
-        if (is.read() == BYTES_PREFIX[0]) {
-          byteArrays[i] = RedisProtocol.readBytes(is);
-        } else {
-          throw new IOException("Unexpected character");
-        }
-      }
-      return new Command(byteArrays);
-    } else {
-      DataInputStream dis = new DataInputStream(is);
-      // Special case MONITOR & PING & QUIT command
-      if (read == 'M' || read == 'm') {
-        String command = ("m" + dis.readLine()).toLowerCase();
-        if (command.equals("monitor")) {
-          byte[][] byteArrays = new byte[1][];
-          byteArrays[0] = "monitor".getBytes();
-          return new Command(byteArrays);
-        }
-      } else if (read == 'Q' || read == 'q') {
-        String command = ("q" + dis.readLine()).toLowerCase();
-        if (command.equals("quit")) {
-          byte[][] byteArrays = new byte[1][];
-          byteArrays[0] = "quit".getBytes();
-          return new Command(byteArrays);
-        }
-      } else if (read == 'P' || read == 'p') {
-        String command = ("p" + dis.readLine()).toLowerCase();
-        if (command.equals("ping")) {
-          byte[][] byteArrays = new byte[1][];
-          byteArrays[0] = "ping".getBytes();
-          return new Command(byteArrays);
-        }
-      } else if (read == -1) {
-        return null;
-      }
-      throw new IOException("Unexpected character");
-    }
-  }
-
   private static final int NUM_MAP_LENGTH = 256;
   private static byte[][] numMap = new byte[NUM_MAP_LENGTH][];
 

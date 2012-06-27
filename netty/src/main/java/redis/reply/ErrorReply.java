@@ -34,4 +34,8 @@ public class ErrorReply implements Reply<String> {
     os.writeBytes(error.getBytes(Charsets.UTF_8));
     os.writeBytes(CRLF);
   }
+
+  public String toString() {
+    return error;
+  }
 }

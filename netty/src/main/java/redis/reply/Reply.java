@@ -1,10 +1,9 @@
 package redis.reply;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import redis.RedisProtocol;
+import redis.netty.RedisDecoder;
 
 /**
 * Replies.
@@ -14,7 +13,7 @@ import redis.RedisProtocol;
 * To change this template use File | Settings | File Templates.
 */
 public interface Reply<T> {
-  byte[] CRLF = new byte[] { RedisProtocol.CR, RedisProtocol.LF };
+  byte[] CRLF = new byte[] { RedisDecoder.CR, RedisDecoder.LF };
 
   T data();
   void write(ChannelBuffer os) throws IOException;

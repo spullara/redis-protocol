@@ -3,12 +3,10 @@ package redis.reply;
 import com.google.common.base.Charsets;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
-import redis.RedisProtocol;
+import redis.netty.RedisDecoder;
 
 /**
 * Created by IntelliJ IDEA.
@@ -48,9 +46,13 @@ public class BulkReply implements Reply<ChannelBuffer> {
   @Override
   public void write(ChannelBuffer os) throws IOException {
     os.writeByte(MARKER);
-    os.writeBytes(RedisProtocol.toBytes(bytes.capacity()));
+    os.writeBytes(RedisDecoder.toBytes(bytes.capacity()));
     os.writeBytes(CRLF);
     os.writeBytes(bytes);
     os.writeBytes(CRLF);
+  }
+
+  public String toString() {
+    return asUTF8String();
   }
 }

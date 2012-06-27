@@ -2,11 +2,9 @@ package redis.reply;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import redis.Command;
-import redis.RedisProtocol;
+import redis.netty.RedisDecoder;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +12,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.google.common.base.Charsets;
 
 /**
  * Nested replies.
@@ -25,24 +25,33 @@ import java.util.Set;
 public class MultiBulkReply implements Reply<Reply[]> {
   public static final char MARKER = '*';
   private final Reply[] replies;
+  private final int size;
+  private int index = 0;
 
-  public MultiBulkReply(InputStream is) throws IOException {
-    long size = RedisProtocol.readLong(is);
+  public MultiBulkReply(RedisDecoder rd, ChannelBuffer is) throws IOException {
+    size = RedisDecoder.readInteger(is);
     if (size == -1) {
       replies = null;
     } else {
-      if (size > Integer.MAX_VALUE || size < 0) {
+      if (size < 0) {
         throw new IllegalArgumentException("Invalid size: " + size);
       }
-      replies = new Reply[(int) size];
-      for (int i = 0; i < size; i++) {
-        replies[i] = RedisProtocol.receive(is);
-      }
+      replies = new Reply[size];
+      read(rd, is);
+    }
+  }
+
+  public void read(RedisDecoder rd, ChannelBuffer is) throws IOException {
+    for (int i = index; i < size; i++) {
+      replies[i] = rd.receive(is);
+      index = i + 1;
+      rd.checkpoint();
     }
   }
 
   public MultiBulkReply(Reply[] replies) {
     this.replies = replies;
+    size = replies.length;
   }
 
   @Override
@@ -56,7 +65,7 @@ public class MultiBulkReply implements Reply<Reply[]> {
     if (replies == null) {
       os.writeBytes(Command.NEG_ONE_WITH_CRLF);
     } else {
-      os.writeBytes(RedisProtocol.toBytes(replies.length));
+      os.writeBytes(RedisDecoder.toBytes(replies.length));
       os.writeBytes(CRLF);
       for (Reply reply : replies) {
         reply.write(os);
@@ -111,5 +120,9 @@ public class MultiBulkReply implements Reply<Reply[]> {
       }
     }
     return map;
+  }
+
+  public String toString() {
+    return asStringList(Charsets.UTF_8).toString();
   }
 }

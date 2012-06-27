@@ -1,10 +1,9 @@
 package redis.reply;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import redis.RedisProtocol;
+import redis.netty.RedisDecoder;
 
 /**
 * Created by IntelliJ IDEA.
@@ -29,7 +28,11 @@ public class IntegerReply implements Reply<Long> {
   @Override
   public void write(ChannelBuffer os) throws IOException {
     os.writeByte(MARKER);
-    os.writeBytes(RedisProtocol.toBytes(integer));
+    os.writeBytes(RedisDecoder.toBytes(integer));
     os.writeBytes(CRLF);
+  }
+
+  public String toString() {
+    return data().toString();
   }
 }

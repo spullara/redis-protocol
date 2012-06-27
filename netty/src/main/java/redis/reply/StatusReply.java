@@ -1,12 +1,8 @@
 package redis.reply;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import redis.RedisProtocol;
-
-import static redis.RedisProtocol.toBytes;
 
 /**
 * Created by IntelliJ IDEA.
@@ -33,5 +29,9 @@ public class StatusReply implements Reply<String> {
     os.writeByte(MARKER);
     os.writeBytes(status.getBytes());
     os.writeBytes(CRLF);
+  }
+
+  public String toString() {
+    return status;
   }
 }

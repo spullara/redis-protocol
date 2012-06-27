@@ -1,11 +1,15 @@
 package redis;
 
 import com.google.common.base.Charsets;
+
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Test;
+import redis.netty.RedisDecoder;
 import redis.reply.BulkReply;
 import redis.reply.MultiBulkReply;
+import redis.reply.Reply;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -67,9 +71,12 @@ public class CommandTest {
     }
     byte[] multiBulkReply = baos.toByteArray();
     long start = System.currentTimeMillis();
+    RedisDecoder redisDecoder = new RedisDecoder();
+    ChannelBuffer cb = ChannelBuffers.wrappedBuffer(multiBulkReply);
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 100000; j++) {
-        RedisProtocol.receive(new ByteArrayInputStream(multiBulkReply));
+        Reply receive = redisDecoder.receive(cb);
+        cb.resetReaderIndex();
       }
       long end = System.currentTimeMillis();
       long diff = end - start;
