@@ -91,6 +91,56 @@ public class RedisClient extends RedisClientBase {
     return (StatusReply) execute(BGSAVE, new Command(BGSAVE_BYTES));
   }
   
+  private static final String BITCOUNT = "BITCOUNT";
+  private static final byte[] BITCOUNT_BYTES = BITCOUNT.getBytes(Charsets.US_ASCII);
+  private static final int BITCOUNT_VERSION = parseVersion("2.6.0");
+
+  /**
+   * Count set bits in a string
+   *
+   * @param key0
+   * @param start1
+   * @param end2
+   * @return IntegerReply
+   */
+  public IntegerReply bitcount(Object key0, Object start1, Object end2) throws RedisException {
+    if (version < BITCOUNT_VERSION) throw new RedisException("Server does not support BITCOUNT");
+    return (IntegerReply) execute(BITCOUNT, new Command(BITCOUNT_BYTES, key0, start1, end2));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public IntegerReply bitcount_(Object... arguments) throws RedisException {
+    if (version < BITCOUNT_VERSION) throw new RedisException("Server does not support BITCOUNT");
+    return (IntegerReply) execute(BITCOUNT, new Command(BITCOUNT_BYTES, arguments));
+  }
+  
+  private static final String BITOP = "BITOP";
+  private static final byte[] BITOP_BYTES = BITOP.getBytes(Charsets.US_ASCII);
+  private static final int BITOP_VERSION = parseVersion("2.6.0");
+
+  /**
+   * Perform bitwise operations between strings
+   *
+   * @param operation0
+   * @param destkey1
+   * @param key2
+   * @return IntegerReply
+   */
+  public IntegerReply bitop(Object operation0, Object destkey1, Object[] key2) throws RedisException {
+    if (version < BITOP_VERSION) throw new RedisException("Server does not support BITOP");
+    List list = new ArrayList();
+    list.add(operation0);
+    list.add(destkey1);
+    Collections.addAll(list, key2);
+    return (IntegerReply) execute(BITOP, new Command(BITOP_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public IntegerReply bitop_(Object... arguments) throws RedisException {
+    if (version < BITOP_VERSION) throw new RedisException("Server does not support BITOP");
+    return (IntegerReply) execute(BITOP, new Command(BITOP_BYTES, arguments));
+  }
+  
   private static final String BLPOP = "BLPOP";
   private static final byte[] BLPOP_BYTES = BLPOP.getBytes(Charsets.US_ASCII);
   private static final int BLPOP_VERSION = parseVersion("2.0.0");
@@ -301,7 +351,7 @@ public class RedisClient extends RedisClientBase {
   private static final int DUMP_VERSION = parseVersion("2.6.0");
 
   /**
-   * Return a serialized verison of the value stored at the specified key.
+   * Return a serialized version of the value stored at the specified key.
    *
    * @param key0
    * @return BulkReply
@@ -351,6 +401,33 @@ public class RedisClient extends RedisClientBase {
   public Reply eval_(Object... arguments) throws RedisException {
     if (version < EVAL_VERSION) throw new RedisException("Server does not support EVAL");
     return (Reply) execute(EVAL, new Command(EVAL_BYTES, arguments));
+  }
+  
+  private static final String EVALSHA = "EVALSHA";
+  private static final byte[] EVALSHA_BYTES = EVALSHA.getBytes(Charsets.US_ASCII);
+  private static final int EVALSHA_VERSION = parseVersion("2.6.0");
+
+  /**
+   * Execute a Lua script server side
+   *
+   * @param sha10
+   * @param numkeys1
+   * @param key2
+   * @return Reply
+   */
+  public Reply evalsha(Object sha10, Object numkeys1, Object[] key2) throws RedisException {
+    if (version < EVALSHA_VERSION) throw new RedisException("Server does not support EVALSHA");
+    List list = new ArrayList();
+    list.add(sha10);
+    list.add(numkeys1);
+    Collections.addAll(list, key2);
+    return (Reply) execute(EVALSHA, new Command(EVALSHA_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public Reply evalsha_(Object... arguments) throws RedisException {
+    if (version < EVALSHA_VERSION) throw new RedisException("Server does not support EVALSHA");
+    return (Reply) execute(EVALSHA, new Command(EVALSHA_BYTES, arguments));
   }
   
   private static final String EXISTS = "EXISTS";
@@ -2449,6 +2526,48 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
+   * Count set bits in a string
+   *
+   * @param key0
+   * @param start1
+   * @param end2
+   * @return IntegerReply
+   */
+  public ListenableFuture<IntegerReply> bitcount(Object key0, Object start1, Object end2) throws RedisException {
+    if (version < BITCOUNT_VERSION) throw new RedisException("Server does not support BITCOUNT");
+    return (ListenableFuture<IntegerReply>) pipeline(BITCOUNT, new Command(BITCOUNT_BYTES, key0, start1, end2));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<IntegerReply> bitcount_(Object... arguments) throws RedisException {
+    if (version < BITCOUNT_VERSION) throw new RedisException("Server does not support BITCOUNT");
+    return (ListenableFuture<IntegerReply>) pipeline(BITCOUNT, new Command(BITCOUNT_BYTES, arguments));
+  }
+
+  /**
+   * Perform bitwise operations between strings
+   *
+   * @param operation0
+   * @param destkey1
+   * @param key2
+   * @return IntegerReply
+   */
+  public ListenableFuture<IntegerReply> bitop(Object operation0, Object destkey1, Object[] key2) throws RedisException {
+    if (version < BITOP_VERSION) throw new RedisException("Server does not support BITOP");
+    List list = new ArrayList();
+    list.add(operation0);
+    list.add(destkey1);
+    Collections.addAll(list, key2);
+    return (ListenableFuture<IntegerReply>) pipeline(BITOP, new Command(BITOP_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<IntegerReply> bitop_(Object... arguments) throws RedisException {
+    if (version < BITOP_VERSION) throw new RedisException("Server does not support BITOP");
+    return (ListenableFuture<IntegerReply>) pipeline(BITOP, new Command(BITOP_BYTES, arguments));
+  }
+
+  /**
    * Remove and get the first element in a list, or block until one is available
    *
    * @param key0
@@ -2606,7 +2725,7 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Return a serialized verison of the value stored at the specified key.
+   * Return a serialized version of the value stored at the specified key.
    *
    * @param key0
    * @return BulkReply
@@ -2648,6 +2767,29 @@ public class RedisClient extends RedisClientBase {
   public ListenableFuture<Reply> eval_(Object... arguments) throws RedisException {
     if (version < EVAL_VERSION) throw new RedisException("Server does not support EVAL");
     return (ListenableFuture<Reply>) pipeline(EVAL, new Command(EVAL_BYTES, arguments));
+  }
+
+  /**
+   * Execute a Lua script server side
+   *
+   * @param sha10
+   * @param numkeys1
+   * @param key2
+   * @return Reply
+   */
+  public ListenableFuture<Reply> evalsha(Object sha10, Object numkeys1, Object[] key2) throws RedisException {
+    if (version < EVALSHA_VERSION) throw new RedisException("Server does not support EVALSHA");
+    List list = new ArrayList();
+    list.add(sha10);
+    list.add(numkeys1);
+    Collections.addAll(list, key2);
+    return (ListenableFuture<Reply>) pipeline(EVALSHA, new Command(EVALSHA_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<Reply> evalsha_(Object... arguments) throws RedisException {
+    if (version < EVALSHA_VERSION) throw new RedisException("Server does not support EVALSHA");
+    return (ListenableFuture<Reply>) pipeline(EVALSHA, new Command(EVALSHA_BYTES, arguments));
   }
 
   /**

@@ -45,18 +45,15 @@ public class RedisDecoder extends ReplayingDecoder<State> {
     if (size == -1) {
       return null;
     }
-    if (super.actualReadableBytes() < size + 2) {
-      is.skipBytes(size + 2);
-      throw new UnreplayableOperationException();
-    }
-    byte[] bytes = new byte[size];
-    is.readBytes(bytes, 0, size);
+    ChannelBuffer buffer = ChannelBuffers.buffer(size);
+    is.readBytes(buffer, 0, size);
+    buffer.setIndex(0, size);
     int cr = is.readByte();
     int lf = is.readByte();
     if (cr != CR || lf != LF) {
       throw new IOException("Improper line ending: " + cr + ", " + lf);
     }
-    return ChannelBuffers.wrappedBuffer(bytes);
+    return buffer;
   }
 
   public static int readInteger(ChannelBuffer is) throws IOException {
