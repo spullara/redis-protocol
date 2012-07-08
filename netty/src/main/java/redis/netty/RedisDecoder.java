@@ -45,9 +45,7 @@ public class RedisDecoder extends ReplayingDecoder<State> {
     if (size == -1) {
       return null;
     }
-    ChannelBuffer buffer = ChannelBuffers.buffer(size);
-    is.readBytes(buffer, 0, size);
-    buffer.setIndex(0, size);
+    ChannelBuffer buffer = is.readSlice(size);
     int cr = is.readByte();
     int lf = is.readByte();
     if (cr != CR || lf != LF) {
