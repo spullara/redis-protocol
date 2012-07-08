@@ -5,10 +5,10 @@ import com.google.common.base.Charsets;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Test;
+import redis.netty.Reply;
 import redis.netty.RedisDecoder;
-import redis.reply.BulkReply;
-import redis.reply.MultiBulkReply;
-import redis.reply.Reply;
+import redis.netty.BulkReply;
+import redis.netty.MultiBulkReply;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

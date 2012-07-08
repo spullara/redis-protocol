@@ -15,7 +15,6 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.handler.queue.BlockingReadHandler;
 import redis.Command;
-import redis.reply.Reply;
 
 public class RedisClient {
   private static final byte[] VALUE = "value".getBytes(Charsets.UTF_8);

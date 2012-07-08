@@ -1,7 +1,6 @@
-package redis.reply;
+package redis.netty;
 
 import java.io.IOException;
-import java.io.OutputStream;
 
 import com.google.common.base.Charsets;
 

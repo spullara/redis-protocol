@@ -1,4 +1,4 @@
-package redis.reply;
+package redis.netty;
 
 import com.google.common.base.Charsets;
 
@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import redis.netty.RedisDecoder;
 
 /**
 * Created by IntelliJ IDEA.

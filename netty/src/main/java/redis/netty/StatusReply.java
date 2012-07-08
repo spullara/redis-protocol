@@ -1,38 +1,37 @@
-package redis.reply;
+package redis.netty;
 
 import java.io.IOException;
 
 import org.jboss.netty.buffer.ChannelBuffer;
-import redis.netty.RedisDecoder;
 
 /**
 * Created by IntelliJ IDEA.
 * User: sam
 * Date: 7/29/11
-* Time: 10:23 AM
+* Time: 10:22 AM
 * To change this template use File | Settings | File Templates.
 */
-public class IntegerReply implements Reply<Long> {
-  public static final char MARKER = ':';
-  private final long integer;
+public class StatusReply implements Reply<String> {
+  public static final char MARKER = '+';
+  private final String status;
 
-  public IntegerReply(long integer) {
-    this.integer = integer;
+  public StatusReply(String status) {
+    this.status = status;
   }
 
   @Override
-  public Long data() {
-    return integer;
+  public String data() {
+    return status;
   }
 
   @Override
   public void write(ChannelBuffer os) throws IOException {
     os.writeByte(MARKER);
-    os.writeBytes(RedisDecoder.toBytes(integer));
+    os.writeBytes(status.getBytes());
     os.writeBytes(CRLF);
   }
 
   public String toString() {
-    return data().toString();
+    return status;
   }
 }

@@ -2,11 +2,14 @@ package com.twitter.finagle.redis
 
 import com.google.common.base.Charsets
 
-import org.jboss.netty.buffer.ChannelBuffers;
-import org.jboss.netty.handler.codec.redis._
-
 import com.twitter.finagle.Service
 import com.twitter.finagle.builder.ClientBuilder
+import com.twitter.util.Future
+
+import org.jboss.netty.buffer.ChannelBuffers
+
+import redis._
+import redis.netty._
 
 import scala.collection.mutable.ArrayBuffer
 
@@ -26,28 +29,24 @@ object RedisClient {
   /**
    * Construct a client from a single Service.
    */
-  def apply(service: Service[Command, Reply]): RedisClient = new RedisClient(service)
+  def apply(service: Service[Command, Reply[_]]): RedisClient = new RedisClient(service)
 
   {{#commands}}
-  val {{name}} = "{{name}}";
-  val {{name}}_BYTES = ChannelBuffers.copiedBuffer({{name}}, Charsets.US_ASCII);
+  val {{name}} = "{{name}}"
+  val {{name}}_BYTES = ChannelBuffers.copiedBuffer({{name}}, Charsets.US_ASCII)
 
   {{/commands}}
 }
 
 case class RedisException(message:String) extends RuntimeException(message)
 
-class RedisClient(service: Service[Command, Reply]) {
+class RedisClient(service: Service[Command, Reply[_]]) {
   {{#commands}}
 
   /**
    * {{comment}}
-   *
-   * @params {{#arguments}}{{^first}}, {{/first}}{{name}}{{/arguments}}
-   * @return {{reply}}
-   * @throw RedisException
    */
-  def {{quote}}{{methodname}}{{quote}}({{#arguments}}{{^first}}, {{/first}}{{name}}: {{typename}}{{#multiple}}*{{/multiple}}{{/arguments}}) = {
+  def {{quote}}{{methodname}}{{quote}}({{#arguments}}{{^first}}, {{/first}}{{name}}: {{typename}}{{#multiple}}*{{/multiple}}{{/arguments}}): Future[{{reply}}{{#generic}}[_]{{/generic}}] = {
     {{#usearray}}
     var arguments = ArrayBuffer[Object]()
     {{#arguments}}
@@ -64,8 +63,9 @@ class RedisClient(service: Service[Command, Reply]) {
     service(new Command(RedisClient.{{name}}_BYTES{{#arguments}}, {{name}}{{/arguments}})) map {
     {{/usearray}}
       _ match {
-        case error: ErrorReply => throw new RedisException(error.data().toString(Charsets.US_ASCII))
-        case reply: {{reply}} => reply
+        case error: ErrorReply => throw new RedisException(error.data())
+        case reply: {{reply}}{{#generic}}[_]{{/generic}} => reply
+        case other => throw new RedisException("Unexpected reply from {{name}}: " + other)
       }
     }
   }

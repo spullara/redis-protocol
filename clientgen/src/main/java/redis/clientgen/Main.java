@@ -114,7 +114,8 @@ public class Main {
       commands.add(new Object() {
         String name = safeCommand;
         String comment = commandNode.get("summary").getTextValue();
-        String reply = (finalReply.equals("") || genericReply.contains(name)) ? "Reply" : finalReply;
+        boolean generic = finalReply.equals("") || genericReply.contains(name);
+        String reply = generic ? "Reply" : finalReply;
         String version = commandNode.get("since").getTextValue();
         boolean hasOptional = false;
         boolean hasMultiple = false;

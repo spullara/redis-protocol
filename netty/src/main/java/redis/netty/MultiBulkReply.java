@@ -1,8 +1,7 @@
-package redis.reply;
+package redis.netty;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import redis.Command;
-import redis.netty.RedisDecoder;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

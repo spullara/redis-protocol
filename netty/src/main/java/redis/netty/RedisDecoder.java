@@ -6,17 +6,9 @@ import com.google.common.base.Charsets;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferIndexFinder;
-import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
-import org.jboss.netty.handler.codec.replay.UnreplayableOperationException;
-import redis.reply.BulkReply;
-import redis.reply.ErrorReply;
-import redis.reply.IntegerReply;
-import redis.reply.MultiBulkReply;
-import redis.reply.Reply;
-import redis.reply.StatusReply;
 
 /**
  * Netty codec for Redis
