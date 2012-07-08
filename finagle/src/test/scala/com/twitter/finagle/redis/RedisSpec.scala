@@ -28,11 +28,9 @@ class RedisSpec extends SpecificationWithJUnit {
         RedisCluster.start(1)
         val service = ClientBuilder()
           .codec(new RedisCodecFactory)
-          .channelFactory(new ReferenceCountedChannelFactory(
-          new OioClientSocketChannelFactory(Executors.newCachedThreadPool())))
           .hosts(RedisCluster.hostAddresses())
           .hostConnectionLimit(1)
-          .buildFactory().make()()
+          .build()
         client = RedisClient(service)
       }
     }
@@ -45,7 +43,9 @@ class RedisSpec extends SpecificationWithJUnit {
 
     "perform simple commands" in {
       ifDevelopment {
-        client.set("test", "value")()
+        client.set("test", "value") foreach { status =>
+          println(status.data())
+        } get()
         client.get("test")().data().toString(Charsets.UTF_8) mustEqual "value"
         client.mget("test")().data()(0) match {
           case cb:ChannelBuffer => cb.toString(Charsets.UTF_8) mustEqual "value"

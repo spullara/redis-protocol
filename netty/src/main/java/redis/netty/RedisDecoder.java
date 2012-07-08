@@ -9,15 +9,13 @@ import org.jboss.netty.buffer.ChannelBufferIndexFinder;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
+import org.jboss.netty.handler.codec.replay.VoidEnum;
 
 /**
  * Netty codec for Redis
  */
 
-enum State {
-}
-
-public class RedisDecoder extends ReplayingDecoder<State> {
+public class RedisDecoder extends ReplayingDecoder<VoidEnum> {
 
   public static final char CR = '\r';
   public static final char LF = '\n';
@@ -106,8 +104,9 @@ public class RedisDecoder extends ReplayingDecoder<State> {
   }
 
   @Override
-  protected Object decode(ChannelHandlerContext channelHandlerContext, Channel channel, ChannelBuffer channelBuffer, State anEnum) throws Exception {
-    return receive(channelBuffer);
+  protected Object decode(ChannelHandlerContext channelHandlerContext, Channel channel, ChannelBuffer channelBuffer, VoidEnum anEnum) throws Exception {
+    Reply receive = receive(channelBuffer);
+    return receive;
   }
 
   public MultiBulkReply decodeMultiBulkReply(ChannelBuffer is) throws IOException {

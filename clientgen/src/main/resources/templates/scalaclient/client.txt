@@ -62,11 +62,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     {{^usearray}}
     service(new Command(RedisClient.{{name}}_BYTES{{#arguments}}, {{name}}{{/arguments}})) map {
     {{/usearray}}
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: {{reply}}{{#generic}}[_]{{/generic}} => reply
-        case other => throw new RedisException("Unexpected reply from {{name}}: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: {{reply}}{{#generic}}[_]{{/generic}} => reply
+      case other => throw new RedisException("Unexpected reply from {{name}}: " + other)
     }
   }
   {{/commands}}

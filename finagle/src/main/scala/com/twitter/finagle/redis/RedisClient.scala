@@ -447,11 +447,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def append(key0: Object, value1: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.APPEND_BYTES, key0, value1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from APPEND: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from APPEND: " + other)
     }
   }
 
@@ -460,11 +458,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def auth(password0: Object): Future[StatusReply] = {
     service(new Command(RedisClient.AUTH_BYTES, password0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from AUTH: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from AUTH: " + other)
     }
   }
 
@@ -473,11 +469,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def bgrewriteaof(): Future[StatusReply] = {
     service(new Command(RedisClient.BGREWRITEAOF_BYTES)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from BGREWRITEAOF: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from BGREWRITEAOF: " + other)
     }
   }
 
@@ -486,11 +480,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def bgsave(): Future[StatusReply] = {
     service(new Command(RedisClient.BGSAVE_BYTES)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from BGSAVE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from BGSAVE: " + other)
     }
   }
 
@@ -499,11 +491,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def bitcount(key0: Object, start1: Object, end2: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.BITCOUNT_BYTES, key0, start1, end2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from BITCOUNT: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from BITCOUNT: " + other)
     }
   }
 
@@ -516,11 +506,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += destkey1
     arguments = arguments ++ key2
     service(new Command(RedisClient.BITOP_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from BITOP: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from BITOP: " + other)
     }
   }
 
@@ -531,11 +519,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     var arguments = ArrayBuffer[Object]()
     arguments = arguments ++ key0
     service(new Command(RedisClient.BLPOP_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: MultiBulkReply => reply
-        case other => throw new RedisException("Unexpected reply from BLPOP: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: MultiBulkReply => reply
+      case other => throw new RedisException("Unexpected reply from BLPOP: " + other)
     }
   }
 
@@ -546,11 +532,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     var arguments = ArrayBuffer[Object]()
     arguments = arguments ++ key0
     service(new Command(RedisClient.BRPOP_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: MultiBulkReply => reply
-        case other => throw new RedisException("Unexpected reply from BRPOP: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: MultiBulkReply => reply
+      case other => throw new RedisException("Unexpected reply from BRPOP: " + other)
     }
   }
 
@@ -559,11 +543,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def brpoplpush(source0: Object, destination1: Object, timeout2: Object): Future[BulkReply] = {
     service(new Command(RedisClient.BRPOPLPUSH_BYTES, source0, destination1, timeout2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: BulkReply => reply
-        case other => throw new RedisException("Unexpected reply from BRPOPLPUSH: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: BulkReply => reply
+      case other => throw new RedisException("Unexpected reply from BRPOPLPUSH: " + other)
     }
   }
 
@@ -572,11 +554,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def config_get(parameter0: Object): Future[Reply[_]] = {
     service(new Command(RedisClient.CONFIG_GET_BYTES, parameter0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: Reply[_] => reply
-        case other => throw new RedisException("Unexpected reply from CONFIG_GET: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: Reply[_] => reply
+      case other => throw new RedisException("Unexpected reply from CONFIG_GET: " + other)
     }
   }
 
@@ -585,11 +565,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def config_set(parameter0: Object, value1: Object): Future[Reply[_]] = {
     service(new Command(RedisClient.CONFIG_SET_BYTES, parameter0, value1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: Reply[_] => reply
-        case other => throw new RedisException("Unexpected reply from CONFIG_SET: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: Reply[_] => reply
+      case other => throw new RedisException("Unexpected reply from CONFIG_SET: " + other)
     }
   }
 
@@ -598,11 +576,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def config_resetstat(): Future[Reply[_]] = {
     service(new Command(RedisClient.CONFIG_RESETSTAT_BYTES)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: Reply[_] => reply
-        case other => throw new RedisException("Unexpected reply from CONFIG_RESETSTAT: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: Reply[_] => reply
+      case other => throw new RedisException("Unexpected reply from CONFIG_RESETSTAT: " + other)
     }
   }
 
@@ -611,11 +587,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def dbsize(): Future[IntegerReply] = {
     service(new Command(RedisClient.DBSIZE_BYTES)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from DBSIZE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from DBSIZE: " + other)
     }
   }
 
@@ -624,11 +598,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def debug_object(key0: Object): Future[Reply[_]] = {
     service(new Command(RedisClient.DEBUG_OBJECT_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: Reply[_] => reply
-        case other => throw new RedisException("Unexpected reply from DEBUG_OBJECT: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: Reply[_] => reply
+      case other => throw new RedisException("Unexpected reply from DEBUG_OBJECT: " + other)
     }
   }
 
@@ -637,11 +609,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def debug_segfault(): Future[Reply[_]] = {
     service(new Command(RedisClient.DEBUG_SEGFAULT_BYTES)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: Reply[_] => reply
-        case other => throw new RedisException("Unexpected reply from DEBUG_SEGFAULT: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: Reply[_] => reply
+      case other => throw new RedisException("Unexpected reply from DEBUG_SEGFAULT: " + other)
     }
   }
 
@@ -650,11 +620,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def decr(key0: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.DECR_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from DECR: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from DECR: " + other)
     }
   }
 
@@ -663,11 +631,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def decrby(key0: Object, decrement1: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.DECRBY_BYTES, key0, decrement1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from DECRBY: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from DECRBY: " + other)
     }
   }
 
@@ -678,11 +644,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     var arguments = ArrayBuffer[Object]()
     arguments = arguments ++ key0
     service(new Command(RedisClient.DEL_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from DEL: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from DEL: " + other)
     }
   }
 
@@ -691,11 +655,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def dump(key0: Object): Future[BulkReply] = {
     service(new Command(RedisClient.DUMP_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: BulkReply => reply
-        case other => throw new RedisException("Unexpected reply from DUMP: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: BulkReply => reply
+      case other => throw new RedisException("Unexpected reply from DUMP: " + other)
     }
   }
 
@@ -704,11 +666,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def echo(message0: Object): Future[BulkReply] = {
     service(new Command(RedisClient.ECHO_BYTES, message0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: BulkReply => reply
-        case other => throw new RedisException("Unexpected reply from ECHO: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: BulkReply => reply
+      case other => throw new RedisException("Unexpected reply from ECHO: " + other)
     }
   }
 
@@ -721,11 +681,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += numkeys1
     arguments = arguments ++ key2
     service(new Command(RedisClient.EVAL_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: Reply[_] => reply
-        case other => throw new RedisException("Unexpected reply from EVAL: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: Reply[_] => reply
+      case other => throw new RedisException("Unexpected reply from EVAL: " + other)
     }
   }
 
@@ -738,11 +696,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += numkeys1
     arguments = arguments ++ key2
     service(new Command(RedisClient.EVALSHA_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: Reply[_] => reply
-        case other => throw new RedisException("Unexpected reply from EVALSHA: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: Reply[_] => reply
+      case other => throw new RedisException("Unexpected reply from EVALSHA: " + other)
     }
   }
 
@@ -751,11 +707,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def exists(key0: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.EXISTS_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from EXISTS: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from EXISTS: " + other)
     }
   }
 
@@ -764,11 +718,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def expire(key0: Object, seconds1: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.EXPIRE_BYTES, key0, seconds1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from EXPIRE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from EXPIRE: " + other)
     }
   }
 
@@ -777,11 +729,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def expireat(key0: Object, timestamp1: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.EXPIREAT_BYTES, key0, timestamp1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from EXPIREAT: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from EXPIREAT: " + other)
     }
   }
 
@@ -790,11 +740,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def flushall(): Future[StatusReply] = {
     service(new Command(RedisClient.FLUSHALL_BYTES)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from FLUSHALL: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from FLUSHALL: " + other)
     }
   }
 
@@ -803,11 +751,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def flushdb(): Future[StatusReply] = {
     service(new Command(RedisClient.FLUSHDB_BYTES)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from FLUSHDB: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from FLUSHDB: " + other)
     }
   }
 
@@ -816,11 +762,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def get(key0: Object): Future[BulkReply] = {
     service(new Command(RedisClient.GET_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: BulkReply => reply
-        case other => throw new RedisException("Unexpected reply from GET: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: BulkReply => reply
+      case other => throw new RedisException("Unexpected reply from GET: " + other)
     }
   }
 
@@ -829,11 +773,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def getbit(key0: Object, offset1: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.GETBIT_BYTES, key0, offset1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from GETBIT: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from GETBIT: " + other)
     }
   }
 
@@ -842,11 +784,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def getrange(key0: Object, start1: Object, end2: Object): Future[BulkReply] = {
     service(new Command(RedisClient.GETRANGE_BYTES, key0, start1, end2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: BulkReply => reply
-        case other => throw new RedisException("Unexpected reply from GETRANGE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: BulkReply => reply
+      case other => throw new RedisException("Unexpected reply from GETRANGE: " + other)
     }
   }
 
@@ -855,11 +795,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def getset(key0: Object, value1: Object): Future[BulkReply] = {
     service(new Command(RedisClient.GETSET_BYTES, key0, value1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: BulkReply => reply
-        case other => throw new RedisException("Unexpected reply from GETSET: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: BulkReply => reply
+      case other => throw new RedisException("Unexpected reply from GETSET: " + other)
     }
   }
 
@@ -871,11 +809,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += key0
     arguments = arguments ++ field1
     service(new Command(RedisClient.HDEL_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from HDEL: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from HDEL: " + other)
     }
   }
 
@@ -884,11 +820,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def hexists(key0: Object, field1: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.HEXISTS_BYTES, key0, field1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from HEXISTS: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from HEXISTS: " + other)
     }
   }
 
@@ -897,11 +831,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def hget(key0: Object, field1: Object): Future[BulkReply] = {
     service(new Command(RedisClient.HGET_BYTES, key0, field1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: BulkReply => reply
-        case other => throw new RedisException("Unexpected reply from HGET: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: BulkReply => reply
+      case other => throw new RedisException("Unexpected reply from HGET: " + other)
     }
   }
 
@@ -910,11 +842,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def hgetall(key0: Object): Future[MultiBulkReply] = {
     service(new Command(RedisClient.HGETALL_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: MultiBulkReply => reply
-        case other => throw new RedisException("Unexpected reply from HGETALL: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: MultiBulkReply => reply
+      case other => throw new RedisException("Unexpected reply from HGETALL: " + other)
     }
   }
 
@@ -923,11 +853,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def hincrby(key0: Object, field1: Object, increment2: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.HINCRBY_BYTES, key0, field1, increment2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from HINCRBY: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from HINCRBY: " + other)
     }
   }
 
@@ -936,11 +864,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def hincrbyfloat(key0: Object, field1: Object, increment2: Object): Future[BulkReply] = {
     service(new Command(RedisClient.HINCRBYFLOAT_BYTES, key0, field1, increment2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: BulkReply => reply
-        case other => throw new RedisException("Unexpected reply from HINCRBYFLOAT: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: BulkReply => reply
+      case other => throw new RedisException("Unexpected reply from HINCRBYFLOAT: " + other)
     }
   }
 
@@ -949,11 +875,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def hkeys(key0: Object): Future[MultiBulkReply] = {
     service(new Command(RedisClient.HKEYS_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: MultiBulkReply => reply
-        case other => throw new RedisException("Unexpected reply from HKEYS: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: MultiBulkReply => reply
+      case other => throw new RedisException("Unexpected reply from HKEYS: " + other)
     }
   }
 
@@ -962,11 +886,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def hlen(key0: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.HLEN_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from HLEN: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from HLEN: " + other)
     }
   }
 
@@ -978,11 +900,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += key0
     arguments = arguments ++ field1
     service(new Command(RedisClient.HMGET_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: MultiBulkReply => reply
-        case other => throw new RedisException("Unexpected reply from HMGET: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: MultiBulkReply => reply
+      case other => throw new RedisException("Unexpected reply from HMGET: " + other)
     }
   }
 
@@ -994,11 +914,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += key0
     arguments = arguments ++ field_or_value1
     service(new Command(RedisClient.HMSET_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from HMSET: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from HMSET: " + other)
     }
   }
 
@@ -1007,11 +925,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def hset(key0: Object, field1: Object, value2: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.HSET_BYTES, key0, field1, value2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from HSET: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from HSET: " + other)
     }
   }
 
@@ -1020,11 +936,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def hsetnx(key0: Object, field1: Object, value2: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.HSETNX_BYTES, key0, field1, value2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from HSETNX: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from HSETNX: " + other)
     }
   }
 
@@ -1033,11 +947,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def hvals(key0: Object): Future[MultiBulkReply] = {
     service(new Command(RedisClient.HVALS_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: MultiBulkReply => reply
-        case other => throw new RedisException("Unexpected reply from HVALS: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: MultiBulkReply => reply
+      case other => throw new RedisException("Unexpected reply from HVALS: " + other)
     }
   }
 
@@ -1046,11 +958,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def incr(key0: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.INCR_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from INCR: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from INCR: " + other)
     }
   }
 
@@ -1059,11 +969,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def incrby(key0: Object, increment1: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.INCRBY_BYTES, key0, increment1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from INCRBY: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from INCRBY: " + other)
     }
   }
 
@@ -1072,11 +980,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def incrbyfloat(key0: Object, increment1: Object): Future[BulkReply] = {
     service(new Command(RedisClient.INCRBYFLOAT_BYTES, key0, increment1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: BulkReply => reply
-        case other => throw new RedisException("Unexpected reply from INCRBYFLOAT: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: BulkReply => reply
+      case other => throw new RedisException("Unexpected reply from INCRBYFLOAT: " + other)
     }
   }
 
@@ -1085,11 +991,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def info(): Future[BulkReply] = {
     service(new Command(RedisClient.INFO_BYTES)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: BulkReply => reply
-        case other => throw new RedisException("Unexpected reply from INFO: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: BulkReply => reply
+      case other => throw new RedisException("Unexpected reply from INFO: " + other)
     }
   }
 
@@ -1098,11 +1002,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def keys(pattern0: Object): Future[MultiBulkReply] = {
     service(new Command(RedisClient.KEYS_BYTES, pattern0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: MultiBulkReply => reply
-        case other => throw new RedisException("Unexpected reply from KEYS: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: MultiBulkReply => reply
+      case other => throw new RedisException("Unexpected reply from KEYS: " + other)
     }
   }
 
@@ -1111,11 +1013,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def lastsave(): Future[IntegerReply] = {
     service(new Command(RedisClient.LASTSAVE_BYTES)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from LASTSAVE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from LASTSAVE: " + other)
     }
   }
 
@@ -1124,11 +1024,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def lindex(key0: Object, index1: Object): Future[BulkReply] = {
     service(new Command(RedisClient.LINDEX_BYTES, key0, index1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: BulkReply => reply
-        case other => throw new RedisException("Unexpected reply from LINDEX: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: BulkReply => reply
+      case other => throw new RedisException("Unexpected reply from LINDEX: " + other)
     }
   }
 
@@ -1142,11 +1040,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += pivot2
     arguments += value3
     service(new Command(RedisClient.LINSERT_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from LINSERT: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from LINSERT: " + other)
     }
   }
 
@@ -1155,11 +1051,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def llen(key0: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.LLEN_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from LLEN: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from LLEN: " + other)
     }
   }
 
@@ -1168,11 +1062,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def lpop(key0: Object): Future[BulkReply] = {
     service(new Command(RedisClient.LPOP_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: BulkReply => reply
-        case other => throw new RedisException("Unexpected reply from LPOP: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: BulkReply => reply
+      case other => throw new RedisException("Unexpected reply from LPOP: " + other)
     }
   }
 
@@ -1184,11 +1076,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += key0
     arguments = arguments ++ value1
     service(new Command(RedisClient.LPUSH_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from LPUSH: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from LPUSH: " + other)
     }
   }
 
@@ -1197,11 +1087,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def lpushx(key0: Object, value1: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.LPUSHX_BYTES, key0, value1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from LPUSHX: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from LPUSHX: " + other)
     }
   }
 
@@ -1210,11 +1098,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def lrange(key0: Object, start1: Object, stop2: Object): Future[MultiBulkReply] = {
     service(new Command(RedisClient.LRANGE_BYTES, key0, start1, stop2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: MultiBulkReply => reply
-        case other => throw new RedisException("Unexpected reply from LRANGE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: MultiBulkReply => reply
+      case other => throw new RedisException("Unexpected reply from LRANGE: " + other)
     }
   }
 
@@ -1223,11 +1109,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def lrem(key0: Object, count1: Object, value2: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.LREM_BYTES, key0, count1, value2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from LREM: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from LREM: " + other)
     }
   }
 
@@ -1236,11 +1120,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def lset(key0: Object, index1: Object, value2: Object): Future[StatusReply] = {
     service(new Command(RedisClient.LSET_BYTES, key0, index1, value2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from LSET: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from LSET: " + other)
     }
   }
 
@@ -1249,11 +1131,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def ltrim(key0: Object, start1: Object, stop2: Object): Future[StatusReply] = {
     service(new Command(RedisClient.LTRIM_BYTES, key0, start1, stop2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from LTRIM: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from LTRIM: " + other)
     }
   }
 
@@ -1264,11 +1144,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     var arguments = ArrayBuffer[Object]()
     arguments = arguments ++ key0
     service(new Command(RedisClient.MGET_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: MultiBulkReply => reply
-        case other => throw new RedisException("Unexpected reply from MGET: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: MultiBulkReply => reply
+      case other => throw new RedisException("Unexpected reply from MGET: " + other)
     }
   }
 
@@ -1283,11 +1161,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += destination_db3
     arguments += timeout4
     service(new Command(RedisClient.MIGRATE_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from MIGRATE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from MIGRATE: " + other)
     }
   }
 
@@ -1296,11 +1172,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def monitor(): Future[Reply[_]] = {
     service(new Command(RedisClient.MONITOR_BYTES)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: Reply[_] => reply
-        case other => throw new RedisException("Unexpected reply from MONITOR: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: Reply[_] => reply
+      case other => throw new RedisException("Unexpected reply from MONITOR: " + other)
     }
   }
 
@@ -1309,11 +1183,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def move(key0: Object, db1: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.MOVE_BYTES, key0, db1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from MOVE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from MOVE: " + other)
     }
   }
 
@@ -1324,11 +1196,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     var arguments = ArrayBuffer[Object]()
     arguments = arguments ++ key_or_value0
     service(new Command(RedisClient.MSET_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from MSET: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from MSET: " + other)
     }
   }
 
@@ -1339,11 +1209,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     var arguments = ArrayBuffer[Object]()
     arguments = arguments ++ key_or_value0
     service(new Command(RedisClient.MSETNX_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from MSETNX: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from MSETNX: " + other)
     }
   }
 
@@ -1355,11 +1223,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += subcommand0
     arguments = arguments ++ arguments1
     service(new Command(RedisClient.OBJECT_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: Reply[_] => reply
-        case other => throw new RedisException("Unexpected reply from OBJECT: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: Reply[_] => reply
+      case other => throw new RedisException("Unexpected reply from OBJECT: " + other)
     }
   }
 
@@ -1368,11 +1234,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def persist(key0: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.PERSIST_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from PERSIST: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from PERSIST: " + other)
     }
   }
 
@@ -1381,11 +1245,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def pexpire(key0: Object, milliseconds1: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.PEXPIRE_BYTES, key0, milliseconds1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from PEXPIRE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from PEXPIRE: " + other)
     }
   }
 
@@ -1394,11 +1256,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def pexpireat(key0: Object, milliseconds_timestamp1: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.PEXPIREAT_BYTES, key0, milliseconds_timestamp1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from PEXPIREAT: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from PEXPIREAT: " + other)
     }
   }
 
@@ -1407,11 +1267,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def ping(): Future[StatusReply] = {
     service(new Command(RedisClient.PING_BYTES)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from PING: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from PING: " + other)
     }
   }
 
@@ -1420,11 +1278,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def psetex(key0: Object, milliseconds1: Object, value2: Object): Future[Reply[_]] = {
     service(new Command(RedisClient.PSETEX_BYTES, key0, milliseconds1, value2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: Reply[_] => reply
-        case other => throw new RedisException("Unexpected reply from PSETEX: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: Reply[_] => reply
+      case other => throw new RedisException("Unexpected reply from PSETEX: " + other)
     }
   }
 
@@ -1433,11 +1289,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def pttl(key0: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.PTTL_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from PTTL: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from PTTL: " + other)
     }
   }
 
@@ -1446,11 +1300,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def publish(channel0: Object, message1: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.PUBLISH_BYTES, channel0, message1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from PUBLISH: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from PUBLISH: " + other)
     }
   }
 
@@ -1459,11 +1311,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def quit(): Future[StatusReply] = {
     service(new Command(RedisClient.QUIT_BYTES)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from QUIT: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from QUIT: " + other)
     }
   }
 
@@ -1472,11 +1322,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def randomkey(): Future[BulkReply] = {
     service(new Command(RedisClient.RANDOMKEY_BYTES)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: BulkReply => reply
-        case other => throw new RedisException("Unexpected reply from RANDOMKEY: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: BulkReply => reply
+      case other => throw new RedisException("Unexpected reply from RANDOMKEY: " + other)
     }
   }
 
@@ -1485,11 +1333,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def rename(key0: Object, newkey1: Object): Future[StatusReply] = {
     service(new Command(RedisClient.RENAME_BYTES, key0, newkey1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from RENAME: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from RENAME: " + other)
     }
   }
 
@@ -1498,11 +1344,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def renamenx(key0: Object, newkey1: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.RENAMENX_BYTES, key0, newkey1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from RENAMENX: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from RENAMENX: " + other)
     }
   }
 
@@ -1511,11 +1355,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def restore(key0: Object, ttl1: Object, serialized_value2: Object): Future[StatusReply] = {
     service(new Command(RedisClient.RESTORE_BYTES, key0, ttl1, serialized_value2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from RESTORE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from RESTORE: " + other)
     }
   }
 
@@ -1524,11 +1366,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def rpop(key0: Object): Future[BulkReply] = {
     service(new Command(RedisClient.RPOP_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: BulkReply => reply
-        case other => throw new RedisException("Unexpected reply from RPOP: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: BulkReply => reply
+      case other => throw new RedisException("Unexpected reply from RPOP: " + other)
     }
   }
 
@@ -1537,11 +1377,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def rpoplpush(source0: Object, destination1: Object): Future[BulkReply] = {
     service(new Command(RedisClient.RPOPLPUSH_BYTES, source0, destination1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: BulkReply => reply
-        case other => throw new RedisException("Unexpected reply from RPOPLPUSH: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: BulkReply => reply
+      case other => throw new RedisException("Unexpected reply from RPOPLPUSH: " + other)
     }
   }
 
@@ -1553,11 +1391,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += key0
     arguments = arguments ++ value1
     service(new Command(RedisClient.RPUSH_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from RPUSH: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from RPUSH: " + other)
     }
   }
 
@@ -1566,11 +1402,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def rpushx(key0: Object, value1: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.RPUSHX_BYTES, key0, value1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from RPUSHX: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from RPUSHX: " + other)
     }
   }
 
@@ -1582,11 +1416,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += key0
     arguments = arguments ++ member1
     service(new Command(RedisClient.SADD_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from SADD: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from SADD: " + other)
     }
   }
 
@@ -1595,11 +1427,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def save(): Future[StatusReply] = {
     service(new Command(RedisClient.SAVE_BYTES)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from SAVE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from SAVE: " + other)
     }
   }
 
@@ -1608,11 +1438,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def scard(key0: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.SCARD_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from SCARD: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from SCARD: " + other)
     }
   }
 
@@ -1623,11 +1451,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     var arguments = ArrayBuffer[Object]()
     arguments = arguments ++ script0
     service(new Command(RedisClient.SCRIPT_EXISTS_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: Reply[_] => reply
-        case other => throw new RedisException("Unexpected reply from SCRIPT_EXISTS: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: Reply[_] => reply
+      case other => throw new RedisException("Unexpected reply from SCRIPT_EXISTS: " + other)
     }
   }
 
@@ -1636,11 +1462,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def script_flush(): Future[Reply[_]] = {
     service(new Command(RedisClient.SCRIPT_FLUSH_BYTES)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: Reply[_] => reply
-        case other => throw new RedisException("Unexpected reply from SCRIPT_FLUSH: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: Reply[_] => reply
+      case other => throw new RedisException("Unexpected reply from SCRIPT_FLUSH: " + other)
     }
   }
 
@@ -1649,11 +1473,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def script_kill(): Future[Reply[_]] = {
     service(new Command(RedisClient.SCRIPT_KILL_BYTES)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: Reply[_] => reply
-        case other => throw new RedisException("Unexpected reply from SCRIPT_KILL: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: Reply[_] => reply
+      case other => throw new RedisException("Unexpected reply from SCRIPT_KILL: " + other)
     }
   }
 
@@ -1662,11 +1484,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def script_load(script0: Object): Future[Reply[_]] = {
     service(new Command(RedisClient.SCRIPT_LOAD_BYTES, script0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: Reply[_] => reply
-        case other => throw new RedisException("Unexpected reply from SCRIPT_LOAD: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: Reply[_] => reply
+      case other => throw new RedisException("Unexpected reply from SCRIPT_LOAD: " + other)
     }
   }
 
@@ -1677,11 +1497,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     var arguments = ArrayBuffer[Object]()
     arguments = arguments ++ key0
     service(new Command(RedisClient.SDIFF_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: MultiBulkReply => reply
-        case other => throw new RedisException("Unexpected reply from SDIFF: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: MultiBulkReply => reply
+      case other => throw new RedisException("Unexpected reply from SDIFF: " + other)
     }
   }
 
@@ -1693,11 +1511,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += destination0
     arguments = arguments ++ key1
     service(new Command(RedisClient.SDIFFSTORE_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from SDIFFSTORE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from SDIFFSTORE: " + other)
     }
   }
 
@@ -1706,11 +1522,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def select(index0: Object): Future[StatusReply] = {
     service(new Command(RedisClient.SELECT_BYTES, index0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from SELECT: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from SELECT: " + other)
     }
   }
 
@@ -1719,11 +1533,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def set(key0: Object, value1: Object): Future[StatusReply] = {
     service(new Command(RedisClient.SET_BYTES, key0, value1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from SET: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from SET: " + other)
     }
   }
 
@@ -1732,11 +1544,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def setbit(key0: Object, offset1: Object, value2: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.SETBIT_BYTES, key0, offset1, value2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from SETBIT: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from SETBIT: " + other)
     }
   }
 
@@ -1745,11 +1555,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def setex(key0: Object, seconds1: Object, value2: Object): Future[StatusReply] = {
     service(new Command(RedisClient.SETEX_BYTES, key0, seconds1, value2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from SETEX: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from SETEX: " + other)
     }
   }
 
@@ -1758,11 +1566,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def setnx(key0: Object, value1: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.SETNX_BYTES, key0, value1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from SETNX: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from SETNX: " + other)
     }
   }
 
@@ -1771,11 +1577,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def setrange(key0: Object, offset1: Object, value2: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.SETRANGE_BYTES, key0, offset1, value2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from SETRANGE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from SETRANGE: " + other)
     }
   }
 
@@ -1784,11 +1588,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def shutdown(NOSAVE0: Object, SAVE1: Object): Future[StatusReply] = {
     service(new Command(RedisClient.SHUTDOWN_BYTES, NOSAVE0, SAVE1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from SHUTDOWN: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from SHUTDOWN: " + other)
     }
   }
 
@@ -1799,11 +1601,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     var arguments = ArrayBuffer[Object]()
     arguments = arguments ++ key0
     service(new Command(RedisClient.SINTER_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: MultiBulkReply => reply
-        case other => throw new RedisException("Unexpected reply from SINTER: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: MultiBulkReply => reply
+      case other => throw new RedisException("Unexpected reply from SINTER: " + other)
     }
   }
 
@@ -1815,11 +1615,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += destination0
     arguments = arguments ++ key1
     service(new Command(RedisClient.SINTERSTORE_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from SINTERSTORE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from SINTERSTORE: " + other)
     }
   }
 
@@ -1828,11 +1626,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def sismember(key0: Object, member1: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.SISMEMBER_BYTES, key0, member1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from SISMEMBER: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from SISMEMBER: " + other)
     }
   }
 
@@ -1841,11 +1637,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def slaveof(host0: Object, port1: Object): Future[StatusReply] = {
     service(new Command(RedisClient.SLAVEOF_BYTES, host0, port1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from SLAVEOF: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from SLAVEOF: " + other)
     }
   }
 
@@ -1854,11 +1648,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def slowlog(subcommand0: Object, argument1: Object): Future[Reply[_]] = {
     service(new Command(RedisClient.SLOWLOG_BYTES, subcommand0, argument1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: Reply[_] => reply
-        case other => throw new RedisException("Unexpected reply from SLOWLOG: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: Reply[_] => reply
+      case other => throw new RedisException("Unexpected reply from SLOWLOG: " + other)
     }
   }
 
@@ -1867,11 +1659,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def smembers(key0: Object): Future[MultiBulkReply] = {
     service(new Command(RedisClient.SMEMBERS_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: MultiBulkReply => reply
-        case other => throw new RedisException("Unexpected reply from SMEMBERS: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: MultiBulkReply => reply
+      case other => throw new RedisException("Unexpected reply from SMEMBERS: " + other)
     }
   }
 
@@ -1880,11 +1670,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def smove(source0: Object, destination1: Object, member2: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.SMOVE_BYTES, source0, destination1, member2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from SMOVE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from SMOVE: " + other)
     }
   }
 
@@ -1898,11 +1686,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += offset_or_count2
     arguments = arguments ++ pattern3
     service(new Command(RedisClient.SORT_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: Reply[_] => reply
-        case other => throw new RedisException("Unexpected reply from SORT: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: Reply[_] => reply
+      case other => throw new RedisException("Unexpected reply from SORT: " + other)
     }
   }
 
@@ -1911,11 +1697,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def spop(key0: Object): Future[BulkReply] = {
     service(new Command(RedisClient.SPOP_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: BulkReply => reply
-        case other => throw new RedisException("Unexpected reply from SPOP: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: BulkReply => reply
+      case other => throw new RedisException("Unexpected reply from SPOP: " + other)
     }
   }
 
@@ -1924,11 +1708,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def srandmember(key0: Object): Future[BulkReply] = {
     service(new Command(RedisClient.SRANDMEMBER_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: BulkReply => reply
-        case other => throw new RedisException("Unexpected reply from SRANDMEMBER: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: BulkReply => reply
+      case other => throw new RedisException("Unexpected reply from SRANDMEMBER: " + other)
     }
   }
 
@@ -1940,11 +1722,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += key0
     arguments = arguments ++ member1
     service(new Command(RedisClient.SREM_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from SREM: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from SREM: " + other)
     }
   }
 
@@ -1953,11 +1733,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def strlen(key0: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.STRLEN_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from STRLEN: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from STRLEN: " + other)
     }
   }
 
@@ -1968,11 +1746,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     var arguments = ArrayBuffer[Object]()
     arguments = arguments ++ key0
     service(new Command(RedisClient.SUNION_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: MultiBulkReply => reply
-        case other => throw new RedisException("Unexpected reply from SUNION: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: MultiBulkReply => reply
+      case other => throw new RedisException("Unexpected reply from SUNION: " + other)
     }
   }
 
@@ -1984,11 +1760,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += destination0
     arguments = arguments ++ key1
     service(new Command(RedisClient.SUNIONSTORE_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from SUNIONSTORE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from SUNIONSTORE: " + other)
     }
   }
 
@@ -1997,11 +1771,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def sync(): Future[Reply[_]] = {
     service(new Command(RedisClient.SYNC_BYTES)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: Reply[_] => reply
-        case other => throw new RedisException("Unexpected reply from SYNC: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: Reply[_] => reply
+      case other => throw new RedisException("Unexpected reply from SYNC: " + other)
     }
   }
 
@@ -2010,11 +1782,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def time(): Future[MultiBulkReply] = {
     service(new Command(RedisClient.TIME_BYTES)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: MultiBulkReply => reply
-        case other => throw new RedisException("Unexpected reply from TIME: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: MultiBulkReply => reply
+      case other => throw new RedisException("Unexpected reply from TIME: " + other)
     }
   }
 
@@ -2023,11 +1793,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def ttl(key0: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.TTL_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from TTL: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from TTL: " + other)
     }
   }
 
@@ -2036,11 +1804,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def `type`(key0: Object): Future[StatusReply] = {
     service(new Command(RedisClient.TYPE_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from TYPE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from TYPE: " + other)
     }
   }
 
@@ -2049,11 +1815,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def unwatch(): Future[StatusReply] = {
     service(new Command(RedisClient.UNWATCH_BYTES)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from UNWATCH: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from UNWATCH: " + other)
     }
   }
 
@@ -2064,11 +1828,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     var arguments = ArrayBuffer[Object]()
     arguments = arguments ++ key0
     service(new Command(RedisClient.WATCH_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: StatusReply => reply
-        case other => throw new RedisException("Unexpected reply from WATCH: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: StatusReply => reply
+      case other => throw new RedisException("Unexpected reply from WATCH: " + other)
     }
   }
 
@@ -2079,11 +1841,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     var arguments = ArrayBuffer[Object]()
     arguments = arguments ++ args
     service(new Command(RedisClient.ZADD_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from ZADD: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from ZADD: " + other)
     }
   }
 
@@ -2092,11 +1852,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def zcard(key0: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.ZCARD_BYTES, key0)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from ZCARD: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from ZCARD: " + other)
     }
   }
 
@@ -2105,11 +1863,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def zcount(key0: Object, min1: Object, max2: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.ZCOUNT_BYTES, key0, min1, max2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from ZCOUNT: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from ZCOUNT: " + other)
     }
   }
 
@@ -2118,11 +1874,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def zincrby(key0: Object, increment1: Object, member2: Object): Future[BulkReply] = {
     service(new Command(RedisClient.ZINCRBY_BYTES, key0, increment1, member2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: BulkReply => reply
-        case other => throw new RedisException("Unexpected reply from ZINCRBY: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: BulkReply => reply
+      case other => throw new RedisException("Unexpected reply from ZINCRBY: " + other)
     }
   }
 
@@ -2133,11 +1887,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     var arguments = ArrayBuffer[Object]()
     arguments = arguments ++ args
     service(new Command(RedisClient.ZINTERSTORE_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from ZINTERSTORE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from ZINTERSTORE: " + other)
     }
   }
 
@@ -2151,11 +1903,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += stop2
     arguments += withscores3
     service(new Command(RedisClient.ZRANGE_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: MultiBulkReply => reply
-        case other => throw new RedisException("Unexpected reply from ZRANGE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: MultiBulkReply => reply
+      case other => throw new RedisException("Unexpected reply from ZRANGE: " + other)
     }
   }
 
@@ -2170,11 +1920,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += withscores3
     arguments += offset_or_count4
     service(new Command(RedisClient.ZRANGEBYSCORE_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: MultiBulkReply => reply
-        case other => throw new RedisException("Unexpected reply from ZRANGEBYSCORE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: MultiBulkReply => reply
+      case other => throw new RedisException("Unexpected reply from ZRANGEBYSCORE: " + other)
     }
   }
 
@@ -2183,11 +1931,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def zrank(key0: Object, member1: Object): Future[Reply[_]] = {
     service(new Command(RedisClient.ZRANK_BYTES, key0, member1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: Reply[_] => reply
-        case other => throw new RedisException("Unexpected reply from ZRANK: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: Reply[_] => reply
+      case other => throw new RedisException("Unexpected reply from ZRANK: " + other)
     }
   }
 
@@ -2199,11 +1945,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += key0
     arguments = arguments ++ member1
     service(new Command(RedisClient.ZREM_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from ZREM: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from ZREM: " + other)
     }
   }
 
@@ -2212,11 +1956,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def zremrangebyrank(key0: Object, start1: Object, stop2: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.ZREMRANGEBYRANK_BYTES, key0, start1, stop2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from ZREMRANGEBYRANK: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from ZREMRANGEBYRANK: " + other)
     }
   }
 
@@ -2225,11 +1967,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def zremrangebyscore(key0: Object, min1: Object, max2: Object): Future[IntegerReply] = {
     service(new Command(RedisClient.ZREMRANGEBYSCORE_BYTES, key0, min1, max2)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from ZREMRANGEBYSCORE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from ZREMRANGEBYSCORE: " + other)
     }
   }
 
@@ -2243,11 +1983,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += stop2
     arguments += withscores3
     service(new Command(RedisClient.ZREVRANGE_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: MultiBulkReply => reply
-        case other => throw new RedisException("Unexpected reply from ZREVRANGE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: MultiBulkReply => reply
+      case other => throw new RedisException("Unexpected reply from ZREVRANGE: " + other)
     }
   }
 
@@ -2262,11 +2000,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += withscores3
     arguments += offset_or_count4
     service(new Command(RedisClient.ZREVRANGEBYSCORE_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: MultiBulkReply => reply
-        case other => throw new RedisException("Unexpected reply from ZREVRANGEBYSCORE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: MultiBulkReply => reply
+      case other => throw new RedisException("Unexpected reply from ZREVRANGEBYSCORE: " + other)
     }
   }
 
@@ -2275,11 +2011,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def zrevrank(key0: Object, member1: Object): Future[Reply[_]] = {
     service(new Command(RedisClient.ZREVRANK_BYTES, key0, member1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: Reply[_] => reply
-        case other => throw new RedisException("Unexpected reply from ZREVRANK: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: Reply[_] => reply
+      case other => throw new RedisException("Unexpected reply from ZREVRANK: " + other)
     }
   }
 
@@ -2288,11 +2022,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
    */
   def zscore(key0: Object, member1: Object): Future[BulkReply] = {
     service(new Command(RedisClient.ZSCORE_BYTES, key0, member1)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: BulkReply => reply
-        case other => throw new RedisException("Unexpected reply from ZSCORE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: BulkReply => reply
+      case other => throw new RedisException("Unexpected reply from ZSCORE: " + other)
     }
   }
 
@@ -2305,11 +2037,9 @@ class RedisClient(service: Service[Command, Reply[_]]) {
     arguments += numkeys1
     arguments = arguments ++ key2
     service(new Command(RedisClient.ZUNIONSTORE_BYTES, arguments.toArray)) map {
-      _ match {
-        case error: ErrorReply => throw new RedisException(error.data())
-        case reply: IntegerReply => reply
-        case other => throw new RedisException("Unexpected reply from ZUNIONSTORE: " + other)
-      }
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: IntegerReply => reply
+      case other => throw new RedisException("Unexpected reply from ZUNIONSTORE: " + other)
     }
   }
 
