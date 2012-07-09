@@ -6,6 +6,7 @@
   <artifactId>redis</artifactId>
   <version>0.3-SNAPSHOT</version>
   <modules>
+    <module>util</module>
     <module>protocol</module>
     <module>netty</module>
     <module>finagle</module>
@@ -13,7 +14,6 @@
     <module>clientgen</module>
     <module>benchmark</module>
     <module>proxy</module>
-    <module>util</module>
   </modules>
   <packaging>pom</packaging>
 
