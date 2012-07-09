@@ -6,12 +6,6 @@
   <version>0.0.2</version>
   <packaging>pom</packaging>
   <description>Parent pom for scala 2.9.2 projects</description>
-  <parent>
-    <groupId>com.twitter</groupId>
-    <artifactId>aggregator</artifactId>
-    <version>0.0.2</version>
-    <relativePath>../aggregator/pom.xml</relativePath>
-  </parent>
   <name>scala-parent-pom</name>
   <properties>
     <git.dir>${project.basedir}/../../.git</git.dir>
@@ -31,14 +25,6 @@
       <url>http://repo1.maven.org/maven2</url>
       <snapshots>
         <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
-    <pluginRepository>
-      <id>artifactory</id>
-      <name>Twitter Artifactory</name>
-      <url>http://artifactory.local.twitter.com/repo</url>
-      <snapshots>
-        <enabled>true</enabled>
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
