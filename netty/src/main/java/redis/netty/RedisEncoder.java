@@ -17,10 +17,9 @@ public class RedisEncoder extends SimpleChannelDownstreamHandler {
       ChannelBuffer cb = ChannelBuffers.dynamicBuffer();
       Command command = (Command) o;
       command.write(cb);
-      Channels.write(ctx.getChannel(), cb);
+      Channels.write(ctx, e.getFuture(), cb, e.getRemoteAddress());
     } else {
       super.writeRequested(ctx, e);
     }
-
   }
 }

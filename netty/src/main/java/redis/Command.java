@@ -89,11 +89,11 @@ public class Command {
     byte[] argument;
     if (object == null) {
       argument = EMPTY_BYTES;
+    } else if (object instanceof byte[]) {
+      argument = (byte[]) object;
     } else if (object instanceof ChannelBuffer) {
       writeArgument(os, (ChannelBuffer) object);
       return;
-    } else if (object instanceof byte[]) {
-      argument = (byte[]) object;
     } else {
       argument = object.toString().getBytes(Charsets.UTF_8);
     }

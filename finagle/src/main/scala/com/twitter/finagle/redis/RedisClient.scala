@@ -32,409 +32,409 @@ object RedisClient {
   def apply(service: Service[Command, Reply[_]]): RedisClient = new RedisClient(service)
 
   val APPEND = "APPEND"
-  val APPEND_BYTES = ChannelBuffers.copiedBuffer(APPEND, Charsets.US_ASCII)
+  val APPEND_BYTES = APPEND.getBytes(Charsets.UTF_8)
 
   val AUTH = "AUTH"
-  val AUTH_BYTES = ChannelBuffers.copiedBuffer(AUTH, Charsets.US_ASCII)
+  val AUTH_BYTES = AUTH.getBytes(Charsets.UTF_8)
 
   val BGREWRITEAOF = "BGREWRITEAOF"
-  val BGREWRITEAOF_BYTES = ChannelBuffers.copiedBuffer(BGREWRITEAOF, Charsets.US_ASCII)
+  val BGREWRITEAOF_BYTES = BGREWRITEAOF.getBytes(Charsets.UTF_8)
 
   val BGSAVE = "BGSAVE"
-  val BGSAVE_BYTES = ChannelBuffers.copiedBuffer(BGSAVE, Charsets.US_ASCII)
+  val BGSAVE_BYTES = BGSAVE.getBytes(Charsets.UTF_8)
 
   val BITCOUNT = "BITCOUNT"
-  val BITCOUNT_BYTES = ChannelBuffers.copiedBuffer(BITCOUNT, Charsets.US_ASCII)
+  val BITCOUNT_BYTES = BITCOUNT.getBytes(Charsets.UTF_8)
 
   val BITOP = "BITOP"
-  val BITOP_BYTES = ChannelBuffers.copiedBuffer(BITOP, Charsets.US_ASCII)
+  val BITOP_BYTES = BITOP.getBytes(Charsets.UTF_8)
 
   val BLPOP = "BLPOP"
-  val BLPOP_BYTES = ChannelBuffers.copiedBuffer(BLPOP, Charsets.US_ASCII)
+  val BLPOP_BYTES = BLPOP.getBytes(Charsets.UTF_8)
 
   val BRPOP = "BRPOP"
-  val BRPOP_BYTES = ChannelBuffers.copiedBuffer(BRPOP, Charsets.US_ASCII)
+  val BRPOP_BYTES = BRPOP.getBytes(Charsets.UTF_8)
 
   val BRPOPLPUSH = "BRPOPLPUSH"
-  val BRPOPLPUSH_BYTES = ChannelBuffers.copiedBuffer(BRPOPLPUSH, Charsets.US_ASCII)
+  val BRPOPLPUSH_BYTES = BRPOPLPUSH.getBytes(Charsets.UTF_8)
 
   val CONFIG_GET = "CONFIG_GET"
-  val CONFIG_GET_BYTES = ChannelBuffers.copiedBuffer(CONFIG_GET, Charsets.US_ASCII)
+  val CONFIG_GET_BYTES = CONFIG_GET.getBytes(Charsets.UTF_8)
 
   val CONFIG_SET = "CONFIG_SET"
-  val CONFIG_SET_BYTES = ChannelBuffers.copiedBuffer(CONFIG_SET, Charsets.US_ASCII)
+  val CONFIG_SET_BYTES = CONFIG_SET.getBytes(Charsets.UTF_8)
 
   val CONFIG_RESETSTAT = "CONFIG_RESETSTAT"
-  val CONFIG_RESETSTAT_BYTES = ChannelBuffers.copiedBuffer(CONFIG_RESETSTAT, Charsets.US_ASCII)
+  val CONFIG_RESETSTAT_BYTES = CONFIG_RESETSTAT.getBytes(Charsets.UTF_8)
 
   val DBSIZE = "DBSIZE"
-  val DBSIZE_BYTES = ChannelBuffers.copiedBuffer(DBSIZE, Charsets.US_ASCII)
+  val DBSIZE_BYTES = DBSIZE.getBytes(Charsets.UTF_8)
 
   val DEBUG_OBJECT = "DEBUG_OBJECT"
-  val DEBUG_OBJECT_BYTES = ChannelBuffers.copiedBuffer(DEBUG_OBJECT, Charsets.US_ASCII)
+  val DEBUG_OBJECT_BYTES = DEBUG_OBJECT.getBytes(Charsets.UTF_8)
 
   val DEBUG_SEGFAULT = "DEBUG_SEGFAULT"
-  val DEBUG_SEGFAULT_BYTES = ChannelBuffers.copiedBuffer(DEBUG_SEGFAULT, Charsets.US_ASCII)
+  val DEBUG_SEGFAULT_BYTES = DEBUG_SEGFAULT.getBytes(Charsets.UTF_8)
 
   val DECR = "DECR"
-  val DECR_BYTES = ChannelBuffers.copiedBuffer(DECR, Charsets.US_ASCII)
+  val DECR_BYTES = DECR.getBytes(Charsets.UTF_8)
 
   val DECRBY = "DECRBY"
-  val DECRBY_BYTES = ChannelBuffers.copiedBuffer(DECRBY, Charsets.US_ASCII)
+  val DECRBY_BYTES = DECRBY.getBytes(Charsets.UTF_8)
 
   val DEL = "DEL"
-  val DEL_BYTES = ChannelBuffers.copiedBuffer(DEL, Charsets.US_ASCII)
+  val DEL_BYTES = DEL.getBytes(Charsets.UTF_8)
 
   val DUMP = "DUMP"
-  val DUMP_BYTES = ChannelBuffers.copiedBuffer(DUMP, Charsets.US_ASCII)
+  val DUMP_BYTES = DUMP.getBytes(Charsets.UTF_8)
 
   val ECHO = "ECHO"
-  val ECHO_BYTES = ChannelBuffers.copiedBuffer(ECHO, Charsets.US_ASCII)
+  val ECHO_BYTES = ECHO.getBytes(Charsets.UTF_8)
 
   val EVAL = "EVAL"
-  val EVAL_BYTES = ChannelBuffers.copiedBuffer(EVAL, Charsets.US_ASCII)
+  val EVAL_BYTES = EVAL.getBytes(Charsets.UTF_8)
 
   val EVALSHA = "EVALSHA"
-  val EVALSHA_BYTES = ChannelBuffers.copiedBuffer(EVALSHA, Charsets.US_ASCII)
+  val EVALSHA_BYTES = EVALSHA.getBytes(Charsets.UTF_8)
 
   val EXISTS = "EXISTS"
-  val EXISTS_BYTES = ChannelBuffers.copiedBuffer(EXISTS, Charsets.US_ASCII)
+  val EXISTS_BYTES = EXISTS.getBytes(Charsets.UTF_8)
 
   val EXPIRE = "EXPIRE"
-  val EXPIRE_BYTES = ChannelBuffers.copiedBuffer(EXPIRE, Charsets.US_ASCII)
+  val EXPIRE_BYTES = EXPIRE.getBytes(Charsets.UTF_8)
 
   val EXPIREAT = "EXPIREAT"
-  val EXPIREAT_BYTES = ChannelBuffers.copiedBuffer(EXPIREAT, Charsets.US_ASCII)
+  val EXPIREAT_BYTES = EXPIREAT.getBytes(Charsets.UTF_8)
 
   val FLUSHALL = "FLUSHALL"
-  val FLUSHALL_BYTES = ChannelBuffers.copiedBuffer(FLUSHALL, Charsets.US_ASCII)
+  val FLUSHALL_BYTES = FLUSHALL.getBytes(Charsets.UTF_8)
 
   val FLUSHDB = "FLUSHDB"
-  val FLUSHDB_BYTES = ChannelBuffers.copiedBuffer(FLUSHDB, Charsets.US_ASCII)
+  val FLUSHDB_BYTES = FLUSHDB.getBytes(Charsets.UTF_8)
 
   val GET = "GET"
-  val GET_BYTES = ChannelBuffers.copiedBuffer(GET, Charsets.US_ASCII)
+  val GET_BYTES = GET.getBytes(Charsets.UTF_8)
 
   val GETBIT = "GETBIT"
-  val GETBIT_BYTES = ChannelBuffers.copiedBuffer(GETBIT, Charsets.US_ASCII)
+  val GETBIT_BYTES = GETBIT.getBytes(Charsets.UTF_8)
 
   val GETRANGE = "GETRANGE"
-  val GETRANGE_BYTES = ChannelBuffers.copiedBuffer(GETRANGE, Charsets.US_ASCII)
+  val GETRANGE_BYTES = GETRANGE.getBytes(Charsets.UTF_8)
 
   val GETSET = "GETSET"
-  val GETSET_BYTES = ChannelBuffers.copiedBuffer(GETSET, Charsets.US_ASCII)
+  val GETSET_BYTES = GETSET.getBytes(Charsets.UTF_8)
 
   val HDEL = "HDEL"
-  val HDEL_BYTES = ChannelBuffers.copiedBuffer(HDEL, Charsets.US_ASCII)
+  val HDEL_BYTES = HDEL.getBytes(Charsets.UTF_8)
 
   val HEXISTS = "HEXISTS"
-  val HEXISTS_BYTES = ChannelBuffers.copiedBuffer(HEXISTS, Charsets.US_ASCII)
+  val HEXISTS_BYTES = HEXISTS.getBytes(Charsets.UTF_8)
 
   val HGET = "HGET"
-  val HGET_BYTES = ChannelBuffers.copiedBuffer(HGET, Charsets.US_ASCII)
+  val HGET_BYTES = HGET.getBytes(Charsets.UTF_8)
 
   val HGETALL = "HGETALL"
-  val HGETALL_BYTES = ChannelBuffers.copiedBuffer(HGETALL, Charsets.US_ASCII)
+  val HGETALL_BYTES = HGETALL.getBytes(Charsets.UTF_8)
 
   val HINCRBY = "HINCRBY"
-  val HINCRBY_BYTES = ChannelBuffers.copiedBuffer(HINCRBY, Charsets.US_ASCII)
+  val HINCRBY_BYTES = HINCRBY.getBytes(Charsets.UTF_8)
 
   val HINCRBYFLOAT = "HINCRBYFLOAT"
-  val HINCRBYFLOAT_BYTES = ChannelBuffers.copiedBuffer(HINCRBYFLOAT, Charsets.US_ASCII)
+  val HINCRBYFLOAT_BYTES = HINCRBYFLOAT.getBytes(Charsets.UTF_8)
 
   val HKEYS = "HKEYS"
-  val HKEYS_BYTES = ChannelBuffers.copiedBuffer(HKEYS, Charsets.US_ASCII)
+  val HKEYS_BYTES = HKEYS.getBytes(Charsets.UTF_8)
 
   val HLEN = "HLEN"
-  val HLEN_BYTES = ChannelBuffers.copiedBuffer(HLEN, Charsets.US_ASCII)
+  val HLEN_BYTES = HLEN.getBytes(Charsets.UTF_8)
 
   val HMGET = "HMGET"
-  val HMGET_BYTES = ChannelBuffers.copiedBuffer(HMGET, Charsets.US_ASCII)
+  val HMGET_BYTES = HMGET.getBytes(Charsets.UTF_8)
 
   val HMSET = "HMSET"
-  val HMSET_BYTES = ChannelBuffers.copiedBuffer(HMSET, Charsets.US_ASCII)
+  val HMSET_BYTES = HMSET.getBytes(Charsets.UTF_8)
 
   val HSET = "HSET"
-  val HSET_BYTES = ChannelBuffers.copiedBuffer(HSET, Charsets.US_ASCII)
+  val HSET_BYTES = HSET.getBytes(Charsets.UTF_8)
 
   val HSETNX = "HSETNX"
-  val HSETNX_BYTES = ChannelBuffers.copiedBuffer(HSETNX, Charsets.US_ASCII)
+  val HSETNX_BYTES = HSETNX.getBytes(Charsets.UTF_8)
 
   val HVALS = "HVALS"
-  val HVALS_BYTES = ChannelBuffers.copiedBuffer(HVALS, Charsets.US_ASCII)
+  val HVALS_BYTES = HVALS.getBytes(Charsets.UTF_8)
 
   val INCR = "INCR"
-  val INCR_BYTES = ChannelBuffers.copiedBuffer(INCR, Charsets.US_ASCII)
+  val INCR_BYTES = INCR.getBytes(Charsets.UTF_8)
 
   val INCRBY = "INCRBY"
-  val INCRBY_BYTES = ChannelBuffers.copiedBuffer(INCRBY, Charsets.US_ASCII)
+  val INCRBY_BYTES = INCRBY.getBytes(Charsets.UTF_8)
 
   val INCRBYFLOAT = "INCRBYFLOAT"
-  val INCRBYFLOAT_BYTES = ChannelBuffers.copiedBuffer(INCRBYFLOAT, Charsets.US_ASCII)
+  val INCRBYFLOAT_BYTES = INCRBYFLOAT.getBytes(Charsets.UTF_8)
 
   val INFO = "INFO"
-  val INFO_BYTES = ChannelBuffers.copiedBuffer(INFO, Charsets.US_ASCII)
+  val INFO_BYTES = INFO.getBytes(Charsets.UTF_8)
 
   val KEYS = "KEYS"
-  val KEYS_BYTES = ChannelBuffers.copiedBuffer(KEYS, Charsets.US_ASCII)
+  val KEYS_BYTES = KEYS.getBytes(Charsets.UTF_8)
 
   val LASTSAVE = "LASTSAVE"
-  val LASTSAVE_BYTES = ChannelBuffers.copiedBuffer(LASTSAVE, Charsets.US_ASCII)
+  val LASTSAVE_BYTES = LASTSAVE.getBytes(Charsets.UTF_8)
 
   val LINDEX = "LINDEX"
-  val LINDEX_BYTES = ChannelBuffers.copiedBuffer(LINDEX, Charsets.US_ASCII)
+  val LINDEX_BYTES = LINDEX.getBytes(Charsets.UTF_8)
 
   val LINSERT = "LINSERT"
-  val LINSERT_BYTES = ChannelBuffers.copiedBuffer(LINSERT, Charsets.US_ASCII)
+  val LINSERT_BYTES = LINSERT.getBytes(Charsets.UTF_8)
 
   val LLEN = "LLEN"
-  val LLEN_BYTES = ChannelBuffers.copiedBuffer(LLEN, Charsets.US_ASCII)
+  val LLEN_BYTES = LLEN.getBytes(Charsets.UTF_8)
 
   val LPOP = "LPOP"
-  val LPOP_BYTES = ChannelBuffers.copiedBuffer(LPOP, Charsets.US_ASCII)
+  val LPOP_BYTES = LPOP.getBytes(Charsets.UTF_8)
 
   val LPUSH = "LPUSH"
-  val LPUSH_BYTES = ChannelBuffers.copiedBuffer(LPUSH, Charsets.US_ASCII)
+  val LPUSH_BYTES = LPUSH.getBytes(Charsets.UTF_8)
 
   val LPUSHX = "LPUSHX"
-  val LPUSHX_BYTES = ChannelBuffers.copiedBuffer(LPUSHX, Charsets.US_ASCII)
+  val LPUSHX_BYTES = LPUSHX.getBytes(Charsets.UTF_8)
 
   val LRANGE = "LRANGE"
-  val LRANGE_BYTES = ChannelBuffers.copiedBuffer(LRANGE, Charsets.US_ASCII)
+  val LRANGE_BYTES = LRANGE.getBytes(Charsets.UTF_8)
 
   val LREM = "LREM"
-  val LREM_BYTES = ChannelBuffers.copiedBuffer(LREM, Charsets.US_ASCII)
+  val LREM_BYTES = LREM.getBytes(Charsets.UTF_8)
 
   val LSET = "LSET"
-  val LSET_BYTES = ChannelBuffers.copiedBuffer(LSET, Charsets.US_ASCII)
+  val LSET_BYTES = LSET.getBytes(Charsets.UTF_8)
 
   val LTRIM = "LTRIM"
-  val LTRIM_BYTES = ChannelBuffers.copiedBuffer(LTRIM, Charsets.US_ASCII)
+  val LTRIM_BYTES = LTRIM.getBytes(Charsets.UTF_8)
 
   val MGET = "MGET"
-  val MGET_BYTES = ChannelBuffers.copiedBuffer(MGET, Charsets.US_ASCII)
+  val MGET_BYTES = MGET.getBytes(Charsets.UTF_8)
 
   val MIGRATE = "MIGRATE"
-  val MIGRATE_BYTES = ChannelBuffers.copiedBuffer(MIGRATE, Charsets.US_ASCII)
+  val MIGRATE_BYTES = MIGRATE.getBytes(Charsets.UTF_8)
 
   val MONITOR = "MONITOR"
-  val MONITOR_BYTES = ChannelBuffers.copiedBuffer(MONITOR, Charsets.US_ASCII)
+  val MONITOR_BYTES = MONITOR.getBytes(Charsets.UTF_8)
 
   val MOVE = "MOVE"
-  val MOVE_BYTES = ChannelBuffers.copiedBuffer(MOVE, Charsets.US_ASCII)
+  val MOVE_BYTES = MOVE.getBytes(Charsets.UTF_8)
 
   val MSET = "MSET"
-  val MSET_BYTES = ChannelBuffers.copiedBuffer(MSET, Charsets.US_ASCII)
+  val MSET_BYTES = MSET.getBytes(Charsets.UTF_8)
 
   val MSETNX = "MSETNX"
-  val MSETNX_BYTES = ChannelBuffers.copiedBuffer(MSETNX, Charsets.US_ASCII)
+  val MSETNX_BYTES = MSETNX.getBytes(Charsets.UTF_8)
 
   val OBJECT = "OBJECT"
-  val OBJECT_BYTES = ChannelBuffers.copiedBuffer(OBJECT, Charsets.US_ASCII)
+  val OBJECT_BYTES = OBJECT.getBytes(Charsets.UTF_8)
 
   val PERSIST = "PERSIST"
-  val PERSIST_BYTES = ChannelBuffers.copiedBuffer(PERSIST, Charsets.US_ASCII)
+  val PERSIST_BYTES = PERSIST.getBytes(Charsets.UTF_8)
 
   val PEXPIRE = "PEXPIRE"
-  val PEXPIRE_BYTES = ChannelBuffers.copiedBuffer(PEXPIRE, Charsets.US_ASCII)
+  val PEXPIRE_BYTES = PEXPIRE.getBytes(Charsets.UTF_8)
 
   val PEXPIREAT = "PEXPIREAT"
-  val PEXPIREAT_BYTES = ChannelBuffers.copiedBuffer(PEXPIREAT, Charsets.US_ASCII)
+  val PEXPIREAT_BYTES = PEXPIREAT.getBytes(Charsets.UTF_8)
 
   val PING = "PING"
-  val PING_BYTES = ChannelBuffers.copiedBuffer(PING, Charsets.US_ASCII)
+  val PING_BYTES = PING.getBytes(Charsets.UTF_8)
 
   val PSETEX = "PSETEX"
-  val PSETEX_BYTES = ChannelBuffers.copiedBuffer(PSETEX, Charsets.US_ASCII)
+  val PSETEX_BYTES = PSETEX.getBytes(Charsets.UTF_8)
 
   val PTTL = "PTTL"
-  val PTTL_BYTES = ChannelBuffers.copiedBuffer(PTTL, Charsets.US_ASCII)
+  val PTTL_BYTES = PTTL.getBytes(Charsets.UTF_8)
 
   val PUBLISH = "PUBLISH"
-  val PUBLISH_BYTES = ChannelBuffers.copiedBuffer(PUBLISH, Charsets.US_ASCII)
+  val PUBLISH_BYTES = PUBLISH.getBytes(Charsets.UTF_8)
 
   val QUIT = "QUIT"
-  val QUIT_BYTES = ChannelBuffers.copiedBuffer(QUIT, Charsets.US_ASCII)
+  val QUIT_BYTES = QUIT.getBytes(Charsets.UTF_8)
 
   val RANDOMKEY = "RANDOMKEY"
-  val RANDOMKEY_BYTES = ChannelBuffers.copiedBuffer(RANDOMKEY, Charsets.US_ASCII)
+  val RANDOMKEY_BYTES = RANDOMKEY.getBytes(Charsets.UTF_8)
 
   val RENAME = "RENAME"
-  val RENAME_BYTES = ChannelBuffers.copiedBuffer(RENAME, Charsets.US_ASCII)
+  val RENAME_BYTES = RENAME.getBytes(Charsets.UTF_8)
 
   val RENAMENX = "RENAMENX"
-  val RENAMENX_BYTES = ChannelBuffers.copiedBuffer(RENAMENX, Charsets.US_ASCII)
+  val RENAMENX_BYTES = RENAMENX.getBytes(Charsets.UTF_8)
 
   val RESTORE = "RESTORE"
-  val RESTORE_BYTES = ChannelBuffers.copiedBuffer(RESTORE, Charsets.US_ASCII)
+  val RESTORE_BYTES = RESTORE.getBytes(Charsets.UTF_8)
 
   val RPOP = "RPOP"
-  val RPOP_BYTES = ChannelBuffers.copiedBuffer(RPOP, Charsets.US_ASCII)
+  val RPOP_BYTES = RPOP.getBytes(Charsets.UTF_8)
 
   val RPOPLPUSH = "RPOPLPUSH"
-  val RPOPLPUSH_BYTES = ChannelBuffers.copiedBuffer(RPOPLPUSH, Charsets.US_ASCII)
+  val RPOPLPUSH_BYTES = RPOPLPUSH.getBytes(Charsets.UTF_8)
 
   val RPUSH = "RPUSH"
-  val RPUSH_BYTES = ChannelBuffers.copiedBuffer(RPUSH, Charsets.US_ASCII)
+  val RPUSH_BYTES = RPUSH.getBytes(Charsets.UTF_8)
 
   val RPUSHX = "RPUSHX"
-  val RPUSHX_BYTES = ChannelBuffers.copiedBuffer(RPUSHX, Charsets.US_ASCII)
+  val RPUSHX_BYTES = RPUSHX.getBytes(Charsets.UTF_8)
 
   val SADD = "SADD"
-  val SADD_BYTES = ChannelBuffers.copiedBuffer(SADD, Charsets.US_ASCII)
+  val SADD_BYTES = SADD.getBytes(Charsets.UTF_8)
 
   val SAVE = "SAVE"
-  val SAVE_BYTES = ChannelBuffers.copiedBuffer(SAVE, Charsets.US_ASCII)
+  val SAVE_BYTES = SAVE.getBytes(Charsets.UTF_8)
 
   val SCARD = "SCARD"
-  val SCARD_BYTES = ChannelBuffers.copiedBuffer(SCARD, Charsets.US_ASCII)
+  val SCARD_BYTES = SCARD.getBytes(Charsets.UTF_8)
 
   val SCRIPT_EXISTS = "SCRIPT_EXISTS"
-  val SCRIPT_EXISTS_BYTES = ChannelBuffers.copiedBuffer(SCRIPT_EXISTS, Charsets.US_ASCII)
+  val SCRIPT_EXISTS_BYTES = SCRIPT_EXISTS.getBytes(Charsets.UTF_8)
 
   val SCRIPT_FLUSH = "SCRIPT_FLUSH"
-  val SCRIPT_FLUSH_BYTES = ChannelBuffers.copiedBuffer(SCRIPT_FLUSH, Charsets.US_ASCII)
+  val SCRIPT_FLUSH_BYTES = SCRIPT_FLUSH.getBytes(Charsets.UTF_8)
 
   val SCRIPT_KILL = "SCRIPT_KILL"
-  val SCRIPT_KILL_BYTES = ChannelBuffers.copiedBuffer(SCRIPT_KILL, Charsets.US_ASCII)
+  val SCRIPT_KILL_BYTES = SCRIPT_KILL.getBytes(Charsets.UTF_8)
 
   val SCRIPT_LOAD = "SCRIPT_LOAD"
-  val SCRIPT_LOAD_BYTES = ChannelBuffers.copiedBuffer(SCRIPT_LOAD, Charsets.US_ASCII)
+  val SCRIPT_LOAD_BYTES = SCRIPT_LOAD.getBytes(Charsets.UTF_8)
 
   val SDIFF = "SDIFF"
-  val SDIFF_BYTES = ChannelBuffers.copiedBuffer(SDIFF, Charsets.US_ASCII)
+  val SDIFF_BYTES = SDIFF.getBytes(Charsets.UTF_8)
 
   val SDIFFSTORE = "SDIFFSTORE"
-  val SDIFFSTORE_BYTES = ChannelBuffers.copiedBuffer(SDIFFSTORE, Charsets.US_ASCII)
+  val SDIFFSTORE_BYTES = SDIFFSTORE.getBytes(Charsets.UTF_8)
 
   val SELECT = "SELECT"
-  val SELECT_BYTES = ChannelBuffers.copiedBuffer(SELECT, Charsets.US_ASCII)
+  val SELECT_BYTES = SELECT.getBytes(Charsets.UTF_8)
 
   val SET = "SET"
-  val SET_BYTES = ChannelBuffers.copiedBuffer(SET, Charsets.US_ASCII)
+  val SET_BYTES = SET.getBytes(Charsets.UTF_8)
 
   val SETBIT = "SETBIT"
-  val SETBIT_BYTES = ChannelBuffers.copiedBuffer(SETBIT, Charsets.US_ASCII)
+  val SETBIT_BYTES = SETBIT.getBytes(Charsets.UTF_8)
 
   val SETEX = "SETEX"
-  val SETEX_BYTES = ChannelBuffers.copiedBuffer(SETEX, Charsets.US_ASCII)
+  val SETEX_BYTES = SETEX.getBytes(Charsets.UTF_8)
 
   val SETNX = "SETNX"
-  val SETNX_BYTES = ChannelBuffers.copiedBuffer(SETNX, Charsets.US_ASCII)
+  val SETNX_BYTES = SETNX.getBytes(Charsets.UTF_8)
 
   val SETRANGE = "SETRANGE"
-  val SETRANGE_BYTES = ChannelBuffers.copiedBuffer(SETRANGE, Charsets.US_ASCII)
+  val SETRANGE_BYTES = SETRANGE.getBytes(Charsets.UTF_8)
 
   val SHUTDOWN = "SHUTDOWN"
-  val SHUTDOWN_BYTES = ChannelBuffers.copiedBuffer(SHUTDOWN, Charsets.US_ASCII)
+  val SHUTDOWN_BYTES = SHUTDOWN.getBytes(Charsets.UTF_8)
 
   val SINTER = "SINTER"
-  val SINTER_BYTES = ChannelBuffers.copiedBuffer(SINTER, Charsets.US_ASCII)
+  val SINTER_BYTES = SINTER.getBytes(Charsets.UTF_8)
 
   val SINTERSTORE = "SINTERSTORE"
-  val SINTERSTORE_BYTES = ChannelBuffers.copiedBuffer(SINTERSTORE, Charsets.US_ASCII)
+  val SINTERSTORE_BYTES = SINTERSTORE.getBytes(Charsets.UTF_8)
 
   val SISMEMBER = "SISMEMBER"
-  val SISMEMBER_BYTES = ChannelBuffers.copiedBuffer(SISMEMBER, Charsets.US_ASCII)
+  val SISMEMBER_BYTES = SISMEMBER.getBytes(Charsets.UTF_8)
 
   val SLAVEOF = "SLAVEOF"
-  val SLAVEOF_BYTES = ChannelBuffers.copiedBuffer(SLAVEOF, Charsets.US_ASCII)
+  val SLAVEOF_BYTES = SLAVEOF.getBytes(Charsets.UTF_8)
 
   val SLOWLOG = "SLOWLOG"
-  val SLOWLOG_BYTES = ChannelBuffers.copiedBuffer(SLOWLOG, Charsets.US_ASCII)
+  val SLOWLOG_BYTES = SLOWLOG.getBytes(Charsets.UTF_8)
 
   val SMEMBERS = "SMEMBERS"
-  val SMEMBERS_BYTES = ChannelBuffers.copiedBuffer(SMEMBERS, Charsets.US_ASCII)
+  val SMEMBERS_BYTES = SMEMBERS.getBytes(Charsets.UTF_8)
 
   val SMOVE = "SMOVE"
-  val SMOVE_BYTES = ChannelBuffers.copiedBuffer(SMOVE, Charsets.US_ASCII)
+  val SMOVE_BYTES = SMOVE.getBytes(Charsets.UTF_8)
 
   val SORT = "SORT"
-  val SORT_BYTES = ChannelBuffers.copiedBuffer(SORT, Charsets.US_ASCII)
+  val SORT_BYTES = SORT.getBytes(Charsets.UTF_8)
 
   val SPOP = "SPOP"
-  val SPOP_BYTES = ChannelBuffers.copiedBuffer(SPOP, Charsets.US_ASCII)
+  val SPOP_BYTES = SPOP.getBytes(Charsets.UTF_8)
 
   val SRANDMEMBER = "SRANDMEMBER"
-  val SRANDMEMBER_BYTES = ChannelBuffers.copiedBuffer(SRANDMEMBER, Charsets.US_ASCII)
+  val SRANDMEMBER_BYTES = SRANDMEMBER.getBytes(Charsets.UTF_8)
 
   val SREM = "SREM"
-  val SREM_BYTES = ChannelBuffers.copiedBuffer(SREM, Charsets.US_ASCII)
+  val SREM_BYTES = SREM.getBytes(Charsets.UTF_8)
 
   val STRLEN = "STRLEN"
-  val STRLEN_BYTES = ChannelBuffers.copiedBuffer(STRLEN, Charsets.US_ASCII)
+  val STRLEN_BYTES = STRLEN.getBytes(Charsets.UTF_8)
 
   val SUNION = "SUNION"
-  val SUNION_BYTES = ChannelBuffers.copiedBuffer(SUNION, Charsets.US_ASCII)
+  val SUNION_BYTES = SUNION.getBytes(Charsets.UTF_8)
 
   val SUNIONSTORE = "SUNIONSTORE"
-  val SUNIONSTORE_BYTES = ChannelBuffers.copiedBuffer(SUNIONSTORE, Charsets.US_ASCII)
+  val SUNIONSTORE_BYTES = SUNIONSTORE.getBytes(Charsets.UTF_8)
 
   val SYNC = "SYNC"
-  val SYNC_BYTES = ChannelBuffers.copiedBuffer(SYNC, Charsets.US_ASCII)
+  val SYNC_BYTES = SYNC.getBytes(Charsets.UTF_8)
 
   val TIME = "TIME"
-  val TIME_BYTES = ChannelBuffers.copiedBuffer(TIME, Charsets.US_ASCII)
+  val TIME_BYTES = TIME.getBytes(Charsets.UTF_8)
 
   val TTL = "TTL"
-  val TTL_BYTES = ChannelBuffers.copiedBuffer(TTL, Charsets.US_ASCII)
+  val TTL_BYTES = TTL.getBytes(Charsets.UTF_8)
 
   val TYPE = "TYPE"
-  val TYPE_BYTES = ChannelBuffers.copiedBuffer(TYPE, Charsets.US_ASCII)
+  val TYPE_BYTES = TYPE.getBytes(Charsets.UTF_8)
 
   val UNWATCH = "UNWATCH"
-  val UNWATCH_BYTES = ChannelBuffers.copiedBuffer(UNWATCH, Charsets.US_ASCII)
+  val UNWATCH_BYTES = UNWATCH.getBytes(Charsets.UTF_8)
 
   val WATCH = "WATCH"
-  val WATCH_BYTES = ChannelBuffers.copiedBuffer(WATCH, Charsets.US_ASCII)
+  val WATCH_BYTES = WATCH.getBytes(Charsets.UTF_8)
 
   val ZADD = "ZADD"
-  val ZADD_BYTES = ChannelBuffers.copiedBuffer(ZADD, Charsets.US_ASCII)
+  val ZADD_BYTES = ZADD.getBytes(Charsets.UTF_8)
 
   val ZCARD = "ZCARD"
-  val ZCARD_BYTES = ChannelBuffers.copiedBuffer(ZCARD, Charsets.US_ASCII)
+  val ZCARD_BYTES = ZCARD.getBytes(Charsets.UTF_8)
 
   val ZCOUNT = "ZCOUNT"
-  val ZCOUNT_BYTES = ChannelBuffers.copiedBuffer(ZCOUNT, Charsets.US_ASCII)
+  val ZCOUNT_BYTES = ZCOUNT.getBytes(Charsets.UTF_8)
 
   val ZINCRBY = "ZINCRBY"
-  val ZINCRBY_BYTES = ChannelBuffers.copiedBuffer(ZINCRBY, Charsets.US_ASCII)
+  val ZINCRBY_BYTES = ZINCRBY.getBytes(Charsets.UTF_8)
 
   val ZINTERSTORE = "ZINTERSTORE"
-  val ZINTERSTORE_BYTES = ChannelBuffers.copiedBuffer(ZINTERSTORE, Charsets.US_ASCII)
+  val ZINTERSTORE_BYTES = ZINTERSTORE.getBytes(Charsets.UTF_8)
 
   val ZRANGE = "ZRANGE"
-  val ZRANGE_BYTES = ChannelBuffers.copiedBuffer(ZRANGE, Charsets.US_ASCII)
+  val ZRANGE_BYTES = ZRANGE.getBytes(Charsets.UTF_8)
 
   val ZRANGEBYSCORE = "ZRANGEBYSCORE"
-  val ZRANGEBYSCORE_BYTES = ChannelBuffers.copiedBuffer(ZRANGEBYSCORE, Charsets.US_ASCII)
+  val ZRANGEBYSCORE_BYTES = ZRANGEBYSCORE.getBytes(Charsets.UTF_8)
 
   val ZRANK = "ZRANK"
-  val ZRANK_BYTES = ChannelBuffers.copiedBuffer(ZRANK, Charsets.US_ASCII)
+  val ZRANK_BYTES = ZRANK.getBytes(Charsets.UTF_8)
 
   val ZREM = "ZREM"
-  val ZREM_BYTES = ChannelBuffers.copiedBuffer(ZREM, Charsets.US_ASCII)
+  val ZREM_BYTES = ZREM.getBytes(Charsets.UTF_8)
 
   val ZREMRANGEBYRANK = "ZREMRANGEBYRANK"
-  val ZREMRANGEBYRANK_BYTES = ChannelBuffers.copiedBuffer(ZREMRANGEBYRANK, Charsets.US_ASCII)
+  val ZREMRANGEBYRANK_BYTES = ZREMRANGEBYRANK.getBytes(Charsets.UTF_8)
 
   val ZREMRANGEBYSCORE = "ZREMRANGEBYSCORE"
-  val ZREMRANGEBYSCORE_BYTES = ChannelBuffers.copiedBuffer(ZREMRANGEBYSCORE, Charsets.US_ASCII)
+  val ZREMRANGEBYSCORE_BYTES = ZREMRANGEBYSCORE.getBytes(Charsets.UTF_8)
 
   val ZREVRANGE = "ZREVRANGE"
-  val ZREVRANGE_BYTES = ChannelBuffers.copiedBuffer(ZREVRANGE, Charsets.US_ASCII)
+  val ZREVRANGE_BYTES = ZREVRANGE.getBytes(Charsets.UTF_8)
 
   val ZREVRANGEBYSCORE = "ZREVRANGEBYSCORE"
-  val ZREVRANGEBYSCORE_BYTES = ChannelBuffers.copiedBuffer(ZREVRANGEBYSCORE, Charsets.US_ASCII)
+  val ZREVRANGEBYSCORE_BYTES = ZREVRANGEBYSCORE.getBytes(Charsets.UTF_8)
 
   val ZREVRANK = "ZREVRANK"
-  val ZREVRANK_BYTES = ChannelBuffers.copiedBuffer(ZREVRANK, Charsets.US_ASCII)
+  val ZREVRANK_BYTES = ZREVRANK.getBytes(Charsets.UTF_8)
 
   val ZSCORE = "ZSCORE"
-  val ZSCORE_BYTES = ChannelBuffers.copiedBuffer(ZSCORE, Charsets.US_ASCII)
+  val ZSCORE_BYTES = ZSCORE.getBytes(Charsets.UTF_8)
 
   val ZUNIONSTORE = "ZUNIONSTORE"
-  val ZUNIONSTORE_BYTES = ChannelBuffers.copiedBuffer(ZUNIONSTORE, Charsets.US_ASCII)
+  val ZUNIONSTORE_BYTES = ZUNIONSTORE.getBytes(Charsets.UTF_8)
 
 }
 

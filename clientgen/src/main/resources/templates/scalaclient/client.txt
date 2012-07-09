@@ -33,7 +33,7 @@ object RedisClient {
 
   {{#commands}}
   val {{name}} = "{{name}}"
-  val {{name}}_BYTES = ChannelBuffers.copiedBuffer({{name}}, Charsets.US_ASCII)
+  val {{name}}_BYTES = {{name}}.getBytes(Charsets.UTF_8)
 
   {{/commands}}
 }

@@ -7,6 +7,8 @@ import com.twitter.finagle.builder.{ReferenceCountedChannelFactory, ClientBuilde
 import org.specs.SpecificationWithJUnit
 import com.google.common.base.Charsets
 import org.jboss.netty.buffer.{ChannelBuffers, ChannelBuffer}
+import redis.netty.BulkReply
+import redis.Command
 
 class RedisSpec extends SpecificationWithJUnit {
   def ifDevelopment[T](f: => T): Option[T] = {
@@ -25,10 +27,10 @@ class RedisSpec extends SpecificationWithJUnit {
 
     doBefore {
       ifDevelopment {
-        RedisCluster.start(1)
+        // RedisCluster.start(1)
         val service = ClientBuilder()
           .codec(new RedisCodecFactory)
-          .hosts(RedisCluster.hostAddresses())
+          .hosts("localhost:6379")
           .hostConnectionLimit(1)
           .build()
         client = RedisClient(service)
@@ -37,18 +39,16 @@ class RedisSpec extends SpecificationWithJUnit {
 
     doAfter {
       ifDevelopment {
-        RedisCluster.stop()
+        // RedisCluster.stop()
       }
     }
 
     "perform simple commands" in {
       ifDevelopment {
-        client.set("test", "value") foreach { status =>
-          println(status.data())
-        } get()
+        client.set("test", "value")()
         client.get("test")().data().toString(Charsets.UTF_8) mustEqual "value"
         client.mget("test")().data()(0) match {
-          case cb:ChannelBuffer => cb.toString(Charsets.UTF_8) mustEqual "value"
+          case br: BulkReply => br.asString(Charsets.UTF_8) mustEqual "value"
         }
       }
     }
@@ -61,7 +61,7 @@ class RedisSpec extends SpecificationWithJUnit {
         var i = 0
         val promise = new Promise[String]()
         def call() {
-          client.set(String.valueOf(CALLS), value) onSuccess {
+          client.set(Command.numToBytes(i, false), value) onSuccess {
             reply =>
               i = i + 1
               if (i == CALLS) {
@@ -70,10 +70,14 @@ class RedisSpec extends SpecificationWithJUnit {
               } else {
                 call()
               }
+          } onFailure {
+            case e => promise.setException(e)
           }
         }
         call()
-        println(promise.get())
+        var result = promise.get()
+        println(result)
+        result mustNotBe null
       }
     }
   }

@@ -1,6 +1,6 @@
 package com.twitter.finagle.redis
 
-import com.twitter.finagle.{Codec, CodecFactory}
+import com.twitter.finagle.{ServiceFactory, Codec, CodecFactory}
 
 import org.jboss.netty.channel.{ChannelPipelineFactory, Channels}
 import redis.Command
