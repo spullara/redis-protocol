@@ -34,8 +34,9 @@ public class CommandTest {
     {
       // Warm them up
       for (int i = 0; i < 10000000; i++) {
-        Long.toString(i).getBytes(Charsets.UTF_8);
-        Command.numToBytes(i, true);
+        byte[] bytes = Long.toString(i).getBytes(Charsets.UTF_8);
+        byte[] bytes1 = Command.numToBytes(i, false);
+        assertEquals(new String(bytes), new String(bytes1));
       }
     }
     {

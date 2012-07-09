@@ -6,7 +6,6 @@ import java.util.concurrent.Executors
 import com.twitter.finagle.builder.{ReferenceCountedChannelFactory, ClientBuilder}
 import org.specs.SpecificationWithJUnit
 import com.google.common.base.Charsets
-import org.jboss.netty.buffer.{ChannelBuffers, ChannelBuffer}
 import redis.netty.BulkReply
 import redis.Command
 
@@ -27,19 +26,21 @@ class RedisSpec extends SpecificationWithJUnit {
 
     doBefore {
       ifDevelopment {
-        // RedisCluster.start(1)
+        val oioFactory = new OioClientSocketChannelFactory(Executors.newCachedThreadPool())
+        RedisCluster.start(1)
         val service = ClientBuilder()
-          .codec(new RedisCodecFactory)
-          .hosts("localhost:6379")
-          .hostConnectionLimit(1)
-          .build()
+                .codec(new RedisCodecFactory)
+                .channelFactory(new ReferenceCountedChannelFactory(oioFactory))
+                .hosts(RedisCluster.hostAddresses())
+                .hostConnectionLimit(1)
+                .build()
         client = RedisClient(service)
       }
     }
 
     doAfter {
       ifDevelopment {
-        // RedisCluster.stop()
+        RedisCluster.stop()
       }
     }
 
@@ -57,7 +58,7 @@ class RedisSpec extends SpecificationWithJUnit {
       ifDevelopment {
         val value = "value".getBytes
         val start = System.currentTimeMillis()
-        val CALLS = 1000000
+        val CALLS = 100000
         var i = 0
         val promise = new Promise[String]()
         def call() {
@@ -75,7 +76,7 @@ class RedisSpec extends SpecificationWithJUnit {
           }
         }
         call()
-        var result = promise.get()
+        val result = promise.get()
         println(result)
         result mustNotBe null
       }

@@ -183,9 +183,8 @@ public class Command {
     boolean negative = value < 0;
     int index = negative ? 2 : 1;
     long current = negative ? -value : value;
-    while ((current /= 10) > 0) {
-      index++;
-    }
+    // Checked javadoc: If the argument is equal to 10n for integer n, then the result is n.
+    index += current == 0 ? 0 : (int) Math.log10(current);
     byte[] bytes = new byte[withCRLF ? index + 2 : index];
     if (withCRLF) {
       bytes[index + 1] = LF;

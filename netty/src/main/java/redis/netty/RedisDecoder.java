@@ -105,8 +105,7 @@ public class RedisDecoder extends ReplayingDecoder<VoidEnum> {
 
   @Override
   protected Object decode(ChannelHandlerContext channelHandlerContext, Channel channel, ChannelBuffer channelBuffer, VoidEnum anEnum) throws Exception {
-    Reply receive = receive(channelBuffer);
-    return receive;
+    return receive(channelBuffer);
   }
 
   public MultiBulkReply decodeMultiBulkReply(ChannelBuffer is) throws IOException {

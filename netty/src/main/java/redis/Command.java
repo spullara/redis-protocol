@@ -10,11 +10,9 @@ import java.io.OutputStream;
 import org.jboss.netty.buffer.ChannelBuffer;
 
 /**
- * Command serialization.
- * User: sam
- * Date: 7/27/11
- * Time: 3:04 PM
- * To change this template use File | Settings | File Templates.
+ * Command serialization.  We special case when there are few 4 or fewer parameters
+ * since most commands fall into that category. Passing bytes, channelbuffers and
+ * strings / objects are all allowed. All strings are assumed to be UTF-8.
  */
 public class Command {
   public static final byte[] ARGS_PREFIX = "*".getBytes();
@@ -94,6 +92,8 @@ public class Command {
     } else if (object instanceof ChannelBuffer) {
       writeArgument(os, (ChannelBuffer) object);
       return;
+    } else if (object instanceof String) {
+      argument = ((String) object).getBytes(Charsets.UTF_8);
     } else {
       argument = object.toString().getBytes(Charsets.UTF_8);
     }
@@ -114,6 +114,8 @@ public class Command {
     os.writeBytes(CRLF);
   }
 
+  // Cache 256 number conversions. That should cover a huge
+  // percentage of numbers passed over the wire.
   private static final int NUM_MAP_LENGTH = 256;
   private static byte[][] numMap = new byte[NUM_MAP_LENGTH][];
 
@@ -148,9 +150,8 @@ public class Command {
     boolean negative = value < 0;
     int index = negative ? 2 : 1;
     long current = negative ? -value : value;
-    while ((current /= 10) > 0) {
-      index++;
-    }
+    // Checked javadoc: If the argument is equal to 10n for integer n, then the result is n.
+    index += current == 0 ? 0 : (int) Math.log10(current);
     byte[] bytes = new byte[withCRLF ? index + 2 : index];
     if (withCRLF) {
       bytes[index + 1] = LF;
