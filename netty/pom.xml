@@ -19,7 +19,7 @@
     <dependency>
       <groupId>com.github.spullara.redis</groupId>
       <artifactId>util</artifactId>
-      <version>LATEST</version>
+      <version>0.3-SNAPSHOT</version>
     </dependency>
   </dependencies>
 </project>

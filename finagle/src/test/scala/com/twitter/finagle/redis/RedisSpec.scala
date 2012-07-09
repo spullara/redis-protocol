@@ -8,6 +8,7 @@ import org.specs.SpecificationWithJUnit
 import com.google.common.base.Charsets
 import redis.netty.BulkReply
 import redis.Command
+import redis.util.Encoding
 
 class RedisSpec extends SpecificationWithJUnit {
   def ifDevelopment[T](f: => T): Option[T] = {
@@ -62,7 +63,7 @@ class RedisSpec extends SpecificationWithJUnit {
         var i = 0
         val promise = new Promise[String]()
         def call() {
-          client.set(Command.numToBytes(i, false), value) onSuccess {
+          client.set(Encoding.numToBytes(i, false), value) onSuccess {
             reply =>
               i = i + 1
               if (i == CALLS) {
