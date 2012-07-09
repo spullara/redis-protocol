@@ -2,6 +2,7 @@ package redis.netty;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import redis.Command;
+import redis.util.Encoding;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -13,6 +14,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Charsets;
+
+import static redis.util.Encoding.NEG_ONE_WITH_CRLF;
+import static redis.util.Encoding.numToBytes;
 
 /**
  * Nested replies.
@@ -62,10 +66,9 @@ public class MultiBulkReply implements Reply<Reply[]> {
   public void write(ChannelBuffer os) throws IOException {
     os.writeByte(MARKER);
     if (replies == null) {
-      os.writeBytes(Command.NEG_ONE_WITH_CRLF);
+      os.writeBytes(NEG_ONE_WITH_CRLF);
     } else {
-      os.writeBytes(RedisDecoder.toBytes(replies.length));
-      os.writeBytes(CRLF);
+      os.writeBytes(numToBytes(replies.length, true));
       for (Reply reply : replies) {
         reply.write(os);
       }

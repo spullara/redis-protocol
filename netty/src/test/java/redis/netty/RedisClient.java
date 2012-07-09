@@ -15,6 +15,9 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import org.jboss.netty.handler.queue.BlockingReadHandler;
 import redis.Command;
+import redis.util.Encoding;
+
+import static redis.util.Encoding.numToBytes;
 
 public class RedisClient {
   private static final byte[] VALUE = "value".getBytes(Charsets.UTF_8);
@@ -43,10 +46,11 @@ public class RedisClient {
     channel.write(new Command("get", "1"));
     System.out.println(blockingReadHandler.read());
 
-    int CALLS = 1000000;
+    int CALLS = 100000;
     long start = System.currentTimeMillis();
+    byte[] set = "SET".getBytes(Charsets.UTF_8);
     for (int i = 0; i < CALLS; i++) {
-      channel.write(new Command("SET", Long.toString(i).getBytes(Charsets.US_ASCII), VALUE));
+      channel.write(new Command(set, numToBytes(i, false), VALUE));
       blockingReadHandler.read();
     }
     long end = System.currentTimeMillis();

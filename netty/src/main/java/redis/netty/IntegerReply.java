@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
+import static redis.util.Encoding.numToBytes;
+
 /**
 * Created by IntelliJ IDEA.
 * User: sam
@@ -27,8 +29,7 @@ public class IntegerReply implements Reply<Long> {
   @Override
   public void write(ChannelBuffer os) throws IOException {
     os.writeByte(MARKER);
-    os.writeBytes(RedisDecoder.toBytes(integer));
-    os.writeBytes(CRLF);
+    os.writeBytes(numToBytes(integer, true));
   }
 
   public String toString() {

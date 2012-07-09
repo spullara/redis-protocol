@@ -1,18 +1,5 @@
 package client;
 
-import com.google.common.base.Charsets;
-import com.google.common.util.concurrent.SettableFuture;
-import org.junit.Test;
-import redis.Command;
-import redis.client.MessageListener;
-import redis.client.RedisClient;
-import redis.client.RedisException;
-import redis.client.ReplyListener;
-import redis.reply.BulkReply;
-import redis.reply.IntegerReply;
-import redis.reply.MultiBulkReply;
-import redis.reply.StatusReply;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -24,8 +11,22 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.google.common.base.Charsets;
+import com.google.common.util.concurrent.SettableFuture;
+
+import org.junit.Test;
+import redis.client.MessageListener;
+import redis.client.RedisClient;
+import redis.client.RedisException;
+import redis.client.ReplyListener;
+import redis.reply.BulkReply;
+import redis.reply.IntegerReply;
+import redis.reply.MultiBulkReply;
+import redis.reply.StatusReply;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
+import static redis.util.Encoding.numToBytes;
 
 /**
  * Test the boilerplate
@@ -97,8 +98,8 @@ public class RedisClientTest {
       redisClient1.multi();
       redisClient2.set("txincr", 1);
       RedisClient.Pipeline p = redisClient1.pipeline();
-      Future<IntegerReply> txincr1 = p.incr("txincr");
-      Future<IntegerReply> txincr2 = p.incr("txincr");
+      p.incr("txincr");
+      p.incr("txincr");
       if (redisClient1.exec().get()) {
         fail("This should have failed");
       }
@@ -171,7 +172,7 @@ public class RedisClientTest {
     long start = System.currentTimeMillis();
     RedisClient redisClient = new RedisClient("localhost", 6379);
     for (int i = 0; i < CALLS; i++) {
-      redisClient.set(Command.numToBytes(i, false), VALUE);
+      redisClient.set(numToBytes(i, false), VALUE);
     }
     long end = System.currentTimeMillis();
     System.out.println("Blocking: " + (CALLS * 1000) / (end - start) + " calls per second");
@@ -182,7 +183,7 @@ public class RedisClientTest {
     long start = System.currentTimeMillis();
     RedisClient.Pipeline redisClient = new RedisClient("localhost", 6379).pipeline();
     for (int i = 0; i < CALLS; i++) {
-      redisClient.set(Command.numToBytes(i, false), VALUE).get();
+      redisClient.set(numToBytes(i, false), VALUE).get();
     }
     long end = System.currentTimeMillis();
     System.out.println("Future: " + (CALLS * 1000) / (end - start) + " calls per second");
@@ -201,7 +202,7 @@ public class RedisClientTest {
         if (total.decrementAndGet() == 0) {
           countDownLatch.countDown();
         } else {
-          redisClient.set(Command.numToBytes(total.intValue(), false), VALUE).addListener(this, es);
+          redisClient.set(numToBytes(total.intValue(), false), VALUE).addListener(this, es);
         }
       }
     }.run();
@@ -211,6 +212,7 @@ public class RedisClientTest {
   }
 
 
+  @SuppressWarnings("unchecked")
   @Test
   public void benchmarkPipeline() throws IOException, ExecutionException, InterruptedException {
     long start = System.currentTimeMillis();
@@ -220,7 +222,7 @@ public class RedisClientTest {
     Future<StatusReply>[] replies = new Future[PIPELINE_CALLS];
     for (int i = 0; i < CALLS * 10 / PIPELINE_CALLS; i++) {
       for (int j = 0; j < PIPELINE_CALLS; j++) {
-        replies[j] = pipeline.set(Command.numToBytes(i, false), VALUE);
+        replies[j] = pipeline.set(numToBytes(i, false), VALUE);
       }
       for (int j = 0; j < PIPELINE_CALLS; j++) {
         replies[j].get();
@@ -238,11 +240,13 @@ public class RedisClientTest {
     RedisClient subscriberClient = new RedisClient("localhost", 6379);
     final AtomicReference<SettableFuture> futureRef = new AtomicReference<SettableFuture>();
     subscriberClient.addListener(new MessageListener() {
+      @SuppressWarnings("unchecked")
       @Override
       public void message(byte[] channel, byte[] message) {
         futureRef.get().set(null);
       }
 
+      @SuppressWarnings("unchecked")
       @Override
       public void pmessage(byte[] pattern, byte[] channel, byte[] message) {
         futureRef.get().set(null);

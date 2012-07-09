@@ -1,34 +1,35 @@
 package redis;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 import com.google.common.base.Charsets;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Test;
-import redis.netty.Reply;
-import redis.netty.RedisDecoder;
 import redis.netty.BulkReply;
 import redis.netty.MultiBulkReply;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import redis.netty.RedisDecoder;
+import redis.netty.Reply;
 
 import static junit.framework.Assert.assertEquals;
+import static redis.util.Encoding.numToBytes;
 
 /**
  * Some low level tests
  */
 public class CommandTest {
   @Test
-  public void numToBytes() {
-    assertEquals("-12345678", new String(Command.numToBytes(-12345678, false)));
-    assertEquals("-1", new String(Command.numToBytes(-1, false)));
-    assertEquals("0", new String(Command.numToBytes(0, false)));
-    assertEquals("10", new String(Command.numToBytes(10, false)));
-    assertEquals("12345678", new String(Command.numToBytes(12345678, false)));
-    assertEquals("-1\r\n", new String(Command.numToBytes(-1, true)));
-    assertEquals("10\r\n", new String(Command.numToBytes(10, true)));
-    assertEquals("12345678\r\n", new String(Command.numToBytes(12345678, true)));
+  public void testNumToBytes() {
+    assertEquals("-12345678", new String(numToBytes(-12345678, false)));
+    assertEquals("-1", new String(numToBytes(-1, false)));
+    assertEquals("0", new String(numToBytes(0, false)));
+    assertEquals("10", new String(numToBytes(10, false)));
+    assertEquals("12345678", new String(numToBytes(12345678, false)));
+    assertEquals("-1\r\n", new String(numToBytes(-1, true)));
+    assertEquals("10\r\n", new String(numToBytes(10, true)));
+    assertEquals("12345678\r\n", new String(numToBytes(12345678, true)));
   }
 
   @Test
@@ -39,7 +40,7 @@ public class CommandTest {
       // Warm them up
       for (int i = 0; i < 10000000; i++) {
         Long.toString(i).getBytes(Charsets.UTF_8);
-        Command.numToBytes(i, true);
+        numToBytes(i, true);
       }
     }
     {
@@ -52,7 +53,7 @@ public class CommandTest {
     {
       long start = System.currentTimeMillis();
       for (int i = 0; i < 10000000; i++) {
-        Command.numToBytes(i, true);
+        numToBytes(i, true);
       }
       diff -= System.currentTimeMillis() - start;
     }

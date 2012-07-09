@@ -1,8 +1,5 @@
 package redis.reply;
 
-import redis.Command;
-import redis.RedisProtocol;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,6 +10,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import redis.RedisProtocol;
+
+import static redis.util.Encoding.NEG_ONE_WITH_CRLF;
 
 /**
  * Nested replies.
@@ -53,7 +54,7 @@ public class MultiBulkReply implements Reply<Reply[]> {
   public void write(OutputStream os) throws IOException {
     os.write(MARKER);
     if (replies == null) {
-      os.write(Command.NEG_ONE_WITH_CRLF);
+      os.write(NEG_ONE_WITH_CRLF);
     } else {
       os.write(RedisProtocol.toBytes(replies.length));
       os.write(CRLF);

@@ -15,7 +15,6 @@ import org.jboss.netty.buffer.ChannelBuffer;
 */
 public class ErrorReply implements Reply<String> {
   public static final char MARKER = '-';
-  private static final byte[] ERR = "ERR ".getBytes();
   private final String error;
 
   public ErrorReply(String error) {

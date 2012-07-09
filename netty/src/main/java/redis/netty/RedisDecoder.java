@@ -26,10 +26,6 @@ public class RedisDecoder extends ReplayingDecoder<VoidEnum> {
   // decode invocation.
   private MultiBulkReply reply;
 
-  public static byte[] toBytes(Number length) {
-    return length.toString().getBytes();
-  }
-
   public ChannelBuffer readBytes(ChannelBuffer is) throws IOException {
     int size = readInteger(is);
     if (size == -1) {
@@ -74,12 +70,12 @@ public class RedisDecoder extends ReplayingDecoder<VoidEnum> {
     int code = is.readByte();
     switch (code) {
       case StatusReply.MARKER: {
-        String status = is.readBytes(is.bytesBefore(ChannelBufferIndexFinder.CRLF)).toString(Charsets.US_ASCII);
+        String status = is.readBytes(is.bytesBefore(ChannelBufferIndexFinder.CRLF)).toString(Charsets.UTF_8);
         is.skipBytes(2);
         return new StatusReply(status);
       }
       case ErrorReply.MARKER: {
-        String error = is.readBytes(is.bytesBefore(ChannelBufferIndexFinder.CRLF)).toString(Charsets.US_ASCII);
+        String error = is.readBytes(is.bytesBefore(ChannelBufferIndexFinder.CRLF)).toString(Charsets.UTF_8);
         is.skipBytes(2);
         return new ErrorReply(error);
       }

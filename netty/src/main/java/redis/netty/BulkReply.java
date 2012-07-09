@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 
 import org.jboss.netty.buffer.ChannelBuffer;
+import redis.util.Encoding;
+
+import static redis.util.Encoding.numToBytes;
 
 /**
 * Created by IntelliJ IDEA.
@@ -45,8 +48,7 @@ public class BulkReply implements Reply<ChannelBuffer> {
   @Override
   public void write(ChannelBuffer os) throws IOException {
     os.writeByte(MARKER);
-    os.writeBytes(RedisDecoder.toBytes(bytes.capacity()));
-    os.writeBytes(CRLF);
+    os.writeBytes(numToBytes(bytes.capacity(), true));
     os.writeBytes(bytes);
     os.writeBytes(CRLF);
   }
