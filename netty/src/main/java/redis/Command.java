@@ -104,7 +104,7 @@ public class Command {
 
   private static void writeArgument(ChannelBuffer os, ChannelBuffer argument) throws IOException {
     os.writeBytes(BYTES_PREFIX);
-    os.writeBytes(numToBytes(argument.capacity(), true));
+    os.writeBytes(numToBytes(argument.readableBytes(), true));
     os.writeBytes(argument);
     os.writeBytes(CRLF);
   }

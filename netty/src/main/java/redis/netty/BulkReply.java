@@ -10,13 +10,6 @@ import redis.util.Encoding;
 
 import static redis.util.Encoding.numToBytes;
 
-/**
-* Created by IntelliJ IDEA.
-* User: sam
-* Date: 7/29/11
-* Time: 10:23 AM
-* To change this template use File | Settings | File Templates.
-*/
 public class BulkReply implements Reply<ChannelBuffer> {
   public static final char MARKER = '$';
   private final ChannelBuffer bytes;

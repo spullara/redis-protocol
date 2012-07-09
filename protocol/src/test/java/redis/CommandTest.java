@@ -4,27 +4,29 @@ import com.google.common.base.Charsets;
 import org.junit.Test;
 import redis.reply.BulkReply;
 import redis.reply.MultiBulkReply;
+import redis.util.Encoding;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
+import static redis.util.Encoding.*;
 
 /**
  * Some low level tests
  */
 public class CommandTest {
   @Test
-  public void numToBytes() {
-    assertEquals("-12345678", new String(Command.numToBytes(-12345678, false)));
-    assertEquals("-1", new String(Command.numToBytes(-1, false)));
-    assertEquals("0", new String(Command.numToBytes(0, false)));
-    assertEquals("10", new String(Command.numToBytes(10, false)));
-    assertEquals("12345678", new String(Command.numToBytes(12345678, false)));
-    assertEquals("-1\r\n", new String(Command.numToBytes(-1, true)));
-    assertEquals("10\r\n", new String(Command.numToBytes(10, true)));
-    assertEquals("12345678\r\n", new String(Command.numToBytes(12345678, true)));
+  public void testNumToBytes() {
+    assertEquals("-12345678", new String(numToBytes(-12345678, false)));
+    assertEquals("-1", new String(numToBytes(-1, false)));
+    assertEquals("0", new String(numToBytes(0, false)));
+    assertEquals("10", new String(numToBytes(10, false)));
+    assertEquals("12345678", new String(numToBytes(12345678, false)));
+    assertEquals("-1\r\n", new String(numToBytes(-1, true)));
+    assertEquals("10\r\n", new String(numToBytes(10, true)));
+    assertEquals("12345678\r\n", new String(numToBytes(12345678, true)));
   }
 
   @Test
@@ -35,7 +37,7 @@ public class CommandTest {
       // Warm them up
       for (int i = 0; i < 10000000; i++) {
         byte[] bytes = Long.toString(i).getBytes(Charsets.UTF_8);
-        byte[] bytes1 = Command.numToBytes(i, false);
+        byte[] bytes1 = numToBytes(i, false);
         assertEquals(new String(bytes), new String(bytes1));
       }
     }
@@ -49,7 +51,7 @@ public class CommandTest {
     {
       long start = System.currentTimeMillis();
       for (int i = 0; i < 100000000; i++) {
-        Command.numToBytes(i, true);
+        numToBytes(i, true);
       }
       diff -= System.currentTimeMillis() - start;
     }

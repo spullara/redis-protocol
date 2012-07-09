@@ -9,6 +9,7 @@ import com.google.common.base.Charsets
 import redis.netty.BulkReply
 import redis.Command
 import redis.util.Encoding
+import org.jboss.netty.buffer.ChannelBuffers
 
 class RedisSpec extends SpecificationWithJUnit {
   def ifDevelopment[T](f: => T): Option[T] = {
@@ -47,9 +48,19 @@ class RedisSpec extends SpecificationWithJUnit {
 
     "perform simple commands" in {
       ifDevelopment {
-        client.set("test", "value")()
+        client.set("test", "value")().data() mustEqual "OK"
         client.get("test")().data().toString(Charsets.UTF_8) mustEqual "value"
         client.mget("test")().data()(0) match {
+          case br: BulkReply => br.asString(Charsets.UTF_8) mustEqual "value"
+        }
+        client.set("test".getBytes, "value".getBytes)().data() mustEqual "OK"
+        client.get("test".getBytes)().data().toString(Charsets.UTF_8) mustEqual "value"
+        client.mget("test".getBytes)().data()(0) match {
+          case br: BulkReply => br.asString(Charsets.UTF_8) mustEqual "value"
+        }
+        client.set(ChannelBuffers.wrappedBuffer("test".getBytes), ChannelBuffers.wrappedBuffer("value".getBytes))().data() mustEqual "OK"
+        client.get(ChannelBuffers.wrappedBuffer("test".getBytes))().data().toString(Charsets.UTF_8) mustEqual "value"
+        client.mget(ChannelBuffers.wrappedBuffer("test".getBytes))().data()(0) match {
           case br: BulkReply => br.asString(Charsets.UTF_8) mustEqual "value"
         }
       }

@@ -20,10 +20,6 @@ import static redis.util.Encoding.numToBytes;
 
 /**
  * Nested replies.
- * <p/>
- * User: sam
- * Date: 7/29/11
- * Time: 10:23 AM
  */
 public class MultiBulkReply implements Reply<Reply[]> {
   public static final char MARKER = '*';

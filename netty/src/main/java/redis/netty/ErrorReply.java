@@ -6,13 +6,6 @@ import com.google.common.base.Charsets;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 
-/**
-* Created by IntelliJ IDEA.
-* User: sam
-* Date: 7/29/11
-* Time: 10:23 AM
-* To change this template use File | Settings | File Templates.
-*/
 public class ErrorReply implements Reply<String> {
   public static final char MARKER = '-';
   private final String error;
