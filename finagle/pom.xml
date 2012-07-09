@@ -5,6 +5,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
   <artifactId>finagle</artifactId>
   <packaging>jar</packaging>
   <version>0.3-SNAPSHOT</version>
+  <name>finagle</name>
   <parent>
     <groupId>com.twitter</groupId>
     <artifactId>scala-parent-292</artifactId>
