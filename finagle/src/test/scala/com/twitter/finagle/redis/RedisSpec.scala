@@ -30,6 +30,7 @@ class RedisSpec extends SpecificationWithJUnit {
       ifDevelopment {
         val oioFactory = new OioClientSocketChannelFactory(Executors.newCachedThreadPool())
         RedisCluster.start(1)
+        Thread.sleep(1000)
         val service = ClientBuilder()
                 .codec(new RedisCodecFactory)
                 .channelFactory(new ReferenceCountedChannelFactory(oioFactory))

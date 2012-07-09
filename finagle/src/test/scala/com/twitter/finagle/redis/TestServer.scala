@@ -34,7 +34,7 @@ class ExternalRedis() {
       }
     }
     address.getOrElse {
-      error("Couldn't get an address for the external redis instance")
+      sys.error("Couldn't get an address for the external redis instance")
     }
   }
 
