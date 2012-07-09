@@ -9,7 +9,7 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     <groupId>com.twitter</groupId>
     <artifactId>scala-parent-292</artifactId>
     <version>0.0.2</version>
-    <relativePath>../../birdcage/parents/scala-parent-292/pom.xml</relativePath>
+    <relativePath>scala-parent.xml</relativePath>
   </parent>
   <dependencies>
     <!-- project dependencies -->
