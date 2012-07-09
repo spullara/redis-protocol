@@ -28,7 +28,7 @@ public class Benchmark {
       " -p <port>          Server port (default 6379)\n" +
       " -c <clients>       Number of parallel connections (default 50)\n" +
       " -n <requests>      Total number of requests (default 10000)\n" +
-      " -P <outstanding>   Number of outstanding pipeline requests (defaults 1)" +
+      " -P <outstanding>   Number of outstanding pipeline requests (defaults 1)\n" +
       " -d <size>          Data size of SET/GET value in bytes (default 3)\n";
 
   @Argument

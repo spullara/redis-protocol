@@ -18,6 +18,11 @@ clientgen/
 loader/
   Utility to parse HDFS line-oriented files and load them into Redis
 
+netty/
+  A netty 3.5.X compatible codecs for building Redis clients
+finagle/
+  A finagle 5.X compatible codec factory for building Redis clients
+
 Maven dependency:
 
     <dependency>

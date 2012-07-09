@@ -293,7 +293,7 @@ public class RedisClientTest {
     }
     semaphore.acquire(50);
     long end = System.currentTimeMillis();
-    System.out.println("Pub/sub: " + (CALLS * 10 * 1000) / (end - start) + " calls per second");
+    System.out.println("Pub/sub pipelined: " + (CALLS * 10 * 1000) / (end - start) + " calls per second");
   }
 
 }
