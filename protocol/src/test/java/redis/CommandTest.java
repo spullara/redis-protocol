@@ -41,14 +41,14 @@ public class CommandTest {
     }
     {
       long start = System.currentTimeMillis();
-      for (int i = 0; i < 10000000; i++) {
+      for (int i = 0; i < 100000000; i++) {
         Long.toString(i).getBytes(Charsets.UTF_8);
       }
       total = diff = System.currentTimeMillis() - start;
     }
     {
       long start = System.currentTimeMillis();
-      for (int i = 0; i < 10000000; i++) {
+      for (int i = 0; i < 100000000; i++) {
         Command.numToBytes(i, true);
       }
       diff -= System.currentTimeMillis() - start;
