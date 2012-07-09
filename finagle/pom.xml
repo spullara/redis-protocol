@@ -12,6 +12,16 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
     <version>0.0.2</version>
     <relativePath>scala-parent.xml</relativePath>
   </parent>
+  <repositories>
+    <repository>
+      <id>Twitter</id>
+      <url>http://maven.twttr.com/</url>
+    </repository>
+    <repository>
+      <id>Typesafe</id>
+      <url>http://repo.typesafe.com/typesafe/scala-tools-releases-cache</url>
+    </repository>
+  </repositories>
   <dependencies>
     <!-- project dependencies -->
     <dependency>
