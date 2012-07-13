@@ -1,4 +1,4 @@
-package redis.netty;
+package redis.netty4;
 
 import java.io.IOException;
 
@@ -6,16 +6,14 @@ import com.google.common.base.Charsets;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufIndexFinder;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
-import org.jboss.netty.handler.codec.replay.VoidEnum;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.ReplayingDecoder;
 
 /**
  * Netty codec for Redis
  */
 
-public class RedisDecoder extends ReplayingDecoder<VoidEnum> {
+public class RedisDecoder extends ReplayingDecoder<Reply<?>, Void> {
 
   public static final char CR = '\r';
   public static final char LF = '\n';
@@ -99,11 +97,6 @@ public class RedisDecoder extends ReplayingDecoder<VoidEnum> {
     super.checkpoint();
   }
 
-  @Override
-  protected Object decode(ChannelHandlerContext channelHandlerContext, Channel channel, ByteBuf channelBuffer, VoidEnum anEnum) throws Exception {
-    return receive(channelBuffer);
-  }
-
   public MultiBulkReply decodeMultiBulkReply(ByteBuf is) throws IOException {
     try {
       if (reply == null) {
@@ -114,5 +107,10 @@ public class RedisDecoder extends ReplayingDecoder<VoidEnum> {
     } finally {
       reply = null;
     }
+  }
+
+  @Override
+  public Reply<?> decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
+    return receive(byteBuf);
   }
 }

@@ -1,4 +1,4 @@
-package redis.netty;
+package redis.netty4;
 
 import io.netty.buffer.ByteBuf;
 import redis.Command;

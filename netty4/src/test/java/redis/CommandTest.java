@@ -6,8 +6,7 @@ import java.io.IOException;
 import com.google.common.base.Charsets;
 
 import io.netty.buffer.ByteBuf;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.buffer.ChannelBuffers;
+import io.netty.buffer.Unpooled;
 import org.junit.Test;
 import redis.netty.BulkReply;
 import redis.netty.MultiBulkReply;
@@ -74,7 +73,7 @@ public class CommandTest {
     byte[] multiBulkReply = baos.toByteArray();
     long start = System.currentTimeMillis();
     RedisDecoder redisDecoder = new RedisDecoder();
-    ByteBuf cb = ByteBufs.wrappedBuffer(multiBulkReply);
+    ByteBuf cb = Unpooled.wrappedBuffer(multiBulkReply);
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 100000; j++) {
         Reply receive = redisDecoder.receive(cb);

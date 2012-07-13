@@ -1,4 +1,4 @@
-package redis.netty;
+package redis.netty4;
 
 import com.google.common.base.Charsets;
 
