@@ -1,4 +1,4 @@
-package com.twitter.finagle.redis
+package com.twitter.finagle.redisservice
 
 import com.twitter.finagle.{ClientConnection, ServiceFactory, Service}
 import redis.reply._

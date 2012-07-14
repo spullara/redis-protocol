@@ -1,0 +1,70 @@
+package com.twitter.finagle.redis
+
+import com.google.common.base.Charsets
+
+import com.twitter.finagle.Service
+import com.twitter.finagle.builder.ClientBuilder
+import com.twitter.util.Future
+
+import org.jboss.netty.buffer.ChannelBuffers
+
+import redis._
+import redis.reply._
+
+import scala.collection.mutable.ArrayBuffer
+
+object RedisClient {
+
+  /**
+   * Construct a client from a single host.
+   * @param host a String of host:port combination.
+   */
+  def apply(host: String, port: Int): RedisClient = RedisClient(new RedisServiceFactory(host, port).apply().get())
+
+  /**
+   * Construct a client from a single Service.
+   */
+  def apply(service: Service[Command, Reply[_]]): RedisClient = new RedisClient(service)
+
+  {{#commands}}
+  val {{name}} = "{{name}}"
+  val {{name}}_BYTES = {{name}}.getBytes(Charsets.UTF_8)
+
+  {{/commands}}
+}
+
+case class RedisException(message:String) extends RuntimeException(message)
+
+class RedisClient(service: Service[Command, Reply[_]]) {
+  {{#commands}}
+
+  /**
+   * {{comment}}
+   */
+  def {{quote}}{{methodname}}{{quote}}({{#arguments}}{{^first}}, {{/first}}{{name}}: {{typename}}{{#multiple}}*{{/multiple}}{{/arguments}}): Future[{{reply}}{{#generic}}[_]{{/generic}}] = {
+    {{#usearray}}
+    var arguments = ArrayBuffer[Object]()
+    {{#arguments}}
+    {{#multiple}}
+    arguments = arguments ++ {{name}}
+    {{/multiple}}
+    {{^multiple}}
+    arguments += {{name}}
+    {{/multiple}}
+    {{/arguments}}
+    service(new Command(RedisClient.{{name}}_BYTES, arguments.toArray)) map {
+    {{/usearray}}
+    {{^usearray}}
+    service(new Command(RedisClient.{{name}}_BYTES{{#arguments}}, {{name}}{{/arguments}})) map {
+    {{/usearray}}
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: {{reply}}{{#generic}}[_]{{/generic}} => reply
+      case other => throw new RedisException("Unexpected reply from {{name}}: " + other)
+    }
+  }
+  {{/commands}}
+
+  def release() {
+    service.release()
+  }
+}

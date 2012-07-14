@@ -53,6 +53,9 @@ public class Main {
   @Argument(alias = "d", required = true)
   private static File dest;
 
+  @Argument(alias = "t")
+  private static String template = "client";
+
   private static Set<String> keywords = new HashSet<String>() {{
     add("type");
     add("object");
@@ -68,7 +71,7 @@ public class Main {
 
     MustacheBuilder mb = new MustacheBuilder("templates/" + language + "client");
     mb.setSuperclass(NoEncodingMustache.class.getName());
-    Mustache mustache = mb.parseFile("client.txt");
+    Mustache mustache = mb.parseFile(template + ".txt");
 
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     XPathFactory xpf = XPathFactory.newInstance();
