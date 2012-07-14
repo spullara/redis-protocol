@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <groupId>com.twitter</groupId>
+    <artifactId>scala-parent-292</artifactId>
+    <version>0.0.2</version>
+    <relativePath>../finagle/scala-parent.xml</relativePath>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>finagle-service</artifactId>
+  <name>finagle-service</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.github.spullara.redis</groupId>
+      <artifactId>protocol</artifactId>
+      <version>0.3-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.twitter</groupId>
+      <artifactId>finagle-core</artifactId>
+      <version>5.3.0</version>
+    </dependency>
+  </dependencies>
+</project>

@@ -1,28 +1,25 @@
 package client;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
-
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.SettableFuture;
-
+import org.jredis.JRedis;
+import org.jredis.ri.alphazero.JRedisClient;
 import org.junit.Test;
 import redis.client.MessageListener;
 import redis.client.RedisClient;
 import redis.client.RedisException;
 import redis.client.ReplyListener;
+import redis.clients.jedis.Jedis;
 import redis.reply.BulkReply;
 import redis.reply.IntegerReply;
 import redis.reply.MultiBulkReply;
 import redis.reply.StatusReply;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
@@ -176,6 +173,28 @@ public class RedisClientTest {
     }
     long end = System.currentTimeMillis();
     System.out.println("Blocking: " + (CALLS * 1000) / (end - start) + " calls per second");
+  }
+
+  @Test
+  public void jredisBenchmark() throws IOException, org.jredis.RedisException {
+    long start = System.currentTimeMillis();
+    JRedis redisClient = new JRedisClient("localhost", 6379);
+    for (int i = 0; i < CALLS; i++) {
+      redisClient.set(numToBytes(i, false), VALUE);
+    }
+    long end = System.currentTimeMillis();
+    System.out.println("JRedis: " + (CALLS * 1000) / (end - start) + " calls per second");
+  }
+
+  @Test
+  public void jedisBenchmark() throws IOException {
+    long start = System.currentTimeMillis();
+    Jedis redisClient = new Jedis("localhost", 6379);
+    for (int i = 0; i < CALLS; i++) {
+      redisClient.set(numToBytes(i, false), VALUE);
+    }
+    long end = System.currentTimeMillis();
+    System.out.println("Jedis: " + (CALLS * 1000) / (end - start) + " calls per second");
   }
 
   @Test
