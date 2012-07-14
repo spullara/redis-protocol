@@ -8,10 +8,10 @@ import com.google.common.base.Charsets;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.junit.Test;
-import redis.netty.BulkReply;
-import redis.netty.MultiBulkReply;
-import redis.netty.RedisDecoder;
-import redis.netty.Reply;
+import redis.netty4.BulkReply;
+import redis.netty4.MultiBulkReply;
+import redis.netty4.RedisDecoder;
+import redis.netty4.Reply;
 
 import static junit.framework.Assert.assertEquals;
 import static redis.util.Encoding.numToBytes;
