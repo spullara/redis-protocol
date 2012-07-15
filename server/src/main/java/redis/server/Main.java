@@ -36,7 +36,7 @@ public class Main {
          .childHandler(new ChannelInitializer<SocketChannel>() {
              @Override
              public void initChannel(SocketChannel ch) throws Exception {
-                 ch.pipeline().addLast(new RedisCommandDecoder(), new RedisCommandHandler(), new RedisReplyEncoder());
+                 ch.pipeline().addLast(new RedisCommandDecoder(), new RedisCommandHandler());
              }
          });
 

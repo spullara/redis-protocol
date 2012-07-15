@@ -1,17 +1,17 @@
 package redis.server;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.handler.codec.MessageToMessageEncoder;
+import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 import redis.Command;
-import redis.netty4.Reply;
 import redis.netty4.StatusReply;
 
 /**
- * Take command objects and produce replies.
+ * Handle decoded commands
  */
-public class RedisCommandHandler extends MessageToMessageEncoder<Command, Reply<?>> {
+public class RedisCommandHandler extends ChannelInboundMessageHandlerAdapter<Command> {
   @Override
-  public Reply<?> encode(ChannelHandlerContext ctx, Command msg) throws Exception {
-    return new StatusReply("OK");
+  public void messageReceived(ChannelHandlerContext ctx, Command msg) throws Exception {
+    new StatusReply("OK").write(ctx.nextOutboundByteBuffer());
+    ctx.flush();
   }
 }
