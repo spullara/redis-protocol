@@ -1,4 +1,4 @@
-package client;
+package redis.client;
 
 import org.jredis.RedisException;
 

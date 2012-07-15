@@ -12,16 +12,28 @@ protocol/
 benchmark/
   A redis-benchmark clone that uses this Java client for comparison testing.
 
-clientgen/
-  Scrapes the redis.io/commands page and produces the typed Java client and the
-  Finagle-based Scala client.
+redisgen/
+  Scrapes the redis.io/commands page and produce various clients and servers
+
 loader/
   Utility to parse HDFS line-oriented files and load them into Redis
 
 netty/
   A netty 3.5.X compatible codecs for building Redis clients
+netty4/
+  A netty 4.0.0.Alpha1 compatible codec for building Redis clients
+
 finagle/
-  A finagle 5.X compatible codec factory for building Redis clients
+  A finagle 5.X compatible netty codec factory for building Redis clients
+finagle-service/
+  A finagle 5.X compatible service that doesn't use netty
+
+
+util/
+  Some library functions used by both the blocking client and the netty clients
+
+server/
+  An attempt at a server again
 
 Maven dependency:
 

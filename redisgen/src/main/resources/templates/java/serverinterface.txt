@@ -1,0 +1,23 @@
+package redis.server;
+
+import redis.reply.BulkReply;
+import redis.reply.IntegerReply;
+import redis.reply.MultiBulkReply;
+import redis.reply.Reply;
+import redis.reply.StatusReply;
+
+public interface RedisServer {
+
+  {{#commands}}
+
+  /**
+   * {{comment}}
+   *
+   {{#arguments}}
+   * @param {{name}}
+   {{/arguments}}
+   * @return {{reply}}
+   */
+  public {{$return}}{{reply}}{{/return}} {{methodname}}({{#arguments}}{{^first}}, {{/first}}byte[]{{#multiple}}[]{{/multiple}} {{name}}{{/arguments}}) throws RedisException;
+  {{/commands}}
+}

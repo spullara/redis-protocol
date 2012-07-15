@@ -1,4 +1,4 @@
-package redis.clientgen;
+package redis.redisgen;
 
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
@@ -45,6 +45,9 @@ public class Main {
   @Argument(alias = "t")
   private static String template = "client";
 
+  @Argument(alias = "n")
+  private static String className = "RedisClient";
+
   private static Set<String> keywords = new HashSet<String>() {{
     add("type");
     add("object");
@@ -58,7 +61,7 @@ public class Main {
       System.exit(1);
     }
 
-    MustacheFactory mb = new DefaultMustacheFactory("templates/" + language + "client") {
+    MustacheFactory mb = new DefaultMustacheFactory("templates/" + language) {
       @Override
       public void encode(String value, Writer writer) {
         try {
@@ -200,7 +203,7 @@ public class Main {
     ctx.put("commands", commands);
     File base = new File(dest, pkg.replace(".", "/"));
     base.mkdirs();
-    Writer writer = new FileWriter(new File(base, "RedisClient." + language));
+    Writer writer = new FileWriter(new File(base, className + "." + language));
     mustache.execute(writer, ctx);
     writer.flush();
   }

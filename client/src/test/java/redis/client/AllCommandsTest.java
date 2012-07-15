@@ -1,4 +1,4 @@
-package client;
+package redis.client;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -10,9 +10,6 @@ import com.google.common.util.concurrent.ListenableFuture;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import redis.client.RedisClient;
-import redis.client.RedisClientBase;
-import redis.client.RedisException;
 import redis.reply.BulkReply;
 import redis.reply.IntegerReply;
 import redis.reply.MultiBulkReply;

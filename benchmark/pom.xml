@@ -29,7 +29,7 @@
           </descriptorRefs>
           <archive>
             <manifest>
-              <mainClass>redis.client.Benchmark</mainClass>
+              <mainClass>redis.redis.client.Benchmark</mainClass>
             </manifest>
           </archive>
         </configuration>

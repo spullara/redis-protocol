@@ -1,14 +1,10 @@
-package client;
+package redis.client;
 
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.SettableFuture;
 import org.jredis.JRedis;
 import org.jredis.ri.alphazero.JRedisClient;
 import org.junit.Test;
-import redis.client.MessageListener;
-import redis.client.RedisClient;
-import redis.client.RedisException;
-import redis.client.ReplyListener;
 import redis.clients.jedis.Jedis;
 import redis.reply.BulkReply;
 import redis.reply.IntegerReply;

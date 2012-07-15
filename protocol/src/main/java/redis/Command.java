@@ -17,9 +17,9 @@ import static redis.util.Encoding.numToBytes;
  * To change this template use File | Settings | File Templates.
  */
 public class Command {
-  public static final byte[] ARGS_PREFIX = "*".getBytes();
+  public static final char ARGS_PREFIX = '*';
+  public static final char BYTES_PREFIX = '$';
   public static final byte[] CRLF = "\r\n".getBytes();
-  public static final byte[] BYTES_PREFIX = "$".getBytes();
   public static final byte[] EMPTY_BYTES = new byte[0];
 
   private final Object name;
@@ -102,14 +102,14 @@ public class Command {
 
   public static Command read(InputStream is) throws IOException {
     int read = is.read();
-    if (read == ARGS_PREFIX[0]) {
+    if (read == ARGS_PREFIX) {
       long numArgs = RedisProtocol.readLong(is);
       if (numArgs < 0 || numArgs > Integer.MAX_VALUE) {
         throw new IllegalArgumentException("Invalid size: " + numArgs);
       }
       byte[][] byteArrays = new byte[(int) numArgs][];
       for (int i = 0; i < numArgs; i++) {
-        if (is.read() == BYTES_PREFIX[0]) {
+        if (is.read() == BYTES_PREFIX) {
           byteArrays[i] = RedisProtocol.readBytes(is);
         } else {
           throw new IOException("Unexpected character");
