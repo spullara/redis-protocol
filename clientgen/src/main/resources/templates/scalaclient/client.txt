@@ -42,31 +42,7 @@ case class RedisException(message:String) extends RuntimeException(message)
 
 class RedisClient(service: Service[Command, Reply[_]]) {
   {{#commands}}
-
-  /**
-   * {{comment}}
-   */
-  def {{quote}}{{methodname}}{{quote}}({{#arguments}}{{^first}}, {{/first}}{{name}}: {{typename}}{{#multiple}}*{{/multiple}}{{/arguments}}): Future[{{reply}}{{#generic}}[_]{{/generic}}] = {
-    {{#usearray}}
-    var arguments = ArrayBuffer[Object]()
-    {{#arguments}}
-    {{#multiple}}
-    arguments = arguments ++ {{name}}
-    {{/multiple}}
-    {{^multiple}}
-    arguments += {{name}}
-    {{/multiple}}
-    {{/arguments}}
-    service(new Command(RedisClient.{{name}}_BYTES, arguments.toArray)) map {
-    {{/usearray}}
-    {{^usearray}}
-    service(new Command(RedisClient.{{name}}_BYTES{{#arguments}}, {{name}}{{/arguments}})) map {
-    {{/usearray}}
-      case error: ErrorReply => throw new RedisException(error.data())
-      case reply: {{reply}}{{#generic}}[_]{{/generic}} => reply
-      case other => throw new RedisException("Unexpected reply from {{name}}: " + other)
-    }
-  }
+  {{>method}}
   {{/commands}}
 
   def release() {

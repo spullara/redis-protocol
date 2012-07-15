@@ -1,0 +1,25 @@
+
+  /**
+   * {{comment}}
+   */
+  def {{quote}}{{methodname}}{{quote}}({{#arguments}}{{^first}}, {{/first}}{{name}}: {{typename}}{{#multiple}}*{{/multiple}}{{/arguments}}): Future[{{reply}}{{#generic}}[_]{{/generic}}] = {
+    {{#usearray}}
+    val arguments = new Array[Object]({{base_length}}{{#arguments}}{{#multiple}} + {{name}}.length{{/multiple}}{{/arguments}})
+    {{#arguments}}
+    {{#multiple}}
+    {{name}}.copyToArray(arguments, {{base_length}})
+    {{/multiple}}
+    {{^multiple}}
+    arguments({{arg_num}}) = {{name}}
+    {{/multiple}}
+    {{/arguments}}
+    service(new Command(RedisClient.{{name}}_BYTES, arguments)) map {
+    {{/usearray}}
+    {{^usearray}}
+    service(new Command(RedisClient.{{name}}_BYTES{{#arguments}}, {{name}}{{/arguments}})) map {
+    {{/usearray}}
+      case error: ErrorReply => throw new RedisException(error.data())
+      case reply: {{reply}}{{#generic}}[_]{{/generic}} => reply
+      case other => throw new RedisException("Unexpected reply from {{name}}: " + other)
+    }
+  }

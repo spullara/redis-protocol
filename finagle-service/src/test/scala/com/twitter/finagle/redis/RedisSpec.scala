@@ -3,13 +3,26 @@ package com.twitter.finagle.redis
 import org.specs.SpecificationWithJUnit
 import redis.util.Encoding
 import com.twitter.util.Promise
-import redis.reply.Reply
-import com.twitter.finagle.redisservice.RedisServiceFactory
+import redis.reply.{StatusReply, Reply}
+import com.twitter.finagle.redisservice.{RedisClient, RedisServiceFactory}
 
 class RedisSpec extends SpecificationWithJUnit {
   "redis service factory" should {
+
+    "some commands" in {
+      val client = RedisClient("localhost", 6379)
+      val promise = new Promise[StatusReply]()
+      client.del("test").get()
+      client.hmset("test", "test1", "value1", "test2", "value2") onSuccess { reply =>
+        promise.setValue(reply)
+      } onFailure {
+        promise.setException(_)
+      }
+      promise.get().data() mustEqual "OK"
+    }
+
     "low levl benchmark" in {
-      val CALLS = 1000000
+      val CALLS = 100000
       var i = 0
       val value = "value".getBytes
       val factory = new RedisServiceFactory("localhost", 6379)

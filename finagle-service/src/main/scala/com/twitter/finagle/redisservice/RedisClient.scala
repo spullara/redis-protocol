@@ -1,18 +1,12 @@
-package com.twitter.finagle.redis
+package com.twitter.finagle.redisservice
 
 import com.google.common.base.Charsets
 
 import com.twitter.finagle.Service
-import com.twitter.finagle.builder.ClientBuilder
 import com.twitter.util.Future
-
-import org.jboss.netty.buffer.ChannelBuffers
 
 import redis._
 import redis.reply._
-
-import scala.collection.mutable.ArrayBuffer
-import com.twitter.finagle.redisservice.RedisServiceFactory
 
 object RedisClient {
 
@@ -437,7 +431,7 @@ object RedisClient {
 case class RedisException(message:String) extends RuntimeException(message)
 
 class RedisClient(service: Service[Command, Reply[_]]) {
-
+  
   /**
    * Append a value to a key
    */
@@ -448,7 +442,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from APPEND: " + other)
     }
   }
-
+  
   /**
    * Authenticate to the server
    */
@@ -459,7 +453,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from AUTH: " + other)
     }
   }
-
+  
   /**
    * Asynchronously rewrite the append-only file
    */
@@ -470,7 +464,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from BGREWRITEAOF: " + other)
     }
   }
-
+  
   /**
    * Asynchronously save the dataset to disk
    */
@@ -481,7 +475,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from BGSAVE: " + other)
     }
   }
-
+  
   /**
    * Count set bits in a string
    */
@@ -492,48 +486,48 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from BITCOUNT: " + other)
     }
   }
-
+  
   /**
    * Perform bitwise operations between strings
    */
   def bitop(operation0: Object, destkey1: Object, key2: Object*): Future[IntegerReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += operation0
-    arguments += destkey1
-    arguments = arguments ++ key2
-    service(new Command(RedisClient.BITOP_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](2 + key2.length)
+    arguments(0) = operation0
+    arguments(1) = destkey1
+    key2.copyToArray(arguments, 2)
+    service(new Command(RedisClient.BITOP_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: IntegerReply => reply
       case other => throw new RedisException("Unexpected reply from BITOP: " + other)
     }
   }
-
+  
   /**
    * Remove and get the first element in a list, or block until one is available
    */
   def blpop(key0: Object*): Future[MultiBulkReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments = arguments ++ key0
-    service(new Command(RedisClient.BLPOP_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](0 + key0.length)
+    key0.copyToArray(arguments, 0)
+    service(new Command(RedisClient.BLPOP_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: MultiBulkReply => reply
       case other => throw new RedisException("Unexpected reply from BLPOP: " + other)
     }
   }
-
+  
   /**
    * Remove and get the last element in a list, or block until one is available
    */
   def brpop(key0: Object*): Future[MultiBulkReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments = arguments ++ key0
-    service(new Command(RedisClient.BRPOP_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](0 + key0.length)
+    key0.copyToArray(arguments, 0)
+    service(new Command(RedisClient.BRPOP_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: MultiBulkReply => reply
       case other => throw new RedisException("Unexpected reply from BRPOP: " + other)
     }
   }
-
+  
   /**
    * Pop a value from a list, push it to another list and return it; or block until one is available
    */
@@ -544,7 +538,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from BRPOPLPUSH: " + other)
     }
   }
-
+  
   /**
    * Get the value of a configuration parameter
    */
@@ -555,7 +549,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from CONFIG_GET: " + other)
     }
   }
-
+  
   /**
    * Set a configuration parameter to the given value
    */
@@ -566,7 +560,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from CONFIG_SET: " + other)
     }
   }
-
+  
   /**
    * Reset the stats returned by INFO
    */
@@ -577,7 +571,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from CONFIG_RESETSTAT: " + other)
     }
   }
-
+  
   /**
    * Return the number of keys in the selected database
    */
@@ -588,7 +582,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from DBSIZE: " + other)
     }
   }
-
+  
   /**
    * Get debugging information about a key
    */
@@ -599,7 +593,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from DEBUG_OBJECT: " + other)
     }
   }
-
+  
   /**
    * Make the server crash
    */
@@ -610,7 +604,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from DEBUG_SEGFAULT: " + other)
     }
   }
-
+  
   /**
    * Decrement the integer value of a key by one
    */
@@ -621,7 +615,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from DECR: " + other)
     }
   }
-
+  
   /**
    * Decrement the integer value of a key by the given number
    */
@@ -632,20 +626,20 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from DECRBY: " + other)
     }
   }
-
+  
   /**
    * Delete a key
    */
   def del(key0: Object*): Future[IntegerReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments = arguments ++ key0
-    service(new Command(RedisClient.DEL_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](0 + key0.length)
+    key0.copyToArray(arguments, 0)
+    service(new Command(RedisClient.DEL_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: IntegerReply => reply
       case other => throw new RedisException("Unexpected reply from DEL: " + other)
     }
   }
-
+  
   /**
    * Return a serialized version of the value stored at the specified key.
    */
@@ -656,7 +650,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from DUMP: " + other)
     }
   }
-
+  
   /**
    * Echo the given string
    */
@@ -667,37 +661,37 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from ECHO: " + other)
     }
   }
-
+  
   /**
    * Execute a Lua script server side
    */
   def eval(script0: Object, numkeys1: Object, key2: Object*): Future[Reply[_]] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += script0
-    arguments += numkeys1
-    arguments = arguments ++ key2
-    service(new Command(RedisClient.EVAL_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](2 + key2.length)
+    arguments(0) = script0
+    arguments(1) = numkeys1
+    key2.copyToArray(arguments, 2)
+    service(new Command(RedisClient.EVAL_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: Reply[_] => reply
       case other => throw new RedisException("Unexpected reply from EVAL: " + other)
     }
   }
-
+  
   /**
    * Execute a Lua script server side
    */
   def evalsha(sha10: Object, numkeys1: Object, key2: Object*): Future[Reply[_]] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += sha10
-    arguments += numkeys1
-    arguments = arguments ++ key2
-    service(new Command(RedisClient.EVALSHA_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](2 + key2.length)
+    arguments(0) = sha10
+    arguments(1) = numkeys1
+    key2.copyToArray(arguments, 2)
+    service(new Command(RedisClient.EVALSHA_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: Reply[_] => reply
       case other => throw new RedisException("Unexpected reply from EVALSHA: " + other)
     }
   }
-
+  
   /**
    * Determine if a key exists
    */
@@ -708,7 +702,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from EXISTS: " + other)
     }
   }
-
+  
   /**
    * Set a key's time to live in seconds
    */
@@ -719,7 +713,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from EXPIRE: " + other)
     }
   }
-
+  
   /**
    * Set the expiration for a key as a UNIX timestamp
    */
@@ -730,7 +724,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from EXPIREAT: " + other)
     }
   }
-
+  
   /**
    * Remove all keys from all databases
    */
@@ -741,7 +735,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from FLUSHALL: " + other)
     }
   }
-
+  
   /**
    * Remove all keys from the current database
    */
@@ -752,7 +746,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from FLUSHDB: " + other)
     }
   }
-
+  
   /**
    * Get the value of a key
    */
@@ -763,7 +757,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from GET: " + other)
     }
   }
-
+  
   /**
    * Returns the bit value at offset in the string value stored at key
    */
@@ -774,7 +768,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from GETBIT: " + other)
     }
   }
-
+  
   /**
    * Get a substring of the string stored at a key
    */
@@ -785,7 +779,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from GETRANGE: " + other)
     }
   }
-
+  
   /**
    * Set the string value of a key and return its old value
    */
@@ -796,21 +790,21 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from GETSET: " + other)
     }
   }
-
+  
   /**
    * Delete one or more hash fields
    */
   def hdel(key0: Object, field1: Object*): Future[IntegerReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += key0
-    arguments = arguments ++ field1
-    service(new Command(RedisClient.HDEL_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](1 + field1.length)
+    arguments(0) = key0
+    field1.copyToArray(arguments, 1)
+    service(new Command(RedisClient.HDEL_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: IntegerReply => reply
       case other => throw new RedisException("Unexpected reply from HDEL: " + other)
     }
   }
-
+  
   /**
    * Determine if a hash field exists
    */
@@ -821,7 +815,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from HEXISTS: " + other)
     }
   }
-
+  
   /**
    * Get the value of a hash field
    */
@@ -832,7 +826,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from HGET: " + other)
     }
   }
-
+  
   /**
    * Get all the fields and values in a hash
    */
@@ -843,7 +837,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from HGETALL: " + other)
     }
   }
-
+  
   /**
    * Increment the integer value of a hash field by the given number
    */
@@ -854,7 +848,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from HINCRBY: " + other)
     }
   }
-
+  
   /**
    * Increment the float value of a hash field by the given amount
    */
@@ -865,7 +859,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from HINCRBYFLOAT: " + other)
     }
   }
-
+  
   /**
    * Get all the fields in a hash
    */
@@ -876,7 +870,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from HKEYS: " + other)
     }
   }
-
+  
   /**
    * Get the number of fields in a hash
    */
@@ -887,35 +881,35 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from HLEN: " + other)
     }
   }
-
+  
   /**
    * Get the values of all the given hash fields
    */
   def hmget(key0: Object, field1: Object*): Future[MultiBulkReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += key0
-    arguments = arguments ++ field1
-    service(new Command(RedisClient.HMGET_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](1 + field1.length)
+    arguments(0) = key0
+    field1.copyToArray(arguments, 1)
+    service(new Command(RedisClient.HMGET_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: MultiBulkReply => reply
       case other => throw new RedisException("Unexpected reply from HMGET: " + other)
     }
   }
-
+  
   /**
    * Set multiple hash fields to multiple values
    */
   def hmset(key0: Object, field_or_value1: Object*): Future[StatusReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += key0
-    arguments = arguments ++ field_or_value1
-    service(new Command(RedisClient.HMSET_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](1 + field_or_value1.length)
+    arguments(0) = key0
+    field_or_value1.copyToArray(arguments, 1)
+    service(new Command(RedisClient.HMSET_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: StatusReply => reply
       case other => throw new RedisException("Unexpected reply from HMSET: " + other)
     }
   }
-
+  
   /**
    * Set the string value of a hash field
    */
@@ -926,7 +920,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from HSET: " + other)
     }
   }
-
+  
   /**
    * Set the value of a hash field, only if the field does not exist
    */
@@ -937,7 +931,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from HSETNX: " + other)
     }
   }
-
+  
   /**
    * Get all the values in a hash
    */
@@ -948,7 +942,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from HVALS: " + other)
     }
   }
-
+  
   /**
    * Increment the integer value of a key by one
    */
@@ -959,7 +953,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from INCR: " + other)
     }
   }
-
+  
   /**
    * Increment the integer value of a key by the given amount
    */
@@ -970,7 +964,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from INCRBY: " + other)
     }
   }
-
+  
   /**
    * Increment the float value of a key by the given amount
    */
@@ -981,7 +975,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from INCRBYFLOAT: " + other)
     }
   }
-
+  
   /**
    * Get information and statistics about the server
    */
@@ -992,7 +986,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from INFO: " + other)
     }
   }
-
+  
   /**
    * Find all keys matching the given pattern
    */
@@ -1003,7 +997,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from KEYS: " + other)
     }
   }
-
+  
   /**
    * Get the UNIX time stamp of the last successful save to disk
    */
@@ -1014,7 +1008,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from LASTSAVE: " + other)
     }
   }
-
+  
   /**
    * Get an element from a list by its index
    */
@@ -1025,23 +1019,23 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from LINDEX: " + other)
     }
   }
-
+  
   /**
    * Insert an element before or after another element in a list
    */
   def linsert(key0: Object, where1: Object, pivot2: Object, value3: Object): Future[IntegerReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += key0
-    arguments += where1
-    arguments += pivot2
-    arguments += value3
-    service(new Command(RedisClient.LINSERT_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](4)
+    arguments(0) = key0
+    arguments(1) = where1
+    arguments(2) = pivot2
+    arguments(3) = value3
+    service(new Command(RedisClient.LINSERT_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: IntegerReply => reply
       case other => throw new RedisException("Unexpected reply from LINSERT: " + other)
     }
   }
-
+  
   /**
    * Get the length of a list
    */
@@ -1052,7 +1046,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from LLEN: " + other)
     }
   }
-
+  
   /**
    * Remove and get the first element in a list
    */
@@ -1063,21 +1057,21 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from LPOP: " + other)
     }
   }
-
+  
   /**
    * Prepend one or multiple values to a list
    */
   def lpush(key0: Object, value1: Object*): Future[IntegerReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += key0
-    arguments = arguments ++ value1
-    service(new Command(RedisClient.LPUSH_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](1 + value1.length)
+    arguments(0) = key0
+    value1.copyToArray(arguments, 1)
+    service(new Command(RedisClient.LPUSH_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: IntegerReply => reply
       case other => throw new RedisException("Unexpected reply from LPUSH: " + other)
     }
   }
-
+  
   /**
    * Prepend a value to a list, only if the list exists
    */
@@ -1088,7 +1082,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from LPUSHX: " + other)
     }
   }
-
+  
   /**
    * Get a range of elements from a list
    */
@@ -1099,7 +1093,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from LRANGE: " + other)
     }
   }
-
+  
   /**
    * Remove elements from a list
    */
@@ -1110,7 +1104,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from LREM: " + other)
     }
   }
-
+  
   /**
    * Set the value of an element in a list by its index
    */
@@ -1121,7 +1115,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from LSET: " + other)
     }
   }
-
+  
   /**
    * Trim a list to the specified range
    */
@@ -1132,37 +1126,37 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from LTRIM: " + other)
     }
   }
-
+  
   /**
    * Get the values of all the given keys
    */
   def mget(key0: Object*): Future[MultiBulkReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments = arguments ++ key0
-    service(new Command(RedisClient.MGET_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](0 + key0.length)
+    key0.copyToArray(arguments, 0)
+    service(new Command(RedisClient.MGET_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: MultiBulkReply => reply
       case other => throw new RedisException("Unexpected reply from MGET: " + other)
     }
   }
-
+  
   /**
    * Atomically transfer a key from a Redis instance to another one.
    */
   def migrate(host0: Object, port1: Object, key2: Object, destination_db3: Object, timeout4: Object): Future[StatusReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += host0
-    arguments += port1
-    arguments += key2
-    arguments += destination_db3
-    arguments += timeout4
-    service(new Command(RedisClient.MIGRATE_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](5)
+    arguments(0) = host0
+    arguments(1) = port1
+    arguments(2) = key2
+    arguments(3) = destination_db3
+    arguments(4) = timeout4
+    service(new Command(RedisClient.MIGRATE_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: StatusReply => reply
       case other => throw new RedisException("Unexpected reply from MIGRATE: " + other)
     }
   }
-
+  
   /**
    * Listen for all requests received by the server in real time
    */
@@ -1173,7 +1167,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from MONITOR: " + other)
     }
   }
-
+  
   /**
    * Move a key to another database
    */
@@ -1184,47 +1178,47 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from MOVE: " + other)
     }
   }
-
+  
   /**
    * Set multiple keys to multiple values
    */
   def mset(key_or_value0: Object*): Future[StatusReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments = arguments ++ key_or_value0
-    service(new Command(RedisClient.MSET_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](0 + key_or_value0.length)
+    key_or_value0.copyToArray(arguments, 0)
+    service(new Command(RedisClient.MSET_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: StatusReply => reply
       case other => throw new RedisException("Unexpected reply from MSET: " + other)
     }
   }
-
+  
   /**
    * Set multiple keys to multiple values, only if none of the keys exist
    */
   def msetnx(key_or_value0: Object*): Future[IntegerReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments = arguments ++ key_or_value0
-    service(new Command(RedisClient.MSETNX_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](0 + key_or_value0.length)
+    key_or_value0.copyToArray(arguments, 0)
+    service(new Command(RedisClient.MSETNX_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: IntegerReply => reply
       case other => throw new RedisException("Unexpected reply from MSETNX: " + other)
     }
   }
-
+  
   /**
    * Inspect the internals of Redis objects
    */
   def `object`(subcommand0: Object, arguments1: Object*): Future[Reply[_]] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += subcommand0
-    arguments = arguments ++ arguments1
-    service(new Command(RedisClient.OBJECT_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](1 + arguments1.length)
+    arguments(0) = subcommand0
+    arguments1.copyToArray(arguments, 1)
+    service(new Command(RedisClient.OBJECT_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: Reply[_] => reply
       case other => throw new RedisException("Unexpected reply from OBJECT: " + other)
     }
   }
-
+  
   /**
    * Remove the expiration from a key
    */
@@ -1235,7 +1229,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from PERSIST: " + other)
     }
   }
-
+  
   /**
    * Set a key's time to live in milliseconds
    */
@@ -1246,7 +1240,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from PEXPIRE: " + other)
     }
   }
-
+  
   /**
    * Set the expiration for a key as a UNIX timestamp specified in milliseconds
    */
@@ -1257,7 +1251,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from PEXPIREAT: " + other)
     }
   }
-
+  
   /**
    * Ping the server
    */
@@ -1268,7 +1262,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from PING: " + other)
     }
   }
-
+  
   /**
    * Set the value and expiration in milliseconds of a key
    */
@@ -1279,7 +1273,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from PSETEX: " + other)
     }
   }
-
+  
   /**
    * Get the time to live for a key in milliseconds
    */
@@ -1290,7 +1284,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from PTTL: " + other)
     }
   }
-
+  
   /**
    * Post a message to a channel
    */
@@ -1301,7 +1295,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from PUBLISH: " + other)
     }
   }
-
+  
   /**
    * Close the connection
    */
@@ -1312,7 +1306,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from QUIT: " + other)
     }
   }
-
+  
   /**
    * Return a random key from the keyspace
    */
@@ -1323,7 +1317,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from RANDOMKEY: " + other)
     }
   }
-
+  
   /**
    * Rename a key
    */
@@ -1334,7 +1328,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from RENAME: " + other)
     }
   }
-
+  
   /**
    * Rename a key, only if the new key does not exist
    */
@@ -1345,7 +1339,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from RENAMENX: " + other)
     }
   }
-
+  
   /**
    * Create a key using the provided serialized value, previously obtained using DUMP.
    */
@@ -1356,7 +1350,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from RESTORE: " + other)
     }
   }
-
+  
   /**
    * Remove and get the last element in a list
    */
@@ -1367,7 +1361,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from RPOP: " + other)
     }
   }
-
+  
   /**
    * Remove the last element in a list, append it to another list and return it
    */
@@ -1378,21 +1372,21 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from RPOPLPUSH: " + other)
     }
   }
-
+  
   /**
    * Append one or multiple values to a list
    */
   def rpush(key0: Object, value1: Object*): Future[IntegerReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += key0
-    arguments = arguments ++ value1
-    service(new Command(RedisClient.RPUSH_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](1 + value1.length)
+    arguments(0) = key0
+    value1.copyToArray(arguments, 1)
+    service(new Command(RedisClient.RPUSH_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: IntegerReply => reply
       case other => throw new RedisException("Unexpected reply from RPUSH: " + other)
     }
   }
-
+  
   /**
    * Append a value to a list, only if the list exists
    */
@@ -1403,21 +1397,21 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from RPUSHX: " + other)
     }
   }
-
+  
   /**
    * Add one or more members to a set
    */
   def sadd(key0: Object, member1: Object*): Future[IntegerReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += key0
-    arguments = arguments ++ member1
-    service(new Command(RedisClient.SADD_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](1 + member1.length)
+    arguments(0) = key0
+    member1.copyToArray(arguments, 1)
+    service(new Command(RedisClient.SADD_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: IntegerReply => reply
       case other => throw new RedisException("Unexpected reply from SADD: " + other)
     }
   }
-
+  
   /**
    * Synchronously save the dataset to disk
    */
@@ -1428,7 +1422,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SAVE: " + other)
     }
   }
-
+  
   /**
    * Get the number of members in a set
    */
@@ -1439,20 +1433,20 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SCARD: " + other)
     }
   }
-
+  
   /**
    * Check existence of scripts in the script cache.
    */
   def script_exists(script0: Object*): Future[Reply[_]] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments = arguments ++ script0
-    service(new Command(RedisClient.SCRIPT_EXISTS_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](0 + script0.length)
+    script0.copyToArray(arguments, 0)
+    service(new Command(RedisClient.SCRIPT_EXISTS_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: Reply[_] => reply
       case other => throw new RedisException("Unexpected reply from SCRIPT_EXISTS: " + other)
     }
   }
-
+  
   /**
    * Remove all the scripts from the script cache.
    */
@@ -1463,7 +1457,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SCRIPT_FLUSH: " + other)
     }
   }
-
+  
   /**
    * Kill the script currently in execution.
    */
@@ -1474,7 +1468,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SCRIPT_KILL: " + other)
     }
   }
-
+  
   /**
    * Load the specified Lua script into the script cache.
    */
@@ -1485,34 +1479,34 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SCRIPT_LOAD: " + other)
     }
   }
-
+  
   /**
    * Subtract multiple sets
    */
   def sdiff(key0: Object*): Future[MultiBulkReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments = arguments ++ key0
-    service(new Command(RedisClient.SDIFF_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](0 + key0.length)
+    key0.copyToArray(arguments, 0)
+    service(new Command(RedisClient.SDIFF_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: MultiBulkReply => reply
       case other => throw new RedisException("Unexpected reply from SDIFF: " + other)
     }
   }
-
+  
   /**
    * Subtract multiple sets and store the resulting set in a key
    */
   def sdiffstore(destination0: Object, key1: Object*): Future[IntegerReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += destination0
-    arguments = arguments ++ key1
-    service(new Command(RedisClient.SDIFFSTORE_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](1 + key1.length)
+    arguments(0) = destination0
+    key1.copyToArray(arguments, 1)
+    service(new Command(RedisClient.SDIFFSTORE_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: IntegerReply => reply
       case other => throw new RedisException("Unexpected reply from SDIFFSTORE: " + other)
     }
   }
-
+  
   /**
    * Change the selected database for the current connection
    */
@@ -1523,7 +1517,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SELECT: " + other)
     }
   }
-
+  
   /**
    * Set the string value of a key
    */
@@ -1534,7 +1528,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SET: " + other)
     }
   }
-
+  
   /**
    * Sets or clears the bit at offset in the string value stored at key
    */
@@ -1545,7 +1539,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SETBIT: " + other)
     }
   }
-
+  
   /**
    * Set the value and expiration of a key
    */
@@ -1556,7 +1550,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SETEX: " + other)
     }
   }
-
+  
   /**
    * Set the value of a key, only if the key does not exist
    */
@@ -1567,7 +1561,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SETNX: " + other)
     }
   }
-
+  
   /**
    * Overwrite part of a string at key starting at the specified offset
    */
@@ -1578,7 +1572,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SETRANGE: " + other)
     }
   }
-
+  
   /**
    * Synchronously save the dataset to disk and then shut down the server
    */
@@ -1589,34 +1583,34 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SHUTDOWN: " + other)
     }
   }
-
+  
   /**
    * Intersect multiple sets
    */
   def sinter(key0: Object*): Future[MultiBulkReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments = arguments ++ key0
-    service(new Command(RedisClient.SINTER_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](0 + key0.length)
+    key0.copyToArray(arguments, 0)
+    service(new Command(RedisClient.SINTER_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: MultiBulkReply => reply
       case other => throw new RedisException("Unexpected reply from SINTER: " + other)
     }
   }
-
+  
   /**
    * Intersect multiple sets and store the resulting set in a key
    */
   def sinterstore(destination0: Object, key1: Object*): Future[IntegerReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += destination0
-    arguments = arguments ++ key1
-    service(new Command(RedisClient.SINTERSTORE_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](1 + key1.length)
+    arguments(0) = destination0
+    key1.copyToArray(arguments, 1)
+    service(new Command(RedisClient.SINTERSTORE_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: IntegerReply => reply
       case other => throw new RedisException("Unexpected reply from SINTERSTORE: " + other)
     }
   }
-
+  
   /**
    * Determine if a given value is a member of a set
    */
@@ -1627,7 +1621,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SISMEMBER: " + other)
     }
   }
-
+  
   /**
    * Make the server a slave of another instance, or promote it as master
    */
@@ -1638,7 +1632,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SLAVEOF: " + other)
     }
   }
-
+  
   /**
    * Manages the Redis slow queries log
    */
@@ -1649,7 +1643,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SLOWLOG: " + other)
     }
   }
-
+  
   /**
    * Get all the members in a set
    */
@@ -1660,7 +1654,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SMEMBERS: " + other)
     }
   }
-
+  
   /**
    * Move a member from one set to another
    */
@@ -1671,23 +1665,23 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SMOVE: " + other)
     }
   }
-
+  
   /**
    * Sort the elements in a list, set or sorted set
    */
   def sort(key0: Object, pattern1: Object, offset_or_count2: Object, pattern3: Object*): Future[Reply[_]] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += key0
-    arguments += pattern1
-    arguments += offset_or_count2
-    arguments = arguments ++ pattern3
-    service(new Command(RedisClient.SORT_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](3 + pattern3.length)
+    arguments(0) = key0
+    arguments(1) = pattern1
+    arguments(2) = offset_or_count2
+    pattern3.copyToArray(arguments, 3)
+    service(new Command(RedisClient.SORT_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: Reply[_] => reply
       case other => throw new RedisException("Unexpected reply from SORT: " + other)
     }
   }
-
+  
   /**
    * Remove and return a random member from a set
    */
@@ -1698,7 +1692,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SPOP: " + other)
     }
   }
-
+  
   /**
    * Get a random member from a set
    */
@@ -1709,21 +1703,21 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SRANDMEMBER: " + other)
     }
   }
-
+  
   /**
    * Remove one or more members from a set
    */
   def srem(key0: Object, member1: Object*): Future[IntegerReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += key0
-    arguments = arguments ++ member1
-    service(new Command(RedisClient.SREM_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](1 + member1.length)
+    arguments(0) = key0
+    member1.copyToArray(arguments, 1)
+    service(new Command(RedisClient.SREM_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: IntegerReply => reply
       case other => throw new RedisException("Unexpected reply from SREM: " + other)
     }
   }
-
+  
   /**
    * Get the length of the value stored in a key
    */
@@ -1734,34 +1728,34 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from STRLEN: " + other)
     }
   }
-
+  
   /**
    * Add multiple sets
    */
   def sunion(key0: Object*): Future[MultiBulkReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments = arguments ++ key0
-    service(new Command(RedisClient.SUNION_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](0 + key0.length)
+    key0.copyToArray(arguments, 0)
+    service(new Command(RedisClient.SUNION_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: MultiBulkReply => reply
       case other => throw new RedisException("Unexpected reply from SUNION: " + other)
     }
   }
-
+  
   /**
    * Add multiple sets and store the resulting set in a key
    */
   def sunionstore(destination0: Object, key1: Object*): Future[IntegerReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += destination0
-    arguments = arguments ++ key1
-    service(new Command(RedisClient.SUNIONSTORE_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](1 + key1.length)
+    arguments(0) = destination0
+    key1.copyToArray(arguments, 1)
+    service(new Command(RedisClient.SUNIONSTORE_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: IntegerReply => reply
       case other => throw new RedisException("Unexpected reply from SUNIONSTORE: " + other)
     }
   }
-
+  
   /**
    * Internal command used for replication
    */
@@ -1772,7 +1766,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from SYNC: " + other)
     }
   }
-
+  
   /**
    * Return the current server time
    */
@@ -1783,7 +1777,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from TIME: " + other)
     }
   }
-
+  
   /**
    * Get the time to live for a key
    */
@@ -1794,7 +1788,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from TTL: " + other)
     }
   }
-
+  
   /**
    * Determine the type stored at key
    */
@@ -1805,7 +1799,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from TYPE: " + other)
     }
   }
-
+  
   /**
    * Forget about all watched keys
    */
@@ -1816,33 +1810,33 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from UNWATCH: " + other)
     }
   }
-
+  
   /**
    * Watch the given keys to determine execution of the MULTI/EXEC block
    */
   def watch(key0: Object*): Future[StatusReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments = arguments ++ key0
-    service(new Command(RedisClient.WATCH_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](0 + key0.length)
+    key0.copyToArray(arguments, 0)
+    service(new Command(RedisClient.WATCH_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: StatusReply => reply
       case other => throw new RedisException("Unexpected reply from WATCH: " + other)
     }
   }
-
+  
   /**
    * Add one or more members to a sorted set, or update its score if it already exists
    */
   def zadd(args: Object*): Future[IntegerReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments = arguments ++ args
-    service(new Command(RedisClient.ZADD_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](1 + args.length)
+    args.copyToArray(arguments, 1)
+    service(new Command(RedisClient.ZADD_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: IntegerReply => reply
       case other => throw new RedisException("Unexpected reply from ZADD: " + other)
     }
   }
-
+  
   /**
    * Get the number of members in a sorted set
    */
@@ -1853,7 +1847,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from ZCARD: " + other)
     }
   }
-
+  
   /**
    * Count the members in a sorted set with scores within the given values
    */
@@ -1864,7 +1858,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from ZCOUNT: " + other)
     }
   }
-
+  
   /**
    * Increment the score of a member in a sorted set
    */
@@ -1875,53 +1869,53 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from ZINCRBY: " + other)
     }
   }
-
+  
   /**
    * Intersect multiple sorted sets and store the resulting sorted set in a new key
    */
   def zinterstore(args: Object*): Future[IntegerReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments = arguments ++ args
-    service(new Command(RedisClient.ZINTERSTORE_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](1 + args.length)
+    args.copyToArray(arguments, 1)
+    service(new Command(RedisClient.ZINTERSTORE_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: IntegerReply => reply
       case other => throw new RedisException("Unexpected reply from ZINTERSTORE: " + other)
     }
   }
-
+  
   /**
    * Return a range of members in a sorted set, by index
    */
   def zrange(key0: Object, start1: Object, stop2: Object, withscores3: Object): Future[MultiBulkReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += key0
-    arguments += start1
-    arguments += stop2
-    arguments += withscores3
-    service(new Command(RedisClient.ZRANGE_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](4)
+    arguments(0) = key0
+    arguments(1) = start1
+    arguments(2) = stop2
+    arguments(3) = withscores3
+    service(new Command(RedisClient.ZRANGE_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: MultiBulkReply => reply
       case other => throw new RedisException("Unexpected reply from ZRANGE: " + other)
     }
   }
-
+  
   /**
    * Return a range of members in a sorted set, by score
    */
   def zrangebyscore(key0: Object, min1: Object, max2: Object, withscores3: Object, offset_or_count4: Object): Future[MultiBulkReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += key0
-    arguments += min1
-    arguments += max2
-    arguments += withscores3
-    arguments += offset_or_count4
-    service(new Command(RedisClient.ZRANGEBYSCORE_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](5)
+    arguments(0) = key0
+    arguments(1) = min1
+    arguments(2) = max2
+    arguments(3) = withscores3
+    arguments(4) = offset_or_count4
+    service(new Command(RedisClient.ZRANGEBYSCORE_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: MultiBulkReply => reply
       case other => throw new RedisException("Unexpected reply from ZRANGEBYSCORE: " + other)
     }
   }
-
+  
   /**
    * Determine the index of a member in a sorted set
    */
@@ -1932,21 +1926,21 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from ZRANK: " + other)
     }
   }
-
+  
   /**
    * Remove one or more members from a sorted set
    */
   def zrem(key0: Object, member1: Object*): Future[IntegerReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += key0
-    arguments = arguments ++ member1
-    service(new Command(RedisClient.ZREM_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](1 + member1.length)
+    arguments(0) = key0
+    member1.copyToArray(arguments, 1)
+    service(new Command(RedisClient.ZREM_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: IntegerReply => reply
       case other => throw new RedisException("Unexpected reply from ZREM: " + other)
     }
   }
-
+  
   /**
    * Remove all members in a sorted set within the given indexes
    */
@@ -1957,7 +1951,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from ZREMRANGEBYRANK: " + other)
     }
   }
-
+  
   /**
    * Remove all members in a sorted set within the given scores
    */
@@ -1968,40 +1962,40 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from ZREMRANGEBYSCORE: " + other)
     }
   }
-
+  
   /**
    * Return a range of members in a sorted set, by index, with scores ordered from high to low
    */
   def zrevrange(key0: Object, start1: Object, stop2: Object, withscores3: Object): Future[MultiBulkReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += key0
-    arguments += start1
-    arguments += stop2
-    arguments += withscores3
-    service(new Command(RedisClient.ZREVRANGE_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](4)
+    arguments(0) = key0
+    arguments(1) = start1
+    arguments(2) = stop2
+    arguments(3) = withscores3
+    service(new Command(RedisClient.ZREVRANGE_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: MultiBulkReply => reply
       case other => throw new RedisException("Unexpected reply from ZREVRANGE: " + other)
     }
   }
-
+  
   /**
    * Return a range of members in a sorted set, by score, with scores ordered from high to low
    */
   def zrevrangebyscore(key0: Object, max1: Object, min2: Object, withscores3: Object, offset_or_count4: Object): Future[MultiBulkReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += key0
-    arguments += max1
-    arguments += min2
-    arguments += withscores3
-    arguments += offset_or_count4
-    service(new Command(RedisClient.ZREVRANGEBYSCORE_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](5)
+    arguments(0) = key0
+    arguments(1) = max1
+    arguments(2) = min2
+    arguments(3) = withscores3
+    arguments(4) = offset_or_count4
+    service(new Command(RedisClient.ZREVRANGEBYSCORE_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: MultiBulkReply => reply
       case other => throw new RedisException("Unexpected reply from ZREVRANGEBYSCORE: " + other)
     }
   }
-
+  
   /**
    * Determine the index of a member in a sorted set, with scores ordered from high to low
    */
@@ -2012,7 +2006,7 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from ZREVRANK: " + other)
     }
   }
-
+  
   /**
    * Get the score associated with the given member in a sorted set
    */
@@ -2023,16 +2017,16 @@ class RedisClient(service: Service[Command, Reply[_]]) {
       case other => throw new RedisException("Unexpected reply from ZSCORE: " + other)
     }
   }
-
+  
   /**
    * Add multiple sorted sets and store the resulting sorted set in a new key
    */
   def zunionstore(destination0: Object, numkeys1: Object, key2: Object*): Future[IntegerReply] = {
-    var arguments = ArrayBuffer[Object]()
-    arguments += destination0
-    arguments += numkeys1
-    arguments = arguments ++ key2
-    service(new Command(RedisClient.ZUNIONSTORE_BYTES, arguments.toArray)) map {
+    val arguments = new Array[Object](2 + key2.length)
+    arguments(0) = destination0
+    arguments(1) = numkeys1
+    key2.copyToArray(arguments, 2)
+    service(new Command(RedisClient.ZUNIONSTORE_BYTES, arguments)) map {
       case error: ErrorReply => throw new RedisException(error.data())
       case reply: IntegerReply => reply
       case other => throw new RedisException("Unexpected reply from ZUNIONSTORE: " + other)

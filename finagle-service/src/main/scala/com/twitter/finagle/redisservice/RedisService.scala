@@ -15,7 +15,9 @@ class RedisService(redisProtocol: RedisProtocol) extends Service[Command, Reply[
       redisProtocol.sendAsync(request)
       futurePool {
         redisProtocol.receiveAsync() match {
-          case e: ErrorReply => throw new RuntimeException(e.data())
+          case e: ErrorReply => {
+            throw new RuntimeException(e.data())
+          }
           case r: Reply[Any] => r
           case o => throw new RuntimeException("Unexpected reply: " + o)
         }

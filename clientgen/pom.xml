@@ -19,8 +19,8 @@
   <dependencies>
     <dependency>
       <groupId>com.github.spullara.mustache.java</groupId>
-      <artifactId>builder</artifactId>
-      <version>0.6.2</version>
+      <artifactId>compiler</artifactId>
+      <version>0.8.3</version>
     </dependency>
 
     <dependency>

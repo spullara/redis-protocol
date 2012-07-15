@@ -1,11 +1,11 @@
 package redis.clientgen;
 
+import com.github.mustachejava.DefaultMustacheFactory;
+import com.github.mustachejava.Mustache;
+import com.github.mustachejava.MustacheException;
+import com.github.mustachejava.MustacheFactory;
 import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
-import com.sampullara.mustache.Mustache;
-import com.sampullara.mustache.MustacheBuilder;
-import com.sampullara.mustache.MustacheException;
-import com.sampullara.mustache.Scope;
 import org.codehaus.jackson.JsonFactory;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.JsonParser;
@@ -19,21 +19,10 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Generate client code for redis based on the protocol.
@@ -69,9 +58,17 @@ public class Main {
       System.exit(1);
     }
 
-    MustacheBuilder mb = new MustacheBuilder("templates/" + language + "client");
-    mb.setSuperclass(NoEncodingMustache.class.getName());
-    Mustache mustache = mb.parseFile(template + ".txt");
+    MustacheFactory mb = new DefaultMustacheFactory("templates/" + language + "client") {
+      @Override
+      public void encode(String value, Writer writer) {
+        try {
+          writer.write(value);
+        } catch (IOException e) {
+          throw new MustacheException();
+        }
+      }
+    };
+    Mustache mustache = mb.compile(template + ".txt");
 
     DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
     XPathFactory xpf = XPathFactory.newInstance();
@@ -122,11 +119,18 @@ public class Main {
         String version = commandNode.get("since").getTextValue();
         boolean hasOptional = false;
         boolean hasMultiple = false;
+
         boolean varargs() {
           return (hasMultiple || hasOptional);
         }
+
         boolean usearray = false;
         List<Object> arguments = new ArrayList<Object>();
+
+        int base_length() {
+          return arguments.size() - (hasMultiple ? 1 : 0);
+        }
+
         {
           JsonNode argumentArray = commandNode.get("arguments");
           if (argumentArray != null) {
@@ -163,11 +167,13 @@ public class Main {
                 }
                 final boolean finalFirst = first;
                 final int finalArgNum = argNum;
-                final boolean isMultiple = argumentNode.get("multiple") != null ;
+                final boolean isMultiple = argumentNode.get("multiple") != null;
                 final boolean isOptional = argumentNode.get("optional") != null;
                 if (isOptional) hasOptional = true;
                 if (isMultiple) hasMultiple = true;
+                final int finalArgNum1 = argNum;
                 arguments.add(new Object() {
+                  int arg_num = finalArgNum1;
                   boolean first = finalFirst;
                   boolean multiple = isMultiple;
                   String typename = "Object";
@@ -190,19 +196,12 @@ public class Main {
       });
     }
 
-    Scope ctx = new Scope();
+    Map ctx = new HashMap();
     ctx.put("commands", commands);
     File base = new File(dest, pkg.replace(".", "/"));
     base.mkdirs();
     Writer writer = new FileWriter(new File(base, "RedisClient." + language));
     mustache.execute(writer, ctx);
     writer.flush();
-  }
-
-  public static class NoEncodingMustache extends Mustache {
-    @Override
-    public String encode(String value) {
-      return value;
-    }
   }
 }
