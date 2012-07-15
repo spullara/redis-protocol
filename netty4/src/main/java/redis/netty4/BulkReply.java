@@ -1,22 +1,28 @@
 package redis.netty4;
 
 import com.google.common.base.Charsets;
+import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBuf;
-import redis.util.Encoding;
-
 import static redis.util.Encoding.numToBytes;
 
 public class BulkReply implements Reply<ByteBuf> {
+  public static final BulkReply NIL_REPLY = new BulkReply();
+
   public static final char MARKER = '$';
   private final ByteBuf bytes;
+  private final int capacity;
+
+  private BulkReply() {
+    bytes = null;
+    capacity = -1;
+  }
 
   public BulkReply(ByteBuf bytes) {
     this.bytes = bytes;
+    capacity = bytes.capacity();
   }
 
   @Override
@@ -42,9 +48,11 @@ public class BulkReply implements Reply<ByteBuf> {
   @Override
   public void write(ByteBuf os) throws IOException {
     os.writeByte(MARKER);
-    os.writeBytes(numToBytes(bytes.capacity(), true));
-    os.writeBytes(bytes);
-    os.writeBytes(CRLF);
+    os.writeBytes(numToBytes(capacity, true));
+    if (capacity > 0) {
+      os.writeBytes(bytes);
+      os.writeBytes(CRLF);
+    }
   }
 
   public String toString() {

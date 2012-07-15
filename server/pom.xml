@@ -19,6 +19,11 @@
       <version>0.3-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <groupId>com.github.spullara.redis</groupId>
+      <artifactId>protocol</artifactId>
+      <version>0.3-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>io.netty</groupId>
       <artifactId>netty</artifactId>
       <version>4.0.0.Alpha1</version>

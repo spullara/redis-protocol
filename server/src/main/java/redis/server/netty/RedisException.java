@@ -1,4 +1,4 @@
-package redis.server;
+package redis.server.netty;
 
 /**
  * Server exception

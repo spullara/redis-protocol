@@ -2,10 +2,7 @@ package redis.reply;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
-import redis.RedisProtocol;
-
-import static redis.RedisProtocol.toBytes;
+import java.nio.charset.Charset;
 
 /**
 * Created by IntelliJ IDEA.
@@ -17,9 +14,16 @@ import static redis.RedisProtocol.toBytes;
 public class StatusReply implements Reply<String> {
   public static final char MARKER = '+';
   private final String status;
+  private byte[] statusBytes;
 
   public StatusReply(String status) {
     this.status = status;
+    this.statusBytes = status.getBytes();
+  }
+
+  public StatusReply(byte[] statusBytes, Charset charset) {
+    this.status = new String(statusBytes, charset);
+    this.statusBytes = statusBytes;
   }
 
   @Override
@@ -30,7 +34,7 @@ public class StatusReply implements Reply<String> {
   @Override
   public void write(OutputStream os) throws IOException {
     os.write(MARKER);
-    os.write(status.getBytes());
+    os.write(statusBytes);
     os.write(CRLF);
   }
 }

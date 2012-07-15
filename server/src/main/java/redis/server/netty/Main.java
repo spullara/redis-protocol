@@ -1,11 +1,9 @@
-package redis.server;
+package redis.server.netty;
 
 import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
+import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioEventLoop;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
@@ -25,6 +23,10 @@ public class Main {
       System.exit(1);
     }
 
+    // Only execute the command handler in a single thread
+    final EventExecutor ee = new DefaultEventExecutor(1);
+    final RedisCommandHandler commandHandler = new RedisCommandHandler(new SimpleRedisServer());
+
     // Configure the server.
     ServerBootstrap b = new ServerBootstrap();
     try {
@@ -36,7 +38,9 @@ public class Main {
          .childHandler(new ChannelInitializer<SocketChannel>() {
              @Override
              public void initChannel(SocketChannel ch) throws Exception {
-                 ch.pipeline().addLast(new RedisCommandDecoder(), new RedisCommandHandler());
+               ChannelPipeline p = ch.pipeline();
+               p.addLast(new RedisCommandDecoder());
+               p.addLast(ee, commandHandler);
              }
          });
 

@@ -1,10 +1,9 @@
-package redis;
-
-import java.io.IOException;
+package redis.netty4;
 
 import com.google.common.base.Charsets;
-
 import io.netty.buffer.ByteBuf;
+
+import java.io.IOException;
 
 import static redis.util.Encoding.numToBytes;
 
@@ -56,6 +55,46 @@ public class Command {
     this.object3 = object3;
     this.objects = objects;
   }
+
+  public byte[] getName() {
+    // It is either the name or the first objects in the objects array
+    if (name != null) return getBytes(name);
+    return getBytes(objects[0]);
+  }
+
+  private byte[] getBytes(Object object) {
+    byte[] argument;
+    if (object == null) {
+      argument = EMPTY_BYTES;
+    } else if (object instanceof byte[]) {
+      argument = (byte[]) object;
+    } else if (object instanceof ByteBuf) {
+      argument = ((ByteBuf) object).array();
+    } else if (object instanceof String) {
+      argument = ((String) object).getBytes(Charsets.UTF_8);
+    } else {
+      argument = object.toString().getBytes(Charsets.UTF_8);
+    }
+    return argument;
+  }
+
+  public void toArguments(Object[] arguments, Class<?>[] types) {
+    int position = 0;
+    for (Class<?> type : types) {
+      if (type == byte[].class) {
+        arguments[position] = objects[1 + position];
+      } else {
+        int left = objects.length - position - 1;
+        byte[][] lastArgument = new byte[left][];
+        for (int i = 0; i < left; i++) {
+          lastArgument[i] = (byte[]) objects[i + position + 1];
+        }
+        arguments[position] = lastArgument;
+      }
+      position++;
+    }
+  }
+
 
   public void write(ByteBuf os) throws IOException {
     writeDirect(os, name, object1, object2, object3, objects);

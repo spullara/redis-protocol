@@ -12,7 +12,6 @@ import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioEventLoop;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import redis.Command;
 
 import static redis.util.Encoding.numToBytes;
 

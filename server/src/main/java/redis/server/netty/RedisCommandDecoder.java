@@ -1,10 +1,10 @@
-package redis.server;
+package redis.server.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufIndexFinder;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
-import redis.Command;
+import redis.netty4.Command;
 
 import java.io.IOException;
 
@@ -37,7 +37,12 @@ public class RedisCommandDecoder extends ReplayingDecoder<Command, Void> {
           throw new IOException("Unexpected character");
         }
       }
-      return new Command(bytes);
+      try {
+        return new Command(bytes);
+      } finally {
+        bytes = null;
+        arguments = 0;
+      }
     }
     if (in.readByte() == '*') {
       int numArgs = readInteger(in);

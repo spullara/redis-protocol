@@ -1,4 +1,4 @@
-package redis.server;
+package redis.server.netty;
 
 import redis.netty4.BulkReply;
 import redis.netty4.IntegerReply;

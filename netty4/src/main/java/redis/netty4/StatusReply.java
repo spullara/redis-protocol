@@ -1,17 +1,19 @@
 package redis.netty4;
 
-import java.io.IOException;
-
 import com.google.common.base.Charsets;
-
 import io.netty.buffer.ByteBuf;
+
+import java.io.IOException;
 
 public class StatusReply implements Reply<String> {
   public static final char MARKER = '+';
+  public static final StatusReply OK = new StatusReply("OK");
   private final String status;
+  private final byte[] statusBytes;
 
   public StatusReply(String status) {
     this.status = status;
+    this.statusBytes = status.getBytes(Charsets.UTF_8);
   }
 
   @Override
@@ -22,7 +24,7 @@ public class StatusReply implements Reply<String> {
   @Override
   public void write(ByteBuf os) throws IOException {
     os.writeByte(MARKER);
-    os.writeBytes(status.getBytes(Charsets.UTF_8));
+    os.writeBytes(statusBytes);
     os.writeBytes(CRLF);
   }
 
