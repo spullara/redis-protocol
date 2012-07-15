@@ -32,7 +32,7 @@ public class RedisClient {
     final SocketChannel ch = new NioSocketChannel();
     new NioEventLoop().register(ch);
     final long start = System.currentTimeMillis();
-    ch.pipeline().addLast(new RedisEncoder(), new RedisDecoder(),
+    ch.pipeline().addLast(new RedisCommandEncoder(), new RedisReplyDecoder(),
             new ChannelInboundMessageHandlerAdapter<Reply<?>>() {
               @Override
               public void messageReceived(ChannelHandlerContext channelHandlerContext, Reply<?> reply) throws Exception {

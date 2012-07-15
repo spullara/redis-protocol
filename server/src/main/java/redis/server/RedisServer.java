@@ -1,10 +1,10 @@
 package redis.server;
 
-import redis.reply.BulkReply;
-import redis.reply.IntegerReply;
-import redis.reply.MultiBulkReply;
-import redis.reply.Reply;
-import redis.reply.StatusReply;
+import redis.netty4.BulkReply;
+import redis.netty4.IntegerReply;
+import redis.netty4.MultiBulkReply;
+import redis.netty4.Reply;
+import redis.netty4.StatusReply;
 
 public interface RedisServer {
 

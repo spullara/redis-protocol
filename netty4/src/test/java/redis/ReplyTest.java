@@ -7,13 +7,8 @@ import com.google.common.base.Charsets;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.junit.Test;
-import redis.netty4.Reply;
-import redis.netty4.RedisDecoder;
-import redis.netty4.BulkReply;
-import redis.netty4.ErrorReply;
-import redis.netty4.IntegerReply;
-import redis.netty4.MultiBulkReply;
-import redis.netty4.StatusReply;
+import redis.netty4.*;
+import redis.netty4.RedisReplyDecoder;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -26,7 +21,7 @@ public class ReplyTest {
   public void testReadWrite() throws IOException {
     ByteBuf os;
     Reply receive;
-    RedisDecoder redisDecoder = new RedisDecoder();
+    RedisReplyDecoder redisDecoder = new RedisReplyDecoder();
     {
       os = Unpooled.dynamicBuffer();
       String message = "OK";

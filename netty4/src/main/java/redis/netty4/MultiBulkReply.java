@@ -1,8 +1,6 @@
 package redis.netty4;
 
 import io.netty.buffer.ByteBuf;
-import redis.Command;
-import redis.util.Encoding;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -27,8 +25,8 @@ public class MultiBulkReply implements Reply<Reply[]> {
   private final int size;
   private int index = 0;
 
-  public MultiBulkReply(RedisDecoder rd, ByteBuf is) throws IOException {
-    size = RedisDecoder.readInteger(is);
+  public MultiBulkReply(RedisReplyDecoder rd, ByteBuf is) throws IOException {
+    size = Decoders.readInteger(is);
     if (size == -1) {
       replies = null;
     } else {
@@ -40,7 +38,7 @@ public class MultiBulkReply implements Reply<Reply[]> {
     }
   }
 
-  public void read(RedisDecoder rd, ByteBuf is) throws IOException {
+  public void read(RedisReplyDecoder rd, ByteBuf is) throws IOException {
     for (int i = index; i < size; i++) {
       replies[i] = rd.receive(is);
       index = i + 1;

@@ -10,7 +10,7 @@ import io.netty.buffer.Unpooled;
 import org.junit.Test;
 import redis.netty4.BulkReply;
 import redis.netty4.MultiBulkReply;
-import redis.netty4.RedisDecoder;
+import redis.netty4.RedisReplyDecoder;
 import redis.netty4.Reply;
 
 import static junit.framework.Assert.assertEquals;
@@ -72,7 +72,7 @@ public class CommandTest {
     }
     byte[] multiBulkReply = baos.toByteArray();
     long start = System.currentTimeMillis();
-    RedisDecoder redisDecoder = new RedisDecoder();
+    RedisReplyDecoder redisDecoder = new RedisReplyDecoder();
     ByteBuf cb = Unpooled.wrappedBuffer(multiBulkReply);
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 100000; j++) {
