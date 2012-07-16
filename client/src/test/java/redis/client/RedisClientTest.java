@@ -31,7 +31,7 @@ import static redis.util.Encoding.numToBytes;
 public class RedisClientTest {
 
   private static final byte[] VALUE = "value".getBytes(Charsets.UTF_8);
-  private static final long CALLS = 1000000l;
+  private static final long CALLS = 100000l;
 
   @Test
   public void testIt() throws IOException, ExecutionException, InterruptedException {

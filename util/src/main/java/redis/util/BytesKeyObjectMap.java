@@ -13,12 +13,12 @@ public class BytesKeyObjectMap<V> extends HashMap<Object, V> {
   }
 
   @Override
-  public V get(Object key) {
-    return super.get(makeKey(key));
+  public V get(Object o) {
+    return get(makeKey(o));
   }
 
-  public V get(byte[] key) {
-    return super.get(new BytesKey(key));
+  public V get(byte[] bytes) {
+    return get(new BytesKey(bytes));
   }
 
   public V get(BytesKey key) {
@@ -26,12 +26,12 @@ public class BytesKeyObjectMap<V> extends HashMap<Object, V> {
   }
 
   @Override
-  public boolean containsKey(Object key) {
-    return super.containsKey(makeKey(key));
+  public boolean containsKey(Object o) {
+    return containsKey(makeKey(o));
   }
 
-  public boolean containsKey(byte[] key) {
-    return super.containsKey(new BytesKey(key));
+  public boolean containsKey(byte[] bytes) {
+    return containsKey(new BytesKey(bytes));
   }
 
   public boolean containsKey(BytesKey key) {
@@ -39,12 +39,12 @@ public class BytesKeyObjectMap<V> extends HashMap<Object, V> {
   }
 
   @Override
-  public V put(Object key, V value) {
-    return super.put(makeKey(key), value);
+  public V put(Object o, V value) {
+    return put(makeKey(o), value);
   }
 
-  public V put(byte[] key, V value) {
-    return super.put(new BytesKey(key), value);
+  public V put(byte[] bytes, V value) {
+    return put(new BytesKey(bytes), value);
   }
 
   public V put(BytesKey key, V value) {
@@ -52,12 +52,12 @@ public class BytesKeyObjectMap<V> extends HashMap<Object, V> {
   }
 
   @Override
-  public V remove(Object key) {
-    return super.remove(makeKey(key));
+  public V remove(Object o) {
+    return remove(makeKey(o));
   }
 
-  public V remove(byte[] key) {
-    return super.remove(new BytesKey(key));
+  public V remove(byte[] bytes) {
+    return remove(new BytesKey(bytes));
   }
 
   public V remove(BytesKey key) {

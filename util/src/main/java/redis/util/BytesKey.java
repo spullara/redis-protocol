@@ -36,8 +36,8 @@ public class BytesKey implements Comparable<BytesKey> {
       return false;
     }
     int half = length / 2;
-    for (int i = 0; i < i; i++) {
-      int end = length - i;
+    for (int i = 0; i < half; i++) {
+      int end = length - i - 1;
       if (thisBytes[end] != otherBytes[end]) return false;
       if (thisBytes[i] != otherBytes[i]) return false;
     }

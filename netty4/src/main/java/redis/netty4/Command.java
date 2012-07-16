@@ -23,43 +23,53 @@ public class Command {
   private final Object object1;
   private final Object object2;
   private final Object object3;
+  private final boolean inline;
 
   public Command(Object[] objects) {
-    this(null, null, null, null, objects);
+    this(null, null, null, null, objects, false);
+  }
+
+  public Command(Object[] objects, boolean inline) {
+    this(null, null, null, null, objects, inline);
   }
 
   public Command(Object name) {
-    this(name, null, null, null, null);
+    this(name, null, null, null, null, false);
   }
 
   public Command(Object name, Object[] objects) {
-    this(name, null, null, null, objects);
+    this(name, null, null, null, objects, false);
   }
 
   public Command(Object name, Object object1) {
-    this(name, object1, null, null, null);
+    this(name, object1, null, null, null, false);
   }
 
   public Command(Object name, Object object1, Object object2) {
-    this(name, object1, object2, null, null);
+    this(name, object1, object2, null, null, false);
   }
 
   public Command(Object name, Object object1, Object object2, Object object3) {
-    this(name, object1, object2, object3, null);
+    this(name, object1, object2, object3, null, false);
   }
 
-  private Command(Object name, Object object1, Object object2, Object object3, Object[] objects) {
+  private Command(Object name, Object object1, Object object2, Object object3, Object[] objects, boolean inline) {
     this.name = name;
     this.object1 = object1;
     this.object2 = object2;
     this.object3 = object3;
     this.objects = objects;
+    this.inline = inline;
   }
 
   public byte[] getName() {
     // It is either the name or the first objects in the objects array
     if (name != null) return getBytes(name);
     return getBytes(objects[0]);
+  }
+
+  public boolean isInline() {
+    return inline;
   }
 
   private byte[] getBytes(Object object) {

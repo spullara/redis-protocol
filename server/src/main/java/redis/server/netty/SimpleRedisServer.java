@@ -20,6 +20,7 @@ import static redis.util.Encoding.numToBytes;
  */
 public class SimpleRedisServer implements RedisServer {
 
+  private long started = System.currentTimeMillis();
   private BytesKeyObjectMap<Object> data = new BytesKeyObjectMap<Object>();
 
   @Override
@@ -356,7 +357,11 @@ public class SimpleRedisServer implements RedisServer {
 
   @Override
   public BulkReply info() throws RedisException {
-    return null;
+    StringBuilder sb = new StringBuilder();
+    sb.append("redis_version:2.4.0\n");
+    sb.append("keys:").append(data.size()).append("\n");
+    sb.append("uptime:").append(System.currentTimeMillis() - started).append("\n");
+    return new BulkReply(sb.toString().getBytes());
   }
 
   @Override

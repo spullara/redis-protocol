@@ -1,12 +1,12 @@
 package redis.server.netty;
 
+import java.io.IOException;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufIndexFinder;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
 import redis.netty4.Command;
-
-import java.io.IOException;
 
 import static redis.netty4.Decoders.readInteger;
 
@@ -55,10 +55,11 @@ public class RedisCommandDecoder extends ReplayingDecoder<Command, Void> {
     } else {
       // Go backwards one
       in.readerIndex(in.readerIndex() - 1);
-      // Read command
-      bytes = new byte[1][];
-      bytes[0] = in.readBytes(in.bytesBefore(ByteBufIndexFinder.CRLF)).array();
-      return new Command(bytes);
+      // Read command -- can't be interupted
+      byte[][] b = new byte[1][];
+      b[0] = in.readBytes(in.bytesBefore(ByteBufIndexFinder.CRLF)).array();
+      in.skipBytes(2);
+      return new Command(b, true);
     }
   }
 }
