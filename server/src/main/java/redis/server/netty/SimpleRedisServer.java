@@ -405,7 +405,17 @@ public class SimpleRedisServer implements RedisServer {
 
   @Override
   public MultiBulkReply mget(byte[][] key0) throws RedisException {
-    return null;
+    int length = key0.length;
+    Reply[] replies = new Reply[length];
+    for (int i = 0; i < length; i++) {
+      Object o = data.get(key0[i]);
+      if (o instanceof byte[]) {
+        replies[i] = new BulkReply((byte[]) o);
+      } else {
+        replies[i] = NIL_REPLY;
+      }
+    }
+    return new MultiBulkReply(replies);
   }
 
   @Override
@@ -425,7 +435,14 @@ public class SimpleRedisServer implements RedisServer {
 
   @Override
   public StatusReply mset(byte[][] key_or_value0) throws RedisException {
-    return null;
+    int length = key_or_value0.length;
+    if (length % 2 != 0) {
+      throw new RedisException("wrong number of arguments for MSET");
+    }
+    for (int i = 0; i < length; i += 2) {
+      data.put(key_or_value0[i], key_or_value0[i + 1]);
+    }
+    return OK;
   }
 
   @Override
@@ -455,7 +472,7 @@ public class SimpleRedisServer implements RedisServer {
 
   @Override
   public StatusReply ping() throws RedisException {
-    return null;
+    return new StatusReply("PONG");
   }
 
   @Override
@@ -570,14 +587,8 @@ public class SimpleRedisServer implements RedisServer {
 
   @Override
   public StatusReply set(byte[] key0, byte[] value1) throws RedisException {
-    Object put = data.put(key0, value1);
-    if (put == null || put instanceof byte[]) {
-      return OK;
-    } else {
-      // Put it back
-      data.put(key0, put);
-      throw invalidValue();
-    }
+    data.put(key0, value1);
+    return OK;
   }
 
   private RedisException invalidValue() {

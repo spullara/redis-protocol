@@ -6,10 +6,10 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>clientgen</artifactId>
+  <artifactId>redisgen</artifactId>
   <packaging>jar</packaging>
 
-  <name>clientgen</name>
+  <name>redisgen</name>
   <url>http://maven.apache.org</url>
 
   <properties>
