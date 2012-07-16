@@ -15,6 +15,8 @@ import static redis.util.Encoding.numToBytes;
 */
 public class IntegerReply implements Reply<Long> {
   public static final char MARKER = ':';
+  public static final IntegerReply ZERO_REPLY = new IntegerReply(0);
+  public static final IntegerReply ONE_REPLY = new IntegerReply(1);
   private final long integer;
 
   public IntegerReply(long integer) {

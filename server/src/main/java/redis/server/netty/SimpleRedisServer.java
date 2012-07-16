@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static redis.netty4.BulkReply.*;
+import static redis.netty4.IntegerReply.ONE_REPLY;
+import static redis.netty4.IntegerReply.ZERO_REPLY;
+import static redis.netty4.StatusReply.OK;
 
 /**
  * Uses java.util.*
@@ -176,27 +179,53 @@ public class SimpleRedisServer implements RedisServer {
 
   @Override
   public BulkReply getset(byte[] key0, byte[] value1) throws RedisException {
-    return null;
+    BytesKey key = new BytesKey(key0);
+    Object put = redis.put(key, value1);
+    if (put == null || put instanceof byte[]) {
+      return put == null ? NIL_REPLY : new BulkReply((byte[]) put);
+    } else {
+      // Put it back
+      redis.put(key, put);
+      throw invalidValue();
+    }
   }
 
   @Override
   public IntegerReply hdel(byte[] key0, byte[][] field1) throws RedisException {
-    return null;
+    HashMap<BytesKey, byte[]> hash = getHash(key0, false);
+    int total = 0;
+    for (byte[] hkey : field1) {
+      total += hash.remove(new BytesKey(hkey)) == null ? 0 : 1;
+    }
+    return new IntegerReply(total);
   }
 
   @Override
   public IntegerReply hexists(byte[] key0, byte[] field1) throws RedisException {
-    return null;
+    return getHash(key0, false).get(new BytesKey(field1)) == null ? ZERO_REPLY : ONE_REPLY;
   }
 
   @Override
   public BulkReply hget(byte[] key0, byte[] field1) throws RedisException {
-    return null;
+    byte[] bytes = getHash(key0, false).get(new BytesKey(field1));
+    if (bytes == null) {
+      return NIL_REPLY;
+    } else {
+      return new BulkReply(bytes);
+    }
   }
 
   @Override
   public MultiBulkReply hgetall(byte[] key0) throws RedisException {
-    return null;
+    HashMap<BytesKey, byte[]> hash = getHash(key0, false);
+    int size = hash.size();
+    Reply[] replies = new Reply[size * 2];
+    int i = 0;
+    for (Map.Entry<BytesKey, byte[]> entry : hash.entrySet()) {
+      replies[i++] = new BulkReply(entry.getKey().getBytes());
+      replies[i++] = new BulkReply(entry.getValue());
+    }
+    return new MultiBulkReply(replies);
   }
 
   @Override
@@ -211,27 +240,71 @@ public class SimpleRedisServer implements RedisServer {
 
   @Override
   public MultiBulkReply hkeys(byte[] key0) throws RedisException {
-    return null;
+    HashMap<BytesKey, byte[]> hash = getHash(key0, false);
+    int size = hash.size();
+    Reply[] replies = new Reply[size];
+    int i = 0;
+    for (BytesKey hkey : hash.keySet()) {
+      replies[i++] = new BulkReply(hkey.getBytes());
+    }
+    return new MultiBulkReply(replies);
   }
 
   @Override
   public IntegerReply hlen(byte[] key0) throws RedisException {
-    return null;
+    HashMap<BytesKey, byte[]> hash = getHash(key0, false);
+    return new IntegerReply(hash.size());
   }
 
   @Override
   public MultiBulkReply hmget(byte[] key0, byte[][] field1) throws RedisException {
-    return null;
+    HashMap<BytesKey, byte[]> hash = getHash(key0, false);
+    int length = field1.length;
+    Reply[] replies = new Reply[length];
+    for (int i = 0; i < length; i++) {
+      byte[] bytes = hash.get(new BytesKey(field1[i]));
+      if (bytes == null) {
+        replies[i] = NIL_REPLY;
+      } else {
+        replies[i] = new BulkReply(bytes);
+      }
+    }
+    return new MultiBulkReply(replies);
   }
 
   @Override
   public StatusReply hmset(byte[] key0, byte[][] field_or_value1) throws RedisException {
-    return null;
+    HashMap<BytesKey, byte[]> hash = getHash(key0, true);
+    if (field_or_value1.length % 2 != 0) {
+      throw new RedisException("wrong number of arguments for HMSET");
+    }
+    for (int i = 0; i < field_or_value1.length; i+=2) {
+      hash.put(new BytesKey(field_or_value1[i]), field_or_value1[i + 1]);
+    }
+    return OK;
   }
 
   @Override
   public IntegerReply hset(byte[] key0, byte[] field1, byte[] value2) throws RedisException {
-    return null;
+    HashMap<BytesKey, byte[]> hash = getHash(key0, true);
+    Object put = hash.put(new BytesKey(field1), value2);
+    return put == null ? ONE_REPLY : ZERO_REPLY;
+  }
+
+  @SuppressWarnings("unchecked")
+  private HashMap<BytesKey, byte[]> getHash(byte[] key0, boolean create) throws RedisException {
+    BytesKey key = new BytesKey(key0);
+    Object o = redis.get(key);
+    if (o == null) {
+      o = new HashMap<BytesKey, byte[]>();
+      if (create) {
+        redis.put(key, o);
+      }
+    }
+    if (!(o instanceof HashMap)) {
+      throw invalidValue();
+    }
+    return (HashMap<BytesKey, byte[]>) o;
   }
 
   @Override
@@ -241,7 +314,14 @@ public class SimpleRedisServer implements RedisServer {
 
   @Override
   public MultiBulkReply hvals(byte[] key0) throws RedisException {
-    return null;
+    HashMap<BytesKey, byte[]> hash = getHash(key0, false);
+    int size = hash.size();
+    Reply[] replies = new Reply[size];
+    int i = 0;
+    for (byte[] hvalue : hash.values()) {
+      replies[i++] = new BulkReply(hvalue);
+    }
+    return new MultiBulkReply(replies);
   }
 
   @Override
@@ -491,10 +571,13 @@ public class SimpleRedisServer implements RedisServer {
 
   @Override
   public StatusReply set(byte[] key0, byte[] value1) throws RedisException {
-    Object put = redis.put(new BytesKey(key0), value1);
+    BytesKey key = new BytesKey(key0);
+    Object put = redis.put(key, value1);
     if (put == null || put instanceof byte[]) {
-      return StatusReply.OK;
+      return OK;
     } else {
+      // Put it back
+      redis.put(key, put);
       throw invalidValue();
     }
   }

@@ -2,6 +2,7 @@ package redis.netty4;
 
 import com.google.common.base.Charsets;
 import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -18,6 +19,11 @@ public class BulkReply implements Reply<ByteBuf> {
   private BulkReply() {
     bytes = null;
     capacity = -1;
+  }
+
+  public BulkReply(byte[] bytes) {
+    this.bytes = Unpooled.wrappedBuffer(bytes);
+    capacity = bytes.length;
   }
 
   public BulkReply(ByteBuf bytes) {
