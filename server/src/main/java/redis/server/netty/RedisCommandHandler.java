@@ -42,7 +42,7 @@ public class RedisCommandHandler extends ChannelInboundMessageHandlerAdapter<Com
           } catch (IllegalAccessException e) {
             throw new RedisException("Invalid server implementation");
           } catch (InvocationTargetException e) {
-            return new ErrorReply(e.getTargetException().getMessage());
+            return new ErrorReply("ERR " + e.getTargetException().getMessage());
           }
         }
       });

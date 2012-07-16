@@ -3,6 +3,7 @@ package redis.server.netty;
 import redis.netty4.*;
 import redis.util.BytesKey;
 import redis.util.BytesKeyObjectMap;
+import redis.util.Encoding;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +12,8 @@ import static redis.netty4.BulkReply.NIL_REPLY;
 import static redis.netty4.IntegerReply.ONE_REPLY;
 import static redis.netty4.IntegerReply.ZERO_REPLY;
 import static redis.netty4.StatusReply.OK;
+import static redis.util.Encoding.bytesToNum;
+import static redis.util.Encoding.numToBytes;
 
 /**
  * Uses java.util.*
@@ -324,8 +327,21 @@ public class SimpleRedisServer implements RedisServer {
 
   @Override
   public IntegerReply incr(byte[] key0) throws RedisException {
-
-    return null;
+    Object o = data.get(key0);
+    if (o == null) {
+      data.put(key0, new byte[] { '1' });
+      return ONE_REPLY;
+    } else if (o instanceof byte[]) {
+      try {
+        long integer = bytesToNum((byte[]) o) + 1;
+        data.put(key0, numToBytes(integer, false));
+        return new IntegerReply(integer);
+      } catch (IllegalArgumentException e) {
+        throw new RedisException(e.getMessage());
+      }
+    } else {
+      throw invalidValue();
+    }
   }
 
   @Override
