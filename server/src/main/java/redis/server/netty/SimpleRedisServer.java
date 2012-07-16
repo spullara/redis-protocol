@@ -1,13 +1,13 @@
 package redis.server.netty;
 
-import io.netty.buffer.Unpooled;
 import redis.netty4.*;
 import redis.util.BytesKey;
+import redis.util.BytesKeyObjectMap;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static redis.netty4.BulkReply.*;
+import static redis.netty4.BulkReply.NIL_REPLY;
 import static redis.netty4.IntegerReply.ONE_REPLY;
 import static redis.netty4.IntegerReply.ZERO_REPLY;
 import static redis.netty4.StatusReply.OK;
@@ -17,7 +17,7 @@ import static redis.netty4.StatusReply.OK;
  */
 public class SimpleRedisServer implements RedisServer {
 
-  private Map<BytesKey, Object> redis = new HashMap<BytesKey, Object>();
+  private BytesKeyObjectMap<Object> data = new BytesKeyObjectMap<Object>();
 
   @Override
   public IntegerReply append(byte[] key0, byte[] value1) throws RedisException {
@@ -156,9 +156,9 @@ public class SimpleRedisServer implements RedisServer {
 
   @Override
   public BulkReply get(byte[] key0) throws RedisException {
-    Object o = redis.get(new BytesKey(key0));
+    Object o = data.get(key0);
     if (o instanceof byte[]) {
-      return new BulkReply(Unpooled.wrappedBuffer((byte[]) o));
+      return new BulkReply((byte[]) o);
     }
     if (o == null) {
       return NIL_REPLY;
@@ -179,20 +179,19 @@ public class SimpleRedisServer implements RedisServer {
 
   @Override
   public BulkReply getset(byte[] key0, byte[] value1) throws RedisException {
-    BytesKey key = new BytesKey(key0);
-    Object put = redis.put(key, value1);
+    Object put = data.put(key0, value1);
     if (put == null || put instanceof byte[]) {
       return put == null ? NIL_REPLY : new BulkReply((byte[]) put);
     } else {
       // Put it back
-      redis.put(key, put);
+      data.put(key0, put);
       throw invalidValue();
     }
   }
 
   @Override
   public IntegerReply hdel(byte[] key0, byte[][] field1) throws RedisException {
-    HashMap<BytesKey, byte[]> hash = getHash(key0, false);
+    BytesKeyObjectMap<byte[]> hash = getHash(key0, false);
     int total = 0;
     for (byte[] hkey : field1) {
       total += hash.remove(new BytesKey(hkey)) == null ? 0 : 1;
@@ -217,12 +216,12 @@ public class SimpleRedisServer implements RedisServer {
 
   @Override
   public MultiBulkReply hgetall(byte[] key0) throws RedisException {
-    HashMap<BytesKey, byte[]> hash = getHash(key0, false);
+    BytesKeyObjectMap<byte[]> hash = getHash(key0, false);
     int size = hash.size();
     Reply[] replies = new Reply[size * 2];
     int i = 0;
-    for (Map.Entry<BytesKey, byte[]> entry : hash.entrySet()) {
-      replies[i++] = new BulkReply(entry.getKey().getBytes());
+    for (Map.Entry<Object, byte[]> entry : hash.entrySet()) {
+      replies[i++] = new BulkReply(((BytesKey)entry.getKey()).getBytes());
       replies[i++] = new BulkReply(entry.getValue());
     }
     return new MultiBulkReply(replies);
@@ -240,25 +239,25 @@ public class SimpleRedisServer implements RedisServer {
 
   @Override
   public MultiBulkReply hkeys(byte[] key0) throws RedisException {
-    HashMap<BytesKey, byte[]> hash = getHash(key0, false);
+    BytesKeyObjectMap<byte[]> hash = getHash(key0, false);
     int size = hash.size();
     Reply[] replies = new Reply[size];
     int i = 0;
-    for (BytesKey hkey : hash.keySet()) {
-      replies[i++] = new BulkReply(hkey.getBytes());
+    for (Object hkey : hash.keySet()) {
+      replies[i++] = new BulkReply(((BytesKey)hkey).getBytes());
     }
     return new MultiBulkReply(replies);
   }
 
   @Override
   public IntegerReply hlen(byte[] key0) throws RedisException {
-    HashMap<BytesKey, byte[]> hash = getHash(key0, false);
+    BytesKeyObjectMap<byte[]> hash = getHash(key0, false);
     return new IntegerReply(hash.size());
   }
 
   @Override
   public MultiBulkReply hmget(byte[] key0, byte[][] field1) throws RedisException {
-    HashMap<BytesKey, byte[]> hash = getHash(key0, false);
+    BytesKeyObjectMap<byte[]> hash = getHash(key0, false);
     int length = field1.length;
     Reply[] replies = new Reply[length];
     for (int i = 0; i < length; i++) {
@@ -274,7 +273,7 @@ public class SimpleRedisServer implements RedisServer {
 
   @Override
   public StatusReply hmset(byte[] key0, byte[][] field_or_value1) throws RedisException {
-    HashMap<BytesKey, byte[]> hash = getHash(key0, true);
+    BytesKeyObjectMap<byte[]> hash = getHash(key0, true);
     if (field_or_value1.length % 2 != 0) {
       throw new RedisException("wrong number of arguments for HMSET");
     }
@@ -286,25 +285,24 @@ public class SimpleRedisServer implements RedisServer {
 
   @Override
   public IntegerReply hset(byte[] key0, byte[] field1, byte[] value2) throws RedisException {
-    HashMap<BytesKey, byte[]> hash = getHash(key0, true);
+    BytesKeyObjectMap<byte[]> hash = getHash(key0, true);
     Object put = hash.put(new BytesKey(field1), value2);
     return put == null ? ONE_REPLY : ZERO_REPLY;
   }
 
   @SuppressWarnings("unchecked")
-  private HashMap<BytesKey, byte[]> getHash(byte[] key0, boolean create) throws RedisException {
-    BytesKey key = new BytesKey(key0);
-    Object o = redis.get(key);
+  private BytesKeyObjectMap<byte[]> getHash(byte[] key0, boolean create) throws RedisException {
+    Object o = data.get(key0);
     if (o == null) {
-      o = new HashMap<BytesKey, byte[]>();
+      o = new BytesKeyObjectMap();
       if (create) {
-        redis.put(key, o);
+        data.put(key0, o);
       }
     }
     if (!(o instanceof HashMap)) {
       throw invalidValue();
     }
-    return (HashMap<BytesKey, byte[]>) o;
+    return (BytesKeyObjectMap<byte[]>) o;
   }
 
   @Override
@@ -314,7 +312,7 @@ public class SimpleRedisServer implements RedisServer {
 
   @Override
   public MultiBulkReply hvals(byte[] key0) throws RedisException {
-    HashMap<BytesKey, byte[]> hash = getHash(key0, false);
+    BytesKeyObjectMap<byte[]> hash = getHash(key0, false);
     int size = hash.size();
     Reply[] replies = new Reply[size];
     int i = 0;
@@ -326,6 +324,7 @@ public class SimpleRedisServer implements RedisServer {
 
   @Override
   public IntegerReply incr(byte[] key0) throws RedisException {
+
     return null;
   }
 
@@ -571,13 +570,12 @@ public class SimpleRedisServer implements RedisServer {
 
   @Override
   public StatusReply set(byte[] key0, byte[] value1) throws RedisException {
-    BytesKey key = new BytesKey(key0);
-    Object put = redis.put(key, value1);
+    Object put = data.put(key0, value1);
     if (put == null || put instanceof byte[]) {
       return OK;
     } else {
       // Put it back
-      redis.put(key, put);
+      data.put(key0, put);
       throw invalidValue();
     }
   }
@@ -790,4 +788,5 @@ public class SimpleRedisServer implements RedisServer {
   public IntegerReply zunionstore(byte[] destination0, byte[] numkeys1, byte[][] key2) throws RedisException {
     return null;
   }
+
 }
