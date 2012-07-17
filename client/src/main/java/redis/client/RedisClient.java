@@ -37,8 +37,8 @@ public class RedisClient extends RedisClientBase {
   private static final int APPEND_VERSION = parseVersion("2.0.0");
 
   /**
-   * String
    * Append a value to a key
+   * String
    *
    * @param key0
    * @param value1
@@ -46,7 +46,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply append(Object key0, Object value1) throws RedisException {
     if (version < APPEND_VERSION) throw new RedisException("Server does not support APPEND");
-    return (ListenableFuture<IntegerReply>) pipeline(APPEND, new Command(APPEND_BYTES, key0, value1));
+    return (IntegerReply) execute(APPEND, new Command(APPEND_BYTES, key0, value1));
   }
   
   private static final String BITCOUNT = "BITCOUNT";
@@ -54,8 +54,8 @@ public class RedisClient extends RedisClientBase {
   private static final int BITCOUNT_VERSION = parseVersion("2.6.0");
 
   /**
-   * String
    * Count set bits in a string
+   * String
    *
    * @param key0
    * @param start1
@@ -64,13 +64,13 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply bitcount(Object key0, Object start1, Object end2) throws RedisException {
     if (version < BITCOUNT_VERSION) throw new RedisException("Server does not support BITCOUNT");
-    return (ListenableFuture<IntegerReply>) pipeline(BITCOUNT, new Command(BITCOUNT_BYTES, key0, start1, end2));
+    return (IntegerReply) execute(BITCOUNT, new Command(BITCOUNT_BYTES, key0, start1, end2));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> bitcount_(Object... arguments) throws RedisException {
+  public IntegerReply bitcount_(Object... arguments) throws RedisException {
     if (version < BITCOUNT_VERSION) throw new RedisException("Server does not support BITCOUNT");
-    return (ListenableFuture<IntegerReply>) pipeline(BITCOUNT, new Command(BITCOUNT_BYTES, arguments));
+    return (IntegerReply) execute(BITCOUNT, new Command(BITCOUNT_BYTES, arguments));
   }
   
   private static final String BITOP = "BITOP";
@@ -78,8 +78,8 @@ public class RedisClient extends RedisClientBase {
   private static final int BITOP_VERSION = parseVersion("2.6.0");
 
   /**
-   * String
    * Perform bitwise operations between strings
+   * String
    *
    * @param operation0
    * @param destkey1
@@ -92,13 +92,13 @@ public class RedisClient extends RedisClientBase {
     list.add(operation0);
     list.add(destkey1);
     Collections.addAll(list, key2);
-    return (ListenableFuture<IntegerReply>) pipeline(BITOP, new Command(BITOP_BYTES, list.toArray(new Object[list.size()])));
+    return (IntegerReply) execute(BITOP, new Command(BITOP_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> bitop_(Object... arguments) throws RedisException {
+  public IntegerReply bitop_(Object... arguments) throws RedisException {
     if (version < BITOP_VERSION) throw new RedisException("Server does not support BITOP");
-    return (ListenableFuture<IntegerReply>) pipeline(BITOP, new Command(BITOP_BYTES, arguments));
+    return (IntegerReply) execute(BITOP, new Command(BITOP_BYTES, arguments));
   }
   
   private static final String DECR = "DECR";
@@ -106,15 +106,15 @@ public class RedisClient extends RedisClientBase {
   private static final int DECR_VERSION = parseVersion("1.0.0");
 
   /**
-   * String
    * Decrement the integer value of a key by one
+   * String
    *
    * @param key0
    * @return IntegerReply
    */
   public IntegerReply decr(Object key0) throws RedisException {
     if (version < DECR_VERSION) throw new RedisException("Server does not support DECR");
-    return (ListenableFuture<IntegerReply>) pipeline(DECR, new Command(DECR_BYTES, key0));
+    return (IntegerReply) execute(DECR, new Command(DECR_BYTES, key0));
   }
   
   private static final String DECRBY = "DECRBY";
@@ -122,8 +122,8 @@ public class RedisClient extends RedisClientBase {
   private static final int DECRBY_VERSION = parseVersion("1.0.0");
 
   /**
-   * String
    * Decrement the integer value of a key by the given number
+   * String
    *
    * @param key0
    * @param decrement1
@@ -131,7 +131,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply decrby(Object key0, Object decrement1) throws RedisException {
     if (version < DECRBY_VERSION) throw new RedisException("Server does not support DECRBY");
-    return (ListenableFuture<IntegerReply>) pipeline(DECRBY, new Command(DECRBY_BYTES, key0, decrement1));
+    return (IntegerReply) execute(DECRBY, new Command(DECRBY_BYTES, key0, decrement1));
   }
   
   private static final String GET = "GET";
@@ -139,15 +139,15 @@ public class RedisClient extends RedisClientBase {
   private static final int GET_VERSION = parseVersion("1.0.0");
 
   /**
-   * String
    * Get the value of a key
+   * String
    *
    * @param key0
    * @return BulkReply
    */
   public BulkReply get(Object key0) throws RedisException {
     if (version < GET_VERSION) throw new RedisException("Server does not support GET");
-    return (ListenableFuture<BulkReply>) pipeline(GET, new Command(GET_BYTES, key0));
+    return (BulkReply) execute(GET, new Command(GET_BYTES, key0));
   }
   
   private static final String GETBIT = "GETBIT";
@@ -155,8 +155,8 @@ public class RedisClient extends RedisClientBase {
   private static final int GETBIT_VERSION = parseVersion("2.2.0");
 
   /**
-   * String
    * Returns the bit value at offset in the string value stored at key
+   * String
    *
    * @param key0
    * @param offset1
@@ -164,7 +164,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply getbit(Object key0, Object offset1) throws RedisException {
     if (version < GETBIT_VERSION) throw new RedisException("Server does not support GETBIT");
-    return (ListenableFuture<IntegerReply>) pipeline(GETBIT, new Command(GETBIT_BYTES, key0, offset1));
+    return (IntegerReply) execute(GETBIT, new Command(GETBIT_BYTES, key0, offset1));
   }
   
   private static final String GETRANGE = "GETRANGE";
@@ -172,8 +172,8 @@ public class RedisClient extends RedisClientBase {
   private static final int GETRANGE_VERSION = parseVersion("2.4.0");
 
   /**
-   * String
    * Get a substring of the string stored at a key
+   * String
    *
    * @param key0
    * @param start1
@@ -182,7 +182,7 @@ public class RedisClient extends RedisClientBase {
    */
   public BulkReply getrange(Object key0, Object start1, Object end2) throws RedisException {
     if (version < GETRANGE_VERSION) throw new RedisException("Server does not support GETRANGE");
-    return (ListenableFuture<BulkReply>) pipeline(GETRANGE, new Command(GETRANGE_BYTES, key0, start1, end2));
+    return (BulkReply) execute(GETRANGE, new Command(GETRANGE_BYTES, key0, start1, end2));
   }
   
   private static final String GETSET = "GETSET";
@@ -190,8 +190,8 @@ public class RedisClient extends RedisClientBase {
   private static final int GETSET_VERSION = parseVersion("1.0.0");
 
   /**
-   * String
    * Set the string value of a key and return its old value
+   * String
    *
    * @param key0
    * @param value1
@@ -199,7 +199,7 @@ public class RedisClient extends RedisClientBase {
    */
   public BulkReply getset(Object key0, Object value1) throws RedisException {
     if (version < GETSET_VERSION) throw new RedisException("Server does not support GETSET");
-    return (ListenableFuture<BulkReply>) pipeline(GETSET, new Command(GETSET_BYTES, key0, value1));
+    return (BulkReply) execute(GETSET, new Command(GETSET_BYTES, key0, value1));
   }
   
   private static final String INCR = "INCR";
@@ -207,15 +207,15 @@ public class RedisClient extends RedisClientBase {
   private static final int INCR_VERSION = parseVersion("1.0.0");
 
   /**
-   * String
    * Increment the integer value of a key by one
+   * String
    *
    * @param key0
    * @return IntegerReply
    */
   public IntegerReply incr(Object key0) throws RedisException {
     if (version < INCR_VERSION) throw new RedisException("Server does not support INCR");
-    return (ListenableFuture<IntegerReply>) pipeline(INCR, new Command(INCR_BYTES, key0));
+    return (IntegerReply) execute(INCR, new Command(INCR_BYTES, key0));
   }
   
   private static final String INCRBY = "INCRBY";
@@ -223,8 +223,8 @@ public class RedisClient extends RedisClientBase {
   private static final int INCRBY_VERSION = parseVersion("1.0.0");
 
   /**
-   * String
    * Increment the integer value of a key by the given amount
+   * String
    *
    * @param key0
    * @param increment1
@@ -232,7 +232,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply incrby(Object key0, Object increment1) throws RedisException {
     if (version < INCRBY_VERSION) throw new RedisException("Server does not support INCRBY");
-    return (ListenableFuture<IntegerReply>) pipeline(INCRBY, new Command(INCRBY_BYTES, key0, increment1));
+    return (IntegerReply) execute(INCRBY, new Command(INCRBY_BYTES, key0, increment1));
   }
   
   private static final String INCRBYFLOAT = "INCRBYFLOAT";
@@ -240,8 +240,8 @@ public class RedisClient extends RedisClientBase {
   private static final int INCRBYFLOAT_VERSION = parseVersion("2.6.0");
 
   /**
-   * String
    * Increment the float value of a key by the given amount
+   * String
    *
    * @param key0
    * @param increment1
@@ -249,7 +249,7 @@ public class RedisClient extends RedisClientBase {
    */
   public BulkReply incrbyfloat(Object key0, Object increment1) throws RedisException {
     if (version < INCRBYFLOAT_VERSION) throw new RedisException("Server does not support INCRBYFLOAT");
-    return (ListenableFuture<BulkReply>) pipeline(INCRBYFLOAT, new Command(INCRBYFLOAT_BYTES, key0, increment1));
+    return (BulkReply) execute(INCRBYFLOAT, new Command(INCRBYFLOAT_BYTES, key0, increment1));
   }
   
   private static final String MGET = "MGET";
@@ -257,8 +257,8 @@ public class RedisClient extends RedisClientBase {
   private static final int MGET_VERSION = parseVersion("1.0.0");
 
   /**
-   * String
    * Get the values of all the given keys
+   * String
    *
    * @param key0
    * @return MultiBulkReply
@@ -267,13 +267,13 @@ public class RedisClient extends RedisClientBase {
     if (version < MGET_VERSION) throw new RedisException("Server does not support MGET");
     List list = new ArrayList();
     Collections.addAll(list, key0);
-    return (ListenableFuture<MultiBulkReply>) pipeline(MGET, new Command(MGET_BYTES, list.toArray(new Object[list.size()])));
+    return (MultiBulkReply) execute(MGET, new Command(MGET_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> mget_(Object... arguments) throws RedisException {
+  public MultiBulkReply mget_(Object... arguments) throws RedisException {
     if (version < MGET_VERSION) throw new RedisException("Server does not support MGET");
-    return (ListenableFuture<MultiBulkReply>) pipeline(MGET, new Command(MGET_BYTES, arguments));
+    return (MultiBulkReply) execute(MGET, new Command(MGET_BYTES, arguments));
   }
   
   private static final String MSET = "MSET";
@@ -281,8 +281,8 @@ public class RedisClient extends RedisClientBase {
   private static final int MSET_VERSION = parseVersion("1.0.1");
 
   /**
-   * String
    * Set multiple keys to multiple values
+   * String
    *
    * @param key_or_value0
    * @return StatusReply
@@ -291,13 +291,13 @@ public class RedisClient extends RedisClientBase {
     if (version < MSET_VERSION) throw new RedisException("Server does not support MSET");
     List list = new ArrayList();
     Collections.addAll(list, key_or_value0);
-    return (ListenableFuture<StatusReply>) pipeline(MSET, new Command(MSET_BYTES, list.toArray(new Object[list.size()])));
+    return (StatusReply) execute(MSET, new Command(MSET_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<StatusReply> mset_(Object... arguments) throws RedisException {
+  public StatusReply mset_(Object... arguments) throws RedisException {
     if (version < MSET_VERSION) throw new RedisException("Server does not support MSET");
-    return (ListenableFuture<StatusReply>) pipeline(MSET, new Command(MSET_BYTES, arguments));
+    return (StatusReply) execute(MSET, new Command(MSET_BYTES, arguments));
   }
   
   private static final String MSETNX = "MSETNX";
@@ -305,8 +305,8 @@ public class RedisClient extends RedisClientBase {
   private static final int MSETNX_VERSION = parseVersion("1.0.1");
 
   /**
-   * String
    * Set multiple keys to multiple values, only if none of the keys exist
+   * String
    *
    * @param key_or_value0
    * @return IntegerReply
@@ -315,13 +315,13 @@ public class RedisClient extends RedisClientBase {
     if (version < MSETNX_VERSION) throw new RedisException("Server does not support MSETNX");
     List list = new ArrayList();
     Collections.addAll(list, key_or_value0);
-    return (ListenableFuture<IntegerReply>) pipeline(MSETNX, new Command(MSETNX_BYTES, list.toArray(new Object[list.size()])));
+    return (IntegerReply) execute(MSETNX, new Command(MSETNX_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> msetnx_(Object... arguments) throws RedisException {
+  public IntegerReply msetnx_(Object... arguments) throws RedisException {
     if (version < MSETNX_VERSION) throw new RedisException("Server does not support MSETNX");
-    return (ListenableFuture<IntegerReply>) pipeline(MSETNX, new Command(MSETNX_BYTES, arguments));
+    return (IntegerReply) execute(MSETNX, new Command(MSETNX_BYTES, arguments));
   }
   
   private static final String PSETEX = "PSETEX";
@@ -329,8 +329,8 @@ public class RedisClient extends RedisClientBase {
   private static final int PSETEX_VERSION = parseVersion("2.6.0");
 
   /**
-   * String
    * Set the value and expiration in milliseconds of a key
+   * String
    *
    * @param key0
    * @param milliseconds1
@@ -339,7 +339,7 @@ public class RedisClient extends RedisClientBase {
    */
   public Reply psetex(Object key0, Object milliseconds1, Object value2) throws RedisException {
     if (version < PSETEX_VERSION) throw new RedisException("Server does not support PSETEX");
-    return (ListenableFuture<Reply>) pipeline(PSETEX, new Command(PSETEX_BYTES, key0, milliseconds1, value2));
+    return (Reply) execute(PSETEX, new Command(PSETEX_BYTES, key0, milliseconds1, value2));
   }
   
   private static final String SET = "SET";
@@ -347,8 +347,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SET_VERSION = parseVersion("1.0.0");
 
   /**
-   * String
    * Set the string value of a key
+   * String
    *
    * @param key0
    * @param value1
@@ -356,7 +356,7 @@ public class RedisClient extends RedisClientBase {
    */
   public StatusReply set(Object key0, Object value1) throws RedisException {
     if (version < SET_VERSION) throw new RedisException("Server does not support SET");
-    return (ListenableFuture<StatusReply>) pipeline(SET, new Command(SET_BYTES, key0, value1));
+    return (StatusReply) execute(SET, new Command(SET_BYTES, key0, value1));
   }
   
   private static final String SETBIT = "SETBIT";
@@ -364,8 +364,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SETBIT_VERSION = parseVersion("2.2.0");
 
   /**
-   * String
    * Sets or clears the bit at offset in the string value stored at key
+   * String
    *
    * @param key0
    * @param offset1
@@ -374,7 +374,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply setbit(Object key0, Object offset1, Object value2) throws RedisException {
     if (version < SETBIT_VERSION) throw new RedisException("Server does not support SETBIT");
-    return (ListenableFuture<IntegerReply>) pipeline(SETBIT, new Command(SETBIT_BYTES, key0, offset1, value2));
+    return (IntegerReply) execute(SETBIT, new Command(SETBIT_BYTES, key0, offset1, value2));
   }
   
   private static final String SETEX = "SETEX";
@@ -382,8 +382,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SETEX_VERSION = parseVersion("2.0.0");
 
   /**
-   * String
    * Set the value and expiration of a key
+   * String
    *
    * @param key0
    * @param seconds1
@@ -392,7 +392,7 @@ public class RedisClient extends RedisClientBase {
    */
   public StatusReply setex(Object key0, Object seconds1, Object value2) throws RedisException {
     if (version < SETEX_VERSION) throw new RedisException("Server does not support SETEX");
-    return (ListenableFuture<StatusReply>) pipeline(SETEX, new Command(SETEX_BYTES, key0, seconds1, value2));
+    return (StatusReply) execute(SETEX, new Command(SETEX_BYTES, key0, seconds1, value2));
   }
   
   private static final String SETNX = "SETNX";
@@ -400,8 +400,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SETNX_VERSION = parseVersion("1.0.0");
 
   /**
-   * String
    * Set the value of a key, only if the key does not exist
+   * String
    *
    * @param key0
    * @param value1
@@ -409,7 +409,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply setnx(Object key0, Object value1) throws RedisException {
     if (version < SETNX_VERSION) throw new RedisException("Server does not support SETNX");
-    return (ListenableFuture<IntegerReply>) pipeline(SETNX, new Command(SETNX_BYTES, key0, value1));
+    return (IntegerReply) execute(SETNX, new Command(SETNX_BYTES, key0, value1));
   }
   
   private static final String SETRANGE = "SETRANGE";
@@ -417,8 +417,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SETRANGE_VERSION = parseVersion("2.2.0");
 
   /**
-   * String
    * Overwrite part of a string at key starting at the specified offset
+   * String
    *
    * @param key0
    * @param offset1
@@ -427,7 +427,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply setrange(Object key0, Object offset1, Object value2) throws RedisException {
     if (version < SETRANGE_VERSION) throw new RedisException("Server does not support SETRANGE");
-    return (ListenableFuture<IntegerReply>) pipeline(SETRANGE, new Command(SETRANGE_BYTES, key0, offset1, value2));
+    return (IntegerReply) execute(SETRANGE, new Command(SETRANGE_BYTES, key0, offset1, value2));
   }
   
   private static final String STRLEN = "STRLEN";
@@ -435,15 +435,15 @@ public class RedisClient extends RedisClientBase {
   private static final int STRLEN_VERSION = parseVersion("2.2.0");
 
   /**
-   * String
    * Get the length of the value stored in a key
+   * String
    *
    * @param key0
    * @return IntegerReply
    */
   public IntegerReply strlen(Object key0) throws RedisException {
     if (version < STRLEN_VERSION) throw new RedisException("Server does not support STRLEN");
-    return (ListenableFuture<IntegerReply>) pipeline(STRLEN, new Command(STRLEN_BYTES, key0));
+    return (IntegerReply) execute(STRLEN, new Command(STRLEN_BYTES, key0));
   }
   
   private static final String AUTH = "AUTH";
@@ -451,15 +451,15 @@ public class RedisClient extends RedisClientBase {
   private static final int AUTH_VERSION = parseVersion("1.0.0");
 
   /**
-   * Connection
    * Authenticate to the server
+   * Connection
    *
    * @param password0
    * @return StatusReply
    */
   public StatusReply auth(Object password0) throws RedisException {
     if (version < AUTH_VERSION) throw new RedisException("Server does not support AUTH");
-    return (ListenableFuture<StatusReply>) pipeline(AUTH, new Command(AUTH_BYTES, password0));
+    return (StatusReply) execute(AUTH, new Command(AUTH_BYTES, password0));
   }
   
   private static final String ECHO = "ECHO";
@@ -467,15 +467,15 @@ public class RedisClient extends RedisClientBase {
   private static final int ECHO_VERSION = parseVersion("1.0.0");
 
   /**
-   * Connection
    * Echo the given string
+   * Connection
    *
    * @param message0
    * @return BulkReply
    */
   public BulkReply echo(Object message0) throws RedisException {
     if (version < ECHO_VERSION) throw new RedisException("Server does not support ECHO");
-    return (ListenableFuture<BulkReply>) pipeline(ECHO, new Command(ECHO_BYTES, message0));
+    return (BulkReply) execute(ECHO, new Command(ECHO_BYTES, message0));
   }
   
   private static final String PING = "PING";
@@ -483,14 +483,14 @@ public class RedisClient extends RedisClientBase {
   private static final int PING_VERSION = parseVersion("1.0.0");
 
   /**
-   * Connection
    * Ping the server
+   * Connection
    *
    * @return StatusReply
    */
   public StatusReply ping() throws RedisException {
     if (version < PING_VERSION) throw new RedisException("Server does not support PING");
-    return (ListenableFuture<StatusReply>) pipeline(PING, new Command(PING_BYTES));
+    return (StatusReply) execute(PING, new Command(PING_BYTES));
   }
   
   private static final String QUIT = "QUIT";
@@ -498,14 +498,14 @@ public class RedisClient extends RedisClientBase {
   private static final int QUIT_VERSION = parseVersion("1.0.0");
 
   /**
-   * Connection
    * Close the connection
+   * Connection
    *
    * @return StatusReply
    */
   public StatusReply quit() throws RedisException {
     if (version < QUIT_VERSION) throw new RedisException("Server does not support QUIT");
-    return (ListenableFuture<StatusReply>) pipeline(QUIT, new Command(QUIT_BYTES));
+    return (StatusReply) execute(QUIT, new Command(QUIT_BYTES));
   }
   
   private static final String SELECT = "SELECT";
@@ -513,15 +513,15 @@ public class RedisClient extends RedisClientBase {
   private static final int SELECT_VERSION = parseVersion("1.0.0");
 
   /**
-   * Connection
    * Change the selected database for the current connection
+   * Connection
    *
    * @param index0
    * @return StatusReply
    */
   public StatusReply select(Object index0) throws RedisException {
     if (version < SELECT_VERSION) throw new RedisException("Server does not support SELECT");
-    return (ListenableFuture<StatusReply>) pipeline(SELECT, new Command(SELECT_BYTES, index0));
+    return (StatusReply) execute(SELECT, new Command(SELECT_BYTES, index0));
   }
   
   private static final String BGREWRITEAOF = "BGREWRITEAOF";
@@ -529,14 +529,14 @@ public class RedisClient extends RedisClientBase {
   private static final int BGREWRITEAOF_VERSION = parseVersion("1.0.0");
 
   /**
-   * Server
    * Asynchronously rewrite the append-only file
+   * Server
    *
    * @return StatusReply
    */
   public StatusReply bgrewriteaof() throws RedisException {
     if (version < BGREWRITEAOF_VERSION) throw new RedisException("Server does not support BGREWRITEAOF");
-    return (ListenableFuture<StatusReply>) pipeline(BGREWRITEAOF, new Command(BGREWRITEAOF_BYTES));
+    return (StatusReply) execute(BGREWRITEAOF, new Command(BGREWRITEAOF_BYTES));
   }
   
   private static final String BGSAVE = "BGSAVE";
@@ -544,14 +544,14 @@ public class RedisClient extends RedisClientBase {
   private static final int BGSAVE_VERSION = parseVersion("1.0.0");
 
   /**
-   * Server
    * Asynchronously save the dataset to disk
+   * Server
    *
    * @return StatusReply
    */
   public StatusReply bgsave() throws RedisException {
     if (version < BGSAVE_VERSION) throw new RedisException("Server does not support BGSAVE");
-    return (ListenableFuture<StatusReply>) pipeline(BGSAVE, new Command(BGSAVE_BYTES));
+    return (StatusReply) execute(BGSAVE, new Command(BGSAVE_BYTES));
   }
   
   private static final String CONFIG_GET = "CONFIG_GET";
@@ -559,15 +559,15 @@ public class RedisClient extends RedisClientBase {
   private static final int CONFIG_GET_VERSION = parseVersion("2.0.0");
 
   /**
-   * Server
    * Get the value of a configuration parameter
+   * Server
    *
    * @param parameter0
    * @return Reply
    */
   public Reply config_get(Object parameter0) throws RedisException {
     if (version < CONFIG_GET_VERSION) throw new RedisException("Server does not support CONFIG_GET");
-    return (ListenableFuture<Reply>) pipeline(CONFIG_GET, new Command(CONFIG_GET_BYTES, parameter0));
+    return (Reply) execute(CONFIG_GET, new Command(CONFIG_GET_BYTES, parameter0));
   }
   
   private static final String CONFIG_SET = "CONFIG_SET";
@@ -575,8 +575,8 @@ public class RedisClient extends RedisClientBase {
   private static final int CONFIG_SET_VERSION = parseVersion("2.0.0");
 
   /**
-   * Server
    * Set a configuration parameter to the given value
+   * Server
    *
    * @param parameter0
    * @param value1
@@ -584,7 +584,7 @@ public class RedisClient extends RedisClientBase {
    */
   public Reply config_set(Object parameter0, Object value1) throws RedisException {
     if (version < CONFIG_SET_VERSION) throw new RedisException("Server does not support CONFIG_SET");
-    return (ListenableFuture<Reply>) pipeline(CONFIG_SET, new Command(CONFIG_SET_BYTES, parameter0, value1));
+    return (Reply) execute(CONFIG_SET, new Command(CONFIG_SET_BYTES, parameter0, value1));
   }
   
   private static final String CONFIG_RESETSTAT = "CONFIG_RESETSTAT";
@@ -592,14 +592,14 @@ public class RedisClient extends RedisClientBase {
   private static final int CONFIG_RESETSTAT_VERSION = parseVersion("2.0.0");
 
   /**
-   * Server
    * Reset the stats returned by INFO
+   * Server
    *
    * @return Reply
    */
   public Reply config_resetstat() throws RedisException {
     if (version < CONFIG_RESETSTAT_VERSION) throw new RedisException("Server does not support CONFIG_RESETSTAT");
-    return (ListenableFuture<Reply>) pipeline(CONFIG_RESETSTAT, new Command(CONFIG_RESETSTAT_BYTES));
+    return (Reply) execute(CONFIG_RESETSTAT, new Command(CONFIG_RESETSTAT_BYTES));
   }
   
   private static final String DBSIZE = "DBSIZE";
@@ -607,14 +607,14 @@ public class RedisClient extends RedisClientBase {
   private static final int DBSIZE_VERSION = parseVersion("1.0.0");
 
   /**
-   * Server
    * Return the number of keys in the selected database
+   * Server
    *
    * @return IntegerReply
    */
   public IntegerReply dbsize() throws RedisException {
     if (version < DBSIZE_VERSION) throw new RedisException("Server does not support DBSIZE");
-    return (ListenableFuture<IntegerReply>) pipeline(DBSIZE, new Command(DBSIZE_BYTES));
+    return (IntegerReply) execute(DBSIZE, new Command(DBSIZE_BYTES));
   }
   
   private static final String DEBUG_OBJECT = "DEBUG_OBJECT";
@@ -622,15 +622,15 @@ public class RedisClient extends RedisClientBase {
   private static final int DEBUG_OBJECT_VERSION = parseVersion("1.0.0");
 
   /**
-   * Server
    * Get debugging information about a key
+   * Server
    *
    * @param key0
    * @return Reply
    */
   public Reply debug_object(Object key0) throws RedisException {
     if (version < DEBUG_OBJECT_VERSION) throw new RedisException("Server does not support DEBUG_OBJECT");
-    return (ListenableFuture<Reply>) pipeline(DEBUG_OBJECT, new Command(DEBUG_OBJECT_BYTES, key0));
+    return (Reply) execute(DEBUG_OBJECT, new Command(DEBUG_OBJECT_BYTES, key0));
   }
   
   private static final String DEBUG_SEGFAULT = "DEBUG_SEGFAULT";
@@ -638,14 +638,14 @@ public class RedisClient extends RedisClientBase {
   private static final int DEBUG_SEGFAULT_VERSION = parseVersion("1.0.0");
 
   /**
-   * Server
    * Make the server crash
+   * Server
    *
    * @return Reply
    */
   public Reply debug_segfault() throws RedisException {
     if (version < DEBUG_SEGFAULT_VERSION) throw new RedisException("Server does not support DEBUG_SEGFAULT");
-    return (ListenableFuture<Reply>) pipeline(DEBUG_SEGFAULT, new Command(DEBUG_SEGFAULT_BYTES));
+    return (Reply) execute(DEBUG_SEGFAULT, new Command(DEBUG_SEGFAULT_BYTES));
   }
   
   private static final String FLUSHALL = "FLUSHALL";
@@ -653,14 +653,14 @@ public class RedisClient extends RedisClientBase {
   private static final int FLUSHALL_VERSION = parseVersion("1.0.0");
 
   /**
-   * Server
    * Remove all keys from all databases
+   * Server
    *
    * @return StatusReply
    */
   public StatusReply flushall() throws RedisException {
     if (version < FLUSHALL_VERSION) throw new RedisException("Server does not support FLUSHALL");
-    return (ListenableFuture<StatusReply>) pipeline(FLUSHALL, new Command(FLUSHALL_BYTES));
+    return (StatusReply) execute(FLUSHALL, new Command(FLUSHALL_BYTES));
   }
   
   private static final String FLUSHDB = "FLUSHDB";
@@ -668,14 +668,14 @@ public class RedisClient extends RedisClientBase {
   private static final int FLUSHDB_VERSION = parseVersion("1.0.0");
 
   /**
-   * Server
    * Remove all keys from the current database
+   * Server
    *
    * @return StatusReply
    */
   public StatusReply flushdb() throws RedisException {
     if (version < FLUSHDB_VERSION) throw new RedisException("Server does not support FLUSHDB");
-    return (ListenableFuture<StatusReply>) pipeline(FLUSHDB, new Command(FLUSHDB_BYTES));
+    return (StatusReply) execute(FLUSHDB, new Command(FLUSHDB_BYTES));
   }
   
   private static final String INFO = "INFO";
@@ -683,14 +683,14 @@ public class RedisClient extends RedisClientBase {
   private static final int INFO_VERSION = parseVersion("1.0.0");
 
   /**
-   * Server
    * Get information and statistics about the server
+   * Server
    *
    * @return BulkReply
    */
   public BulkReply info() throws RedisException {
     if (version < INFO_VERSION) throw new RedisException("Server does not support INFO");
-    return (ListenableFuture<BulkReply>) pipeline(INFO, new Command(INFO_BYTES));
+    return (BulkReply) execute(INFO, new Command(INFO_BYTES));
   }
   
   private static final String LASTSAVE = "LASTSAVE";
@@ -698,14 +698,14 @@ public class RedisClient extends RedisClientBase {
   private static final int LASTSAVE_VERSION = parseVersion("1.0.0");
 
   /**
-   * Server
    * Get the UNIX time stamp of the last successful save to disk
+   * Server
    *
    * @return IntegerReply
    */
   public IntegerReply lastsave() throws RedisException {
     if (version < LASTSAVE_VERSION) throw new RedisException("Server does not support LASTSAVE");
-    return (ListenableFuture<IntegerReply>) pipeline(LASTSAVE, new Command(LASTSAVE_BYTES));
+    return (IntegerReply) execute(LASTSAVE, new Command(LASTSAVE_BYTES));
   }
   
   private static final String MONITOR = "MONITOR";
@@ -713,14 +713,14 @@ public class RedisClient extends RedisClientBase {
   private static final int MONITOR_VERSION = parseVersion("1.0.0");
 
   /**
-   * Server
    * Listen for all requests received by the server in real time
+   * Server
    *
    * @return Reply
    */
   public Reply monitor() throws RedisException {
     if (version < MONITOR_VERSION) throw new RedisException("Server does not support MONITOR");
-    return (ListenableFuture<Reply>) pipeline(MONITOR, new Command(MONITOR_BYTES));
+    return (Reply) execute(MONITOR, new Command(MONITOR_BYTES));
   }
   
   private static final String SAVE = "SAVE";
@@ -728,14 +728,14 @@ public class RedisClient extends RedisClientBase {
   private static final int SAVE_VERSION = parseVersion("1.0.0");
 
   /**
-   * Server
    * Synchronously save the dataset to disk
+   * Server
    *
    * @return Reply
    */
   public Reply save() throws RedisException {
     if (version < SAVE_VERSION) throw new RedisException("Server does not support SAVE");
-    return (ListenableFuture<Reply>) pipeline(SAVE, new Command(SAVE_BYTES));
+    return (Reply) execute(SAVE, new Command(SAVE_BYTES));
   }
   
   private static final String SHUTDOWN = "SHUTDOWN";
@@ -743,8 +743,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SHUTDOWN_VERSION = parseVersion("1.0.0");
 
   /**
-   * Server
    * Synchronously save the dataset to disk and then shut down the server
+   * Server
    *
    * @param NOSAVE0
    * @param SAVE1
@@ -752,13 +752,13 @@ public class RedisClient extends RedisClientBase {
    */
   public StatusReply shutdown(Object NOSAVE0, Object SAVE1) throws RedisException {
     if (version < SHUTDOWN_VERSION) throw new RedisException("Server does not support SHUTDOWN");
-    return (ListenableFuture<StatusReply>) pipeline(SHUTDOWN, new Command(SHUTDOWN_BYTES, NOSAVE0, SAVE1));
+    return (StatusReply) execute(SHUTDOWN, new Command(SHUTDOWN_BYTES, NOSAVE0, SAVE1));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<StatusReply> shutdown_(Object... arguments) throws RedisException {
+  public StatusReply shutdown_(Object... arguments) throws RedisException {
     if (version < SHUTDOWN_VERSION) throw new RedisException("Server does not support SHUTDOWN");
-    return (ListenableFuture<StatusReply>) pipeline(SHUTDOWN, new Command(SHUTDOWN_BYTES, arguments));
+    return (StatusReply) execute(SHUTDOWN, new Command(SHUTDOWN_BYTES, arguments));
   }
   
   private static final String SLAVEOF = "SLAVEOF";
@@ -766,8 +766,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SLAVEOF_VERSION = parseVersion("1.0.0");
 
   /**
-   * Server
    * Make the server a slave of another instance, or promote it as master
+   * Server
    *
    * @param host0
    * @param port1
@@ -775,7 +775,7 @@ public class RedisClient extends RedisClientBase {
    */
   public StatusReply slaveof(Object host0, Object port1) throws RedisException {
     if (version < SLAVEOF_VERSION) throw new RedisException("Server does not support SLAVEOF");
-    return (ListenableFuture<StatusReply>) pipeline(SLAVEOF, new Command(SLAVEOF_BYTES, host0, port1));
+    return (StatusReply) execute(SLAVEOF, new Command(SLAVEOF_BYTES, host0, port1));
   }
   
   private static final String SLOWLOG = "SLOWLOG";
@@ -783,8 +783,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SLOWLOG_VERSION = parseVersion("2.2.12");
 
   /**
-   * Server
    * Manages the Redis slow queries log
+   * Server
    *
    * @param subcommand0
    * @param argument1
@@ -792,13 +792,13 @@ public class RedisClient extends RedisClientBase {
    */
   public Reply slowlog(Object subcommand0, Object argument1) throws RedisException {
     if (version < SLOWLOG_VERSION) throw new RedisException("Server does not support SLOWLOG");
-    return (ListenableFuture<Reply>) pipeline(SLOWLOG, new Command(SLOWLOG_BYTES, subcommand0, argument1));
+    return (Reply) execute(SLOWLOG, new Command(SLOWLOG_BYTES, subcommand0, argument1));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<Reply> slowlog_(Object... arguments) throws RedisException {
+  public Reply slowlog_(Object... arguments) throws RedisException {
     if (version < SLOWLOG_VERSION) throw new RedisException("Server does not support SLOWLOG");
-    return (ListenableFuture<Reply>) pipeline(SLOWLOG, new Command(SLOWLOG_BYTES, arguments));
+    return (Reply) execute(SLOWLOG, new Command(SLOWLOG_BYTES, arguments));
   }
   
   private static final String SYNC = "SYNC";
@@ -806,14 +806,14 @@ public class RedisClient extends RedisClientBase {
   private static final int SYNC_VERSION = parseVersion("1.0.0");
 
   /**
-   * Server
    * Internal command used for replication
+   * Server
    *
    * @return Reply
    */
   public Reply sync() throws RedisException {
     if (version < SYNC_VERSION) throw new RedisException("Server does not support SYNC");
-    return (ListenableFuture<Reply>) pipeline(SYNC, new Command(SYNC_BYTES));
+    return (Reply) execute(SYNC, new Command(SYNC_BYTES));
   }
   
   private static final String TIME = "TIME";
@@ -821,14 +821,14 @@ public class RedisClient extends RedisClientBase {
   private static final int TIME_VERSION = parseVersion("2.6.0");
 
   /**
-   * Server
    * Return the current server time
+   * Server
    *
    * @return MultiBulkReply
    */
   public MultiBulkReply time() throws RedisException {
     if (version < TIME_VERSION) throw new RedisException("Server does not support TIME");
-    return (ListenableFuture<MultiBulkReply>) pipeline(TIME, new Command(TIME_BYTES));
+    return (MultiBulkReply) execute(TIME, new Command(TIME_BYTES));
   }
   
   private static final String BLPOP = "BLPOP";
@@ -836,8 +836,8 @@ public class RedisClient extends RedisClientBase {
   private static final int BLPOP_VERSION = parseVersion("2.0.0");
 
   /**
-   * List
    * Remove and get the first element in a list, or block until one is available
+   * List
    *
    * @param key0
    * @return MultiBulkReply
@@ -846,13 +846,13 @@ public class RedisClient extends RedisClientBase {
     if (version < BLPOP_VERSION) throw new RedisException("Server does not support BLPOP");
     List list = new ArrayList();
     Collections.addAll(list, key0);
-    return (ListenableFuture<MultiBulkReply>) pipeline(BLPOP, new Command(BLPOP_BYTES, list.toArray(new Object[list.size()])));
+    return (MultiBulkReply) execute(BLPOP, new Command(BLPOP_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> blpop_(Object... arguments) throws RedisException {
+  public MultiBulkReply blpop_(Object... arguments) throws RedisException {
     if (version < BLPOP_VERSION) throw new RedisException("Server does not support BLPOP");
-    return (ListenableFuture<MultiBulkReply>) pipeline(BLPOP, new Command(BLPOP_BYTES, arguments));
+    return (MultiBulkReply) execute(BLPOP, new Command(BLPOP_BYTES, arguments));
   }
   
   private static final String BRPOP = "BRPOP";
@@ -860,8 +860,8 @@ public class RedisClient extends RedisClientBase {
   private static final int BRPOP_VERSION = parseVersion("2.0.0");
 
   /**
-   * List
    * Remove and get the last element in a list, or block until one is available
+   * List
    *
    * @param key0
    * @return MultiBulkReply
@@ -870,13 +870,13 @@ public class RedisClient extends RedisClientBase {
     if (version < BRPOP_VERSION) throw new RedisException("Server does not support BRPOP");
     List list = new ArrayList();
     Collections.addAll(list, key0);
-    return (ListenableFuture<MultiBulkReply>) pipeline(BRPOP, new Command(BRPOP_BYTES, list.toArray(new Object[list.size()])));
+    return (MultiBulkReply) execute(BRPOP, new Command(BRPOP_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> brpop_(Object... arguments) throws RedisException {
+  public MultiBulkReply brpop_(Object... arguments) throws RedisException {
     if (version < BRPOP_VERSION) throw new RedisException("Server does not support BRPOP");
-    return (ListenableFuture<MultiBulkReply>) pipeline(BRPOP, new Command(BRPOP_BYTES, arguments));
+    return (MultiBulkReply) execute(BRPOP, new Command(BRPOP_BYTES, arguments));
   }
   
   private static final String BRPOPLPUSH = "BRPOPLPUSH";
@@ -884,8 +884,8 @@ public class RedisClient extends RedisClientBase {
   private static final int BRPOPLPUSH_VERSION = parseVersion("2.2.0");
 
   /**
-   * List
    * Pop a value from a list, push it to another list and return it; or block until one is available
+   * List
    *
    * @param source0
    * @param destination1
@@ -894,7 +894,7 @@ public class RedisClient extends RedisClientBase {
    */
   public BulkReply brpoplpush(Object source0, Object destination1, Object timeout2) throws RedisException {
     if (version < BRPOPLPUSH_VERSION) throw new RedisException("Server does not support BRPOPLPUSH");
-    return (ListenableFuture<BulkReply>) pipeline(BRPOPLPUSH, new Command(BRPOPLPUSH_BYTES, source0, destination1, timeout2));
+    return (BulkReply) execute(BRPOPLPUSH, new Command(BRPOPLPUSH_BYTES, source0, destination1, timeout2));
   }
   
   private static final String LINDEX = "LINDEX";
@@ -902,8 +902,8 @@ public class RedisClient extends RedisClientBase {
   private static final int LINDEX_VERSION = parseVersion("1.0.0");
 
   /**
-   * List
    * Get an element from a list by its index
+   * List
    *
    * @param key0
    * @param index1
@@ -911,7 +911,7 @@ public class RedisClient extends RedisClientBase {
    */
   public BulkReply lindex(Object key0, Object index1) throws RedisException {
     if (version < LINDEX_VERSION) throw new RedisException("Server does not support LINDEX");
-    return (ListenableFuture<BulkReply>) pipeline(LINDEX, new Command(LINDEX_BYTES, key0, index1));
+    return (BulkReply) execute(LINDEX, new Command(LINDEX_BYTES, key0, index1));
   }
   
   private static final String LINSERT = "LINSERT";
@@ -919,8 +919,8 @@ public class RedisClient extends RedisClientBase {
   private static final int LINSERT_VERSION = parseVersion("2.2.0");
 
   /**
-   * List
    * Insert an element before or after another element in a list
+   * List
    *
    * @param key0
    * @param where1
@@ -935,7 +935,7 @@ public class RedisClient extends RedisClientBase {
     list.add(where1);
     list.add(pivot2);
     list.add(value3);
-    return (ListenableFuture<IntegerReply>) pipeline(LINSERT, new Command(LINSERT_BYTES, list.toArray(new Object[list.size()])));
+    return (IntegerReply) execute(LINSERT, new Command(LINSERT_BYTES, list.toArray(new Object[list.size()])));
   }
   
   private static final String LLEN = "LLEN";
@@ -943,15 +943,15 @@ public class RedisClient extends RedisClientBase {
   private static final int LLEN_VERSION = parseVersion("1.0.0");
 
   /**
-   * List
    * Get the length of a list
+   * List
    *
    * @param key0
    * @return IntegerReply
    */
   public IntegerReply llen(Object key0) throws RedisException {
     if (version < LLEN_VERSION) throw new RedisException("Server does not support LLEN");
-    return (ListenableFuture<IntegerReply>) pipeline(LLEN, new Command(LLEN_BYTES, key0));
+    return (IntegerReply) execute(LLEN, new Command(LLEN_BYTES, key0));
   }
   
   private static final String LPOP = "LPOP";
@@ -959,15 +959,15 @@ public class RedisClient extends RedisClientBase {
   private static final int LPOP_VERSION = parseVersion("1.0.0");
 
   /**
-   * List
    * Remove and get the first element in a list
+   * List
    *
    * @param key0
    * @return BulkReply
    */
   public BulkReply lpop(Object key0) throws RedisException {
     if (version < LPOP_VERSION) throw new RedisException("Server does not support LPOP");
-    return (ListenableFuture<BulkReply>) pipeline(LPOP, new Command(LPOP_BYTES, key0));
+    return (BulkReply) execute(LPOP, new Command(LPOP_BYTES, key0));
   }
   
   private static final String LPUSH = "LPUSH";
@@ -975,8 +975,8 @@ public class RedisClient extends RedisClientBase {
   private static final int LPUSH_VERSION = parseVersion("1.0.0");
 
   /**
-   * List
    * Prepend one or multiple values to a list
+   * List
    *
    * @param key0
    * @param value1
@@ -987,13 +987,13 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     list.add(key0);
     Collections.addAll(list, value1);
-    return (ListenableFuture<IntegerReply>) pipeline(LPUSH, new Command(LPUSH_BYTES, list.toArray(new Object[list.size()])));
+    return (IntegerReply) execute(LPUSH, new Command(LPUSH_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> lpush_(Object... arguments) throws RedisException {
+  public IntegerReply lpush_(Object... arguments) throws RedisException {
     if (version < LPUSH_VERSION) throw new RedisException("Server does not support LPUSH");
-    return (ListenableFuture<IntegerReply>) pipeline(LPUSH, new Command(LPUSH_BYTES, arguments));
+    return (IntegerReply) execute(LPUSH, new Command(LPUSH_BYTES, arguments));
   }
   
   private static final String LPUSHX = "LPUSHX";
@@ -1001,8 +1001,8 @@ public class RedisClient extends RedisClientBase {
   private static final int LPUSHX_VERSION = parseVersion("2.2.0");
 
   /**
-   * List
    * Prepend a value to a list, only if the list exists
+   * List
    *
    * @param key0
    * @param value1
@@ -1010,7 +1010,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply lpushx(Object key0, Object value1) throws RedisException {
     if (version < LPUSHX_VERSION) throw new RedisException("Server does not support LPUSHX");
-    return (ListenableFuture<IntegerReply>) pipeline(LPUSHX, new Command(LPUSHX_BYTES, key0, value1));
+    return (IntegerReply) execute(LPUSHX, new Command(LPUSHX_BYTES, key0, value1));
   }
   
   private static final String LRANGE = "LRANGE";
@@ -1018,8 +1018,8 @@ public class RedisClient extends RedisClientBase {
   private static final int LRANGE_VERSION = parseVersion("1.0.0");
 
   /**
-   * List
    * Get a range of elements from a list
+   * List
    *
    * @param key0
    * @param start1
@@ -1028,7 +1028,7 @@ public class RedisClient extends RedisClientBase {
    */
   public MultiBulkReply lrange(Object key0, Object start1, Object stop2) throws RedisException {
     if (version < LRANGE_VERSION) throw new RedisException("Server does not support LRANGE");
-    return (ListenableFuture<MultiBulkReply>) pipeline(LRANGE, new Command(LRANGE_BYTES, key0, start1, stop2));
+    return (MultiBulkReply) execute(LRANGE, new Command(LRANGE_BYTES, key0, start1, stop2));
   }
   
   private static final String LREM = "LREM";
@@ -1036,8 +1036,8 @@ public class RedisClient extends RedisClientBase {
   private static final int LREM_VERSION = parseVersion("1.0.0");
 
   /**
-   * List
    * Remove elements from a list
+   * List
    *
    * @param key0
    * @param count1
@@ -1046,7 +1046,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply lrem(Object key0, Object count1, Object value2) throws RedisException {
     if (version < LREM_VERSION) throw new RedisException("Server does not support LREM");
-    return (ListenableFuture<IntegerReply>) pipeline(LREM, new Command(LREM_BYTES, key0, count1, value2));
+    return (IntegerReply) execute(LREM, new Command(LREM_BYTES, key0, count1, value2));
   }
   
   private static final String LSET = "LSET";
@@ -1054,8 +1054,8 @@ public class RedisClient extends RedisClientBase {
   private static final int LSET_VERSION = parseVersion("1.0.0");
 
   /**
-   * List
    * Set the value of an element in a list by its index
+   * List
    *
    * @param key0
    * @param index1
@@ -1064,7 +1064,7 @@ public class RedisClient extends RedisClientBase {
    */
   public StatusReply lset(Object key0, Object index1, Object value2) throws RedisException {
     if (version < LSET_VERSION) throw new RedisException("Server does not support LSET");
-    return (ListenableFuture<StatusReply>) pipeline(LSET, new Command(LSET_BYTES, key0, index1, value2));
+    return (StatusReply) execute(LSET, new Command(LSET_BYTES, key0, index1, value2));
   }
   
   private static final String LTRIM = "LTRIM";
@@ -1072,8 +1072,8 @@ public class RedisClient extends RedisClientBase {
   private static final int LTRIM_VERSION = parseVersion("1.0.0");
 
   /**
-   * List
    * Trim a list to the specified range
+   * List
    *
    * @param key0
    * @param start1
@@ -1082,7 +1082,7 @@ public class RedisClient extends RedisClientBase {
    */
   public StatusReply ltrim(Object key0, Object start1, Object stop2) throws RedisException {
     if (version < LTRIM_VERSION) throw new RedisException("Server does not support LTRIM");
-    return (ListenableFuture<StatusReply>) pipeline(LTRIM, new Command(LTRIM_BYTES, key0, start1, stop2));
+    return (StatusReply) execute(LTRIM, new Command(LTRIM_BYTES, key0, start1, stop2));
   }
   
   private static final String RPOP = "RPOP";
@@ -1090,15 +1090,15 @@ public class RedisClient extends RedisClientBase {
   private static final int RPOP_VERSION = parseVersion("1.0.0");
 
   /**
-   * List
    * Remove and get the last element in a list
+   * List
    *
    * @param key0
    * @return BulkReply
    */
   public BulkReply rpop(Object key0) throws RedisException {
     if (version < RPOP_VERSION) throw new RedisException("Server does not support RPOP");
-    return (ListenableFuture<BulkReply>) pipeline(RPOP, new Command(RPOP_BYTES, key0));
+    return (BulkReply) execute(RPOP, new Command(RPOP_BYTES, key0));
   }
   
   private static final String RPOPLPUSH = "RPOPLPUSH";
@@ -1106,8 +1106,8 @@ public class RedisClient extends RedisClientBase {
   private static final int RPOPLPUSH_VERSION = parseVersion("1.2.0");
 
   /**
-   * List
    * Remove the last element in a list, append it to another list and return it
+   * List
    *
    * @param source0
    * @param destination1
@@ -1115,7 +1115,7 @@ public class RedisClient extends RedisClientBase {
    */
   public BulkReply rpoplpush(Object source0, Object destination1) throws RedisException {
     if (version < RPOPLPUSH_VERSION) throw new RedisException("Server does not support RPOPLPUSH");
-    return (ListenableFuture<BulkReply>) pipeline(RPOPLPUSH, new Command(RPOPLPUSH_BYTES, source0, destination1));
+    return (BulkReply) execute(RPOPLPUSH, new Command(RPOPLPUSH_BYTES, source0, destination1));
   }
   
   private static final String RPUSH = "RPUSH";
@@ -1123,8 +1123,8 @@ public class RedisClient extends RedisClientBase {
   private static final int RPUSH_VERSION = parseVersion("1.0.0");
 
   /**
-   * List
    * Append one or multiple values to a list
+   * List
    *
    * @param key0
    * @param value1
@@ -1135,13 +1135,13 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     list.add(key0);
     Collections.addAll(list, value1);
-    return (ListenableFuture<IntegerReply>) pipeline(RPUSH, new Command(RPUSH_BYTES, list.toArray(new Object[list.size()])));
+    return (IntegerReply) execute(RPUSH, new Command(RPUSH_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> rpush_(Object... arguments) throws RedisException {
+  public IntegerReply rpush_(Object... arguments) throws RedisException {
     if (version < RPUSH_VERSION) throw new RedisException("Server does not support RPUSH");
-    return (ListenableFuture<IntegerReply>) pipeline(RPUSH, new Command(RPUSH_BYTES, arguments));
+    return (IntegerReply) execute(RPUSH, new Command(RPUSH_BYTES, arguments));
   }
   
   private static final String RPUSHX = "RPUSHX";
@@ -1149,8 +1149,8 @@ public class RedisClient extends RedisClientBase {
   private static final int RPUSHX_VERSION = parseVersion("2.2.0");
 
   /**
-   * List
    * Append a value to a list, only if the list exists
+   * List
    *
    * @param key0
    * @param value1
@@ -1158,7 +1158,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply rpushx(Object key0, Object value1) throws RedisException {
     if (version < RPUSHX_VERSION) throw new RedisException("Server does not support RPUSHX");
-    return (ListenableFuture<IntegerReply>) pipeline(RPUSHX, new Command(RPUSHX_BYTES, key0, value1));
+    return (IntegerReply) execute(RPUSHX, new Command(RPUSHX_BYTES, key0, value1));
   }
   
   private static final String DEL = "DEL";
@@ -1166,8 +1166,8 @@ public class RedisClient extends RedisClientBase {
   private static final int DEL_VERSION = parseVersion("1.0.0");
 
   /**
-   * Generic
    * Delete a key
+   * Generic
    *
    * @param key0
    * @return IntegerReply
@@ -1176,13 +1176,13 @@ public class RedisClient extends RedisClientBase {
     if (version < DEL_VERSION) throw new RedisException("Server does not support DEL");
     List list = new ArrayList();
     Collections.addAll(list, key0);
-    return (ListenableFuture<IntegerReply>) pipeline(DEL, new Command(DEL_BYTES, list.toArray(new Object[list.size()])));
+    return (IntegerReply) execute(DEL, new Command(DEL_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> del_(Object... arguments) throws RedisException {
+  public IntegerReply del_(Object... arguments) throws RedisException {
     if (version < DEL_VERSION) throw new RedisException("Server does not support DEL");
-    return (ListenableFuture<IntegerReply>) pipeline(DEL, new Command(DEL_BYTES, arguments));
+    return (IntegerReply) execute(DEL, new Command(DEL_BYTES, arguments));
   }
   
   private static final String DUMP = "DUMP";
@@ -1190,15 +1190,15 @@ public class RedisClient extends RedisClientBase {
   private static final int DUMP_VERSION = parseVersion("2.6.0");
 
   /**
-   * Generic
    * Return a serialized version of the value stored at the specified key.
+   * Generic
    *
    * @param key0
    * @return BulkReply
    */
   public BulkReply dump(Object key0) throws RedisException {
     if (version < DUMP_VERSION) throw new RedisException("Server does not support DUMP");
-    return (ListenableFuture<BulkReply>) pipeline(DUMP, new Command(DUMP_BYTES, key0));
+    return (BulkReply) execute(DUMP, new Command(DUMP_BYTES, key0));
   }
   
   private static final String EXISTS = "EXISTS";
@@ -1206,15 +1206,15 @@ public class RedisClient extends RedisClientBase {
   private static final int EXISTS_VERSION = parseVersion("1.0.0");
 
   /**
-   * Generic
    * Determine if a key exists
+   * Generic
    *
    * @param key0
    * @return IntegerReply
    */
   public IntegerReply exists(Object key0) throws RedisException {
     if (version < EXISTS_VERSION) throw new RedisException("Server does not support EXISTS");
-    return (ListenableFuture<IntegerReply>) pipeline(EXISTS, new Command(EXISTS_BYTES, key0));
+    return (IntegerReply) execute(EXISTS, new Command(EXISTS_BYTES, key0));
   }
   
   private static final String EXPIRE = "EXPIRE";
@@ -1222,8 +1222,8 @@ public class RedisClient extends RedisClientBase {
   private static final int EXPIRE_VERSION = parseVersion("1.0.0");
 
   /**
-   * Generic
    * Set a key's time to live in seconds
+   * Generic
    *
    * @param key0
    * @param seconds1
@@ -1231,7 +1231,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply expire(Object key0, Object seconds1) throws RedisException {
     if (version < EXPIRE_VERSION) throw new RedisException("Server does not support EXPIRE");
-    return (ListenableFuture<IntegerReply>) pipeline(EXPIRE, new Command(EXPIRE_BYTES, key0, seconds1));
+    return (IntegerReply) execute(EXPIRE, new Command(EXPIRE_BYTES, key0, seconds1));
   }
   
   private static final String EXPIREAT = "EXPIREAT";
@@ -1239,8 +1239,8 @@ public class RedisClient extends RedisClientBase {
   private static final int EXPIREAT_VERSION = parseVersion("1.2.0");
 
   /**
-   * Generic
    * Set the expiration for a key as a UNIX timestamp
+   * Generic
    *
    * @param key0
    * @param timestamp1
@@ -1248,7 +1248,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply expireat(Object key0, Object timestamp1) throws RedisException {
     if (version < EXPIREAT_VERSION) throw new RedisException("Server does not support EXPIREAT");
-    return (ListenableFuture<IntegerReply>) pipeline(EXPIREAT, new Command(EXPIREAT_BYTES, key0, timestamp1));
+    return (IntegerReply) execute(EXPIREAT, new Command(EXPIREAT_BYTES, key0, timestamp1));
   }
   
   private static final String KEYS = "KEYS";
@@ -1256,15 +1256,15 @@ public class RedisClient extends RedisClientBase {
   private static final int KEYS_VERSION = parseVersion("1.0.0");
 
   /**
-   * Generic
    * Find all keys matching the given pattern
+   * Generic
    *
    * @param pattern0
    * @return MultiBulkReply
    */
   public MultiBulkReply keys(Object pattern0) throws RedisException {
     if (version < KEYS_VERSION) throw new RedisException("Server does not support KEYS");
-    return (ListenableFuture<MultiBulkReply>) pipeline(KEYS, new Command(KEYS_BYTES, pattern0));
+    return (MultiBulkReply) execute(KEYS, new Command(KEYS_BYTES, pattern0));
   }
   
   private static final String MIGRATE = "MIGRATE";
@@ -1272,8 +1272,8 @@ public class RedisClient extends RedisClientBase {
   private static final int MIGRATE_VERSION = parseVersion("2.6.0");
 
   /**
-   * Generic
    * Atomically transfer a key from a Redis instance to another one.
+   * Generic
    *
    * @param host0
    * @param port1
@@ -1290,7 +1290,7 @@ public class RedisClient extends RedisClientBase {
     list.add(key2);
     list.add(destination_db3);
     list.add(timeout4);
-    return (ListenableFuture<StatusReply>) pipeline(MIGRATE, new Command(MIGRATE_BYTES, list.toArray(new Object[list.size()])));
+    return (StatusReply) execute(MIGRATE, new Command(MIGRATE_BYTES, list.toArray(new Object[list.size()])));
   }
   
   private static final String MOVE = "MOVE";
@@ -1298,8 +1298,8 @@ public class RedisClient extends RedisClientBase {
   private static final int MOVE_VERSION = parseVersion("1.0.0");
 
   /**
-   * Generic
    * Move a key to another database
+   * Generic
    *
    * @param key0
    * @param db1
@@ -1307,7 +1307,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply move(Object key0, Object db1) throws RedisException {
     if (version < MOVE_VERSION) throw new RedisException("Server does not support MOVE");
-    return (ListenableFuture<IntegerReply>) pipeline(MOVE, new Command(MOVE_BYTES, key0, db1));
+    return (IntegerReply) execute(MOVE, new Command(MOVE_BYTES, key0, db1));
   }
   
   private static final String OBJECT = "OBJECT";
@@ -1315,8 +1315,8 @@ public class RedisClient extends RedisClientBase {
   private static final int OBJECT_VERSION = parseVersion("2.2.3");
 
   /**
-   * Generic
    * Inspect the internals of Redis objects
+   * Generic
    *
    * @param subcommand0
    * @param arguments1
@@ -1327,13 +1327,13 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     list.add(subcommand0);
     Collections.addAll(list, arguments1);
-    return (ListenableFuture<Reply>) pipeline(OBJECT, new Command(OBJECT_BYTES, list.toArray(new Object[list.size()])));
+    return (Reply) execute(OBJECT, new Command(OBJECT_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<Reply> object_(Object... arguments) throws RedisException {
+  public Reply object_(Object... arguments) throws RedisException {
     if (version < OBJECT_VERSION) throw new RedisException("Server does not support OBJECT");
-    return (ListenableFuture<Reply>) pipeline(OBJECT, new Command(OBJECT_BYTES, arguments));
+    return (Reply) execute(OBJECT, new Command(OBJECT_BYTES, arguments));
   }
   
   private static final String PERSIST = "PERSIST";
@@ -1341,15 +1341,15 @@ public class RedisClient extends RedisClientBase {
   private static final int PERSIST_VERSION = parseVersion("2.2.0");
 
   /**
-   * Generic
    * Remove the expiration from a key
+   * Generic
    *
    * @param key0
    * @return IntegerReply
    */
   public IntegerReply persist(Object key0) throws RedisException {
     if (version < PERSIST_VERSION) throw new RedisException("Server does not support PERSIST");
-    return (ListenableFuture<IntegerReply>) pipeline(PERSIST, new Command(PERSIST_BYTES, key0));
+    return (IntegerReply) execute(PERSIST, new Command(PERSIST_BYTES, key0));
   }
   
   private static final String PEXPIRE = "PEXPIRE";
@@ -1357,8 +1357,8 @@ public class RedisClient extends RedisClientBase {
   private static final int PEXPIRE_VERSION = parseVersion("2.6.0");
 
   /**
-   * Generic
    * Set a key's time to live in milliseconds
+   * Generic
    *
    * @param key0
    * @param milliseconds1
@@ -1366,7 +1366,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply pexpire(Object key0, Object milliseconds1) throws RedisException {
     if (version < PEXPIRE_VERSION) throw new RedisException("Server does not support PEXPIRE");
-    return (ListenableFuture<IntegerReply>) pipeline(PEXPIRE, new Command(PEXPIRE_BYTES, key0, milliseconds1));
+    return (IntegerReply) execute(PEXPIRE, new Command(PEXPIRE_BYTES, key0, milliseconds1));
   }
   
   private static final String PEXPIREAT = "PEXPIREAT";
@@ -1374,8 +1374,8 @@ public class RedisClient extends RedisClientBase {
   private static final int PEXPIREAT_VERSION = parseVersion("2.6.0");
 
   /**
-   * Generic
    * Set the expiration for a key as a UNIX timestamp specified in milliseconds
+   * Generic
    *
    * @param key0
    * @param milliseconds_timestamp1
@@ -1383,7 +1383,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply pexpireat(Object key0, Object milliseconds_timestamp1) throws RedisException {
     if (version < PEXPIREAT_VERSION) throw new RedisException("Server does not support PEXPIREAT");
-    return (ListenableFuture<IntegerReply>) pipeline(PEXPIREAT, new Command(PEXPIREAT_BYTES, key0, milliseconds_timestamp1));
+    return (IntegerReply) execute(PEXPIREAT, new Command(PEXPIREAT_BYTES, key0, milliseconds_timestamp1));
   }
   
   private static final String PTTL = "PTTL";
@@ -1391,15 +1391,15 @@ public class RedisClient extends RedisClientBase {
   private static final int PTTL_VERSION = parseVersion("2.6.0");
 
   /**
-   * Generic
    * Get the time to live for a key in milliseconds
+   * Generic
    *
    * @param key0
    * @return IntegerReply
    */
   public IntegerReply pttl(Object key0) throws RedisException {
     if (version < PTTL_VERSION) throw new RedisException("Server does not support PTTL");
-    return (ListenableFuture<IntegerReply>) pipeline(PTTL, new Command(PTTL_BYTES, key0));
+    return (IntegerReply) execute(PTTL, new Command(PTTL_BYTES, key0));
   }
   
   private static final String RANDOMKEY = "RANDOMKEY";
@@ -1407,14 +1407,14 @@ public class RedisClient extends RedisClientBase {
   private static final int RANDOMKEY_VERSION = parseVersion("1.0.0");
 
   /**
-   * Generic
    * Return a random key from the keyspace
+   * Generic
    *
    * @return BulkReply
    */
   public BulkReply randomkey() throws RedisException {
     if (version < RANDOMKEY_VERSION) throw new RedisException("Server does not support RANDOMKEY");
-    return (ListenableFuture<BulkReply>) pipeline(RANDOMKEY, new Command(RANDOMKEY_BYTES));
+    return (BulkReply) execute(RANDOMKEY, new Command(RANDOMKEY_BYTES));
   }
   
   private static final String RENAME = "RENAME";
@@ -1422,8 +1422,8 @@ public class RedisClient extends RedisClientBase {
   private static final int RENAME_VERSION = parseVersion("1.0.0");
 
   /**
-   * Generic
    * Rename a key
+   * Generic
    *
    * @param key0
    * @param newkey1
@@ -1431,7 +1431,7 @@ public class RedisClient extends RedisClientBase {
    */
   public StatusReply rename(Object key0, Object newkey1) throws RedisException {
     if (version < RENAME_VERSION) throw new RedisException("Server does not support RENAME");
-    return (ListenableFuture<StatusReply>) pipeline(RENAME, new Command(RENAME_BYTES, key0, newkey1));
+    return (StatusReply) execute(RENAME, new Command(RENAME_BYTES, key0, newkey1));
   }
   
   private static final String RENAMENX = "RENAMENX";
@@ -1439,8 +1439,8 @@ public class RedisClient extends RedisClientBase {
   private static final int RENAMENX_VERSION = parseVersion("1.0.0");
 
   /**
-   * Generic
    * Rename a key, only if the new key does not exist
+   * Generic
    *
    * @param key0
    * @param newkey1
@@ -1448,7 +1448,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply renamenx(Object key0, Object newkey1) throws RedisException {
     if (version < RENAMENX_VERSION) throw new RedisException("Server does not support RENAMENX");
-    return (ListenableFuture<IntegerReply>) pipeline(RENAMENX, new Command(RENAMENX_BYTES, key0, newkey1));
+    return (IntegerReply) execute(RENAMENX, new Command(RENAMENX_BYTES, key0, newkey1));
   }
   
   private static final String RESTORE = "RESTORE";
@@ -1456,8 +1456,8 @@ public class RedisClient extends RedisClientBase {
   private static final int RESTORE_VERSION = parseVersion("2.6.0");
 
   /**
-   * Generic
    * Create a key using the provided serialized value, previously obtained using DUMP.
+   * Generic
    *
    * @param key0
    * @param ttl1
@@ -1466,7 +1466,7 @@ public class RedisClient extends RedisClientBase {
    */
   public StatusReply restore(Object key0, Object ttl1, Object serialized_value2) throws RedisException {
     if (version < RESTORE_VERSION) throw new RedisException("Server does not support RESTORE");
-    return (ListenableFuture<StatusReply>) pipeline(RESTORE, new Command(RESTORE_BYTES, key0, ttl1, serialized_value2));
+    return (StatusReply) execute(RESTORE, new Command(RESTORE_BYTES, key0, ttl1, serialized_value2));
   }
   
   private static final String SORT = "SORT";
@@ -1474,8 +1474,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SORT_VERSION = parseVersion("1.0.0");
 
   /**
-   * Generic
    * Sort the elements in a list, set or sorted set
+   * Generic
    *
    * @param key0
    * @param pattern1
@@ -1490,13 +1490,13 @@ public class RedisClient extends RedisClientBase {
     if (pattern1 != null) list.add(pattern1);
     if (offset_or_count2 != null) list.add(offset_or_count2);
     Collections.addAll(list, pattern3);
-    return (ListenableFuture<Reply>) pipeline(SORT, new Command(SORT_BYTES, list.toArray(new Object[list.size()])));
+    return (Reply) execute(SORT, new Command(SORT_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<Reply> sort_(Object... arguments) throws RedisException {
+  public Reply sort_(Object... arguments) throws RedisException {
     if (version < SORT_VERSION) throw new RedisException("Server does not support SORT");
-    return (ListenableFuture<Reply>) pipeline(SORT, new Command(SORT_BYTES, arguments));
+    return (Reply) execute(SORT, new Command(SORT_BYTES, arguments));
   }
   
   private static final String TTL = "TTL";
@@ -1504,15 +1504,15 @@ public class RedisClient extends RedisClientBase {
   private static final int TTL_VERSION = parseVersion("1.0.0");
 
   /**
-   * Generic
    * Get the time to live for a key
+   * Generic
    *
    * @param key0
    * @return IntegerReply
    */
   public IntegerReply ttl(Object key0) throws RedisException {
     if (version < TTL_VERSION) throw new RedisException("Server does not support TTL");
-    return (ListenableFuture<IntegerReply>) pipeline(TTL, new Command(TTL_BYTES, key0));
+    return (IntegerReply) execute(TTL, new Command(TTL_BYTES, key0));
   }
   
   private static final String TYPE = "TYPE";
@@ -1520,15 +1520,15 @@ public class RedisClient extends RedisClientBase {
   private static final int TYPE_VERSION = parseVersion("1.0.0");
 
   /**
-   * Generic
    * Determine the type stored at key
+   * Generic
    *
    * @param key0
    * @return StatusReply
    */
   public StatusReply type(Object key0) throws RedisException {
     if (version < TYPE_VERSION) throw new RedisException("Server does not support TYPE");
-    return (ListenableFuture<StatusReply>) pipeline(TYPE, new Command(TYPE_BYTES, key0));
+    return (StatusReply) execute(TYPE, new Command(TYPE_BYTES, key0));
   }
   
   private static final String UNWATCH = "UNWATCH";
@@ -1536,14 +1536,14 @@ public class RedisClient extends RedisClientBase {
   private static final int UNWATCH_VERSION = parseVersion("2.2.0");
 
   /**
-   * Transactions
    * Forget about all watched keys
+   * Transactions
    *
    * @return StatusReply
    */
   public StatusReply unwatch() throws RedisException {
     if (version < UNWATCH_VERSION) throw new RedisException("Server does not support UNWATCH");
-    return (ListenableFuture<StatusReply>) pipeline(UNWATCH, new Command(UNWATCH_BYTES));
+    return (StatusReply) execute(UNWATCH, new Command(UNWATCH_BYTES));
   }
   
   private static final String WATCH = "WATCH";
@@ -1551,8 +1551,8 @@ public class RedisClient extends RedisClientBase {
   private static final int WATCH_VERSION = parseVersion("2.2.0");
 
   /**
-   * Transactions
    * Watch the given keys to determine execution of the MULTI/EXEC block
+   * Transactions
    *
    * @param key0
    * @return StatusReply
@@ -1561,13 +1561,13 @@ public class RedisClient extends RedisClientBase {
     if (version < WATCH_VERSION) throw new RedisException("Server does not support WATCH");
     List list = new ArrayList();
     Collections.addAll(list, key0);
-    return (ListenableFuture<StatusReply>) pipeline(WATCH, new Command(WATCH_BYTES, list.toArray(new Object[list.size()])));
+    return (StatusReply) execute(WATCH, new Command(WATCH_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<StatusReply> watch_(Object... arguments) throws RedisException {
+  public StatusReply watch_(Object... arguments) throws RedisException {
     if (version < WATCH_VERSION) throw new RedisException("Server does not support WATCH");
-    return (ListenableFuture<StatusReply>) pipeline(WATCH, new Command(WATCH_BYTES, arguments));
+    return (StatusReply) execute(WATCH, new Command(WATCH_BYTES, arguments));
   }
   
   private static final String EVAL = "EVAL";
@@ -1575,8 +1575,8 @@ public class RedisClient extends RedisClientBase {
   private static final int EVAL_VERSION = parseVersion("2.6.0");
 
   /**
-   * Scripting
    * Execute a Lua script server side
+   * Scripting
    *
    * @param script0
    * @param numkeys1
@@ -1589,13 +1589,13 @@ public class RedisClient extends RedisClientBase {
     list.add(script0);
     list.add(numkeys1);
     Collections.addAll(list, key2);
-    return (ListenableFuture<Reply>) pipeline(EVAL, new Command(EVAL_BYTES, list.toArray(new Object[list.size()])));
+    return (Reply) execute(EVAL, new Command(EVAL_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<Reply> eval_(Object... arguments) throws RedisException {
+  public Reply eval_(Object... arguments) throws RedisException {
     if (version < EVAL_VERSION) throw new RedisException("Server does not support EVAL");
-    return (ListenableFuture<Reply>) pipeline(EVAL, new Command(EVAL_BYTES, arguments));
+    return (Reply) execute(EVAL, new Command(EVAL_BYTES, arguments));
   }
   
   private static final String EVALSHA = "EVALSHA";
@@ -1603,8 +1603,8 @@ public class RedisClient extends RedisClientBase {
   private static final int EVALSHA_VERSION = parseVersion("2.6.0");
 
   /**
-   * Scripting
    * Execute a Lua script server side
+   * Scripting
    *
    * @param sha10
    * @param numkeys1
@@ -1617,13 +1617,13 @@ public class RedisClient extends RedisClientBase {
     list.add(sha10);
     list.add(numkeys1);
     Collections.addAll(list, key2);
-    return (ListenableFuture<Reply>) pipeline(EVALSHA, new Command(EVALSHA_BYTES, list.toArray(new Object[list.size()])));
+    return (Reply) execute(EVALSHA, new Command(EVALSHA_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<Reply> evalsha_(Object... arguments) throws RedisException {
+  public Reply evalsha_(Object... arguments) throws RedisException {
     if (version < EVALSHA_VERSION) throw new RedisException("Server does not support EVALSHA");
-    return (ListenableFuture<Reply>) pipeline(EVALSHA, new Command(EVALSHA_BYTES, arguments));
+    return (Reply) execute(EVALSHA, new Command(EVALSHA_BYTES, arguments));
   }
   
   private static final String SCRIPT_EXISTS = "SCRIPT_EXISTS";
@@ -1631,8 +1631,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SCRIPT_EXISTS_VERSION = parseVersion("2.6.0");
 
   /**
-   * Scripting
    * Check existence of scripts in the script cache.
+   * Scripting
    *
    * @param script0
    * @return Reply
@@ -1641,13 +1641,13 @@ public class RedisClient extends RedisClientBase {
     if (version < SCRIPT_EXISTS_VERSION) throw new RedisException("Server does not support SCRIPT_EXISTS");
     List list = new ArrayList();
     Collections.addAll(list, script0);
-    return (ListenableFuture<Reply>) pipeline(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, list.toArray(new Object[list.size()])));
+    return (Reply) execute(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<Reply> script_exists_(Object... arguments) throws RedisException {
+  public Reply script_exists_(Object... arguments) throws RedisException {
     if (version < SCRIPT_EXISTS_VERSION) throw new RedisException("Server does not support SCRIPT_EXISTS");
-    return (ListenableFuture<Reply>) pipeline(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, arguments));
+    return (Reply) execute(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, arguments));
   }
   
   private static final String SCRIPT_FLUSH = "SCRIPT_FLUSH";
@@ -1655,14 +1655,14 @@ public class RedisClient extends RedisClientBase {
   private static final int SCRIPT_FLUSH_VERSION = parseVersion("2.6.0");
 
   /**
-   * Scripting
    * Remove all the scripts from the script cache.
+   * Scripting
    *
    * @return Reply
    */
   public Reply script_flush() throws RedisException {
     if (version < SCRIPT_FLUSH_VERSION) throw new RedisException("Server does not support SCRIPT_FLUSH");
-    return (ListenableFuture<Reply>) pipeline(SCRIPT_FLUSH, new Command(SCRIPT_FLUSH_BYTES));
+    return (Reply) execute(SCRIPT_FLUSH, new Command(SCRIPT_FLUSH_BYTES));
   }
   
   private static final String SCRIPT_KILL = "SCRIPT_KILL";
@@ -1670,14 +1670,14 @@ public class RedisClient extends RedisClientBase {
   private static final int SCRIPT_KILL_VERSION = parseVersion("2.6.0");
 
   /**
-   * Scripting
    * Kill the script currently in execution.
+   * Scripting
    *
    * @return Reply
    */
   public Reply script_kill() throws RedisException {
     if (version < SCRIPT_KILL_VERSION) throw new RedisException("Server does not support SCRIPT_KILL");
-    return (ListenableFuture<Reply>) pipeline(SCRIPT_KILL, new Command(SCRIPT_KILL_BYTES));
+    return (Reply) execute(SCRIPT_KILL, new Command(SCRIPT_KILL_BYTES));
   }
   
   private static final String SCRIPT_LOAD = "SCRIPT_LOAD";
@@ -1685,15 +1685,15 @@ public class RedisClient extends RedisClientBase {
   private static final int SCRIPT_LOAD_VERSION = parseVersion("2.6.0");
 
   /**
-   * Scripting
    * Load the specified Lua script into the script cache.
+   * Scripting
    *
    * @param script0
    * @return Reply
    */
   public Reply script_load(Object script0) throws RedisException {
     if (version < SCRIPT_LOAD_VERSION) throw new RedisException("Server does not support SCRIPT_LOAD");
-    return (ListenableFuture<Reply>) pipeline(SCRIPT_LOAD, new Command(SCRIPT_LOAD_BYTES, script0));
+    return (Reply) execute(SCRIPT_LOAD, new Command(SCRIPT_LOAD_BYTES, script0));
   }
   
   private static final String HDEL = "HDEL";
@@ -1701,8 +1701,8 @@ public class RedisClient extends RedisClientBase {
   private static final int HDEL_VERSION = parseVersion("2.0.0");
 
   /**
-   * Hash
    * Delete one or more hash fields
+   * Hash
    *
    * @param key0
    * @param field1
@@ -1713,13 +1713,13 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     list.add(key0);
     Collections.addAll(list, field1);
-    return (ListenableFuture<IntegerReply>) pipeline(HDEL, new Command(HDEL_BYTES, list.toArray(new Object[list.size()])));
+    return (IntegerReply) execute(HDEL, new Command(HDEL_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> hdel_(Object... arguments) throws RedisException {
+  public IntegerReply hdel_(Object... arguments) throws RedisException {
     if (version < HDEL_VERSION) throw new RedisException("Server does not support HDEL");
-    return (ListenableFuture<IntegerReply>) pipeline(HDEL, new Command(HDEL_BYTES, arguments));
+    return (IntegerReply) execute(HDEL, new Command(HDEL_BYTES, arguments));
   }
   
   private static final String HEXISTS = "HEXISTS";
@@ -1727,8 +1727,8 @@ public class RedisClient extends RedisClientBase {
   private static final int HEXISTS_VERSION = parseVersion("2.0.0");
 
   /**
-   * Hash
    * Determine if a hash field exists
+   * Hash
    *
    * @param key0
    * @param field1
@@ -1736,7 +1736,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply hexists(Object key0, Object field1) throws RedisException {
     if (version < HEXISTS_VERSION) throw new RedisException("Server does not support HEXISTS");
-    return (ListenableFuture<IntegerReply>) pipeline(HEXISTS, new Command(HEXISTS_BYTES, key0, field1));
+    return (IntegerReply) execute(HEXISTS, new Command(HEXISTS_BYTES, key0, field1));
   }
   
   private static final String HGET = "HGET";
@@ -1744,8 +1744,8 @@ public class RedisClient extends RedisClientBase {
   private static final int HGET_VERSION = parseVersion("2.0.0");
 
   /**
-   * Hash
    * Get the value of a hash field
+   * Hash
    *
    * @param key0
    * @param field1
@@ -1753,7 +1753,7 @@ public class RedisClient extends RedisClientBase {
    */
   public BulkReply hget(Object key0, Object field1) throws RedisException {
     if (version < HGET_VERSION) throw new RedisException("Server does not support HGET");
-    return (ListenableFuture<BulkReply>) pipeline(HGET, new Command(HGET_BYTES, key0, field1));
+    return (BulkReply) execute(HGET, new Command(HGET_BYTES, key0, field1));
   }
   
   private static final String HGETALL = "HGETALL";
@@ -1761,15 +1761,15 @@ public class RedisClient extends RedisClientBase {
   private static final int HGETALL_VERSION = parseVersion("2.0.0");
 
   /**
-   * Hash
    * Get all the fields and values in a hash
+   * Hash
    *
    * @param key0
    * @return MultiBulkReply
    */
   public MultiBulkReply hgetall(Object key0) throws RedisException {
     if (version < HGETALL_VERSION) throw new RedisException("Server does not support HGETALL");
-    return (ListenableFuture<MultiBulkReply>) pipeline(HGETALL, new Command(HGETALL_BYTES, key0));
+    return (MultiBulkReply) execute(HGETALL, new Command(HGETALL_BYTES, key0));
   }
   
   private static final String HINCRBY = "HINCRBY";
@@ -1777,8 +1777,8 @@ public class RedisClient extends RedisClientBase {
   private static final int HINCRBY_VERSION = parseVersion("2.0.0");
 
   /**
-   * Hash
    * Increment the integer value of a hash field by the given number
+   * Hash
    *
    * @param key0
    * @param field1
@@ -1787,7 +1787,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply hincrby(Object key0, Object field1, Object increment2) throws RedisException {
     if (version < HINCRBY_VERSION) throw new RedisException("Server does not support HINCRBY");
-    return (ListenableFuture<IntegerReply>) pipeline(HINCRBY, new Command(HINCRBY_BYTES, key0, field1, increment2));
+    return (IntegerReply) execute(HINCRBY, new Command(HINCRBY_BYTES, key0, field1, increment2));
   }
   
   private static final String HINCRBYFLOAT = "HINCRBYFLOAT";
@@ -1795,8 +1795,8 @@ public class RedisClient extends RedisClientBase {
   private static final int HINCRBYFLOAT_VERSION = parseVersion("2.6.0");
 
   /**
-   * Hash
    * Increment the float value of a hash field by the given amount
+   * Hash
    *
    * @param key0
    * @param field1
@@ -1805,7 +1805,7 @@ public class RedisClient extends RedisClientBase {
    */
   public BulkReply hincrbyfloat(Object key0, Object field1, Object increment2) throws RedisException {
     if (version < HINCRBYFLOAT_VERSION) throw new RedisException("Server does not support HINCRBYFLOAT");
-    return (ListenableFuture<BulkReply>) pipeline(HINCRBYFLOAT, new Command(HINCRBYFLOAT_BYTES, key0, field1, increment2));
+    return (BulkReply) execute(HINCRBYFLOAT, new Command(HINCRBYFLOAT_BYTES, key0, field1, increment2));
   }
   
   private static final String HKEYS = "HKEYS";
@@ -1813,15 +1813,15 @@ public class RedisClient extends RedisClientBase {
   private static final int HKEYS_VERSION = parseVersion("2.0.0");
 
   /**
-   * Hash
    * Get all the fields in a hash
+   * Hash
    *
    * @param key0
    * @return MultiBulkReply
    */
   public MultiBulkReply hkeys(Object key0) throws RedisException {
     if (version < HKEYS_VERSION) throw new RedisException("Server does not support HKEYS");
-    return (ListenableFuture<MultiBulkReply>) pipeline(HKEYS, new Command(HKEYS_BYTES, key0));
+    return (MultiBulkReply) execute(HKEYS, new Command(HKEYS_BYTES, key0));
   }
   
   private static final String HLEN = "HLEN";
@@ -1829,15 +1829,15 @@ public class RedisClient extends RedisClientBase {
   private static final int HLEN_VERSION = parseVersion("2.0.0");
 
   /**
-   * Hash
    * Get the number of fields in a hash
+   * Hash
    *
    * @param key0
    * @return IntegerReply
    */
   public IntegerReply hlen(Object key0) throws RedisException {
     if (version < HLEN_VERSION) throw new RedisException("Server does not support HLEN");
-    return (ListenableFuture<IntegerReply>) pipeline(HLEN, new Command(HLEN_BYTES, key0));
+    return (IntegerReply) execute(HLEN, new Command(HLEN_BYTES, key0));
   }
   
   private static final String HMGET = "HMGET";
@@ -1845,8 +1845,8 @@ public class RedisClient extends RedisClientBase {
   private static final int HMGET_VERSION = parseVersion("2.0.0");
 
   /**
-   * Hash
    * Get the values of all the given hash fields
+   * Hash
    *
    * @param key0
    * @param field1
@@ -1857,13 +1857,13 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     list.add(key0);
     Collections.addAll(list, field1);
-    return (ListenableFuture<MultiBulkReply>) pipeline(HMGET, new Command(HMGET_BYTES, list.toArray(new Object[list.size()])));
+    return (MultiBulkReply) execute(HMGET, new Command(HMGET_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> hmget_(Object... arguments) throws RedisException {
+  public MultiBulkReply hmget_(Object... arguments) throws RedisException {
     if (version < HMGET_VERSION) throw new RedisException("Server does not support HMGET");
-    return (ListenableFuture<MultiBulkReply>) pipeline(HMGET, new Command(HMGET_BYTES, arguments));
+    return (MultiBulkReply) execute(HMGET, new Command(HMGET_BYTES, arguments));
   }
   
   private static final String HMSET = "HMSET";
@@ -1871,8 +1871,8 @@ public class RedisClient extends RedisClientBase {
   private static final int HMSET_VERSION = parseVersion("2.0.0");
 
   /**
-   * Hash
    * Set multiple hash fields to multiple values
+   * Hash
    *
    * @param key0
    * @param field_or_value1
@@ -1883,13 +1883,13 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     list.add(key0);
     Collections.addAll(list, field_or_value1);
-    return (ListenableFuture<StatusReply>) pipeline(HMSET, new Command(HMSET_BYTES, list.toArray(new Object[list.size()])));
+    return (StatusReply) execute(HMSET, new Command(HMSET_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<StatusReply> hmset_(Object... arguments) throws RedisException {
+  public StatusReply hmset_(Object... arguments) throws RedisException {
     if (version < HMSET_VERSION) throw new RedisException("Server does not support HMSET");
-    return (ListenableFuture<StatusReply>) pipeline(HMSET, new Command(HMSET_BYTES, arguments));
+    return (StatusReply) execute(HMSET, new Command(HMSET_BYTES, arguments));
   }
   
   private static final String HSET = "HSET";
@@ -1897,8 +1897,8 @@ public class RedisClient extends RedisClientBase {
   private static final int HSET_VERSION = parseVersion("2.0.0");
 
   /**
-   * Hash
    * Set the string value of a hash field
+   * Hash
    *
    * @param key0
    * @param field1
@@ -1907,7 +1907,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply hset(Object key0, Object field1, Object value2) throws RedisException {
     if (version < HSET_VERSION) throw new RedisException("Server does not support HSET");
-    return (ListenableFuture<IntegerReply>) pipeline(HSET, new Command(HSET_BYTES, key0, field1, value2));
+    return (IntegerReply) execute(HSET, new Command(HSET_BYTES, key0, field1, value2));
   }
   
   private static final String HSETNX = "HSETNX";
@@ -1915,8 +1915,8 @@ public class RedisClient extends RedisClientBase {
   private static final int HSETNX_VERSION = parseVersion("2.0.0");
 
   /**
-   * Hash
    * Set the value of a hash field, only if the field does not exist
+   * Hash
    *
    * @param key0
    * @param field1
@@ -1925,7 +1925,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply hsetnx(Object key0, Object field1, Object value2) throws RedisException {
     if (version < HSETNX_VERSION) throw new RedisException("Server does not support HSETNX");
-    return (ListenableFuture<IntegerReply>) pipeline(HSETNX, new Command(HSETNX_BYTES, key0, field1, value2));
+    return (IntegerReply) execute(HSETNX, new Command(HSETNX_BYTES, key0, field1, value2));
   }
   
   private static final String HVALS = "HVALS";
@@ -1933,15 +1933,15 @@ public class RedisClient extends RedisClientBase {
   private static final int HVALS_VERSION = parseVersion("2.0.0");
 
   /**
-   * Hash
    * Get all the values in a hash
+   * Hash
    *
    * @param key0
    * @return MultiBulkReply
    */
   public MultiBulkReply hvals(Object key0) throws RedisException {
     if (version < HVALS_VERSION) throw new RedisException("Server does not support HVALS");
-    return (ListenableFuture<MultiBulkReply>) pipeline(HVALS, new Command(HVALS_BYTES, key0));
+    return (MultiBulkReply) execute(HVALS, new Command(HVALS_BYTES, key0));
   }
   
   private static final String PUBLISH = "PUBLISH";
@@ -1949,8 +1949,8 @@ public class RedisClient extends RedisClientBase {
   private static final int PUBLISH_VERSION = parseVersion("2.0.0");
 
   /**
-   * Pubsub
    * Post a message to a channel
+   * Pubsub
    *
    * @param channel0
    * @param message1
@@ -1958,7 +1958,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply publish(Object channel0, Object message1) throws RedisException {
     if (version < PUBLISH_VERSION) throw new RedisException("Server does not support PUBLISH");
-    return (ListenableFuture<IntegerReply>) pipeline(PUBLISH, new Command(PUBLISH_BYTES, channel0, message1));
+    return (IntegerReply) execute(PUBLISH, new Command(PUBLISH_BYTES, channel0, message1));
   }
   
   private static final String SADD = "SADD";
@@ -1966,8 +1966,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SADD_VERSION = parseVersion("1.0.0");
 
   /**
-   * Set
    * Add one or more members to a set
+   * Set
    *
    * @param key0
    * @param member1
@@ -1978,13 +1978,13 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     list.add(key0);
     Collections.addAll(list, member1);
-    return (ListenableFuture<IntegerReply>) pipeline(SADD, new Command(SADD_BYTES, list.toArray(new Object[list.size()])));
+    return (IntegerReply) execute(SADD, new Command(SADD_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> sadd_(Object... arguments) throws RedisException {
+  public IntegerReply sadd_(Object... arguments) throws RedisException {
     if (version < SADD_VERSION) throw new RedisException("Server does not support SADD");
-    return (ListenableFuture<IntegerReply>) pipeline(SADD, new Command(SADD_BYTES, arguments));
+    return (IntegerReply) execute(SADD, new Command(SADD_BYTES, arguments));
   }
   
   private static final String SCARD = "SCARD";
@@ -1992,15 +1992,15 @@ public class RedisClient extends RedisClientBase {
   private static final int SCARD_VERSION = parseVersion("1.0.0");
 
   /**
-   * Set
    * Get the number of members in a set
+   * Set
    *
    * @param key0
    * @return IntegerReply
    */
   public IntegerReply scard(Object key0) throws RedisException {
     if (version < SCARD_VERSION) throw new RedisException("Server does not support SCARD");
-    return (ListenableFuture<IntegerReply>) pipeline(SCARD, new Command(SCARD_BYTES, key0));
+    return (IntegerReply) execute(SCARD, new Command(SCARD_BYTES, key0));
   }
   
   private static final String SDIFF = "SDIFF";
@@ -2008,8 +2008,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SDIFF_VERSION = parseVersion("1.0.0");
 
   /**
-   * Set
    * Subtract multiple sets
+   * Set
    *
    * @param key0
    * @return MultiBulkReply
@@ -2018,13 +2018,13 @@ public class RedisClient extends RedisClientBase {
     if (version < SDIFF_VERSION) throw new RedisException("Server does not support SDIFF");
     List list = new ArrayList();
     Collections.addAll(list, key0);
-    return (ListenableFuture<MultiBulkReply>) pipeline(SDIFF, new Command(SDIFF_BYTES, list.toArray(new Object[list.size()])));
+    return (MultiBulkReply) execute(SDIFF, new Command(SDIFF_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> sdiff_(Object... arguments) throws RedisException {
+  public MultiBulkReply sdiff_(Object... arguments) throws RedisException {
     if (version < SDIFF_VERSION) throw new RedisException("Server does not support SDIFF");
-    return (ListenableFuture<MultiBulkReply>) pipeline(SDIFF, new Command(SDIFF_BYTES, arguments));
+    return (MultiBulkReply) execute(SDIFF, new Command(SDIFF_BYTES, arguments));
   }
   
   private static final String SDIFFSTORE = "SDIFFSTORE";
@@ -2032,8 +2032,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SDIFFSTORE_VERSION = parseVersion("1.0.0");
 
   /**
-   * Set
    * Subtract multiple sets and store the resulting set in a key
+   * Set
    *
    * @param destination0
    * @param key1
@@ -2044,13 +2044,13 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     list.add(destination0);
     Collections.addAll(list, key1);
-    return (ListenableFuture<IntegerReply>) pipeline(SDIFFSTORE, new Command(SDIFFSTORE_BYTES, list.toArray(new Object[list.size()])));
+    return (IntegerReply) execute(SDIFFSTORE, new Command(SDIFFSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> sdiffstore_(Object... arguments) throws RedisException {
+  public IntegerReply sdiffstore_(Object... arguments) throws RedisException {
     if (version < SDIFFSTORE_VERSION) throw new RedisException("Server does not support SDIFFSTORE");
-    return (ListenableFuture<IntegerReply>) pipeline(SDIFFSTORE, new Command(SDIFFSTORE_BYTES, arguments));
+    return (IntegerReply) execute(SDIFFSTORE, new Command(SDIFFSTORE_BYTES, arguments));
   }
   
   private static final String SINTER = "SINTER";
@@ -2058,8 +2058,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SINTER_VERSION = parseVersion("1.0.0");
 
   /**
-   * Set
    * Intersect multiple sets
+   * Set
    *
    * @param key0
    * @return MultiBulkReply
@@ -2068,13 +2068,13 @@ public class RedisClient extends RedisClientBase {
     if (version < SINTER_VERSION) throw new RedisException("Server does not support SINTER");
     List list = new ArrayList();
     Collections.addAll(list, key0);
-    return (ListenableFuture<MultiBulkReply>) pipeline(SINTER, new Command(SINTER_BYTES, list.toArray(new Object[list.size()])));
+    return (MultiBulkReply) execute(SINTER, new Command(SINTER_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> sinter_(Object... arguments) throws RedisException {
+  public MultiBulkReply sinter_(Object... arguments) throws RedisException {
     if (version < SINTER_VERSION) throw new RedisException("Server does not support SINTER");
-    return (ListenableFuture<MultiBulkReply>) pipeline(SINTER, new Command(SINTER_BYTES, arguments));
+    return (MultiBulkReply) execute(SINTER, new Command(SINTER_BYTES, arguments));
   }
   
   private static final String SINTERSTORE = "SINTERSTORE";
@@ -2082,8 +2082,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SINTERSTORE_VERSION = parseVersion("1.0.0");
 
   /**
-   * Set
    * Intersect multiple sets and store the resulting set in a key
+   * Set
    *
    * @param destination0
    * @param key1
@@ -2094,13 +2094,13 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     list.add(destination0);
     Collections.addAll(list, key1);
-    return (ListenableFuture<IntegerReply>) pipeline(SINTERSTORE, new Command(SINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
+    return (IntegerReply) execute(SINTERSTORE, new Command(SINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> sinterstore_(Object... arguments) throws RedisException {
+  public IntegerReply sinterstore_(Object... arguments) throws RedisException {
     if (version < SINTERSTORE_VERSION) throw new RedisException("Server does not support SINTERSTORE");
-    return (ListenableFuture<IntegerReply>) pipeline(SINTERSTORE, new Command(SINTERSTORE_BYTES, arguments));
+    return (IntegerReply) execute(SINTERSTORE, new Command(SINTERSTORE_BYTES, arguments));
   }
   
   private static final String SISMEMBER = "SISMEMBER";
@@ -2108,8 +2108,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SISMEMBER_VERSION = parseVersion("1.0.0");
 
   /**
-   * Set
    * Determine if a given value is a member of a set
+   * Set
    *
    * @param key0
    * @param member1
@@ -2117,7 +2117,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply sismember(Object key0, Object member1) throws RedisException {
     if (version < SISMEMBER_VERSION) throw new RedisException("Server does not support SISMEMBER");
-    return (ListenableFuture<IntegerReply>) pipeline(SISMEMBER, new Command(SISMEMBER_BYTES, key0, member1));
+    return (IntegerReply) execute(SISMEMBER, new Command(SISMEMBER_BYTES, key0, member1));
   }
   
   private static final String SMEMBERS = "SMEMBERS";
@@ -2125,15 +2125,15 @@ public class RedisClient extends RedisClientBase {
   private static final int SMEMBERS_VERSION = parseVersion("1.0.0");
 
   /**
-   * Set
    * Get all the members in a set
+   * Set
    *
    * @param key0
    * @return MultiBulkReply
    */
   public MultiBulkReply smembers(Object key0) throws RedisException {
     if (version < SMEMBERS_VERSION) throw new RedisException("Server does not support SMEMBERS");
-    return (ListenableFuture<MultiBulkReply>) pipeline(SMEMBERS, new Command(SMEMBERS_BYTES, key0));
+    return (MultiBulkReply) execute(SMEMBERS, new Command(SMEMBERS_BYTES, key0));
   }
   
   private static final String SMOVE = "SMOVE";
@@ -2141,8 +2141,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SMOVE_VERSION = parseVersion("1.0.0");
 
   /**
-   * Set
    * Move a member from one set to another
+   * Set
    *
    * @param source0
    * @param destination1
@@ -2151,7 +2151,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply smove(Object source0, Object destination1, Object member2) throws RedisException {
     if (version < SMOVE_VERSION) throw new RedisException("Server does not support SMOVE");
-    return (ListenableFuture<IntegerReply>) pipeline(SMOVE, new Command(SMOVE_BYTES, source0, destination1, member2));
+    return (IntegerReply) execute(SMOVE, new Command(SMOVE_BYTES, source0, destination1, member2));
   }
   
   private static final String SPOP = "SPOP";
@@ -2159,15 +2159,15 @@ public class RedisClient extends RedisClientBase {
   private static final int SPOP_VERSION = parseVersion("1.0.0");
 
   /**
-   * Set
    * Remove and return a random member from a set
+   * Set
    *
    * @param key0
    * @return BulkReply
    */
   public BulkReply spop(Object key0) throws RedisException {
     if (version < SPOP_VERSION) throw new RedisException("Server does not support SPOP");
-    return (ListenableFuture<BulkReply>) pipeline(SPOP, new Command(SPOP_BYTES, key0));
+    return (BulkReply) execute(SPOP, new Command(SPOP_BYTES, key0));
   }
   
   private static final String SRANDMEMBER = "SRANDMEMBER";
@@ -2175,15 +2175,15 @@ public class RedisClient extends RedisClientBase {
   private static final int SRANDMEMBER_VERSION = parseVersion("1.0.0");
 
   /**
-   * Set
    * Get a random member from a set
+   * Set
    *
    * @param key0
    * @return BulkReply
    */
   public BulkReply srandmember(Object key0) throws RedisException {
     if (version < SRANDMEMBER_VERSION) throw new RedisException("Server does not support SRANDMEMBER");
-    return (ListenableFuture<BulkReply>) pipeline(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, key0));
+    return (BulkReply) execute(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, key0));
   }
   
   private static final String SREM = "SREM";
@@ -2191,8 +2191,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SREM_VERSION = parseVersion("1.0.0");
 
   /**
-   * Set
    * Remove one or more members from a set
+   * Set
    *
    * @param key0
    * @param member1
@@ -2203,13 +2203,13 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     list.add(key0);
     Collections.addAll(list, member1);
-    return (ListenableFuture<IntegerReply>) pipeline(SREM, new Command(SREM_BYTES, list.toArray(new Object[list.size()])));
+    return (IntegerReply) execute(SREM, new Command(SREM_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> srem_(Object... arguments) throws RedisException {
+  public IntegerReply srem_(Object... arguments) throws RedisException {
     if (version < SREM_VERSION) throw new RedisException("Server does not support SREM");
-    return (ListenableFuture<IntegerReply>) pipeline(SREM, new Command(SREM_BYTES, arguments));
+    return (IntegerReply) execute(SREM, new Command(SREM_BYTES, arguments));
   }
   
   private static final String SUNION = "SUNION";
@@ -2217,8 +2217,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SUNION_VERSION = parseVersion("1.0.0");
 
   /**
-   * Set
    * Add multiple sets
+   * Set
    *
    * @param key0
    * @return MultiBulkReply
@@ -2227,13 +2227,13 @@ public class RedisClient extends RedisClientBase {
     if (version < SUNION_VERSION) throw new RedisException("Server does not support SUNION");
     List list = new ArrayList();
     Collections.addAll(list, key0);
-    return (ListenableFuture<MultiBulkReply>) pipeline(SUNION, new Command(SUNION_BYTES, list.toArray(new Object[list.size()])));
+    return (MultiBulkReply) execute(SUNION, new Command(SUNION_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> sunion_(Object... arguments) throws RedisException {
+  public MultiBulkReply sunion_(Object... arguments) throws RedisException {
     if (version < SUNION_VERSION) throw new RedisException("Server does not support SUNION");
-    return (ListenableFuture<MultiBulkReply>) pipeline(SUNION, new Command(SUNION_BYTES, arguments));
+    return (MultiBulkReply) execute(SUNION, new Command(SUNION_BYTES, arguments));
   }
   
   private static final String SUNIONSTORE = "SUNIONSTORE";
@@ -2241,8 +2241,8 @@ public class RedisClient extends RedisClientBase {
   private static final int SUNIONSTORE_VERSION = parseVersion("1.0.0");
 
   /**
-   * Set
    * Add multiple sets and store the resulting set in a key
+   * Set
    *
    * @param destination0
    * @param key1
@@ -2253,13 +2253,13 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     list.add(destination0);
     Collections.addAll(list, key1);
-    return (ListenableFuture<IntegerReply>) pipeline(SUNIONSTORE, new Command(SUNIONSTORE_BYTES, list.toArray(new Object[list.size()])));
+    return (IntegerReply) execute(SUNIONSTORE, new Command(SUNIONSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> sunionstore_(Object... arguments) throws RedisException {
+  public IntegerReply sunionstore_(Object... arguments) throws RedisException {
     if (version < SUNIONSTORE_VERSION) throw new RedisException("Server does not support SUNIONSTORE");
-    return (ListenableFuture<IntegerReply>) pipeline(SUNIONSTORE, new Command(SUNIONSTORE_BYTES, arguments));
+    return (IntegerReply) execute(SUNIONSTORE, new Command(SUNIONSTORE_BYTES, arguments));
   }
   
   private static final String ZADD = "ZADD";
@@ -2267,8 +2267,8 @@ public class RedisClient extends RedisClientBase {
   private static final int ZADD_VERSION = parseVersion("1.2.0");
 
   /**
-   * Sorted_set
    * Add one or more members to a sorted set, or update its score if it already exists
+   * Sorted_set
    *
    * @param args
    * @return IntegerReply
@@ -2277,7 +2277,7 @@ public class RedisClient extends RedisClientBase {
     if (version < ZADD_VERSION) throw new RedisException("Server does not support ZADD");
     List list = new ArrayList();
     Collections.addAll(list, args);
-    return (ListenableFuture<IntegerReply>) pipeline(ZADD, new Command(ZADD_BYTES, list.toArray(new Object[list.size()])));
+    return (IntegerReply) execute(ZADD, new Command(ZADD_BYTES, list.toArray(new Object[list.size()])));
   }
   
   private static final String ZCARD = "ZCARD";
@@ -2285,15 +2285,15 @@ public class RedisClient extends RedisClientBase {
   private static final int ZCARD_VERSION = parseVersion("1.2.0");
 
   /**
-   * Sorted_set
    * Get the number of members in a sorted set
+   * Sorted_set
    *
    * @param key0
    * @return IntegerReply
    */
   public IntegerReply zcard(Object key0) throws RedisException {
     if (version < ZCARD_VERSION) throw new RedisException("Server does not support ZCARD");
-    return (ListenableFuture<IntegerReply>) pipeline(ZCARD, new Command(ZCARD_BYTES, key0));
+    return (IntegerReply) execute(ZCARD, new Command(ZCARD_BYTES, key0));
   }
   
   private static final String ZCOUNT = "ZCOUNT";
@@ -2301,8 +2301,8 @@ public class RedisClient extends RedisClientBase {
   private static final int ZCOUNT_VERSION = parseVersion("2.0.0");
 
   /**
-   * Sorted_set
    * Count the members in a sorted set with scores within the given values
+   * Sorted_set
    *
    * @param key0
    * @param min1
@@ -2311,7 +2311,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply zcount(Object key0, Object min1, Object max2) throws RedisException {
     if (version < ZCOUNT_VERSION) throw new RedisException("Server does not support ZCOUNT");
-    return (ListenableFuture<IntegerReply>) pipeline(ZCOUNT, new Command(ZCOUNT_BYTES, key0, min1, max2));
+    return (IntegerReply) execute(ZCOUNT, new Command(ZCOUNT_BYTES, key0, min1, max2));
   }
   
   private static final String ZINCRBY = "ZINCRBY";
@@ -2319,8 +2319,8 @@ public class RedisClient extends RedisClientBase {
   private static final int ZINCRBY_VERSION = parseVersion("1.2.0");
 
   /**
-   * Sorted_set
    * Increment the score of a member in a sorted set
+   * Sorted_set
    *
    * @param key0
    * @param increment1
@@ -2329,7 +2329,7 @@ public class RedisClient extends RedisClientBase {
    */
   public BulkReply zincrby(Object key0, Object increment1, Object member2) throws RedisException {
     if (version < ZINCRBY_VERSION) throw new RedisException("Server does not support ZINCRBY");
-    return (ListenableFuture<BulkReply>) pipeline(ZINCRBY, new Command(ZINCRBY_BYTES, key0, increment1, member2));
+    return (BulkReply) execute(ZINCRBY, new Command(ZINCRBY_BYTES, key0, increment1, member2));
   }
   
   private static final String ZINTERSTORE = "ZINTERSTORE";
@@ -2337,8 +2337,8 @@ public class RedisClient extends RedisClientBase {
   private static final int ZINTERSTORE_VERSION = parseVersion("2.0.0");
 
   /**
-   * Sorted_set
    * Intersect multiple sorted sets and store the resulting sorted set in a new key
+   * Sorted_set
    *
    * @param args
    * @return IntegerReply
@@ -2347,7 +2347,7 @@ public class RedisClient extends RedisClientBase {
     if (version < ZINTERSTORE_VERSION) throw new RedisException("Server does not support ZINTERSTORE");
     List list = new ArrayList();
     Collections.addAll(list, args);
-    return (ListenableFuture<IntegerReply>) pipeline(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
+    return (IntegerReply) execute(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
   
   private static final String ZRANGE = "ZRANGE";
@@ -2355,8 +2355,8 @@ public class RedisClient extends RedisClientBase {
   private static final int ZRANGE_VERSION = parseVersion("1.2.0");
 
   /**
-   * Sorted_set
    * Return a range of members in a sorted set, by index
+   * Sorted_set
    *
    * @param key0
    * @param start1
@@ -2371,13 +2371,13 @@ public class RedisClient extends RedisClientBase {
     list.add(start1);
     list.add(stop2);
     if (withscores3 != null) list.add(withscores3);
-    return (ListenableFuture<MultiBulkReply>) pipeline(ZRANGE, new Command(ZRANGE_BYTES, list.toArray(new Object[list.size()])));
+    return (MultiBulkReply) execute(ZRANGE, new Command(ZRANGE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> zrange_(Object... arguments) throws RedisException {
+  public MultiBulkReply zrange_(Object... arguments) throws RedisException {
     if (version < ZRANGE_VERSION) throw new RedisException("Server does not support ZRANGE");
-    return (ListenableFuture<MultiBulkReply>) pipeline(ZRANGE, new Command(ZRANGE_BYTES, arguments));
+    return (MultiBulkReply) execute(ZRANGE, new Command(ZRANGE_BYTES, arguments));
   }
   
   private static final String ZRANGEBYSCORE = "ZRANGEBYSCORE";
@@ -2385,8 +2385,8 @@ public class RedisClient extends RedisClientBase {
   private static final int ZRANGEBYSCORE_VERSION = parseVersion("1.0.5");
 
   /**
-   * Sorted_set
    * Return a range of members in a sorted set, by score
+   * Sorted_set
    *
    * @param key0
    * @param min1
@@ -2403,13 +2403,13 @@ public class RedisClient extends RedisClientBase {
     list.add(max2);
     if (withscores3 != null) list.add(withscores3);
     if (offset_or_count4 != null) list.add(offset_or_count4);
-    return (ListenableFuture<MultiBulkReply>) pipeline(ZRANGEBYSCORE, new Command(ZRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
+    return (MultiBulkReply) execute(ZRANGEBYSCORE, new Command(ZRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> zrangebyscore_(Object... arguments) throws RedisException {
+  public MultiBulkReply zrangebyscore_(Object... arguments) throws RedisException {
     if (version < ZRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZRANGEBYSCORE");
-    return (ListenableFuture<MultiBulkReply>) pipeline(ZRANGEBYSCORE, new Command(ZRANGEBYSCORE_BYTES, arguments));
+    return (MultiBulkReply) execute(ZRANGEBYSCORE, new Command(ZRANGEBYSCORE_BYTES, arguments));
   }
   
   private static final String ZRANK = "ZRANK";
@@ -2417,8 +2417,8 @@ public class RedisClient extends RedisClientBase {
   private static final int ZRANK_VERSION = parseVersion("2.0.0");
 
   /**
-   * Sorted_set
    * Determine the index of a member in a sorted set
+   * Sorted_set
    *
    * @param key0
    * @param member1
@@ -2426,7 +2426,7 @@ public class RedisClient extends RedisClientBase {
    */
   public Reply zrank(Object key0, Object member1) throws RedisException {
     if (version < ZRANK_VERSION) throw new RedisException("Server does not support ZRANK");
-    return (ListenableFuture<Reply>) pipeline(ZRANK, new Command(ZRANK_BYTES, key0, member1));
+    return (Reply) execute(ZRANK, new Command(ZRANK_BYTES, key0, member1));
   }
   
   private static final String ZREM = "ZREM";
@@ -2434,8 +2434,8 @@ public class RedisClient extends RedisClientBase {
   private static final int ZREM_VERSION = parseVersion("1.2.0");
 
   /**
-   * Sorted_set
    * Remove one or more members from a sorted set
+   * Sorted_set
    *
    * @param key0
    * @param member1
@@ -2446,13 +2446,13 @@ public class RedisClient extends RedisClientBase {
     List list = new ArrayList();
     list.add(key0);
     Collections.addAll(list, member1);
-    return (ListenableFuture<IntegerReply>) pipeline(ZREM, new Command(ZREM_BYTES, list.toArray(new Object[list.size()])));
+    return (IntegerReply) execute(ZREM, new Command(ZREM_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> zrem_(Object... arguments) throws RedisException {
+  public IntegerReply zrem_(Object... arguments) throws RedisException {
     if (version < ZREM_VERSION) throw new RedisException("Server does not support ZREM");
-    return (ListenableFuture<IntegerReply>) pipeline(ZREM, new Command(ZREM_BYTES, arguments));
+    return (IntegerReply) execute(ZREM, new Command(ZREM_BYTES, arguments));
   }
   
   private static final String ZREMRANGEBYRANK = "ZREMRANGEBYRANK";
@@ -2460,8 +2460,8 @@ public class RedisClient extends RedisClientBase {
   private static final int ZREMRANGEBYRANK_VERSION = parseVersion("2.0.0");
 
   /**
-   * Sorted_set
    * Remove all members in a sorted set within the given indexes
+   * Sorted_set
    *
    * @param key0
    * @param start1
@@ -2470,7 +2470,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply zremrangebyrank(Object key0, Object start1, Object stop2) throws RedisException {
     if (version < ZREMRANGEBYRANK_VERSION) throw new RedisException("Server does not support ZREMRANGEBYRANK");
-    return (ListenableFuture<IntegerReply>) pipeline(ZREMRANGEBYRANK, new Command(ZREMRANGEBYRANK_BYTES, key0, start1, stop2));
+    return (IntegerReply) execute(ZREMRANGEBYRANK, new Command(ZREMRANGEBYRANK_BYTES, key0, start1, stop2));
   }
   
   private static final String ZREMRANGEBYSCORE = "ZREMRANGEBYSCORE";
@@ -2478,8 +2478,8 @@ public class RedisClient extends RedisClientBase {
   private static final int ZREMRANGEBYSCORE_VERSION = parseVersion("1.2.0");
 
   /**
-   * Sorted_set
    * Remove all members in a sorted set within the given scores
+   * Sorted_set
    *
    * @param key0
    * @param min1
@@ -2488,7 +2488,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply zremrangebyscore(Object key0, Object min1, Object max2) throws RedisException {
     if (version < ZREMRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZREMRANGEBYSCORE");
-    return (ListenableFuture<IntegerReply>) pipeline(ZREMRANGEBYSCORE, new Command(ZREMRANGEBYSCORE_BYTES, key0, min1, max2));
+    return (IntegerReply) execute(ZREMRANGEBYSCORE, new Command(ZREMRANGEBYSCORE_BYTES, key0, min1, max2));
   }
   
   private static final String ZREVRANGE = "ZREVRANGE";
@@ -2496,8 +2496,8 @@ public class RedisClient extends RedisClientBase {
   private static final int ZREVRANGE_VERSION = parseVersion("1.2.0");
 
   /**
-   * Sorted_set
    * Return a range of members in a sorted set, by index, with scores ordered from high to low
+   * Sorted_set
    *
    * @param key0
    * @param start1
@@ -2512,13 +2512,13 @@ public class RedisClient extends RedisClientBase {
     list.add(start1);
     list.add(stop2);
     if (withscores3 != null) list.add(withscores3);
-    return (ListenableFuture<MultiBulkReply>) pipeline(ZREVRANGE, new Command(ZREVRANGE_BYTES, list.toArray(new Object[list.size()])));
+    return (MultiBulkReply) execute(ZREVRANGE, new Command(ZREVRANGE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> zrevrange_(Object... arguments) throws RedisException {
+  public MultiBulkReply zrevrange_(Object... arguments) throws RedisException {
     if (version < ZREVRANGE_VERSION) throw new RedisException("Server does not support ZREVRANGE");
-    return (ListenableFuture<MultiBulkReply>) pipeline(ZREVRANGE, new Command(ZREVRANGE_BYTES, arguments));
+    return (MultiBulkReply) execute(ZREVRANGE, new Command(ZREVRANGE_BYTES, arguments));
   }
   
   private static final String ZREVRANGEBYSCORE = "ZREVRANGEBYSCORE";
@@ -2526,8 +2526,8 @@ public class RedisClient extends RedisClientBase {
   private static final int ZREVRANGEBYSCORE_VERSION = parseVersion("2.2.0");
 
   /**
-   * Sorted_set
    * Return a range of members in a sorted set, by score, with scores ordered from high to low
+   * Sorted_set
    *
    * @param key0
    * @param max1
@@ -2544,13 +2544,13 @@ public class RedisClient extends RedisClientBase {
     list.add(min2);
     if (withscores3 != null) list.add(withscores3);
     if (offset_or_count4 != null) list.add(offset_or_count4);
-    return (ListenableFuture<MultiBulkReply>) pipeline(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
+    return (MultiBulkReply) execute(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> zrevrangebyscore_(Object... arguments) throws RedisException {
+  public MultiBulkReply zrevrangebyscore_(Object... arguments) throws RedisException {
     if (version < ZREVRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZREVRANGEBYSCORE");
-    return (ListenableFuture<MultiBulkReply>) pipeline(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, arguments));
+    return (MultiBulkReply) execute(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, arguments));
   }
   
   private static final String ZREVRANK = "ZREVRANK";
@@ -2558,8 +2558,8 @@ public class RedisClient extends RedisClientBase {
   private static final int ZREVRANK_VERSION = parseVersion("2.0.0");
 
   /**
-   * Sorted_set
    * Determine the index of a member in a sorted set, with scores ordered from high to low
+   * Sorted_set
    *
    * @param key0
    * @param member1
@@ -2567,7 +2567,7 @@ public class RedisClient extends RedisClientBase {
    */
   public Reply zrevrank(Object key0, Object member1) throws RedisException {
     if (version < ZREVRANK_VERSION) throw new RedisException("Server does not support ZREVRANK");
-    return (ListenableFuture<Reply>) pipeline(ZREVRANK, new Command(ZREVRANK_BYTES, key0, member1));
+    return (Reply) execute(ZREVRANK, new Command(ZREVRANK_BYTES, key0, member1));
   }
   
   private static final String ZSCORE = "ZSCORE";
@@ -2575,8 +2575,8 @@ public class RedisClient extends RedisClientBase {
   private static final int ZSCORE_VERSION = parseVersion("1.2.0");
 
   /**
-   * Sorted_set
    * Get the score associated with the given member in a sorted set
+   * Sorted_set
    *
    * @param key0
    * @param member1
@@ -2584,7 +2584,7 @@ public class RedisClient extends RedisClientBase {
    */
   public BulkReply zscore(Object key0, Object member1) throws RedisException {
     if (version < ZSCORE_VERSION) throw new RedisException("Server does not support ZSCORE");
-    return (ListenableFuture<BulkReply>) pipeline(ZSCORE, new Command(ZSCORE_BYTES, key0, member1));
+    return (BulkReply) execute(ZSCORE, new Command(ZSCORE_BYTES, key0, member1));
   }
   
   private static final String ZUNIONSTORE = "ZUNIONSTORE";
@@ -2592,8 +2592,8 @@ public class RedisClient extends RedisClientBase {
   private static final int ZUNIONSTORE_VERSION = parseVersion("2.0.0");
 
   /**
-   * Sorted_set
    * Add multiple sorted sets and store the resulting sorted set in a new key
+   * Sorted_set
    *
    * @param destination0
    * @param numkeys1
@@ -2606,20 +2606,20 @@ public class RedisClient extends RedisClientBase {
     list.add(destination0);
     list.add(numkeys1);
     Collections.addAll(list, key2);
-    return (ListenableFuture<IntegerReply>) pipeline(ZUNIONSTORE, new Command(ZUNIONSTORE_BYTES, list.toArray(new Object[list.size()])));
+    return (IntegerReply) execute(ZUNIONSTORE, new Command(ZUNIONSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> zunionstore_(Object... arguments) throws RedisException {
+  public IntegerReply zunionstore_(Object... arguments) throws RedisException {
     if (version < ZUNIONSTORE_VERSION) throw new RedisException("Server does not support ZUNIONSTORE");
-    return (ListenableFuture<IntegerReply>) pipeline(ZUNIONSTORE, new Command(ZUNIONSTORE_BYTES, arguments));
+    return (IntegerReply) execute(ZUNIONSTORE, new Command(ZUNIONSTORE_BYTES, arguments));
   }
 
   public class Pipeline {
 
   /**
-   * String
    * Append a value to a key
+   * String
    *
    * @param key0
    * @param value1
@@ -2631,8 +2631,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Count set bits in a string
+   * String
    *
    * @param key0
    * @param start1
@@ -2651,8 +2651,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Perform bitwise operations between strings
+   * String
    *
    * @param operation0
    * @param destkey1
@@ -2675,8 +2675,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Decrement the integer value of a key by one
+   * String
    *
    * @param key0
    * @return IntegerReply
@@ -2687,8 +2687,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Decrement the integer value of a key by the given number
+   * String
    *
    * @param key0
    * @param decrement1
@@ -2700,8 +2700,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Get the value of a key
+   * String
    *
    * @param key0
    * @return BulkReply
@@ -2712,8 +2712,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Returns the bit value at offset in the string value stored at key
+   * String
    *
    * @param key0
    * @param offset1
@@ -2725,8 +2725,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Get a substring of the string stored at a key
+   * String
    *
    * @param key0
    * @param start1
@@ -2739,8 +2739,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Set the string value of a key and return its old value
+   * String
    *
    * @param key0
    * @param value1
@@ -2752,8 +2752,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Increment the integer value of a key by one
+   * String
    *
    * @param key0
    * @return IntegerReply
@@ -2764,8 +2764,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Increment the integer value of a key by the given amount
+   * String
    *
    * @param key0
    * @param increment1
@@ -2777,8 +2777,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Increment the float value of a key by the given amount
+   * String
    *
    * @param key0
    * @param increment1
@@ -2790,8 +2790,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Get the values of all the given keys
+   * String
    *
    * @param key0
    * @return MultiBulkReply
@@ -2810,8 +2810,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Set multiple keys to multiple values
+   * String
    *
    * @param key_or_value0
    * @return StatusReply
@@ -2830,8 +2830,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Set multiple keys to multiple values, only if none of the keys exist
+   * String
    *
    * @param key_or_value0
    * @return IntegerReply
@@ -2850,8 +2850,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Set the value and expiration in milliseconds of a key
+   * String
    *
    * @param key0
    * @param milliseconds1
@@ -2864,8 +2864,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Set the string value of a key
+   * String
    *
    * @param key0
    * @param value1
@@ -2877,8 +2877,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Sets or clears the bit at offset in the string value stored at key
+   * String
    *
    * @param key0
    * @param offset1
@@ -2891,8 +2891,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Set the value and expiration of a key
+   * String
    *
    * @param key0
    * @param seconds1
@@ -2905,8 +2905,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Set the value of a key, only if the key does not exist
+   * String
    *
    * @param key0
    * @param value1
@@ -2918,8 +2918,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Overwrite part of a string at key starting at the specified offset
+   * String
    *
    * @param key0
    * @param offset1
@@ -2932,8 +2932,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * String
    * Get the length of the value stored in a key
+   * String
    *
    * @param key0
    * @return IntegerReply
@@ -2944,8 +2944,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Connection
    * Authenticate to the server
+   * Connection
    *
    * @param password0
    * @return StatusReply
@@ -2956,8 +2956,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Connection
    * Echo the given string
+   * Connection
    *
    * @param message0
    * @return BulkReply
@@ -2968,8 +2968,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Connection
    * Ping the server
+   * Connection
    *
    * @return StatusReply
    */
@@ -2979,8 +2979,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Connection
    * Close the connection
+   * Connection
    *
    * @return StatusReply
    */
@@ -2990,8 +2990,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Connection
    * Change the selected database for the current connection
+   * Connection
    *
    * @param index0
    * @return StatusReply
@@ -3002,8 +3002,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Server
    * Asynchronously rewrite the append-only file
+   * Server
    *
    * @return StatusReply
    */
@@ -3013,8 +3013,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Server
    * Asynchronously save the dataset to disk
+   * Server
    *
    * @return StatusReply
    */
@@ -3024,8 +3024,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Server
    * Get the value of a configuration parameter
+   * Server
    *
    * @param parameter0
    * @return Reply
@@ -3036,8 +3036,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Server
    * Set a configuration parameter to the given value
+   * Server
    *
    * @param parameter0
    * @param value1
@@ -3049,8 +3049,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Server
    * Reset the stats returned by INFO
+   * Server
    *
    * @return Reply
    */
@@ -3060,8 +3060,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Server
    * Return the number of keys in the selected database
+   * Server
    *
    * @return IntegerReply
    */
@@ -3071,8 +3071,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Server
    * Get debugging information about a key
+   * Server
    *
    * @param key0
    * @return Reply
@@ -3083,8 +3083,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Server
    * Make the server crash
+   * Server
    *
    * @return Reply
    */
@@ -3094,8 +3094,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Server
    * Remove all keys from all databases
+   * Server
    *
    * @return StatusReply
    */
@@ -3105,8 +3105,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Server
    * Remove all keys from the current database
+   * Server
    *
    * @return StatusReply
    */
@@ -3116,8 +3116,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Server
    * Get information and statistics about the server
+   * Server
    *
    * @return BulkReply
    */
@@ -3127,8 +3127,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Server
    * Get the UNIX time stamp of the last successful save to disk
+   * Server
    *
    * @return IntegerReply
    */
@@ -3138,8 +3138,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Server
    * Listen for all requests received by the server in real time
+   * Server
    *
    * @return Reply
    */
@@ -3149,8 +3149,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Server
    * Synchronously save the dataset to disk
+   * Server
    *
    * @return Reply
    */
@@ -3160,8 +3160,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Server
    * Synchronously save the dataset to disk and then shut down the server
+   * Server
    *
    * @param NOSAVE0
    * @param SAVE1
@@ -3179,8 +3179,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Server
    * Make the server a slave of another instance, or promote it as master
+   * Server
    *
    * @param host0
    * @param port1
@@ -3192,8 +3192,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Server
    * Manages the Redis slow queries log
+   * Server
    *
    * @param subcommand0
    * @param argument1
@@ -3211,8 +3211,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Server
    * Internal command used for replication
+   * Server
    *
    * @return Reply
    */
@@ -3222,8 +3222,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Server
    * Return the current server time
+   * Server
    *
    * @return MultiBulkReply
    */
@@ -3233,8 +3233,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * List
    * Remove and get the first element in a list, or block until one is available
+   * List
    *
    * @param key0
    * @return MultiBulkReply
@@ -3253,8 +3253,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * List
    * Remove and get the last element in a list, or block until one is available
+   * List
    *
    * @param key0
    * @return MultiBulkReply
@@ -3273,8 +3273,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * List
    * Pop a value from a list, push it to another list and return it; or block until one is available
+   * List
    *
    * @param source0
    * @param destination1
@@ -3287,8 +3287,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * List
    * Get an element from a list by its index
+   * List
    *
    * @param key0
    * @param index1
@@ -3300,8 +3300,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * List
    * Insert an element before or after another element in a list
+   * List
    *
    * @param key0
    * @param where1
@@ -3320,8 +3320,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * List
    * Get the length of a list
+   * List
    *
    * @param key0
    * @return IntegerReply
@@ -3332,8 +3332,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * List
    * Remove and get the first element in a list
+   * List
    *
    * @param key0
    * @return BulkReply
@@ -3344,8 +3344,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * List
    * Prepend one or multiple values to a list
+   * List
    *
    * @param key0
    * @param value1
@@ -3366,8 +3366,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * List
    * Prepend a value to a list, only if the list exists
+   * List
    *
    * @param key0
    * @param value1
@@ -3379,8 +3379,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * List
    * Get a range of elements from a list
+   * List
    *
    * @param key0
    * @param start1
@@ -3393,8 +3393,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * List
    * Remove elements from a list
+   * List
    *
    * @param key0
    * @param count1
@@ -3407,8 +3407,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * List
    * Set the value of an element in a list by its index
+   * List
    *
    * @param key0
    * @param index1
@@ -3421,8 +3421,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * List
    * Trim a list to the specified range
+   * List
    *
    * @param key0
    * @param start1
@@ -3435,8 +3435,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * List
    * Remove and get the last element in a list
+   * List
    *
    * @param key0
    * @return BulkReply
@@ -3447,8 +3447,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * List
    * Remove the last element in a list, append it to another list and return it
+   * List
    *
    * @param source0
    * @param destination1
@@ -3460,8 +3460,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * List
    * Append one or multiple values to a list
+   * List
    *
    * @param key0
    * @param value1
@@ -3482,8 +3482,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * List
    * Append a value to a list, only if the list exists
+   * List
    *
    * @param key0
    * @param value1
@@ -3495,8 +3495,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Delete a key
+   * Generic
    *
    * @param key0
    * @return IntegerReply
@@ -3515,8 +3515,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Return a serialized version of the value stored at the specified key.
+   * Generic
    *
    * @param key0
    * @return BulkReply
@@ -3527,8 +3527,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Determine if a key exists
+   * Generic
    *
    * @param key0
    * @return IntegerReply
@@ -3539,8 +3539,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Set a key's time to live in seconds
+   * Generic
    *
    * @param key0
    * @param seconds1
@@ -3552,8 +3552,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Set the expiration for a key as a UNIX timestamp
+   * Generic
    *
    * @param key0
    * @param timestamp1
@@ -3565,8 +3565,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Find all keys matching the given pattern
+   * Generic
    *
    * @param pattern0
    * @return MultiBulkReply
@@ -3577,8 +3577,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Atomically transfer a key from a Redis instance to another one.
+   * Generic
    *
    * @param host0
    * @param port1
@@ -3599,8 +3599,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Move a key to another database
+   * Generic
    *
    * @param key0
    * @param db1
@@ -3612,8 +3612,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Inspect the internals of Redis objects
+   * Generic
    *
    * @param subcommand0
    * @param arguments1
@@ -3634,8 +3634,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Remove the expiration from a key
+   * Generic
    *
    * @param key0
    * @return IntegerReply
@@ -3646,8 +3646,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Set a key's time to live in milliseconds
+   * Generic
    *
    * @param key0
    * @param milliseconds1
@@ -3659,8 +3659,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Set the expiration for a key as a UNIX timestamp specified in milliseconds
+   * Generic
    *
    * @param key0
    * @param milliseconds_timestamp1
@@ -3672,8 +3672,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Get the time to live for a key in milliseconds
+   * Generic
    *
    * @param key0
    * @return IntegerReply
@@ -3684,8 +3684,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Return a random key from the keyspace
+   * Generic
    *
    * @return BulkReply
    */
@@ -3695,8 +3695,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Rename a key
+   * Generic
    *
    * @param key0
    * @param newkey1
@@ -3708,8 +3708,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Rename a key, only if the new key does not exist
+   * Generic
    *
    * @param key0
    * @param newkey1
@@ -3721,8 +3721,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Create a key using the provided serialized value, previously obtained using DUMP.
+   * Generic
    *
    * @param key0
    * @param ttl1
@@ -3735,8 +3735,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Sort the elements in a list, set or sorted set
+   * Generic
    *
    * @param key0
    * @param pattern1
@@ -3761,8 +3761,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Get the time to live for a key
+   * Generic
    *
    * @param key0
    * @return IntegerReply
@@ -3773,8 +3773,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Generic
    * Determine the type stored at key
+   * Generic
    *
    * @param key0
    * @return StatusReply
@@ -3785,8 +3785,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Transactions
    * Forget about all watched keys
+   * Transactions
    *
    * @return StatusReply
    */
@@ -3796,8 +3796,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Transactions
    * Watch the given keys to determine execution of the MULTI/EXEC block
+   * Transactions
    *
    * @param key0
    * @return StatusReply
@@ -3816,8 +3816,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Scripting
    * Execute a Lua script server side
+   * Scripting
    *
    * @param script0
    * @param numkeys1
@@ -3840,8 +3840,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Scripting
    * Execute a Lua script server side
+   * Scripting
    *
    * @param sha10
    * @param numkeys1
@@ -3864,8 +3864,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Scripting
    * Check existence of scripts in the script cache.
+   * Scripting
    *
    * @param script0
    * @return Reply
@@ -3884,8 +3884,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Scripting
    * Remove all the scripts from the script cache.
+   * Scripting
    *
    * @return Reply
    */
@@ -3895,8 +3895,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Scripting
    * Kill the script currently in execution.
+   * Scripting
    *
    * @return Reply
    */
@@ -3906,8 +3906,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Scripting
    * Load the specified Lua script into the script cache.
+   * Scripting
    *
    * @param script0
    * @return Reply
@@ -3918,8 +3918,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Hash
    * Delete one or more hash fields
+   * Hash
    *
    * @param key0
    * @param field1
@@ -3940,8 +3940,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Hash
    * Determine if a hash field exists
+   * Hash
    *
    * @param key0
    * @param field1
@@ -3953,8 +3953,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Hash
    * Get the value of a hash field
+   * Hash
    *
    * @param key0
    * @param field1
@@ -3966,8 +3966,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Hash
    * Get all the fields and values in a hash
+   * Hash
    *
    * @param key0
    * @return MultiBulkReply
@@ -3978,8 +3978,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Hash
    * Increment the integer value of a hash field by the given number
+   * Hash
    *
    * @param key0
    * @param field1
@@ -3992,8 +3992,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Hash
    * Increment the float value of a hash field by the given amount
+   * Hash
    *
    * @param key0
    * @param field1
@@ -4006,8 +4006,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Hash
    * Get all the fields in a hash
+   * Hash
    *
    * @param key0
    * @return MultiBulkReply
@@ -4018,8 +4018,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Hash
    * Get the number of fields in a hash
+   * Hash
    *
    * @param key0
    * @return IntegerReply
@@ -4030,8 +4030,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Hash
    * Get the values of all the given hash fields
+   * Hash
    *
    * @param key0
    * @param field1
@@ -4052,8 +4052,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Hash
    * Set multiple hash fields to multiple values
+   * Hash
    *
    * @param key0
    * @param field_or_value1
@@ -4074,8 +4074,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Hash
    * Set the string value of a hash field
+   * Hash
    *
    * @param key0
    * @param field1
@@ -4088,8 +4088,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Hash
    * Set the value of a hash field, only if the field does not exist
+   * Hash
    *
    * @param key0
    * @param field1
@@ -4102,8 +4102,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Hash
    * Get all the values in a hash
+   * Hash
    *
    * @param key0
    * @return MultiBulkReply
@@ -4114,8 +4114,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Pubsub
    * Post a message to a channel
+   * Pubsub
    *
    * @param channel0
    * @param message1
@@ -4127,8 +4127,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Set
    * Add one or more members to a set
+   * Set
    *
    * @param key0
    * @param member1
@@ -4149,8 +4149,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Set
    * Get the number of members in a set
+   * Set
    *
    * @param key0
    * @return IntegerReply
@@ -4161,8 +4161,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Set
    * Subtract multiple sets
+   * Set
    *
    * @param key0
    * @return MultiBulkReply
@@ -4181,8 +4181,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Set
    * Subtract multiple sets and store the resulting set in a key
+   * Set
    *
    * @param destination0
    * @param key1
@@ -4203,8 +4203,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Set
    * Intersect multiple sets
+   * Set
    *
    * @param key0
    * @return MultiBulkReply
@@ -4223,8 +4223,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Set
    * Intersect multiple sets and store the resulting set in a key
+   * Set
    *
    * @param destination0
    * @param key1
@@ -4245,8 +4245,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Set
    * Determine if a given value is a member of a set
+   * Set
    *
    * @param key0
    * @param member1
@@ -4258,8 +4258,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Set
    * Get all the members in a set
+   * Set
    *
    * @param key0
    * @return MultiBulkReply
@@ -4270,8 +4270,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Set
    * Move a member from one set to another
+   * Set
    *
    * @param source0
    * @param destination1
@@ -4284,8 +4284,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Set
    * Remove and return a random member from a set
+   * Set
    *
    * @param key0
    * @return BulkReply
@@ -4296,8 +4296,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Set
    * Get a random member from a set
+   * Set
    *
    * @param key0
    * @return BulkReply
@@ -4308,8 +4308,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Set
    * Remove one or more members from a set
+   * Set
    *
    * @param key0
    * @param member1
@@ -4330,8 +4330,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Set
    * Add multiple sets
+   * Set
    *
    * @param key0
    * @return MultiBulkReply
@@ -4350,8 +4350,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Set
    * Add multiple sets and store the resulting set in a key
+   * Set
    *
    * @param destination0
    * @param key1
@@ -4372,8 +4372,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Sorted_set
    * Add one or more members to a sorted set, or update its score if it already exists
+   * Sorted_set
    *
    * @param args
    * @return IntegerReply
@@ -4386,8 +4386,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Sorted_set
    * Get the number of members in a sorted set
+   * Sorted_set
    *
    * @param key0
    * @return IntegerReply
@@ -4398,8 +4398,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Sorted_set
    * Count the members in a sorted set with scores within the given values
+   * Sorted_set
    *
    * @param key0
    * @param min1
@@ -4412,8 +4412,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Sorted_set
    * Increment the score of a member in a sorted set
+   * Sorted_set
    *
    * @param key0
    * @param increment1
@@ -4426,8 +4426,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Sorted_set
    * Intersect multiple sorted sets and store the resulting sorted set in a new key
+   * Sorted_set
    *
    * @param args
    * @return IntegerReply
@@ -4440,8 +4440,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Sorted_set
    * Return a range of members in a sorted set, by index
+   * Sorted_set
    *
    * @param key0
    * @param start1
@@ -4466,8 +4466,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Sorted_set
    * Return a range of members in a sorted set, by score
+   * Sorted_set
    *
    * @param key0
    * @param min1
@@ -4494,8 +4494,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Sorted_set
    * Determine the index of a member in a sorted set
+   * Sorted_set
    *
    * @param key0
    * @param member1
@@ -4507,8 +4507,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Sorted_set
    * Remove one or more members from a sorted set
+   * Sorted_set
    *
    * @param key0
    * @param member1
@@ -4529,8 +4529,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Sorted_set
    * Remove all members in a sorted set within the given indexes
+   * Sorted_set
    *
    * @param key0
    * @param start1
@@ -4543,8 +4543,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Sorted_set
    * Remove all members in a sorted set within the given scores
+   * Sorted_set
    *
    * @param key0
    * @param min1
@@ -4557,8 +4557,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Sorted_set
    * Return a range of members in a sorted set, by index, with scores ordered from high to low
+   * Sorted_set
    *
    * @param key0
    * @param start1
@@ -4583,8 +4583,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Sorted_set
    * Return a range of members in a sorted set, by score, with scores ordered from high to low
+   * Sorted_set
    *
    * @param key0
    * @param max1
@@ -4611,8 +4611,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Sorted_set
    * Determine the index of a member in a sorted set, with scores ordered from high to low
+   * Sorted_set
    *
    * @param key0
    * @param member1
@@ -4624,8 +4624,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Sorted_set
    * Get the score associated with the given member in a sorted set
+   * Sorted_set
    *
    * @param key0
    * @param member1
@@ -4637,8 +4637,8 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Sorted_set
    * Add multiple sorted sets and store the resulting sorted set in a new key
+   * Sorted_set
    *
    * @param destination0
    * @param numkeys1

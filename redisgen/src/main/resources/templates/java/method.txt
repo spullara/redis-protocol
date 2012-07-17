@@ -1,6 +1,6 @@
   /**
-   * {{group}}
    * {{comment}}
+   * {{group}}
    *
    {{#arguments}}
    * @param {{name}}

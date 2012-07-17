@@ -12,6 +12,7 @@ public interface RedisServer {
 
   /**
    * {{comment}}
+   * {{group}}
    *
    {{#arguments}}
    * @param {{name}}

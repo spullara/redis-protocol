@@ -218,8 +218,6 @@ public class Main {
     ctx.put("commands", commands);
     File base = new File(dest, pkg.replace(".", "/"));
     base.mkdirs();
-    Writer writer = new FileWriter(new File(base, className + "." + language));
-    mustache.execute(writer, ctx);
-    writer.flush();
+    mustache.execute(new FileWriter(new File(base, className + "." + language)), ctx).close();
   }
 }
