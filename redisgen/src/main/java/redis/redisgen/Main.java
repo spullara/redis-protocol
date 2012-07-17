@@ -13,6 +13,7 @@ import org.codehaus.jackson.map.MappingJsonFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import javax.annotation.Nullable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -23,6 +24,10 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
+
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.Multimaps;
 
 /**
  * Generate client code for redis based on the protocol.
@@ -100,9 +105,18 @@ public class Main {
     JsonParser jsonParser = jf.createJsonParser(new URL("https://raw.github.com/antirez/redis-doc/master/commands.json"));
     final JsonNode commandNodes = jsonParser.readValueAsTree();
     Iterator<String> fieldNames = commandNodes.getFieldNames();
+    ImmutableListMultimap<String,String> group = Multimaps.index(fieldNames,
+            new Function<String, String>() {
+              @Override
+              public String apply(String s) {
+                return commandNodes.get(s).get("group").asText();
+              }
+            });
     List<Object> commands = new ArrayList<Object>();
-    while (fieldNames.hasNext()) {
-      final String command = fieldNames.next();
+    for (Map.Entry<String, String> entry : group.entries()) {
+      String key = entry.getKey();
+      final String groupName = key.substring(0, 1).toUpperCase() + key.substring(1);
+      final String command = entry.getValue();
       if (ungenerated.contains(command)) continue;
       final String safeCommand = command.replace(" ", "_");
       String cacheReply = cache.getProperty(command.toLowerCase());
@@ -115,6 +129,7 @@ public class Main {
       final String finalReply = cacheReply;
       final JsonNode commandNode = commandNodes.get(command);
       commands.add(new Object() {
+        String group = groupName;
         String name = safeCommand;
         String comment = commandNode.get("summary").getTextValue();
         boolean generic = finalReply.equals("") || genericReply.contains(name);
