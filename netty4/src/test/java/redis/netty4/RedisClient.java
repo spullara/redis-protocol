@@ -36,7 +36,7 @@ public class RedisClient {
               @Override
               public void messageReceived(ChannelHandlerContext channelHandlerContext, Reply<?> reply) throws Exception {
                 if (i == CALLS) {
-                  System.out.println(CALLS / (System.currentTimeMillis() - start) * 1000 + " calls per second");
+                  System.out.println(CALLS * 1000 / (System.currentTimeMillis() - start) + " calls per second");
                 } else {
                   write(ch);
                 }

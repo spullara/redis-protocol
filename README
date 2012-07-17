@@ -43,6 +43,52 @@ Maven dependency:
       <version>0.2</version>
     </dependency>
 
+Benchmarks
+
+Various redis client benchmarks
+
+- JDK 7u6
+- redis-server 2.4.4
+- for (i <- 0 to 1,000,000) { set(i, "value") }
+- Conditions
+  - localhost
+  - 1 connection
+  - request and wait for response
+- Results
+  - Finagle-Redis 5.3.1-SNAPSHOT
+    - finagle, netty 3, naggati codec
+    - 3.26 MB/s
+    - 12,468 sps
+  - redis-protocol/finagle 0.3-SNAPSHOT
+    - finagle, netty 3, custom codec
+    - 3.96 MB/s
+    - 15,281 sps
+  - redis-protocol/netty4 0.3-SNAPSHOT
+    - netty 4, custom codec
+    - 5.08 MB/s
+    - 19,601 sps
+  - redis-benchmark -n 1000000 -c 1 -r 1000000 set test test
+    - C client included with distribution
+    - 5.53 MB/s
+    - 22,055 sps
+  - JRedis a.0-SNAPSHOT
+    - blocking i/o
+    - 6.08 MB/s
+    - 23,738 sps
+  - Jedis 2.2.0-SNAPSHOT
+    - blocking i/o
+    - 6.11 MB/s
+    - 24,001 sps
+  - redis-protocol/finagle-service 0.3-SNAPSHOT
+    - finagle, blocking i/o
+    - 6.40 MB/s
+    - 24,379 sps
+  - redis-protocol/client 0.3-SNAPSHOT
+    - blocking i/o
+    - 6.72 MB/s
+    - 25,795 sps
+
+
 Copyright 2012 Sam Pullara
 
    Licensed under the Apache License, Version 2.0 (the "License");
