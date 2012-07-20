@@ -17,6 +17,7 @@ import redis.netty4.Reply;
 import redis.netty4.StatusReply;
 import redis.util.BytesKey;
 import redis.util.BytesKeyObjectMap;
+import redis.util.BytesKeySet;
 
 import static java.lang.Integer.MAX_VALUE;
 import static redis.netty4.BulkReply.NIL_REPLY;
@@ -57,6 +58,21 @@ public class SimpleRedisServer implements RedisServer {
       throw invalidValue();
     }
     return (BytesKeyObjectMap<byte[]>) o;
+  }
+
+  @SuppressWarnings("unchecked")
+  private BytesKeySet _getset(byte[] key0, boolean create) throws RedisException {
+    Object o = _get(key0);
+    if (o == null) {
+      o = new BytesKeySet();
+      if (create) {
+        data.put(key0, o);
+      }
+    }
+    if (!(o instanceof BytesKeySet)) {
+      throw invalidValue();
+    }
+    return (BytesKeySet) o;
   }
 
   private Object _get(byte[] key0) {
@@ -2159,7 +2175,12 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply sadd(byte[] key0, byte[][] member1) throws RedisException {
-    return null;
+    BytesKeySet set = _getset(key0, true);
+    int total = 0;
+    for (byte[] bytes : member1) {
+      if (set.add(bytes)) total++;
+    }
+    return integer(total);
   }
 
   /**
@@ -2171,7 +2192,8 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply scard(byte[] key0) throws RedisException {
-    return null;
+    BytesKeySet bytesKeys = _getset(key0, false);
+    return integer(bytesKeys.size());
   }
 
   /**
@@ -2183,7 +2205,25 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public MultiBulkReply sdiff(byte[][] key0) throws RedisException {
-    return null;
+    BytesKeySet set = _sdiff(key0);
+    return _setreply(set);
+  }
+
+  private BytesKeySet _sdiff(byte[][] key0) throws RedisException {
+    BytesKeySet set = null;
+    for (byte[] key : key0) {
+      if (set == null) {
+        set = new BytesKeySet();
+        set.addAll(_getset(key, false));
+      } else {
+        BytesKeySet c = _getset(key, false);
+        set.removeAll(c);
+      }
+    }
+    if (set == null) {
+      throw new RedisException("wrong number of arguments for 'sdiff' command");
+    }
+    return set;
   }
 
   /**
@@ -2196,7 +2236,14 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply sdiffstore(byte[] destination0, byte[][] key1) throws RedisException {
-    return null;
+    Object o = _get(destination0);
+    if (o == null || o instanceof Set) {
+      BytesKeySet set = _sdiff(key1);
+      _put(destination0, set);
+      return integer(set.size());
+    } else {
+      throw invalidValue();
+    }
   }
 
   /**
@@ -2208,7 +2255,30 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public MultiBulkReply sinter(byte[][] key0) throws RedisException {
-    return null;
+    BytesKeySet set = _sinter(key0);
+    return _setreply(set);
+  }
+
+  private BytesKeySet _sinter(byte[][] key0) throws RedisException {
+    BytesKeySet set = null;
+    for (byte[] key : key0) {
+      if (set == null) {
+        set = _getset(key, false);
+      } else {
+        BytesKeySet inter = new BytesKeySet();
+        BytesKeySet newset = _getset(key, false);
+        for (BytesKey bytesKey : newset) {
+          if (set.contains(bytesKey)) {
+            inter.add(bytesKey);
+          }
+        }
+        set = inter;
+      }
+    }
+    if (set == null) {
+      throw new RedisException("wrong number of arguments for 'sinter' command");
+    }
+    return set;
   }
 
   /**
@@ -2221,7 +2291,14 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply sinterstore(byte[] destination0, byte[][] key1) throws RedisException {
-    return null;
+    Object o = _get(destination0);
+    if (o == null || o instanceof Set) {
+      BytesKeySet set = _sinter(key1);
+      _put(destination0, set);
+      return integer(set.size());
+    } else {
+      throw invalidValue();
+    }
   }
 
   /**
@@ -2234,7 +2311,8 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply sismember(byte[] key0, byte[] member1) throws RedisException {
-    return null;
+    BytesKeySet set = _getset(key0, false);
+    return set.contains(member1) ? integer(1) : integer(0);
   }
 
   /**
@@ -2246,7 +2324,17 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public MultiBulkReply smembers(byte[] key0) throws RedisException {
-    return null;
+    BytesKeySet set = _getset(key0, false);
+    return _setreply(set);
+  }
+
+  private MultiBulkReply _setreply(BytesKeySet set) {
+    Reply[] replies = new Reply[set.size()];
+    int i = 0;
+    for (BytesKey value : set) {
+      replies[i++] = new BulkReply(value.getBytes());
+    }
+    return new MultiBulkReply(replies);
   }
 
   /**
@@ -2260,7 +2348,14 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply smove(byte[] source0, byte[] destination1, byte[] member2) throws RedisException {
-    return null;
+    BytesKeySet source = _getset(source0, false);
+    if (source.remove(member2)) {
+      BytesKeySet dest = _getset(destination1, true);
+      dest.add(member2);
+      return integer(1);
+    } else {
+      return integer(0);
+    }
   }
 
   /**
@@ -2272,6 +2367,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public BulkReply spop(byte[] key0) throws RedisException {
+    // TODO
     return null;
   }
 
@@ -2284,6 +2380,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public BulkReply srandmember(byte[] key0) throws RedisException {
+    // TODO
     return null;
   }
 
@@ -2297,7 +2394,14 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply srem(byte[] key0, byte[][] member1) throws RedisException {
-    return null;
+    BytesKeySet set = _getset(key0, false);
+    int total = 0;
+    for (byte[] member : member1) {
+      if (set.remove(member)) {
+        total++;
+      }
+    }
+    return new IntegerReply(total);
   }
 
   /**
@@ -2309,7 +2413,24 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public MultiBulkReply sunion(byte[][] key0) throws RedisException {
-    return null;
+    BytesKeySet set = _sunion(key0);
+    return _setreply(set);
+  }
+
+  private BytesKeySet _sunion(byte[][] key0) throws RedisException {
+    BytesKeySet set = null;
+    for (byte[] key : key0) {
+      if (set == null) {
+        set = new BytesKeySet();
+        set.addAll(_getset(key, false));
+      } else {
+        set.addAll(_getset(key, false));
+      }
+    }
+    if (set == null) {
+      throw new RedisException("wrong number of arguments for 'sunion' command");
+    }
+    return set;
   }
 
   /**
@@ -2322,7 +2443,14 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply sunionstore(byte[] destination0, byte[][] key1) throws RedisException {
-    return null;
+    Object o = _get(destination0);
+    if (o == null || o instanceof Set) {
+      BytesKeySet set = _sunion(key1);
+      _put(destination0, set);
+      return integer(set.size());
+    } else {
+      throw invalidValue();
+    }
   }
 
   /**
