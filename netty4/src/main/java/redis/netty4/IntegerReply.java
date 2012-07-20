@@ -15,9 +15,22 @@ import static redis.util.Encoding.numToBytes;
 */
 public class IntegerReply implements Reply<Long> {
   public static final char MARKER = ':';
-  public static final IntegerReply ZERO_REPLY = new IntegerReply(0);
-  public static final IntegerReply ONE_REPLY = new IntegerReply(1);
   private final long integer;
+
+  private static IntegerReply[] replies = new IntegerReply[512];
+  static {
+    for (int i = -255; i < 256; i++) {
+      replies[i + 255] = new IntegerReply(i);
+    }
+  }
+
+  public static IntegerReply integer(long integer) {
+    if (integer > -256 && integer < 256) {
+      return replies[((int) (integer + 255))];
+    } else {
+      return new IntegerReply(integer);
+    }
+  }
 
   public IntegerReply(long integer) {
     this.integer = integer;

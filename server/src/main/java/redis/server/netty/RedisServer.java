@@ -435,7 +435,7 @@ public interface RedisServer {
   public MultiBulkReply time() throws RedisException;
 
   /**
-   * Remove and get the first element in a list, or block until one is available
+   * Remove and integer the first element in a list, or block until one is available
    * List
    *
    * @param key0
@@ -444,7 +444,7 @@ public interface RedisServer {
   public MultiBulkReply blpop(byte[][] key0) throws RedisException;
 
   /**
-   * Remove and get the last element in a list, or block until one is available
+   * Remove and integer the last element in a list, or block until one is available
    * List
    *
    * @param key0
@@ -495,7 +495,7 @@ public interface RedisServer {
   public IntegerReply llen(byte[] key0) throws RedisException;
 
   /**
-   * Remove and get the first element in a list
+   * Remove and integer the first element in a list
    * List
    *
    * @param key0
@@ -568,7 +568,7 @@ public interface RedisServer {
   public StatusReply ltrim(byte[] key0, byte[] start1, byte[] stop2) throws RedisException;
 
   /**
-   * Remove and get the last element in a list
+   * Remove and integer the last element in a list
    * List
    *
    * @param key0

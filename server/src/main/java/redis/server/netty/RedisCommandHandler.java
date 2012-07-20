@@ -43,13 +43,15 @@ public class RedisCommandHandler extends ChannelInboundMessageHandlerAdapter<Com
         @Override
         public Reply execute(Command command) throws RedisException {
           Object[] objects = new Object[types.length];
-          command.toArguments(objects, types);
           try {
+            command.toArguments(objects, types);
             return (Reply) method.invoke(rs, objects);
           } catch (IllegalAccessException e) {
             throw new RedisException("Invalid server implementation");
           } catch (InvocationTargetException e) {
             return new ErrorReply("ERR " + e.getTargetException().getMessage());
+          } catch (Exception e) {
+            return new ErrorReply("ERR " + e.getMessage());
           }
         }
       });
