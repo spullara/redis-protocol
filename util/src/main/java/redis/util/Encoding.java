@@ -32,6 +32,10 @@ public class Encoding {
     }
   }
 
+  public static byte[] numToBytes(long value) {
+    return numToBytes(value, false);
+  }
+
   // Optimized for the direct to ASCII bytes case
   // About 5x faster than using Long.toString.getBytes
   public static byte[] numToBytes(long value, boolean withCRLF) {

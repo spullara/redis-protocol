@@ -1,13 +1,14 @@
 package redis.server.netty;
 
+import java.lang.reflect.Field;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
-
-import com.google.common.base.Charsets;
+import java.util.SortedSet;
 
 import redis.netty4.BulkReply;
 import redis.netty4.IntegerReply;
@@ -26,7 +27,7 @@ import static redis.util.Encoding.numToBytes;
 
 public class SimpleRedisServer implements RedisServer {
 
-  private long started = System.currentTimeMillis();
+  private long started = now();
   private BytesKeyObjectMap<Object> data = new BytesKeyObjectMap<Object>();
   private BytesKeyObjectMap<Long> expires = new BytesKeyObjectMap<Long>();
   private static int[] mask = {128, 64, 32, 16, 8, 4, 2, 1};
@@ -63,7 +64,7 @@ public class SimpleRedisServer implements RedisServer {
     if (o != null) {
       Long l = expires.get(key0);
       if (l != null) {
-        if (l < System.currentTimeMillis()) {
+        if (l < now()) {
           data.remove(key0);
           return null;
         }
@@ -231,6 +232,30 @@ public class SimpleRedisServer implements RedisServer {
       offset = length - 1;
     }
     return (int) offset;
+  }
+
+  private static Random r = new SecureRandom();
+  private static Field tableField;
+  private static Field nextField;
+  static {
+    try {
+      tableField = HashMap.class.getDeclaredField("table");
+      tableField.setAccessible(true);
+      Class c = Class.forName("java.util.HashMap$Entry");
+      nextField = c.getDeclaredField("next");
+      nextField.setAccessible(true);
+    } catch (Exception e) {
+      e.printStackTrace();
+      tableField = null;
+    }
+  }
+
+  private static RedisException noSuchKey() {
+    return new RedisException("no such key");
+  }
+
+  private long now() {
+    return System.currentTimeMillis();
   }
 
   /**
@@ -577,7 +602,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply psetex(byte[] key0, byte[] milliseconds1, byte[] value2) throws RedisException {
-    _put(key0, value2, bytesToNum(milliseconds1) + System.currentTimeMillis());
+    _put(key0, value2, bytesToNum(milliseconds1) + now());
     return OK;
   }
 
@@ -651,7 +676,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply setex(byte[] key0, byte[] seconds1, byte[] value2) throws RedisException {
-    _put(key0, value2, bytesToNum(seconds1) * 1000 + System.currentTimeMillis());
+    _put(key0, value2, bytesToNum(seconds1) * 1000 + now());
     return OK;
   }
 
@@ -904,7 +929,7 @@ public class SimpleRedisServer implements RedisServer {
     StringBuilder sb = new StringBuilder();
     sb.append("redis_version:2.6.0\n");
     sb.append("keys:").append(data.size()).append("\n");
-    sb.append("uptime:").append(System.currentTimeMillis() - started).append("\n");
+    sb.append("uptime:").append(now() - started).append("\n");
     return new BulkReply(sb.toString().getBytes());
   }
 
@@ -1244,7 +1269,7 @@ public class SimpleRedisServer implements RedisServer {
   public StatusReply lset(byte[] key0, byte[] index1, byte[] value2) throws RedisException {
     List<BytesKey> list = _getlist(key0, false);
     if (list == null) {
-      throw new RedisException("no such key");
+      throw noSuchKey();
     }
     int size = list.size();
     int index = _toposint(index1);
@@ -1419,7 +1444,7 @@ public class SimpleRedisServer implements RedisServer {
     if (o == null) {
       return integer(0);
     } else {
-      expires.put(key0, bytesToNum(seconds1) * 1000 + System.currentTimeMillis());
+      expires.put(key0, bytesToNum(seconds1) * 1000 + now());
       return integer(1);
     }
   }
@@ -1540,7 +1565,7 @@ public class SimpleRedisServer implements RedisServer {
     if (o == null) {
       return integer(0);
     } else {
-      expires.put(key0, bytesToNum(milliseconds1) + System.currentTimeMillis());
+      expires.put(key0, bytesToNum(milliseconds1) + now());
       return integer(1);
     }
   }
@@ -1581,7 +1606,7 @@ public class SimpleRedisServer implements RedisServer {
       if (aLong == null) {
         return integer(-1);
       } else {
-        return integer(aLong - System.currentTimeMillis());
+        return integer(aLong - now());
       }
     }
   }
@@ -1594,6 +1619,38 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public BulkReply randomkey() throws RedisException {
+    // This implementation mirrors that of Redis. I'm not
+    // sure I believe that this is a great algorithm but
+    // it beats the alternatives that are very inefficient.
+    if (tableField != null) {
+      int size = data.size();
+      if (size == 0) {
+        return NIL_REPLY;
+      }
+      try {
+        Map.Entry[] table = (Map.Entry[]) tableField.get(data);
+        int length = table.length;
+        Map.Entry entry;
+        do {
+          entry = table[r.nextInt(length)];
+        } while(entry == null);
+
+        int entries = 0;
+        Map.Entry current = entry;
+        do {
+          entries++;
+          entry = current;
+          current = (Map.Entry) nextField.get(current);
+        } while (current != null);
+        int choose = r.nextInt(entries);
+        current = entry;
+        while (choose-- != 0) current = (Map.Entry) nextField.get(current);
+        BytesKey key = (BytesKey) current.getKey();
+        return new BulkReply(key.getBytes());
+      } catch (Exception e) {
+        throw new RedisException(e);
+      }
+    }
     return null;
   }
 
@@ -1607,7 +1664,14 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply rename(byte[] key0, byte[] newkey1) throws RedisException {
-    return null;
+    Object o = _get(key0);
+    if (o == null) {
+      throw noSuchKey();
+    } else {
+      data.put(newkey1, data.remove(key0));
+      expires.put(newkey1, expires.remove(key0));
+      return OK;
+    }
   }
 
   /**
@@ -1620,7 +1684,19 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply renamenx(byte[] key0, byte[] newkey1) throws RedisException {
-    return null;
+    Object o = _get(key0);
+    if (o == null) {
+      throw noSuchKey();
+    } else {
+      Object newo = _get(newkey1);
+      if (newo == null) {
+        data.put(newkey1, data.remove(key0));
+        expires.put(newkey1, expires.remove(key0));
+        return integer(1);
+      } else {
+        return integer(0);
+      }
+    }
   }
 
   /**
@@ -1634,6 +1710,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply restore(byte[] key0, byte[] ttl1, byte[] serialized_value2) throws RedisException {
+    // TODO
     return null;
   }
 
@@ -1649,6 +1726,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply sort(byte[] key0, byte[] pattern1, byte[] offset_or_count2, byte[][] pattern3) throws RedisException {
+    // TODO
     return null;
   }
 
@@ -1661,7 +1739,17 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply ttl(byte[] key0) throws RedisException {
-    return null;
+    Object o = _get(key0);
+    if (o == null) {
+      return integer(-1);
+    } else {
+      Long aLong = expires.get(key0);
+      if (aLong == null) {
+        return integer(-1);
+      } else {
+        return integer((aLong - now())/1000);
+      }
+    }
   }
 
   /**
@@ -1673,6 +1761,20 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply type(byte[] key0) throws RedisException {
+    Object o = _get(key0);
+    if (o == null) {
+      return new StatusReply("none");
+    } else if (o instanceof byte[]) {
+      return new StatusReply("string");
+    } else if (o instanceof Map) {
+      return new StatusReply("hash");
+    } else if (o instanceof List) {
+      return new StatusReply("list");
+    } else if (o instanceof SortedSet) {
+      return new StatusReply("zset");
+    } else if (o instanceof Set) {
+      return new StatusReply("set");
+    }
     return null;
   }
 
@@ -1684,6 +1786,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply unwatch() throws RedisException {
+    // TODO
     return null;
   }
 
@@ -1696,6 +1799,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply watch(byte[][] key0) throws RedisException {
+    // TODO
     return null;
   }
 
@@ -1710,6 +1814,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply eval(byte[] script0, byte[] numkeys1, byte[][] key2) throws RedisException {
+    // TODO
     return null;
   }
 
@@ -1724,6 +1829,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply evalsha(byte[] sha10, byte[] numkeys1, byte[][] key2) throws RedisException {
+    // TODO
     return null;
   }
 
@@ -1736,6 +1842,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply script_exists(byte[][] script0) throws RedisException {
+    // TODO
     return null;
   }
 
@@ -1747,6 +1854,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply script_flush() throws RedisException {
+    // TODO
     return null;
   }
 
@@ -1758,6 +1866,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply script_kill() throws RedisException {
+    // TODO
     return null;
   }
 
@@ -1770,6 +1879,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply script_load(byte[] script0) throws RedisException {
+    // TODO
     return null;
   }
 
@@ -1786,7 +1896,7 @@ public class SimpleRedisServer implements RedisServer {
     BytesKeyObjectMap<byte[]> hash = _gethash(key0, false);
     int total = 0;
     for (byte[] hkey : field1) {
-      total += hash.remove(new BytesKey(hkey)) == null ? 0 : 1;
+      total += hash.remove(hkey) == null ? 0 : 1;
     }
     return integer(total);
   }
@@ -1801,7 +1911,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply hexists(byte[] key0, byte[] field1) throws RedisException {
-    return _gethash(key0, false).get(new BytesKey(field1)) == null ? integer(0) : integer(1);
+    return _gethash(key0, false).get(field1) == null ? integer(0) : integer(1);
   }
 
   /**
@@ -1814,7 +1924,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public BulkReply hget(byte[] key0, byte[] field1) throws RedisException {
-    byte[] bytes = _gethash(key0, false).get(new BytesKey(field1));
+    byte[] bytes = _gethash(key0, false).get(field1);
     if (bytes == null) {
       return NIL_REPLY;
     } else {
@@ -1853,7 +1963,18 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply hincrby(byte[] key0, byte[] field1, byte[] increment2) throws RedisException {
-    return null;
+    BytesKeyObjectMap<byte[]> hash = _gethash(key0, true);
+    byte[] field = hash.get(field1);
+    int increment = _toint(increment2);
+    if (field == null) {
+      hash.put(field1, increment2);
+      return new IntegerReply(increment);
+    } else {
+      int i = _toint(field);
+      int value = i + increment;
+      hash.put(field1, numToBytes(value, false));
+      return new IntegerReply(value);
+    }
   }
 
   /**
@@ -1867,7 +1988,19 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public BulkReply hincrbyfloat(byte[] key0, byte[] field1, byte[] increment2) throws RedisException {
-    return null;
+    BytesKeyObjectMap<byte[]> hash = _gethash(key0, true);
+    byte[] field = hash.get(field1);
+    double increment = Double.parseDouble(new String(increment2));
+    if (field == null) {
+      hash.put(field1, increment2);
+      return new BulkReply(increment2);
+    } else {
+      double d = Double.parseDouble(new String(field));
+      double value = d + increment;
+      byte[] bytes = String.valueOf(value).getBytes();
+      hash.put(field1, bytes);
+      return new BulkReply(bytes);
+    }
   }
 
   /**
@@ -1916,7 +2049,7 @@ public class SimpleRedisServer implements RedisServer {
     int length = field1.length;
     Reply[] replies = new Reply[length];
     for (int i = 0; i < length; i++) {
-      byte[] bytes = hash.get(new BytesKey(field1[i]));
+      byte[] bytes = hash.get(field1[i]);
       if (bytes == null) {
         replies[i] = NIL_REPLY;
       } else {
@@ -1941,7 +2074,7 @@ public class SimpleRedisServer implements RedisServer {
       throw new RedisException("wrong number of arguments for HMSET");
     }
     for (int i = 0; i < field_or_value1.length; i += 2) {
-      hash.put(new BytesKey(field_or_value1[i]), field_or_value1[i + 1]);
+      hash.put(field_or_value1[i], field_or_value1[i + 1]);
     }
     return OK;
   }
@@ -1958,7 +2091,7 @@ public class SimpleRedisServer implements RedisServer {
   @Override
   public IntegerReply hset(byte[] key0, byte[] field1, byte[] value2) throws RedisException {
     BytesKeyObjectMap<byte[]> hash = _gethash(key0, true);
-    Object put = hash.put(new BytesKey(field1), value2);
+    Object put = hash.put(field1, value2);
     return put == null ? integer(1) : integer(0);
   }
 
@@ -1973,7 +2106,14 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply hsetnx(byte[] key0, byte[] field1, byte[] value2) throws RedisException {
-    return null;
+    BytesKeyObjectMap<byte[]> hash = _gethash(key0, true);
+    byte[] bytes = hash.get(field1);
+    if (bytes == null) {
+      hash.put(field1, value2);
+      return integer(1);
+    } else {
+      return integer(0);
+    }
   }
 
   /**
@@ -2005,6 +2145,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply publish(byte[] channel0, byte[] message1) throws RedisException {
+    // TODO
     return null;
   }
 
