@@ -65,6 +65,33 @@ public class SimpleRedisServer implements RedisServer {
     }
   }
 
+  private int test(byte[] bytes, long offset) throws RedisException {
+    long div = offset / 8;
+    if (div > Integer.MAX_VALUE) throw notInteger();
+    int i;
+    if (bytes.length < div + 1) {
+      i = 0;
+    } else {
+      int mod = (int) (offset % 8);
+      int value = bytes[((int) div)] & 0xFF;
+      i = value & mask[mod];
+    }
+    return i != 0 ? 1 : 0;
+  }
+
+  private byte[] getBytes(byte[] aKey2) throws RedisException {
+    byte[] src;
+    Object o = data.get(aKey2);
+    if (o instanceof byte[]) {
+      src = (byte[]) o;
+    } else if (o != null) {
+      throw invalidValue();
+    } else {
+      src = new byte[0];
+    }
+    return src;
+  }
+
   /**
    * Append a value to a key
    * String
@@ -103,7 +130,38 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply bitcount(byte[] key0, byte[] start1, byte[] end2) throws RedisException {
-    return null;
+    Object o = data.get(key0);
+    if (o instanceof byte[]) {
+      byte[] bytes = (byte[]) o;
+      long s = bytesToNum(start1);
+      long e = bytesToNum(end2);
+      if (s < 0 && e < 0) {
+        s = bytes.length + e + 1;
+        e = bytes.length + s + 1;
+      } else if (s < 0 || e < 0) {
+        throw notInteger();
+      }
+      if (s < 0) {
+        throw notInteger();
+      }
+      if (e > bytes.length) {
+        e = bytes.length;
+      }
+      int total = 0;
+      for (int i = (int) s; i < e; i++) {
+        int b = bytes[i] & 0xFF;
+        for (int j = 0; j < 8; j++) {
+          if ((b & mask[j]) != 0) {
+            total++;
+          }
+        }
+      }
+      return integer(total);
+    } else if (o == null) {
+      return integer(0);
+    } else {
+      throw invalidValue();
+    }
   }
 
   /**
@@ -117,8 +175,53 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply bitop(byte[] operation0, byte[] destkey1, byte[][] key2) throws RedisException {
-    return null;
+    BitOp bitOp = BitOp.valueOf(new String(operation0).toUpperCase());
+    int size = 0;
+    for (byte[] aKey2 : key2) {
+      int length = aKey2.length;
+      if (length > size) {
+        size = length;
+      }
+    }
+    byte[] bytes = null;
+    for (byte[] aKey2 : key2) {
+      byte[] src;
+      src = getBytes(aKey2);
+      if (bytes == null) {
+        bytes = new byte[size];
+        if (bitOp == BitOp.NOT) {
+          if (key2.length > 1) {
+            throw new RedisException("invalid number of arguments for 'bitop' NOT operation");
+          }
+          for (int i = 0; i < src.length; i++) {
+            bytes[i] = (byte) ~(src[i] & 0xFF);
+          }
+        } else {
+          System.arraycopy(src, 0, bytes, 0, src.length);
+        }
+      } else {
+        for (int i = 0; i < src.length; i++) {
+          int d = bytes[i] & 0xFF;
+          int s = src[i] & 0xFF;
+          switch (bitOp) {
+            case AND:
+              bytes[i] = (byte) (d & s);
+              break;
+            case OR:
+              bytes[i] = (byte) (d | s);
+              break;
+            case XOR:
+              bytes[i] = (byte) (d ^ s);
+              break;
+          }
+        }
+      }
+    }
+    data.put(destkey1, bytes);
+    return integer(bytes == null ? 0 : bytes.length);
   }
+
+  enum BitOp {AND, OR, XOR, NOT}
 
   /**
    * Decrement the integer value of a key by one
@@ -177,15 +280,9 @@ public class SimpleRedisServer implements RedisServer {
   public IntegerReply getbit(byte[] key0, byte[] offset1) throws RedisException {
     Object o = data.get(key0);
     if (o instanceof byte[]) {
-      byte[] bytes = (byte[]) o;
       long offset = bytesToNum(offset1);
-      long div = offset / 8;
-      if (div > Integer.MAX_VALUE) throw notInteger();
-      if (bytes.length < div + 1) return integer(0);
-      int mod = (int) (offset % 8);
-      int value = bytes[((int) div)] & 0xFF;
-      int i = value & mask[mod];
-      return i != 0 ? integer(1) : integer(0);
+      byte[] bytes = (byte[]) o;
+      return test(bytes, offset) == 1 ? integer(1) : integer(0);
     } else if (o == null) {
       return new IntegerReply(0);
     } else {
@@ -204,7 +301,23 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public BulkReply getrange(byte[] key0, byte[] start1, byte[] end2) throws RedisException {
-    return null;
+    byte[] bytes = getBytes(key0);
+    long s = bytesToNum(start1);
+    long e = bytesToNum(end2);
+    if (s < 0 && e < 0) {
+      long tmp = s;
+      s = bytes.length + e + 1;
+      e = bytes.length + tmp + 1;
+    } else if (s < 0 || e < 0 || s > Integer.MAX_VALUE || e > Integer.MAX_VALUE) {
+      throw notInteger();
+    }
+    if (s < 0 || e > bytes.length) {
+      throw notInteger();
+    }
+    int length = (int) (e - s);
+    byte[] out = new byte[length];
+    System.arraycopy(bytes, (int) s, out, 0, length);
+    return new BulkReply(out);
   }
 
   /**
@@ -1364,7 +1477,7 @@ public class SimpleRedisServer implements RedisServer {
     Reply[] replies = new Reply[size * 2];
     int i = 0;
     for (Map.Entry<Object, byte[]> entry : hash.entrySet()) {
-      replies[i++] = new BulkReply(((BytesKey)entry.getKey()).getBytes());
+      replies[i++] = new BulkReply(((BytesKey) entry.getKey()).getBytes());
       replies[i++] = new BulkReply(entry.getValue());
     }
     return new MultiBulkReply(replies);
@@ -1412,7 +1525,7 @@ public class SimpleRedisServer implements RedisServer {
     Reply[] replies = new Reply[size];
     int i = 0;
     for (Object hkey : hash.keySet()) {
-      replies[i++] = new BulkReply(((BytesKey)hkey).getBytes());
+      replies[i++] = new BulkReply(((BytesKey) hkey).getBytes());
     }
     return new MultiBulkReply(replies);
   }
@@ -1468,7 +1581,7 @@ public class SimpleRedisServer implements RedisServer {
     if (field_or_value1.length % 2 != 0) {
       throw new RedisException("wrong number of arguments for HMSET");
     }
-    for (int i = 0; i < field_or_value1.length; i+=2) {
+    for (int i = 0; i < field_or_value1.length; i += 2) {
       hash.put(new BytesKey(field_or_value1[i]), field_or_value1[i + 1]);
     }
     return OK;
