@@ -1,6 +1,8 @@
 package redis.server.netty;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import redis.netty4.BulkReply;
@@ -131,14 +133,32 @@ public class SimpleRedisServer implements RedisServer {
     return src;
   }
 
-  private Object _put(byte[] key0, byte[] value1) {
-    expires.remove(key0);
-    return data.put(key0, value1);
+  @SuppressWarnings("unchecked")
+  private List<BytesKey> _getlist(byte[] key0, boolean create) throws RedisException {
+    Object o = _get(key0);
+    if (o instanceof List) {
+      return (List<BytesKey>) o;
+    } else if (o == null) {
+      if (create) {
+        ArrayList<BytesKey> list = new ArrayList<BytesKey>();
+        _put(key0, list);
+        return list;
+      } else {
+        return null;
+      }
+    } else {
+      throw invalidValue();
+    }
   }
 
-  private Object _put(byte[] key0, byte[] value1, long expiration) {
-    expires.put(key0, expiration);
-    return data.put(key0, value1);
+  private Object _put(byte[] key, Object value) {
+    expires.remove(key);
+    return data.put(key, value);
+  }
+
+  private Object _put(byte[] key, byte[] value, long expiration) {
+    expires.put(key, expiration);
+    return data.put(key, value);
   }
 
   /**
@@ -182,22 +202,12 @@ public class SimpleRedisServer implements RedisServer {
     Object o = _get(key0);
     if (o instanceof byte[]) {
       byte[] bytes = (byte[]) o;
-      long s = bytesToNum(start1);
-      long e = bytesToNum(end2);
-      if (s < 0 && e < 0) {
-        s = bytes.length + e + 1;
-        e = bytes.length + s + 1;
-      } else if (s < 0 || e < 0) {
-        throw notInteger();
-      }
-      if (s < 0) {
-        throw notInteger();
-      }
-      if (e > bytes.length) {
-        e = bytes.length;
-      }
+      int size = bytes.length;
+      int s = _torange(start1, size);
+      int e = _torange(end2, size);
+      if (e < s) e = s;
       int total = 0;
-      for (int i = (int) s; i < e; i++) {
+      for (int i = (int) s; i <= e; i++) {
         int b = bytes[i] & 0xFF;
         for (int j = 0; j < 8; j++) {
           if ((b & mask[j]) != 0) {
@@ -351,19 +361,11 @@ public class SimpleRedisServer implements RedisServer {
   @Override
   public BulkReply getrange(byte[] key0, byte[] start1, byte[] end2) throws RedisException {
     byte[] bytes = _getbytes(key0);
-    long s = bytesToNum(start1);
-    long e = bytesToNum(end2);
-    if (s < 0 && e < 0) {
-      long tmp = s;
-      s = bytes.length + e + 1;
-      e = bytes.length + tmp + 1;
-    } else if (s < 0 || e < 0 || s > MAX_VALUE || e > MAX_VALUE) {
-      throw notInteger();
-    }
-    if (s < 0 || e > bytes.length) {
-      throw notInteger();
-    }
-    int length = (int) (e - s);
+    int size = bytes.length;
+    int s = _torange(start1, size);
+    int e = _torange(end2, size);
+    if (e < s) e = s;
+    int length = e - s + 1;
     byte[] out = new byte[length];
     System.arraycopy(bytes, (int) s, out, 0, length);
     return new BulkReply(out);
@@ -610,19 +612,46 @@ public class SimpleRedisServer implements RedisServer {
   @Override
   public IntegerReply setrange(byte[] key0, byte[] offset1, byte[] value2) throws RedisException {
     byte[] bytes = _getbytes(key0);
-    long offset = bytesToNum(offset1);
-    if (offset < 0 || offset > MAX_VALUE) {
-      throw notInteger();
-    }
+    int offset = _toposint(offset1);
     int length = (int) (value2.length + offset);
     if (bytes.length < length) {
       byte[] tmp = bytes;
       bytes = new byte[length];
-      System.arraycopy(tmp, 0, bytes, 0, (int) offset);
+      System.arraycopy(tmp, 0, bytes, 0, offset);
       _put(key0, bytes);
     }
-    System.arraycopy(value2, 0, bytes, (int) offset, value2.length);
+    System.arraycopy(value2, 0, bytes, offset, value2.length);
     return integer(bytes.length);
+  }
+
+  private int _toposint(byte[] offset1) throws RedisException {
+    long offset = bytesToNum(offset1);
+    if (offset < 0 || offset > MAX_VALUE) {
+      throw notInteger();
+    }
+    return (int) offset;
+  }
+
+  private int _toint(byte[] offset1) throws RedisException {
+    long offset = bytesToNum(offset1);
+    if (offset > MAX_VALUE) {
+      throw notInteger();
+    }
+    return (int) offset;
+  }
+
+  private int _torange(byte[] offset1, int length) throws RedisException {
+    long offset = bytesToNum(offset1);
+    if (offset > MAX_VALUE) {
+      throw notInteger();
+    }
+    if (offset < 0) {
+      offset = (length + offset);
+    }
+    if (offset >= length) {
+      offset = length - 1;
+    }
+    return (int) offset;
   }
 
   /**
@@ -706,6 +735,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply bgrewriteaof() throws RedisException {
+    // TODO
     return null;
   }
 
@@ -717,6 +747,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply bgsave() throws RedisException {
+    // TODO
     return null;
   }
 
@@ -729,6 +760,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply config_get(byte[] parameter0) throws RedisException {
+    // TODO
     return null;
   }
 
@@ -742,6 +774,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply config_set(byte[] parameter0, byte[] value1) throws RedisException {
+    // TODO
     return null;
   }
 
@@ -753,6 +786,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply config_resetstat() throws RedisException {
+    // TODO
     return null;
   }
 
@@ -764,6 +798,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply dbsize() throws RedisException {
+    // TODO
     return null;
   }
 
@@ -776,6 +811,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply debug_object(byte[] key0) throws RedisException {
+    // TODO
     return null;
   }
 
@@ -787,6 +823,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply debug_segfault() throws RedisException {
+    // TODO
     return null;
   }
 
@@ -798,6 +835,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply flushall() throws RedisException {
+    // TODO
     return null;
   }
 
@@ -809,6 +847,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply flushdb() throws RedisException {
+    // TODO
     return null;
   }
 
@@ -835,6 +874,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply lastsave() throws RedisException {
+    // TODO
     return null;
   }
 
@@ -846,6 +886,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply monitor() throws RedisException {
+    // TODO
     return null;
   }
 
@@ -870,6 +911,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply shutdown(byte[] NOSAVE0, byte[] SAVE1) throws RedisException {
+    // TODO
     return null;
   }
 
@@ -883,6 +925,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply slaveof(byte[] host0, byte[] port1) throws RedisException {
+    // TODO
     return null;
   }
 
@@ -896,6 +939,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply slowlog(byte[] subcommand0, byte[] argument1) throws RedisException {
+    // TODO
     return null;
   }
 
@@ -907,6 +951,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply sync() throws RedisException {
+    // TODO
     return null;
   }
 
@@ -918,6 +963,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public MultiBulkReply time() throws RedisException {
+    // TODO
     return null;
   }
 
@@ -930,6 +976,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public MultiBulkReply blpop(byte[][] key0) throws RedisException {
+    // TODO: Blocking
     return null;
   }
 
@@ -942,6 +989,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public MultiBulkReply brpop(byte[][] key0) throws RedisException {
+    // TODO: Blocking
     return null;
   }
 
@@ -956,6 +1004,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public BulkReply brpoplpush(byte[] source0, byte[] destination1, byte[] timeout2) throws RedisException {
+    // TODO: Blocking
     return null;
   }
 
@@ -967,9 +1016,16 @@ public class SimpleRedisServer implements RedisServer {
    * @param index1
    * @return BulkReply
    */
+  @SuppressWarnings("unchecked")
   @Override
   public BulkReply lindex(byte[] key0, byte[] index1) throws RedisException {
-    return null;
+    int index = _toposint(index1);
+    List<BytesKey> list = _getlist(key0, true);
+    if (list == null || list.size() >= index) {
+      return NIL_REPLY;
+    } else {
+      return new BulkReply(list.get(index).getBytes());
+    }
   }
 
   /**
@@ -984,8 +1040,18 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply linsert(byte[] key0, byte[] where1, byte[] pivot2, byte[] value3) throws RedisException {
-    return null;
+    Where where = Where.valueOf(new String(where1).toUpperCase());
+    List<BytesKey> list = _getlist(key0, true);
+    BytesKey pivot = new BytesKey(pivot2);
+    int i = list.indexOf(pivot);
+    if (i == -1) {
+      return integer(-1);
+    }
+    list.add(i + (where == Where.BEFORE ? 0 : 1), new BytesKey(value3));
+    return integer(list.size());
   }
+
+  enum Where { BEFORE, AFTER }
 
   /**
    * Get the length of a list
@@ -996,7 +1062,8 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply llen(byte[] key0) throws RedisException {
-    return null;
+    List<BytesKey> list = _getlist(key0, false);
+    return list == null ? integer(0) : integer(list.size());
   }
 
   /**
@@ -1008,7 +1075,12 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public BulkReply lpop(byte[] key0) throws RedisException {
-    return null;
+    List<BytesKey> list = _getlist(key0, false);
+    if (list == null || list.size() == 0) {
+      return NIL_REPLY;
+    } else {
+      return new BulkReply(list.remove(0).getBytes());
+    }
   }
 
   /**
@@ -1021,7 +1093,11 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply lpush(byte[] key0, byte[][] value1) throws RedisException {
-    return null;
+    List<BytesKey> list = _getlist(key0, true);
+    for (byte[] value : value1) {
+      list.add(0, new BytesKey(value));
+    }
+    return integer(list.size());
   }
 
   /**
@@ -1034,7 +1110,13 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply lpushx(byte[] key0, byte[] value1) throws RedisException {
-    return null;
+    List<BytesKey> list = _getlist(key0, false);
+    if (list == null) {
+      return integer(0);
+    } else {
+      list.add(0, new BytesKey(value1));
+    }
+    return integer(list.size());
   }
 
   /**
@@ -1048,7 +1130,21 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public MultiBulkReply lrange(byte[] key0, byte[] start1, byte[] stop2) throws RedisException {
-    return null;
+    List<BytesKey> list = _getlist(key0, false);
+    if (list == null) {
+      return MultiBulkReply.EMPTY;
+    } else {
+      int size = list.size();
+      int s = _torange(start1, size);
+      int e = _torange(stop2, size);
+      if (e < s) e = s;
+      int length = e - s + 1;
+      Reply[] replies = new Reply[length];
+      for (int i = s; i <= e; i++) {
+        replies[i - s] = new BulkReply(list.get(i).getBytes());
+      }
+      return new MultiBulkReply(replies);
+    }
   }
 
   /**
@@ -1062,7 +1158,35 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply lrem(byte[] key0, byte[] count1, byte[] value2) throws RedisException {
-    return null;
+    List<BytesKey> list = _getlist(key0, false);
+    if (list == null) {
+      return integer(0);
+    } else {
+      int count = _toint(count1);
+      BytesKey value = new BytesKey(value2);
+      int size = list.size();
+      int dir = 1;
+      int s = 0;
+      int e = size;
+      int rem = 0;
+      boolean all = count == 0;
+      if (count < 0) {
+        count = -count;
+        dir = -1;
+        s = e;
+        e = -1;
+      }
+      for (int i = s; (all || count != 0) && i != e; i += dir) {
+        if (list.get(i).equals(value)) {
+          list.remove(i);
+          e -= dir;
+          i -= dir;
+          rem++;
+          count--;
+        }
+      }
+      return integer(rem);
+    }
   }
 
   /**

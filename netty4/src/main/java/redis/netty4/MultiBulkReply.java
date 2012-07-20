@@ -21,6 +21,8 @@ import static redis.util.Encoding.numToBytes;
  */
 public class MultiBulkReply implements Reply<Reply[]> {
   public static final char MARKER = '*';
+  public static final MultiBulkReply EMPTY = new MultiBulkReply(new Reply[0]);
+
   private final Reply[] replies;
   private final int size;
   private int index = 0;
