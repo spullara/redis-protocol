@@ -19,6 +19,6 @@ public interface RedisServer {
    {{/arguments}}
    * @return {{reply}}
    */
-  public {{$return}}{{reply}}{{/return}} {{methodname}}({{#arguments}}{{^first}}, {{/first}}byte[]{{#multiple}}[]{{/multiple}} {{name}}{{/arguments}}) throws RedisException;
+  public {{$return}}{{reply}}{{/return}} {{methodname}}({{#arguments}}{{^skip}}{{^first}}, {{/first}}byte[]{{#multiple}}[]{{/multiple}} {{name}}{{/skip}}{{/arguments}}) throws RedisException;
   {{/commands}}
 }

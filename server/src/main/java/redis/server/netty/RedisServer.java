@@ -435,7 +435,7 @@ public interface RedisServer {
   public MultiBulkReply time() throws RedisException;
 
   /**
-   * Remove and integer the first element in a list, or block until one is available
+   * Remove and get the first element in a list, or block until one is available
    * List
    *
    * @param key0
@@ -444,7 +444,7 @@ public interface RedisServer {
   public MultiBulkReply blpop(byte[][] key0) throws RedisException;
 
   /**
-   * Remove and integer the last element in a list, or block until one is available
+   * Remove and get the last element in a list, or block until one is available
    * List
    *
    * @param key0
@@ -495,7 +495,7 @@ public interface RedisServer {
   public IntegerReply llen(byte[] key0) throws RedisException;
 
   /**
-   * Remove and integer the first element in a list
+   * Remove and get the first element in a list
    * List
    *
    * @param key0
@@ -568,7 +568,7 @@ public interface RedisServer {
   public StatusReply ltrim(byte[] key0, byte[] start1, byte[] stop2) throws RedisException;
 
   /**
-   * Remove and integer the last element in a list
+   * Remove and get the last element in a list
    * List
    *
    * @param key0
@@ -778,11 +778,9 @@ public interface RedisServer {
    *
    * @param key0
    * @param pattern1
-   * @param offset_or_count2
-   * @param pattern3
    * @return Reply
    */
-  public Reply sort(byte[] key0, byte[] pattern1, byte[] offset_or_count2, byte[][] pattern3) throws RedisException;
+  public Reply sort(byte[] key0, byte[][] pattern1) throws RedisException;
 
   /**
    * Get the time to live for a key
@@ -1221,7 +1219,7 @@ public interface RedisServer {
    * @param offset_or_count4
    * @return MultiBulkReply
    */
-  public MultiBulkReply zrangebyscore(byte[] key0, byte[] min1, byte[] max2, byte[] withscores3, byte[] offset_or_count4) throws RedisException;
+  public MultiBulkReply zrangebyscore(byte[] key0, byte[] min1, byte[] max2, byte[][] withscores_offset_or_count4) throws RedisException;
 
   /**
    * Determine the index of a member in a sorted set
@@ -1288,7 +1286,7 @@ public interface RedisServer {
    * @param offset_or_count4
    * @return MultiBulkReply
    */
-  public MultiBulkReply zrevrangebyscore(byte[] key0, byte[] max1, byte[] min2, byte[] withscores3, byte[] offset_or_count4) throws RedisException;
+  public MultiBulkReply zrevrangebyscore(byte[] key0, byte[] max1, byte[] min2, byte[][] withscores_offset_or_count4) throws RedisException;
 
   /**
    * Determine the index of a member in a sorted set, with scores ordered from high to low

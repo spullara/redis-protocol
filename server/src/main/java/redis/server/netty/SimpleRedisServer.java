@@ -1755,13 +1755,11 @@ public class SimpleRedisServer implements RedisServer {
    * Generic
    *
    * @param key0
-   * @param pattern1
-   * @param offset_or_count2
-   * @param pattern3
+   * @param pattern1_offset_or_count2_pattern3
    * @return Reply
    */
   @Override
-  public Reply sort(byte[] key0, byte[] pattern1, byte[] offset_or_count2, byte[][] pattern3) throws RedisException {
+  public Reply sort(byte[] key0, byte[][] pattern1_offset_or_count2_pattern3) throws RedisException {
     // TODO
     return null;
   }
@@ -2695,12 +2693,11 @@ public class SimpleRedisServer implements RedisServer {
    * @param key0
    * @param min1
    * @param max2
-   * @param withscores3
-   * @param offset_or_count4
+   * @param withscores_offset_or_count4
    * @return MultiBulkReply
    */
   @Override
-  public MultiBulkReply zrangebyscore(byte[] key0, byte[] min1, byte[] max2, byte[] withscores3, byte[] offset_or_count4) throws RedisException {
+  public MultiBulkReply zrangebyscore(byte[] key0, byte[] min1, byte[] max2, byte[][] withscores_offset_or_count4) throws RedisException {
 
     return null;
   }
@@ -2781,12 +2778,11 @@ public class SimpleRedisServer implements RedisServer {
    * @param key0
    * @param max1
    * @param min2
-   * @param withscores3
-   * @param offset_or_count4
+   * @param withscores_offset_or_count4
    * @return MultiBulkReply
    */
   @Override
-  public MultiBulkReply zrevrangebyscore(byte[] key0, byte[] max1, byte[] min2, byte[] withscores3, byte[] offset_or_count4) throws RedisException {
+  public MultiBulkReply zrevrangebyscore(byte[] key0, byte[] max1, byte[] min2, byte[][] withscores_offset_or_count4) throws RedisException {
     return null;
   }
 

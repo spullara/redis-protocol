@@ -137,7 +137,7 @@ public class Main {
         String version = commandNode.get("since").getTextValue();
         boolean hasOptional = false;
         boolean hasMultiple = false;
-
+        List<String> skipped = new ArrayList<String>();
         boolean varargs() {
           return (hasMultiple || hasOptional);
         }
@@ -195,8 +195,21 @@ public class Main {
                   boolean first = finalFirst;
                   boolean multiple = isMultiple;
                   String typename = "Object";
-                  String name = (argName + finalArgNum).replace(" ", "_").replace("-", "_");
+                  String name() {
+                    String name = (argName + finalArgNum).replace(" ", "_").replace("-", "_");
+                    for (String s : skipped) {
+                      name = s + "_" + name;
+                    }
+                    return name;
+                  }
                   Boolean optional = isOptional;
+                  boolean skip() {
+                    boolean skip = hasMultiple && isOptional && !isMultiple;
+                    if (skip) {
+                      skipped.add(argName);
+                    }
+                    return skip;
+                  }
                 });
                 if (isMultiple) {
                   usearray = true;
