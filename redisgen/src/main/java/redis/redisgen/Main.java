@@ -185,7 +185,7 @@ public class Main {
                 }
                 final boolean finalFirst = first;
                 final int finalArgNum = argNum;
-                final boolean isMultiple = argumentNode.get("multiple") != null;
+                final boolean isMultiple = argumentNode.get("multiple") != null || argumentNode.get("command") != null;
                 final boolean isOptional = argumentNode.get("optional") != null;
                 if (isOptional) hasOptional = true;
                 if (isMultiple) hasMultiple = true;

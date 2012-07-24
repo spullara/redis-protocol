@@ -92,11 +92,12 @@ public class Command {
     int position = 0;
     for (Class<?> type : types) {
       if (type == byte[].class) {
-        if (position >= arguments.length || objects.length - 1 <= position) {
+        if (position >= arguments.length) {
           throw new IllegalArgumentException("wrong number of arguments for '" + new String(getName()) + "' command");
         }
-        arguments[position] =
-                objects[1 + position];
+        if (objects.length - 1 > position) {
+          arguments[position] = objects[1 + position];
+        }
       } else {
         int left = objects.length - position - 1;
         byte[][] lastArgument = new byte[left][];

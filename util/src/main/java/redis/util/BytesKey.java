@@ -51,6 +51,11 @@ public class BytesKey implements Comparable<BytesKey> {
     return o instanceof BytesKey && equals(bytes, ((BytesKey) o).bytes);
   }
 
+  @Override
+  public String toString() {
+    return new String(bytes);
+  }
+
   public byte[] getBytes() {
     return bytes;
   }

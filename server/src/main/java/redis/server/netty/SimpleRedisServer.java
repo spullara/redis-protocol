@@ -4,8 +4,10 @@ import java.lang.reflect.Field;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
@@ -18,7 +20,10 @@ import redis.netty4.StatusReply;
 import redis.util.BytesKey;
 import redis.util.BytesKeyObjectMap;
 import redis.util.BytesKeySet;
+import redis.util.BytesKeyZSet;
+import redis.util.ZSetEntry;
 
+import static java.lang.Double.parseDouble;
 import static java.lang.Integer.MAX_VALUE;
 import static redis.netty4.BulkReply.NIL_REPLY;
 import static redis.netty4.IntegerReply.integer;
@@ -75,6 +80,21 @@ public class SimpleRedisServer implements RedisServer {
     return (BytesKeySet) o;
   }
 
+  @SuppressWarnings("unchecked")
+  private BytesKeyZSet _getzset(byte[] key0, boolean create) throws RedisException {
+    Object o = _get(key0);
+    if (o == null) {
+      o = new BytesKeyZSet();
+      if (create) {
+        data.put(key0, o);
+      }
+    }
+    if (!(o instanceof BytesKeyZSet)) {
+      throw invalidValue();
+    }
+    return (BytesKeyZSet) o;
+  }
+
   private Object _get(byte[] key0) {
     Object o = data.get(key0);
     if (o != null) {
@@ -115,7 +135,7 @@ public class SimpleRedisServer implements RedisServer {
       return new BulkReply(bytes);
     } else if (o instanceof byte[]) {
       try {
-        double number = Double.parseDouble(new String((byte[]) o)) + delta;
+        double number = _todouble((byte[]) o) + delta;
         byte[] bytes = String.valueOf(number).getBytes();
         _put(key0, bytes);
         return new BulkReply(bytes);
@@ -539,7 +559,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public BulkReply incrbyfloat(byte[] key0, byte[] increment1) throws RedisException {
-    return _change(key0, Double.parseDouble(new String(increment1)));
+    return _change(key0, _todouble(increment1));
   }
 
   /**
@@ -2006,12 +2026,12 @@ public class SimpleRedisServer implements RedisServer {
   public BulkReply hincrbyfloat(byte[] key0, byte[] field1, byte[] increment2) throws RedisException {
     BytesKeyObjectMap<byte[]> hash = _gethash(key0, true);
     byte[] field = hash.get(field1);
-    double increment = Double.parseDouble(new String(increment2));
+    double increment = _todouble(increment2);
     if (field == null) {
       hash.put(field1, increment2);
       return new BulkReply(increment2);
     } else {
-      double d = Double.parseDouble(new String(field));
+      double d = _todouble(field);
       double value = d + increment;
       byte[] bytes = String.valueOf(value).getBytes();
       hash.put(field1, bytes);
@@ -2462,7 +2482,24 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply zadd(byte[][] args) throws RedisException {
-    return null;
+    if (args.length < 3 || (args.length - 1) % 2 == 1) {
+      throw new RedisException("wrong number of arguments for 'zadd' command");
+    }
+    byte[] key = args[0];
+    BytesKeyZSet zset = _getzset(key, true);
+    int total = 0;
+    for (int i = 1; i < args.length; i += 2) {
+      byte[] value = args[i + 1];
+      byte[] score = args[i];
+      if (zset.add(new ZSetEntry(new BytesKey(value), _todouble(score)))) {
+        total++;
+      }
+    }
+    return integer(total);
+  }
+
+  private double _todouble(byte[] score) {
+    return parseDouble(new String(score));
   }
 
   /**
@@ -2474,7 +2511,8 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply zcard(byte[] key0) throws RedisException {
-    return null;
+    BytesKeyZSet zset = _getzset(key0, false);
+    return integer(zset.size());
   }
 
   /**
@@ -2488,7 +2526,14 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply zcount(byte[] key0, byte[] min1, byte[] max2) throws RedisException {
-    return null;
+    BytesKeyZSet zset = _getzset(key0, false);
+    NavigableSet<ZSetEntry> entries = zset.subSet(new ZSetEntry(null, _todouble(min1)), true,
+            new ZSetEntry(null, _todouble(max2)), true);
+    int total = 0;
+    for (ZSetEntry entry : entries) {
+      total++;
+    }
+    return integer(total);
   }
 
   /**
@@ -2502,7 +2547,18 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public BulkReply zincrby(byte[] key0, byte[] increment1, byte[] member2) throws RedisException {
-    return null;
+    BytesKeyZSet zset = _getzset(key0, true);
+    ZSetEntry entry = zset.get(member2);
+    double increment = _todouble(increment1);
+    if (entry == null) {
+      zset.add(new ZSetEntry(new BytesKey(member2), increment));
+      return new BulkReply(increment1);
+    } else {
+      zset.remove(entry);
+      entry.increment(increment);
+      zset.add(entry);
+      return new BulkReply(String.valueOf(entry.getScore()).getBytes());
+    }
   }
 
   /**
@@ -2514,8 +2570,76 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply zinterstore(byte[][] args) throws RedisException {
-    return null;
+    if (args.length < 3) {
+      throw new RedisException("wrong number of arguments for 'zinterstore' command");
+    }
+    int numkeys = _toint(args[1]);
+    if (args.length < 2 + numkeys) {
+      throw new RedisException("wrong number of arguments for 'zinterstore' command");
+    }
+    int position = 2 + numkeys;
+    double[] weights = null;
+    Aggregate type = null;
+    if (args.length > position) {
+      if ("weights".equals(new String(args[position]).toLowerCase())) {
+        position++;
+        if (args.length < position + numkeys) {
+          throw new RedisException("wrong number of arguments for 'zinterstore' command");
+        }
+        weights = new double[numkeys];
+        for (int i = position; i < position + numkeys; i++) {
+          weights[i - position] = _todouble(args[i]);
+        }
+        position += numkeys;
+      }
+      if (args.length > position + 1) {
+        if ("aggregate".equals(new String(args[position]).toLowerCase())) {
+          type = Aggregate.valueOf(new String(args[position + 1]).toUpperCase());
+        }
+      } else if (args.length != position) {
+        throw new RedisException("wrong number of arguments for 'zinterstore' command");
+      }
+    }
+    BytesKeyZSet destination = _getzset(args[0], true);
+    for (int i = 2; i < numkeys + 2; i++) {
+      BytesKeyZSet zset = _getzset(args[i], false);
+      if (i == 2) {
+        if (weights == null) {
+          destination.addAll(zset);
+        } else {
+          double weight = weights[i - 2];
+          for (ZSetEntry entry : zset) {
+            destination.add(new ZSetEntry(entry.getValue(), entry.getScore() * weight));
+          }
+        }
+      } else {
+        BytesKeyZSet iterable = new BytesKeyZSet(destination);
+        for (ZSetEntry entry : iterable) {
+          BytesKey key = entry.getValue();
+          ZSetEntry current = zset.get(key);
+          destination.remove(entry);
+          if (current != null) {
+            double newscore = entry.getScore() * (weights == null ? 1 : weights[i - 2]);
+            if (type == null || type == Aggregate.SUM) {
+              newscore += current.getScore();
+            } else if (type == Aggregate.MIN) {
+              if (newscore > current.getScore()) {
+                newscore = current.getScore();
+              }
+            } else if (type == Aggregate.MAX) {
+              if (newscore < current.getScore()) {
+                newscore = current.getScore();
+              }
+            }
+            destination.add(new ZSetEntry(key, newscore));
+          }
+        }
+      }
+    }
+    return integer(destination.size());
   }
+
+  enum Aggregate { SUM, MIN, MAX }
 
   /**
    * Return a range of members in a sorted set, by index
@@ -2529,7 +2653,39 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public MultiBulkReply zrange(byte[] key0, byte[] start1, byte[] stop2, byte[] withscores3) throws RedisException {
-    return null;
+    if (key0 == null || start1 == null || stop2 == null) {
+      throw new RedisException("invalid number of argumenst for 'zrange' command");
+    }
+    boolean withscores;
+    if (withscores3 != null) {
+      if (new String(withscores3).toLowerCase().equals("withscores")) {
+        withscores = true;
+      } else {
+        throw new RedisException("syntax error");
+      }
+    } else {
+      withscores = false;
+    }
+    BytesKeyZSet zset = _getzset(key0, false);
+    int size = zset.size();
+    int start = _torange(start1, size);
+    int end = _torange(stop2, size);
+    Iterator<ZSetEntry> iterator = zset.iterator();
+    List<Reply> list = new ArrayList<Reply>();
+    for (int i = 0; i < size; i++) {
+      if (iterator.hasNext()) {
+        ZSetEntry next = iterator.next();
+        if (i >= start || i <= end) {
+          list.add(new BulkReply(next.getValue().getBytes()));
+          if (withscores) {
+            list.add(new BulkReply(String.valueOf(next.getScore()).getBytes()));
+          }
+        } else if (i > end) {
+          break;
+        }
+      }
+    }
+    return new MultiBulkReply(list.toArray(new Reply[list.size()]));
   }
 
   /**
@@ -2545,6 +2701,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public MultiBulkReply zrangebyscore(byte[] key0, byte[] min1, byte[] max2, byte[] withscores3, byte[] offset_or_count4) throws RedisException {
+
     return null;
   }
 
