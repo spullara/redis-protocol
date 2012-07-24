@@ -2654,16 +2654,7 @@ public class SimpleRedisServer implements RedisServer {
     if (key0 == null || start1 == null || stop2 == null) {
       throw new RedisException("invalid number of argumenst for 'zrange' command");
     }
-    boolean withscores;
-    if (withscores3 != null) {
-      if (new String(withscores3).toLowerCase().equals("withscores")) {
-        withscores = true;
-      } else {
-        throw new RedisException("syntax error");
-      }
-    } else {
-      withscores = false;
-    }
+    boolean withscores = _checkcommand(withscores3, "withscores", true);
     BytesKeyZSet zset = _getzset(key0, false);
     int size = zset.size();
     int start = _torange(start1, size);
@@ -2686,6 +2677,24 @@ public class SimpleRedisServer implements RedisServer {
     return new MultiBulkReply(list.toArray(new Reply[list.size()]));
   }
 
+  private boolean _checkcommand(byte[] check, String command, boolean syntax) throws RedisException {
+    boolean result;
+    if (check != null) {
+      if (new String(check).toLowerCase().equals(command)) {
+        result = true;
+      } else {
+        if (syntax) {
+          throw new RedisException("syntax error");
+        } else {
+          return false;
+        }
+      }
+    } else {
+      result = false;
+    }
+    return result;
+  }
+
   /**
    * Return a range of members in a sorted set, by score
    * Sorted_set
@@ -2698,8 +2707,66 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public MultiBulkReply zrangebyscore(byte[] key0, byte[] min1, byte[] max2, byte[][] withscores_offset_or_count4) throws RedisException {
+    BytesKeyZSet zset = _getzset(key0, false);
+    if (zset.isEmpty()) return MultiBulkReply.EMPTY;
+    int position = 0;
+    boolean withscores = false;
+    if (withscores_offset_or_count4.length > 0) {
+      withscores = _checkcommand(withscores_offset_or_count4[0], "withscores", false);
+    }
+    if (withscores) position++;
+    boolean limit = false;
+    if (withscores_offset_or_count4.length > position) {
+      limit = _checkcommand(withscores_offset_or_count4[position++], "limit", true);
+    }
+    if (withscores_offset_or_count4.length != position + (limit ? 2 : 0)) {
+      throw new RedisException("syntax error");
+    }
+    int offset = 0;
+    int number = Integer.MAX_VALUE;
+    if (limit) {
+      offset = _toint(withscores_offset_or_count4[position++]);
+      number = _toint(withscores_offset_or_count4[position]);
+      if (offset < 0 || number < 1) {
+        throw invalidValue();
+      }
+    }
+    Score min = _toscorerange(min1);
+    Score max = _toscorerange(max2);
+    NavigableSet<ZSetEntry> entries = zset.subSet(new ZSetEntry(null, min.value), min.inclusive,
+            new ZSetEntry(null, max.value), max.inclusive);
+    int current = 0;
+    List<Reply> list = new ArrayList<Reply>();
+    for (ZSetEntry entry : entries) {
+      if (current >= offset && current < offset + number) {
+        list.add(new BulkReply(entry.getValue().getBytes()));
+        if (withscores) list.add(new BulkReply(String.valueOf(entry.getScore()).getBytes()));
+      }
+      current++;
+    }
+    return new MultiBulkReply(list.toArray(new Reply[list.size()]));
+  }
 
-    return null;
+  private Score _toscorerange(byte[] specifier) {
+    Score score = new Score();
+    String s = new String(specifier).toLowerCase();
+    if (s.startsWith("(")) {
+      score.inclusive = false;
+      s = s.substring(1);
+    }
+    if (s.equals("-inf")) {
+      score.value = Double.NEGATIVE_INFINITY;
+    } else if (s.equals("inf") || s.equals("+inf")) {
+      score.value = Double.POSITIVE_INFINITY;
+    } else {
+      score.value = Double.parseDouble(s);
+    }
+    return score;
+  }
+
+  static class Score {
+    boolean inclusive = true;
+    double value;
   }
 
   /**
@@ -2712,7 +2779,16 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply zrank(byte[] key0, byte[] member1) throws RedisException {
-    return null;
+    BytesKeyZSet zset = _getzset(key0, false);
+    BytesKey member = new BytesKey(member1);
+    int position = 0;
+    for (ZSetEntry entry : zset) {
+      if (entry.getValue().equals(member)) {
+        return integer(position);
+      }
+      position++;
+    }
+    return NIL_REPLY;
   }
 
   /**
