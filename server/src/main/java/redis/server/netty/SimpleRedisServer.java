@@ -131,13 +131,13 @@ public class SimpleRedisServer implements RedisServer {
   private BulkReply _change(byte[] key0, double delta) throws RedisException {
     Object o = _get(key0);
     if (o == null) {
-      byte[] bytes = String.valueOf(delta).getBytes();
+      byte[] bytes = _tobytes(delta);
       _put(key0, bytes);
       return new BulkReply(bytes);
     } else if (o instanceof byte[]) {
       try {
         double number = _todouble((byte[]) o) + delta;
-        byte[] bytes = String.valueOf(number).getBytes();
+        byte[] bytes = _tobytes(number);
         _put(key0, bytes);
         return new BulkReply(bytes);
       } catch (IllegalArgumentException e) {
@@ -2032,7 +2032,7 @@ public class SimpleRedisServer implements RedisServer {
     } else {
       double d = _todouble(field);
       double value = d + increment;
-      byte[] bytes = String.valueOf(value).getBytes();
+      byte[] bytes = _tobytes(value);
       hash.put(field1, bytes);
       return new BulkReply(bytes);
     }
@@ -2556,7 +2556,7 @@ public class SimpleRedisServer implements RedisServer {
       zset.remove(entry);
       entry.increment(increment);
       zset.add(entry);
-      return new BulkReply(String.valueOf(entry.getScore()).getBytes());
+      return new BulkReply(_tobytes(entry.getScore()));
     }
   }
 
@@ -2668,7 +2668,7 @@ public class SimpleRedisServer implements RedisServer {
         if (i >= start && i <= end) {
           list.add(new BulkReply(next.getValue().getBytes()));
           if (withscores) {
-            list.add(new BulkReply(String.valueOf(next.getScore()).getBytes()));
+            list.add(new BulkReply(_tobytes(next.getScore())));
           }
         } else if (i > end) {
           break;
@@ -2710,6 +2710,11 @@ public class SimpleRedisServer implements RedisServer {
   public MultiBulkReply zrangebyscore(byte[] key0, byte[] min1, byte[] max2, byte[][] withscores_offset_or_count4) throws RedisException {
     BytesKeyZSet zset = _getzset(key0, false);
     if (zset.isEmpty()) return MultiBulkReply.EMPTY;
+    List<Reply<ByteBuf>> list = _zrangebyscore(min1, max2, withscores_offset_or_count4, zset, false);
+    return new MultiBulkReply(list.toArray(new Reply[list.size()]));
+  }
+
+  private List<Reply<ByteBuf>> _zrangebyscore(byte[] min1, byte[] max2, byte[][] withscores_offset_or_count4, BytesKeyZSet zset, boolean reverse) throws RedisException {
     int position = 0;
     boolean withscores = false;
     if (withscores_offset_or_count4.length > 0) {
@@ -2729,23 +2734,24 @@ public class SimpleRedisServer implements RedisServer {
       offset = _toint(withscores_offset_or_count4[position++]);
       number = _toint(withscores_offset_or_count4[position]);
       if (offset < 0 || number < 1) {
-        throw invalidValue();
+        throw notInteger();
       }
     }
     Score min = _toscorerange(min1);
     Score max = _toscorerange(max2);
     NavigableSet<ZSetEntry> entries = zset.subSet(new ZSetEntry(null, min.value), min.inclusive,
             new ZSetEntry(null, max.value), max.inclusive);
+    if (reverse) entries = entries.descendingSet();
     int current = 0;
     List<Reply<ByteBuf>> list = new ArrayList<Reply<ByteBuf>>();
     for (ZSetEntry entry : entries) {
       if (current >= offset && current < offset + number) {
         list.add(new BulkReply(entry.getValue().getBytes()));
-        if (withscores) list.add(new BulkReply(String.valueOf(entry.getScore()).getBytes()));
+        if (withscores) list.add(new BulkReply(_tobytes(entry.getScore())));
       }
       current++;
     }
-    return new MultiBulkReply(list.toArray(new Reply[list.size()]));
+    return list;
   }
 
   private Score _toscorerange(byte[] specifier) {
@@ -2781,15 +2787,7 @@ public class SimpleRedisServer implements RedisServer {
   @Override
   public Reply zrank(byte[] key0, byte[] member1) throws RedisException {
     BytesKeyZSet zset = _getzset(key0, false);
-    BytesKey member = new BytesKey(member1);
-    int position = 0;
-    for (ZSetEntry entry : zset) {
-      if (entry.getValue().equals(member)) {
-        return integer(position);
-      }
-      position++;
-    }
-    return NIL_REPLY;
+    return _zrank(member1, zset);
   }
 
   /**
@@ -2902,7 +2900,7 @@ public class SimpleRedisServer implements RedisServer {
         if (i >= start && i <= end) {
           list.add(0, new BulkReply(next.getValue().getBytes()));
           if (withscores) {
-            list.add(1, new BulkReply(String.valueOf(next.getScore()).getBytes()));
+            list.add(1, new BulkReply(_tobytes(next.getScore())));
           }
         } else if (i > end) {
           break;
@@ -2924,7 +2922,10 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public MultiBulkReply zrevrangebyscore(byte[] key0, byte[] max1, byte[] min2, byte[][] withscores_offset_or_count4) throws RedisException {
-    return null;
+    BytesKeyZSet zset = _getzset(key0, false);
+    if (zset.isEmpty()) return MultiBulkReply.EMPTY;
+    List<Reply<ByteBuf>> list = _zrangebyscore(min2, max1, withscores_offset_or_count4, zset, true);
+    return new MultiBulkReply(list.toArray(new Reply[list.size()]));
   }
 
   /**
@@ -2937,7 +2938,20 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply zrevrank(byte[] key0, byte[] member1) throws RedisException {
-    return null;
+    NavigableSet<ZSetEntry> zset = _getzset(key0, false).descendingSet();
+    return _zrank(member1, zset);
+  }
+
+  private Reply _zrank(byte[] member1, NavigableSet<ZSetEntry> zset) {
+    BytesKey member = new BytesKey(member1);
+    int position = 0;
+    for (ZSetEntry entry : zset) {
+      if (entry.getValue().equals(member)) {
+        return integer(position);
+      }
+      position++;
+    }
+    return NIL_REPLY;
   }
 
   /**
@@ -2950,7 +2964,15 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public BulkReply zscore(byte[] key0, byte[] member1) throws RedisException {
-    return null;
+    BytesKeyZSet zset = _getzset(key0, false);
+    BytesKey member = new BytesKey(member1);
+    ZSetEntry entry = zset.get(member);
+    double score = entry.getScore();
+    return entry == null ? NIL_REPLY : new BulkReply(_tobytes(score));
+  }
+
+  private byte[] _tobytes(double score) {
+    return String.valueOf(score).getBytes();
   }
 
   /**
