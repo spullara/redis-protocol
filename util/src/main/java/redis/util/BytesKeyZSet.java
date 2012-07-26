@@ -21,7 +21,8 @@ public class BytesKeyZSet extends TreeSet<ZSetEntry> {
   @Override
   public boolean remove(Object o) {
     if (o instanceof ZSetEntry) {
-      map.remove(((ZSetEntry) o).getValue());
+      ZSetEntry removed = map.remove(((ZSetEntry) o).getValue());
+      return removed == null ? false : super.remove(removed);
     }
     return super.remove(o);
   }

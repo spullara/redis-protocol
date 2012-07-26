@@ -12,6 +12,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.SortedSet;
 
+import io.netty.buffer.ByteBuf;
 import redis.netty4.BulkReply;
 import redis.netty4.IntegerReply;
 import redis.netty4.MultiBulkReply;
@@ -1513,7 +1514,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public MultiBulkReply keys(byte[] pattern0) throws RedisException {
-    List<Reply> replies = new ArrayList<Reply>();
+    List<Reply<ByteBuf>> replies = new ArrayList<Reply<ByteBuf>>();
     for (Object o : data.keySet()) {
       BytesKey key = (BytesKey) o;
       byte[] bytes = key.getBytes();
@@ -2660,11 +2661,11 @@ public class SimpleRedisServer implements RedisServer {
     int start = _torange(start1, size);
     int end = _torange(stop2, size);
     Iterator<ZSetEntry> iterator = zset.iterator();
-    List<Reply> list = new ArrayList<Reply>();
+    List<Reply<ByteBuf>> list = new ArrayList<Reply<ByteBuf>>();
     for (int i = 0; i < size; i++) {
       if (iterator.hasNext()) {
         ZSetEntry next = iterator.next();
-        if (i >= start || i <= end) {
+        if (i >= start && i <= end) {
           list.add(new BulkReply(next.getValue().getBytes()));
           if (withscores) {
             list.add(new BulkReply(String.valueOf(next.getScore()).getBytes()));
@@ -2736,7 +2737,7 @@ public class SimpleRedisServer implements RedisServer {
     NavigableSet<ZSetEntry> entries = zset.subSet(new ZSetEntry(null, min.value), min.inclusive,
             new ZSetEntry(null, max.value), max.inclusive);
     int current = 0;
-    List<Reply> list = new ArrayList<Reply>();
+    List<Reply<ByteBuf>> list = new ArrayList<Reply<ByteBuf>>();
     for (ZSetEntry entry : entries) {
       if (current >= offset && current < offset + number) {
         list.add(new BulkReply(entry.getValue().getBytes()));
@@ -2801,7 +2802,15 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply zrem(byte[] key0, byte[][] member1) throws RedisException {
-    return null;
+    BytesKeyZSet zset = _getzset(key0, false);
+    if (zset.isEmpty()) return integer(0);
+    int total = 0;
+    for (byte[] member : member1) {
+      if (zset.remove(new ZSetEntry(new BytesKey(member), 0))) {
+        total++;
+      }
+    }
+    return integer(total);
   }
 
   /**
@@ -2815,7 +2824,28 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply zremrangebyrank(byte[] key0, byte[] start1, byte[] stop2) throws RedisException {
-    return null;
+    BytesKeyZSet zset = _getzset(key0, false);
+    if (zset.isEmpty()) return integer(0);
+    int size = zset.size();
+    int start = _torange(start1, size);
+    int end = _torange(stop2, size);
+    Iterator<ZSetEntry> iterator = zset.iterator();
+    List<ZSetEntry> list = new ArrayList<ZSetEntry>();
+    for (int i = 0; i < size; i++) {
+      if (iterator.hasNext()) {
+        ZSetEntry next = iterator.next();
+        if (i >= start && i <= end) {
+          list.add(next);
+        } else if (i > end) {
+          break;
+        }
+      }
+    }
+    int total = 0;
+    for (ZSetEntry zSetEntry : list) {
+      if (zset.remove(zSetEntry)) total++;
+    }
+    return integer(total);
   }
 
   /**
@@ -2829,7 +2859,19 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply zremrangebyscore(byte[] key0, byte[] min1, byte[] max2) throws RedisException {
-    return null;
+    BytesKeyZSet zset = _getzset(key0, false);
+    if (zset.isEmpty()) return integer(0);
+    Score min = _toscorerange(min1);
+    Score max = _toscorerange(max2);
+    NavigableSet<ZSetEntry> entries = zset.subSet(new ZSetEntry(null, min.value), min.inclusive,
+            new ZSetEntry(null, max.value), max.inclusive);
+    int total = 0;
+    for (ZSetEntry entry : new ArrayList<ZSetEntry>(entries)) {
+      if (zset.remove(entry)) {
+        total++;
+      }
+    }
+    return integer(total);
   }
 
   /**
@@ -2844,7 +2886,30 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public MultiBulkReply zrevrange(byte[] key0, byte[] start1, byte[] stop2, byte[] withscores3) throws RedisException {
-    return null;
+    if (key0 == null || start1 == null || stop2 == null) {
+      throw new RedisException("invalid number of argumenst for 'zrevrange' command");
+    }
+    boolean withscores = _checkcommand(withscores3, "withscores", true);
+    BytesKeyZSet zset = _getzset(key0, false);
+    int size = zset.size();
+    int end = size - _torange(start1, size) -1 ;
+    int start = size - _torange(stop2, size) - 1;
+    Iterator<ZSetEntry> iterator = zset.iterator();
+    List<Reply<ByteBuf>> list = new ArrayList<Reply<ByteBuf>>();
+    for (int i = 0; i < size; i++) {
+      if (iterator.hasNext()) {
+        ZSetEntry next = iterator.next();
+        if (i >= start && i <= end) {
+          list.add(0, new BulkReply(next.getValue().getBytes()));
+          if (withscores) {
+            list.add(1, new BulkReply(String.valueOf(next.getScore()).getBytes()));
+          }
+        } else if (i > end) {
+          break;
+        }
+      }
+    }
+    return new MultiBulkReply(list.toArray(new Reply[list.size()]));
   }
 
   /**
