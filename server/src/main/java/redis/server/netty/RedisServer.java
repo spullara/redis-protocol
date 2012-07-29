@@ -1191,10 +1191,12 @@ public interface RedisServer {
    * Intersect multiple sorted sets and store the resulting sorted set in a new key
    * Sorted_set
    *
-   * @param args
+   * @param destination0
+   * @param numkeys1
+   * @param key2
    * @return IntegerReply
    */
-  public IntegerReply zinterstore(byte[][] args) throws RedisException;
+  public IntegerReply zinterstore(byte[] destination0, byte[] numkeys1, byte[][] key2) throws RedisException;
 
   /**
    * Return a range of members in a sorted set, by index
@@ -1215,8 +1217,7 @@ public interface RedisServer {
    * @param key0
    * @param min1
    * @param max2
-   * @param withscores3
-   * @param offset_or_count4
+   * @param withscores_offset_or_count4
    * @return MultiBulkReply
    */
   public MultiBulkReply zrangebyscore(byte[] key0, byte[] min1, byte[] max2, byte[][] withscores_offset_or_count4) throws RedisException;
@@ -1282,8 +1283,7 @@ public interface RedisServer {
    * @param key0
    * @param max1
    * @param min2
-   * @param withscores3
-   * @param offset_or_count4
+   * @param withscores_offset_or_count4
    * @return MultiBulkReply
    */
   public MultiBulkReply zrevrangebyscore(byte[] key0, byte[] max1, byte[] min2, byte[][] withscores_offset_or_count4) throws RedisException;

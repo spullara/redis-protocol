@@ -2525,11 +2525,22 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply zcount(byte[] key0, byte[] min1, byte[] max2) throws RedisException {
+    if (key0 == null || min1 == null || max2 == null) {
+      throw new RedisException("wrong number of arguments for 'zcount' command");
+    }
     BytesKeyZSet zset = _getzset(key0, false);
-    NavigableSet<ZSetEntry> entries = zset.subSet(new ZSetEntry(null, _todouble(min1)), true,
-            new ZSetEntry(null, _todouble(max2)), true);
+    Score min = _toscorerange(min1);
+    Score max = _toscorerange(max2);
+    NavigableSet<ZSetEntry> entries = zset.subSet(new ZSetEntry(null, min.value), true,
+            new ZSetEntry(null, max.value), true);
     int total = 0;
     for (ZSetEntry entry : entries) {
+      if (entry.getScore() == min.value && !min.inclusive) {
+        continue;
+      }
+      if (entry.getScore() == max.value && !max.inclusive) {
+        continue;
+      }
       total++;
     }
     return integer(total);
@@ -2564,49 +2575,56 @@ public class SimpleRedisServer implements RedisServer {
    * Intersect multiple sorted sets and store the resulting sorted set in a new key
    * Sorted_set
    *
-   * @param args
+   * @param destination0
+   * @param numkeys1
+   * @param key2
    * @return IntegerReply
    */
   @Override
-  public IntegerReply zinterstore(byte[][] args) throws RedisException {
-    if (args.length < 3) {
-      throw new RedisException("wrong number of arguments for 'zinterstore' command");
+  public IntegerReply zinterstore(byte[] destination0, byte[] numkeys1, byte[][] key2) throws RedisException {
+    return _zstore(destination0, numkeys1, key2, "zinterstore", false);
+  }
+
+  private IntegerReply _zstore(byte[] destination0, byte[] numkeys1, byte[][] key2, String name, boolean union) throws RedisException {
+    if (destination0 == null || numkeys1 == null) {
+      throw new RedisException("wrong number of arguments for '" + name + "' command");
     }
-    int numkeys = _toint(args[1]);
-    if (args.length < 2 + numkeys) {
-      throw new RedisException("wrong number of arguments for 'zinterstore' command");
+    int numkeys = _toint(numkeys1);
+    if (key2.length < numkeys) {
+      throw new RedisException("wrong number of arguments for '" + name + "' command");
     }
-    int position = 2 + numkeys;
+    int position = numkeys;
     double[] weights = null;
     Aggregate type = null;
-    if (args.length > position) {
-      if ("weights".equals(new String(args[position]).toLowerCase())) {
+    if (key2.length > position) {
+      if ("weights".equals(new String(key2[position]).toLowerCase())) {
         position++;
-        if (args.length < position + numkeys) {
-          throw new RedisException("wrong number of arguments for 'zinterstore' command");
+        if (key2.length < position + numkeys) {
+          throw new RedisException("wrong number of arguments for '" + name + "' command");
         }
         weights = new double[numkeys];
         for (int i = position; i < position + numkeys; i++) {
-          weights[i - position] = _todouble(args[i]);
+          weights[i - position] = _todouble(key2[i]);
         }
         position += numkeys;
       }
-      if (args.length > position + 1) {
-        if ("aggregate".equals(new String(args[position]).toLowerCase())) {
-          type = Aggregate.valueOf(new String(args[position + 1]).toUpperCase());
+      if (key2.length > position + 1) {
+        if ("aggregate".equals(new String(key2[position]).toLowerCase())) {
+          type = Aggregate.valueOf(new String(key2[position + 1]).toUpperCase());
         }
-      } else if (args.length != position) {
-        throw new RedisException("wrong number of arguments for 'zinterstore' command");
+      } else if (key2.length != position) {
+        throw new RedisException("wrong number of arguments for '" + name + "' command");
       }
     }
-    BytesKeyZSet destination = _getzset(args[0], true);
-    for (int i = 2; i < numkeys + 2; i++) {
-      BytesKeyZSet zset = _getzset(args[i], false);
-      if (i == 2) {
+    del(new byte[][] { destination0 });
+    BytesKeyZSet destination = _getzset(destination0, true);
+    for (int i = 0; i < numkeys; i++) {
+      BytesKeyZSet zset = _getzset(key2[i], false);
+      if (i == 0) {
         if (weights == null) {
           destination.addAll(zset);
         } else {
-          double weight = weights[i - 2];
+          double weight = weights[i];
           for (ZSetEntry entry : zset) {
             destination.add(new ZSetEntry(entry.getValue(), entry.getScore() * weight));
           }
@@ -2617,16 +2635,18 @@ public class SimpleRedisServer implements RedisServer {
           BytesKey key = entry.getValue();
           ZSetEntry current = zset.get(key);
           destination.remove(entry);
-          if (current != null) {
-            double newscore = entry.getScore() * (weights == null ? 1 : weights[i - 2]);
+          if (union || current != null) {
+            double newscore = entry.getScore() * (weights == null ? 1 : weights[i]);
             if (type == null || type == Aggregate.SUM) {
-              newscore += current.getScore();
+              if (current != null) {
+                newscore += current.getScore();
+              }
             } else if (type == Aggregate.MIN) {
-              if (newscore > current.getScore()) {
+              if (current != null && newscore > current.getScore()) {
                 newscore = current.getScore();
               }
             } else if (type == Aggregate.MAX) {
-              if (newscore < current.getScore()) {
+              if (current != null && newscore < current.getScore()) {
                 newscore = current.getScore();
               }
             }
@@ -2986,6 +3006,6 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply zunionstore(byte[] destination0, byte[] numkeys1, byte[][] key2) throws RedisException {
-    return null;
+    return _zstore(destination0, numkeys1, key2, "zunionstore", true);
   }
 }
