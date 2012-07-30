@@ -15,7 +15,7 @@ public class BytesKeyZSet extends TreeSet<ZSetEntry> {
 
   @Override
   public boolean add(ZSetEntry zSetEntry) {
-    getMap().put(zSetEntry.getValue(), zSetEntry);
+    getMap().put(zSetEntry.getKey(), zSetEntry);
     return super.add(zSetEntry);
   }
 
@@ -29,7 +29,7 @@ public class BytesKeyZSet extends TreeSet<ZSetEntry> {
   @Override
   public boolean remove(Object o) {
     if (o instanceof ZSetEntry) {
-      ZSetEntry removed = getMap().remove(((ZSetEntry) o).getValue());
+      ZSetEntry removed = getMap().remove(((ZSetEntry) o).getKey());
       return removed != null && super.remove(removed);
     }
     return super.remove(o);
@@ -47,7 +47,7 @@ public class BytesKeyZSet extends TreeSet<ZSetEntry> {
   public boolean addAll(Collection<? extends ZSetEntry> c) {
     boolean changed = super.addAll(c);
     for (ZSetEntry zSetEntry : c) {
-      getMap().put(zSetEntry.getValue(), zSetEntry);
+      getMap().put(zSetEntry.getKey(), zSetEntry);
     }
     return changed;
   }

@@ -54,14 +54,14 @@ public class ZSet implements Iterable<ZSetEntry> {
     @Override
     public int compare(ZSetEntry o1, ZSetEntry o2) {
       double value = o1.getScore() - o2.getScore();
-      return value < 0 ? -1 : value == (o1.getValue().compareTo(o2.getValue())) ? 0 : 1;
+      return value < 0 ? -1 : value == (o1.getKey().compareTo(o2.getKey())) ? 0 : 1;
     }
   }
 
   public void addAll(ZSet other) {
     for (ZSetEntry zSetEntry : other.list) {
-      remove(zSetEntry.getValue());
-      add(zSetEntry.getValue(), zSetEntry.getScore());
+      remove(zSetEntry.getKey());
+      add(zSetEntry.getKey(), zSetEntry.getScore());
     }
   }
 
@@ -113,6 +113,10 @@ public class ZSet implements Iterable<ZSetEntry> {
         };
       }
     };
+  }
+
+  public boolean isEmpty() {
+    return list.size() == 0;
   }
 
   public List<ZSetEntry> subSet(double min, double max) {

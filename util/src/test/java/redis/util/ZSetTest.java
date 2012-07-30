@@ -26,38 +26,38 @@ public class ZSetTest {
     zs2.addAll(zs);
     {
       Iterator<ZSetEntry> i = zs.subSet(1.0, 2.0).iterator();
-      assertEquals(ONE, i.next().getValue());
-      assertEquals(TWO, i.next().getValue());
+      assertEquals(ONE, i.next().getKey());
+      assertEquals(TWO, i.next().getKey());
       assertFalse(i.hasNext());
     }
     {
       Iterator<ZSetEntry> i = zs.subSet(1, 2).iterator();
-      assertEquals(TWO, i.next().getValue());
-      assertEquals(THREE, i.next().getValue());
+      assertEquals(TWO, i.next().getKey());
+      assertEquals(THREE, i.next().getKey());
       assertFalse(i.hasNext());
     }
     zs.remove(TWO);
     {
       Iterator<ZSetEntry> i = zs2.subSet(1.0, 2.0).iterator();
-      assertEquals(ONE, i.next().getValue());
-      assertEquals(TWO, i.next().getValue());
+      assertEquals(ONE, i.next().getKey());
+      assertEquals(TWO, i.next().getKey());
       assertFalse(i.hasNext());
     }
     {
       Iterator<ZSetEntry> i = zs2.subSet(1, 2).iterator();
-      assertEquals(TWO, i.next().getValue());
-      assertEquals(THREE, i.next().getValue());
+      assertEquals(TWO, i.next().getKey());
+      assertEquals(THREE, i.next().getKey());
       assertFalse(i.hasNext());
     }
     {
       Iterator<ZSetEntry> i = zs.subSet(1.0, 2.0).iterator();
-      assertEquals(ONE, i.next().getValue());
+      assertEquals(ONE, i.next().getKey());
       assertFalse(i.hasNext());
     }
     {
       Iterator<ZSetEntry> i = zs.subSet(0, 1).iterator();
-      assertEquals(ONE, i.next().getValue());
-      assertEquals(THREE, i.next().getValue());
+      assertEquals(ONE, i.next().getKey());
+      assertEquals(THREE, i.next().getKey());
       assertFalse(i.hasNext());
     }
   }

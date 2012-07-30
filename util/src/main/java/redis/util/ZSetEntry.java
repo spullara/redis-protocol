@@ -8,21 +8,21 @@ package redis.util;
 * To change this template use File | Settings | File Templates.
 */
 public class ZSetEntry implements Comparable<ZSetEntry> {
-  private final BytesKey value;
+  private final BytesKey key;
   private double score;
 
   @Override
   public int hashCode() {
-    return value.hashCode();
+    return key.hashCode();
   }
 
   @Override
   public boolean equals(Object obj) {
-    return obj instanceof ZSetEntry && value.equals(((ZSetEntry) obj).value);
+    return obj instanceof ZSetEntry && key.equals(((ZSetEntry) obj).key);
   }
 
-  public ZSetEntry(BytesKey value, double score) {
-    this.value = value;
+  public ZSetEntry(BytesKey key, double score) {
+    this.key = key;
     this.score = score;
   }
 
@@ -32,8 +32,8 @@ public class ZSetEntry implements Comparable<ZSetEntry> {
     return diff < 0 ? -1 : diff == 0 ? 0 : 1;
   }
 
-  public BytesKey getValue() {
-    return value;
+  public BytesKey getKey() {
+    return key;
   }
 
   public double getScore() {

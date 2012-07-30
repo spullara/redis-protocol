@@ -2548,7 +2548,7 @@ public class SimpleRedisServer implements RedisServer {
       return new BulkReply(increment1);
     } else {
       zset.remove(member2);
-      zset.add(entry.getValue(), entry.getScore() + increment);
+      zset.add(entry.getKey(), entry.getScore() + increment);
       return new BulkReply(_tobytes(entry.getScore()));
     }
   }
@@ -2608,15 +2608,14 @@ public class SimpleRedisServer implements RedisServer {
         } else {
           double weight = weights[i];
           for (ZSetEntry entry : zset) {
-            destination.add(entry.getValue(), entry.getScore() * weight);
+            destination.add(entry.getKey(), entry.getScore() * weight);
           }
         }
       } else {
-        ZSet iterable = new ZSet(destination);
-        for (ZSetEntry entry : iterable) {
-          BytesKey key = entry.getValue();
-          ZSetEntry current = zset.get(key);
-          destination.remove(entry.getValue());
+        for (ZSetEntry entry : zset) {
+          BytesKey key = entry.getKey();
+          ZSetEntry current = destination.get(key);
+          destination.remove(key);
           if (union || current != null) {
             double newscore = entry.getScore() * (weights == null ? 1 : weights[i]);
             if (type == null || type == Aggregate.SUM) {
@@ -2633,6 +2632,14 @@ public class SimpleRedisServer implements RedisServer {
               }
             }
             destination.add(key, newscore);
+          }
+        }
+        if (!union) {
+          for (ZSetEntry entry : new ZSet(destination)) {
+            BytesKey key = entry.getKey();
+            if (zset.get(key) == null) {
+              destination.remove(key);
+            }
           }
         }
       }
@@ -2668,7 +2675,7 @@ public class SimpleRedisServer implements RedisServer {
       if (iterator.hasNext()) {
         ZSetEntry next = iterator.next();
         if (i >= start && i <= end) {
-          list.add(new BulkReply(next.getValue().getBytes()));
+          list.add(new BulkReply(next.getKey().getBytes()));
           if (withscores) {
             list.add(new BulkReply(_tobytes(next.getScore())));
           }
@@ -2711,7 +2718,7 @@ public class SimpleRedisServer implements RedisServer {
   @Override
   public MultiBulkReply zrangebyscore(byte[] key0, byte[] min1, byte[] max2, byte[][] withscores_offset_or_count4) throws RedisException {
     ZSet zset = _getzset(key0, false);
-    if (zset.size() == 0) return MultiBulkReply.EMPTY;
+    if (zset.isEmpty()) return MultiBulkReply.EMPTY;
     List<Reply<ByteBuf>> list = _zrangebyscore(min1, max2, withscores_offset_or_count4, zset, false);
     return new MultiBulkReply(list.toArray(new Reply[list.size()]));
   }
@@ -2747,7 +2754,7 @@ public class SimpleRedisServer implements RedisServer {
     List<Reply<ByteBuf>> list = new ArrayList<Reply<ByteBuf>>();
     for (ZSetEntry entry : entries) {
       if (current >= offset && current < offset + number) {
-        list.add(new BulkReply(entry.getValue().getBytes()));
+        list.add(new BulkReply(entry.getKey().getBytes()));
         if (withscores) list.add(new BulkReply(_tobytes(entry.getScore())));
       }
       current++;
@@ -2802,7 +2809,7 @@ public class SimpleRedisServer implements RedisServer {
   @Override
   public IntegerReply zrem(byte[] key0, byte[][] member1) throws RedisException {
     ZSet zset = _getzset(key0, false);
-    if (zset.size() == 0) return integer(0);
+    if (zset.isEmpty()) return integer(0);
     int total = 0;
     for (byte[] member : member1) {
       if (zset.remove(member)) {
@@ -2824,7 +2831,7 @@ public class SimpleRedisServer implements RedisServer {
   @Override
   public IntegerReply zremrangebyrank(byte[] key0, byte[] start1, byte[] stop2) throws RedisException {
     ZSet zset = _getzset(key0, false);
-    if (zset.size() == 0) return integer(0);
+    if (zset.isEmpty()) return integer(0);
     int size = zset.size();
     int start = _torange(start1, size);
     int end = _torange(stop2, size);
@@ -2842,7 +2849,7 @@ public class SimpleRedisServer implements RedisServer {
     }
     int total = 0;
     for (ZSetEntry zSetEntry : list) {
-      if (zset.remove(zSetEntry.getValue())) total++;
+      if (zset.remove(zSetEntry.getKey())) total++;
     }
     return integer(total);
   }
@@ -2859,7 +2866,7 @@ public class SimpleRedisServer implements RedisServer {
   @Override
   public IntegerReply zremrangebyscore(byte[] key0, byte[] min1, byte[] max2) throws RedisException {
     ZSet zset = _getzset(key0, false);
-    if (zset.size() == 0) return integer(0);
+    if (zset.isEmpty()) return integer(0);
     Score min = _toscorerange(min1);
     Score max = _toscorerange(max2);
     List<ZSetEntry> entries = zset.subSet(min.value, max.value);
@@ -2867,7 +2874,7 @@ public class SimpleRedisServer implements RedisServer {
     for (ZSetEntry entry : new ArrayList<ZSetEntry>(entries)) {
       if (!min.inclusive && entry.getScore() == min.value) continue;
       if (!max.inclusive && entry.getScore() == max.value) continue;
-      if (zset.remove(entry.getValue())) {
+      if (zset.remove(entry.getKey())) {
         total++;
       }
     }
@@ -2900,7 +2907,7 @@ public class SimpleRedisServer implements RedisServer {
       if (iterator.hasNext()) {
         ZSetEntry next = iterator.next();
         if (i >= start && i <= end) {
-          list.add(0, new BulkReply(next.getValue().getBytes()));
+          list.add(0, new BulkReply(next.getKey().getBytes()));
           if (withscores) {
             list.add(1, new BulkReply(_tobytes(next.getScore())));
           }
@@ -2925,7 +2932,7 @@ public class SimpleRedisServer implements RedisServer {
   @Override
   public MultiBulkReply zrevrangebyscore(byte[] key0, byte[] max1, byte[] min2, byte[][] withscores_offset_or_count4) throws RedisException {
     ZSet zset = _getzset(key0, false);
-    if (zset.size() == 0) return MultiBulkReply.EMPTY;
+    if (zset.isEmpty()) return MultiBulkReply.EMPTY;
     List<Reply<ByteBuf>> list = _zrangebyscore(min2, max1, withscores_offset_or_count4, zset, true);
     return new MultiBulkReply(list.toArray(new Reply[list.size()]));
   }
@@ -2949,7 +2956,7 @@ public class SimpleRedisServer implements RedisServer {
     BytesKey member = new BytesKey(member1);
     int position = 0;
     for (ZSetEntry entry : zset) {
-      if (entry.getValue().equals(member)) {
+      if (entry.getKey().equals(member)) {
         return integer(position);
       }
       position++;
