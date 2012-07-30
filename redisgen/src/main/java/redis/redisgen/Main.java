@@ -99,7 +99,7 @@ public class Main {
             "ZRANK", "ZREVRANK" // Two different return values
     ));
     final Set<String> multiples = new HashSet<String>(Arrays.asList(
-            "ZADD", "ZINTERSTORE"
+            "ZADD"
     ));
     JsonFactory jf = new MappingJsonFactory();
     JsonParser jsonParser = jf.createJsonParser(new URL("https://raw.github.com/antirez/redis-doc/master/commands.json"));
