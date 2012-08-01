@@ -24,10 +24,10 @@
     {{/optional}}
     {{/multiple}}
     {{/arguments}}
-    return ({{$return}}{{reply}}{{/return}}) {{$method}}method{{/method}}({{name}}, new Command({{name}}_BYTES, list.toArray(new Object[list.size()])));
+    return ({{$return}}{{reply}}{{/return}}) {{$method}}method{{/method}}({{name}}, new Command({{name}}_BYTES, {{#split_command}}{{name}}2_BYTES, {{/split_command}}list.toArray(new Object[list.size()])));
     {{/usearray}}
     {{^usearray}}
-    return ({{$return}}{{reply}}{{/return}}) {{$method}}method{{/method}}({{name}}, new Command({{name}}_BYTES{{#arguments}}, {{name}}{{/arguments}}));
+    return ({{$return}}{{reply}}{{/return}}) {{$method}}method{{/method}}({{name}}, new Command({{name}}_BYTES{{#split_command}}, {{name}}2_BYTES{{/split_command}}{{#arguments}}, {{name}}{{/arguments}}));
     {{/usearray}}
   }
   {{#varargs}}
@@ -35,6 +35,6 @@
   // Varargs version to simplify commands with optional or multiple arguments
   public {{$return}}{{reply}}{{/return}} {{methodname}}_(Object... arguments) throws RedisException {
     if (version < {{name}}_VERSION) throw new RedisException("Server does not support {{name}}");
-    return ({{$return}}{{reply}}{{/return}}) {{$method}}method{{/method}}({{name}}, new Command({{name}}_BYTES, arguments));
+    return ({{$return}}{{reply}}{{/return}}) {{$method}}method{{/method}}({{name}}, new Command({{name}}_BYTES, {{#split_command}}{{name}}2_BYTES, {{/split_command}}arguments));
   }
   {{/varargs}}

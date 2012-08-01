@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Queue;
@@ -17,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.common.base.Charsets;
 import com.google.common.primitives.SignedBytes;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
@@ -57,11 +57,20 @@ public class RedisClientBase {
   private static final Pattern versionMatcher = Pattern.compile(
           "([0-9]+)\\.([0-9]+)(\\.([0-9]+))?");
   protected AtomicInteger pipelined = new AtomicInteger(0);
-  protected int version;
+  protected int version = 9999999;
 
   protected RedisClientBase(Socket socket, ExecutorService executorService) throws RedisException {
     try {
       redisProtocol = new RedisProtocol(socket);
+      parseInfo();
+    } catch (IOException e) {
+      throw new RedisException("Could not connect", e);
+    }
+    es = MoreExecutors.listeningDecorator(executorService);
+  }
+
+  private void parseInfo() {
+    try {
       BulkReply info = (BulkReply) execute("INFO", new Command("INFO"));
       BufferedReader br = new BufferedReader(new StringReader(new String(info.data())));
       String line;
@@ -75,10 +84,9 @@ public class RedisClientBase {
           }
         }
       }
-    } catch (IOException e) {
-      throw new RedisException("Could not connect", e);
+    } catch (Exception re) {
+      // Server requires AUTH, check later
     }
-    es = MoreExecutors.listeningDecorator(executorService);
   }
 
   public static int parseVersion(String value) {
@@ -169,6 +177,8 @@ public class RedisClientBase {
       } else {
         return pipeline(name, command).get();
       }
+    } catch (RedisException re) {
+      throw re;
     } catch (Exception e) {
       throw new RedisException("Failed to execute: " + name, e);
     }
@@ -335,6 +345,23 @@ public class RedisClientBase {
       // are accepted past this point
       es.submit(new SubscriptionsDispatcher());
     }
+  }
+
+  protected static final String AUTH = "AUTH";
+  protected static final byte[] AUTH_BYTES = AUTH.getBytes(Charsets.US_ASCII);
+
+  /**
+   * Authenticate to the server
+   * Connection
+   *
+   * @param password0
+   * @return StatusReply
+   */
+  public StatusReply auth(Object password0) throws RedisException {
+    StatusReply statusReply = (StatusReply) execute(AUTH, new Command(AUTH_BYTES, password0));
+    // Now that we are successful, parse the info
+    parseInfo();
+    return statusReply;
   }
 
   private class SubscriptionsDispatcher implements Runnable {

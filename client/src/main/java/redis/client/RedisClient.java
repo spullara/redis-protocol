@@ -446,22 +446,6 @@ public class RedisClient extends RedisClientBase {
     return (IntegerReply) execute(STRLEN, new Command(STRLEN_BYTES, key0));
   }
   
-  private static final String AUTH = "AUTH";
-  private static final byte[] AUTH_BYTES = AUTH.getBytes(Charsets.US_ASCII);
-  private static final int AUTH_VERSION = parseVersion("1.0.0");
-
-  /**
-   * Authenticate to the server
-   * Connection
-   *
-   * @param password0
-   * @return StatusReply
-   */
-  public StatusReply auth(Object password0) throws RedisException {
-    if (version < AUTH_VERSION) throw new RedisException("Server does not support AUTH");
-    return (StatusReply) execute(AUTH, new Command(AUTH_BYTES, password0));
-  }
-  
   private static final String ECHO = "ECHO";
   private static final byte[] ECHO_BYTES = ECHO.getBytes(Charsets.US_ASCII);
   private static final int ECHO_VERSION = parseVersion("1.0.0");
@@ -554,7 +538,9 @@ public class RedisClient extends RedisClientBase {
     return (StatusReply) execute(BGSAVE, new Command(BGSAVE_BYTES));
   }
   
-  private static final String CONFIG_GET = "CONFIG_GET";
+  private static final String CONFIG_GET = "CONFIG";
+  private static final String CONFIG_GET2 = "GET";
+  private static final byte[] CONFIG_GET2_BYTES = CONFIG_GET2.getBytes(Charsets.US_ASCII);
   private static final byte[] CONFIG_GET_BYTES = CONFIG_GET.getBytes(Charsets.US_ASCII);
   private static final int CONFIG_GET_VERSION = parseVersion("2.0.0");
 
@@ -567,10 +553,12 @@ public class RedisClient extends RedisClientBase {
    */
   public Reply config_get(Object parameter0) throws RedisException {
     if (version < CONFIG_GET_VERSION) throw new RedisException("Server does not support CONFIG_GET");
-    return (Reply) execute(CONFIG_GET, new Command(CONFIG_GET_BYTES, parameter0));
+    return (Reply) execute(CONFIG_GET, new Command(CONFIG_GET_BYTES, CONFIG_GET2_BYTES, parameter0));
   }
   
-  private static final String CONFIG_SET = "CONFIG_SET";
+  private static final String CONFIG_SET = "CONFIG";
+  private static final String CONFIG_SET2 = "SET";
+  private static final byte[] CONFIG_SET2_BYTES = CONFIG_SET2.getBytes(Charsets.US_ASCII);
   private static final byte[] CONFIG_SET_BYTES = CONFIG_SET.getBytes(Charsets.US_ASCII);
   private static final int CONFIG_SET_VERSION = parseVersion("2.0.0");
 
@@ -584,10 +572,12 @@ public class RedisClient extends RedisClientBase {
    */
   public Reply config_set(Object parameter0, Object value1) throws RedisException {
     if (version < CONFIG_SET_VERSION) throw new RedisException("Server does not support CONFIG_SET");
-    return (Reply) execute(CONFIG_SET, new Command(CONFIG_SET_BYTES, parameter0, value1));
+    return (Reply) execute(CONFIG_SET, new Command(CONFIG_SET_BYTES, CONFIG_SET2_BYTES, parameter0, value1));
   }
   
-  private static final String CONFIG_RESETSTAT = "CONFIG_RESETSTAT";
+  private static final String CONFIG_RESETSTAT = "CONFIG";
+  private static final String CONFIG_RESETSTAT2 = "RESETSTAT";
+  private static final byte[] CONFIG_RESETSTAT2_BYTES = CONFIG_RESETSTAT2.getBytes(Charsets.US_ASCII);
   private static final byte[] CONFIG_RESETSTAT_BYTES = CONFIG_RESETSTAT.getBytes(Charsets.US_ASCII);
   private static final int CONFIG_RESETSTAT_VERSION = parseVersion("2.0.0");
 
@@ -599,7 +589,7 @@ public class RedisClient extends RedisClientBase {
    */
   public Reply config_resetstat() throws RedisException {
     if (version < CONFIG_RESETSTAT_VERSION) throw new RedisException("Server does not support CONFIG_RESETSTAT");
-    return (Reply) execute(CONFIG_RESETSTAT, new Command(CONFIG_RESETSTAT_BYTES));
+    return (Reply) execute(CONFIG_RESETSTAT, new Command(CONFIG_RESETSTAT_BYTES, CONFIG_RESETSTAT2_BYTES));
   }
   
   private static final String DBSIZE = "DBSIZE";
@@ -617,7 +607,9 @@ public class RedisClient extends RedisClientBase {
     return (IntegerReply) execute(DBSIZE, new Command(DBSIZE_BYTES));
   }
   
-  private static final String DEBUG_OBJECT = "DEBUG_OBJECT";
+  private static final String DEBUG_OBJECT = "DEBUG";
+  private static final String DEBUG_OBJECT2 = "OBJECT";
+  private static final byte[] DEBUG_OBJECT2_BYTES = DEBUG_OBJECT2.getBytes(Charsets.US_ASCII);
   private static final byte[] DEBUG_OBJECT_BYTES = DEBUG_OBJECT.getBytes(Charsets.US_ASCII);
   private static final int DEBUG_OBJECT_VERSION = parseVersion("1.0.0");
 
@@ -630,10 +622,12 @@ public class RedisClient extends RedisClientBase {
    */
   public Reply debug_object(Object key0) throws RedisException {
     if (version < DEBUG_OBJECT_VERSION) throw new RedisException("Server does not support DEBUG_OBJECT");
-    return (Reply) execute(DEBUG_OBJECT, new Command(DEBUG_OBJECT_BYTES, key0));
+    return (Reply) execute(DEBUG_OBJECT, new Command(DEBUG_OBJECT_BYTES, DEBUG_OBJECT2_BYTES, key0));
   }
   
-  private static final String DEBUG_SEGFAULT = "DEBUG_SEGFAULT";
+  private static final String DEBUG_SEGFAULT = "DEBUG";
+  private static final String DEBUG_SEGFAULT2 = "SEGFAULT";
+  private static final byte[] DEBUG_SEGFAULT2_BYTES = DEBUG_SEGFAULT2.getBytes(Charsets.US_ASCII);
   private static final byte[] DEBUG_SEGFAULT_BYTES = DEBUG_SEGFAULT.getBytes(Charsets.US_ASCII);
   private static final int DEBUG_SEGFAULT_VERSION = parseVersion("1.0.0");
 
@@ -645,7 +639,7 @@ public class RedisClient extends RedisClientBase {
    */
   public Reply debug_segfault() throws RedisException {
     if (version < DEBUG_SEGFAULT_VERSION) throw new RedisException("Server does not support DEBUG_SEGFAULT");
-    return (Reply) execute(DEBUG_SEGFAULT, new Command(DEBUG_SEGFAULT_BYTES));
+    return (Reply) execute(DEBUG_SEGFAULT, new Command(DEBUG_SEGFAULT_BYTES, DEBUG_SEGFAULT2_BYTES));
   }
   
   private static final String FLUSHALL = "FLUSHALL";
@@ -1479,17 +1473,13 @@ public class RedisClient extends RedisClientBase {
    *
    * @param key0
    * @param pattern1
-   * @param offset_or_count2
-   * @param pattern3
    * @return Reply
    */
-  public Reply sort(Object key0, Object pattern1, Object offset_or_count2, Object[] pattern3) throws RedisException {
+  public Reply sort(Object key0, Object[] pattern1) throws RedisException {
     if (version < SORT_VERSION) throw new RedisException("Server does not support SORT");
     List list = new ArrayList();
     list.add(key0);
-    if (pattern1 != null) list.add(pattern1);
-    if (offset_or_count2 != null) list.add(offset_or_count2);
-    Collections.addAll(list, pattern3);
+    Collections.addAll(list, pattern1);
     return (Reply) execute(SORT, new Command(SORT_BYTES, list.toArray(new Object[list.size()])));
   }
 
@@ -1626,7 +1616,9 @@ public class RedisClient extends RedisClientBase {
     return (Reply) execute(EVALSHA, new Command(EVALSHA_BYTES, arguments));
   }
   
-  private static final String SCRIPT_EXISTS = "SCRIPT_EXISTS";
+  private static final String SCRIPT_EXISTS = "SCRIPT";
+  private static final String SCRIPT_EXISTS2 = "EXISTS";
+  private static final byte[] SCRIPT_EXISTS2_BYTES = SCRIPT_EXISTS2.getBytes(Charsets.US_ASCII);
   private static final byte[] SCRIPT_EXISTS_BYTES = SCRIPT_EXISTS.getBytes(Charsets.US_ASCII);
   private static final int SCRIPT_EXISTS_VERSION = parseVersion("2.6.0");
 
@@ -1641,16 +1633,18 @@ public class RedisClient extends RedisClientBase {
     if (version < SCRIPT_EXISTS_VERSION) throw new RedisException("Server does not support SCRIPT_EXISTS");
     List list = new ArrayList();
     Collections.addAll(list, script0);
-    return (Reply) execute(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, list.toArray(new Object[list.size()])));
+    return (Reply) execute(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, SCRIPT_EXISTS2_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Reply script_exists_(Object... arguments) throws RedisException {
     if (version < SCRIPT_EXISTS_VERSION) throw new RedisException("Server does not support SCRIPT_EXISTS");
-    return (Reply) execute(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, arguments));
+    return (Reply) execute(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, SCRIPT_EXISTS2_BYTES, arguments));
   }
   
-  private static final String SCRIPT_FLUSH = "SCRIPT_FLUSH";
+  private static final String SCRIPT_FLUSH = "SCRIPT";
+  private static final String SCRIPT_FLUSH2 = "FLUSH";
+  private static final byte[] SCRIPT_FLUSH2_BYTES = SCRIPT_FLUSH2.getBytes(Charsets.US_ASCII);
   private static final byte[] SCRIPT_FLUSH_BYTES = SCRIPT_FLUSH.getBytes(Charsets.US_ASCII);
   private static final int SCRIPT_FLUSH_VERSION = parseVersion("2.6.0");
 
@@ -1662,10 +1656,12 @@ public class RedisClient extends RedisClientBase {
    */
   public Reply script_flush() throws RedisException {
     if (version < SCRIPT_FLUSH_VERSION) throw new RedisException("Server does not support SCRIPT_FLUSH");
-    return (Reply) execute(SCRIPT_FLUSH, new Command(SCRIPT_FLUSH_BYTES));
+    return (Reply) execute(SCRIPT_FLUSH, new Command(SCRIPT_FLUSH_BYTES, SCRIPT_FLUSH2_BYTES));
   }
   
-  private static final String SCRIPT_KILL = "SCRIPT_KILL";
+  private static final String SCRIPT_KILL = "SCRIPT";
+  private static final String SCRIPT_KILL2 = "KILL";
+  private static final byte[] SCRIPT_KILL2_BYTES = SCRIPT_KILL2.getBytes(Charsets.US_ASCII);
   private static final byte[] SCRIPT_KILL_BYTES = SCRIPT_KILL.getBytes(Charsets.US_ASCII);
   private static final int SCRIPT_KILL_VERSION = parseVersion("2.6.0");
 
@@ -1677,10 +1673,12 @@ public class RedisClient extends RedisClientBase {
    */
   public Reply script_kill() throws RedisException {
     if (version < SCRIPT_KILL_VERSION) throw new RedisException("Server does not support SCRIPT_KILL");
-    return (Reply) execute(SCRIPT_KILL, new Command(SCRIPT_KILL_BYTES));
+    return (Reply) execute(SCRIPT_KILL, new Command(SCRIPT_KILL_BYTES, SCRIPT_KILL2_BYTES));
   }
   
-  private static final String SCRIPT_LOAD = "SCRIPT_LOAD";
+  private static final String SCRIPT_LOAD = "SCRIPT";
+  private static final String SCRIPT_LOAD2 = "LOAD";
+  private static final byte[] SCRIPT_LOAD2_BYTES = SCRIPT_LOAD2.getBytes(Charsets.US_ASCII);
   private static final byte[] SCRIPT_LOAD_BYTES = SCRIPT_LOAD.getBytes(Charsets.US_ASCII);
   private static final int SCRIPT_LOAD_VERSION = parseVersion("2.6.0");
 
@@ -1693,7 +1691,7 @@ public class RedisClient extends RedisClientBase {
    */
   public Reply script_load(Object script0) throws RedisException {
     if (version < SCRIPT_LOAD_VERSION) throw new RedisException("Server does not support SCRIPT_LOAD");
-    return (Reply) execute(SCRIPT_LOAD, new Command(SCRIPT_LOAD_BYTES, script0));
+    return (Reply) execute(SCRIPT_LOAD, new Command(SCRIPT_LOAD_BYTES, SCRIPT_LOAD2_BYTES, script0));
   }
   
   private static final String HDEL = "HDEL";
@@ -2340,14 +2338,24 @@ public class RedisClient extends RedisClientBase {
    * Intersect multiple sorted sets and store the resulting sorted set in a new key
    * Sorted_set
    *
-   * @param args
+   * @param destination0
+   * @param numkeys1
+   * @param key2
    * @return IntegerReply
    */
-  public IntegerReply zinterstore(Object[] args) throws RedisException {
+  public IntegerReply zinterstore(Object destination0, Object numkeys1, Object[] key2) throws RedisException {
     if (version < ZINTERSTORE_VERSION) throw new RedisException("Server does not support ZINTERSTORE");
     List list = new ArrayList();
-    Collections.addAll(list, args);
+    list.add(destination0);
+    list.add(numkeys1);
+    Collections.addAll(list, key2);
     return (IntegerReply) execute(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public IntegerReply zinterstore_(Object... arguments) throws RedisException {
+    if (version < ZINTERSTORE_VERSION) throw new RedisException("Server does not support ZINTERSTORE");
+    return (IntegerReply) execute(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, arguments));
   }
   
   private static final String ZRANGE = "ZRANGE";
@@ -2395,14 +2403,14 @@ public class RedisClient extends RedisClientBase {
    * @param offset_or_count4
    * @return MultiBulkReply
    */
-  public MultiBulkReply zrangebyscore(Object key0, Object min1, Object max2, Object withscores3, Object offset_or_count4) throws RedisException {
+  public MultiBulkReply zrangebyscore(Object key0, Object min1, Object max2, Object withscores3, Object[] offset_or_count4) throws RedisException {
     if (version < ZRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZRANGEBYSCORE");
     List list = new ArrayList();
     list.add(key0);
     list.add(min1);
     list.add(max2);
     if (withscores3 != null) list.add(withscores3);
-    if (offset_or_count4 != null) list.add(offset_or_count4);
+    Collections.addAll(list, offset_or_count4);
     return (MultiBulkReply) execute(ZRANGEBYSCORE, new Command(ZRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
@@ -2536,14 +2544,14 @@ public class RedisClient extends RedisClientBase {
    * @param offset_or_count4
    * @return MultiBulkReply
    */
-  public MultiBulkReply zrevrangebyscore(Object key0, Object max1, Object min2, Object withscores3, Object offset_or_count4) throws RedisException {
+  public MultiBulkReply zrevrangebyscore(Object key0, Object max1, Object min2, Object withscores3, Object[] offset_or_count4) throws RedisException {
     if (version < ZREVRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZREVRANGEBYSCORE");
     List list = new ArrayList();
     list.add(key0);
     list.add(max1);
     list.add(min2);
     if (withscores3 != null) list.add(withscores3);
-    if (offset_or_count4 != null) list.add(offset_or_count4);
+    Collections.addAll(list, offset_or_count4);
     return (MultiBulkReply) execute(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
@@ -2944,18 +2952,6 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Authenticate to the server
-   * Connection
-   *
-   * @param password0
-   * @return StatusReply
-   */
-  public ListenableFuture<StatusReply> auth(Object password0) throws RedisException {
-    if (version < AUTH_VERSION) throw new RedisException("Server does not support AUTH");
-    return (ListenableFuture<StatusReply>) pipeline(AUTH, new Command(AUTH_BYTES, password0));
-  }
-
-  /**
    * Echo the given string
    * Connection
    *
@@ -3032,7 +3028,7 @@ public class RedisClient extends RedisClientBase {
    */
   public ListenableFuture<Reply> config_get(Object parameter0) throws RedisException {
     if (version < CONFIG_GET_VERSION) throw new RedisException("Server does not support CONFIG_GET");
-    return (ListenableFuture<Reply>) pipeline(CONFIG_GET, new Command(CONFIG_GET_BYTES, parameter0));
+    return (ListenableFuture<Reply>) pipeline(CONFIG_GET, new Command(CONFIG_GET_BYTES, CONFIG_GET2_BYTES, parameter0));
   }
 
   /**
@@ -3045,7 +3041,7 @@ public class RedisClient extends RedisClientBase {
    */
   public ListenableFuture<Reply> config_set(Object parameter0, Object value1) throws RedisException {
     if (version < CONFIG_SET_VERSION) throw new RedisException("Server does not support CONFIG_SET");
-    return (ListenableFuture<Reply>) pipeline(CONFIG_SET, new Command(CONFIG_SET_BYTES, parameter0, value1));
+    return (ListenableFuture<Reply>) pipeline(CONFIG_SET, new Command(CONFIG_SET_BYTES, CONFIG_SET2_BYTES, parameter0, value1));
   }
 
   /**
@@ -3056,7 +3052,7 @@ public class RedisClient extends RedisClientBase {
    */
   public ListenableFuture<Reply> config_resetstat() throws RedisException {
     if (version < CONFIG_RESETSTAT_VERSION) throw new RedisException("Server does not support CONFIG_RESETSTAT");
-    return (ListenableFuture<Reply>) pipeline(CONFIG_RESETSTAT, new Command(CONFIG_RESETSTAT_BYTES));
+    return (ListenableFuture<Reply>) pipeline(CONFIG_RESETSTAT, new Command(CONFIG_RESETSTAT_BYTES, CONFIG_RESETSTAT2_BYTES));
   }
 
   /**
@@ -3079,7 +3075,7 @@ public class RedisClient extends RedisClientBase {
    */
   public ListenableFuture<Reply> debug_object(Object key0) throws RedisException {
     if (version < DEBUG_OBJECT_VERSION) throw new RedisException("Server does not support DEBUG_OBJECT");
-    return (ListenableFuture<Reply>) pipeline(DEBUG_OBJECT, new Command(DEBUG_OBJECT_BYTES, key0));
+    return (ListenableFuture<Reply>) pipeline(DEBUG_OBJECT, new Command(DEBUG_OBJECT_BYTES, DEBUG_OBJECT2_BYTES, key0));
   }
 
   /**
@@ -3090,7 +3086,7 @@ public class RedisClient extends RedisClientBase {
    */
   public ListenableFuture<Reply> debug_segfault() throws RedisException {
     if (version < DEBUG_SEGFAULT_VERSION) throw new RedisException("Server does not support DEBUG_SEGFAULT");
-    return (ListenableFuture<Reply>) pipeline(DEBUG_SEGFAULT, new Command(DEBUG_SEGFAULT_BYTES));
+    return (ListenableFuture<Reply>) pipeline(DEBUG_SEGFAULT, new Command(DEBUG_SEGFAULT_BYTES, DEBUG_SEGFAULT2_BYTES));
   }
 
   /**
@@ -3740,17 +3736,13 @@ public class RedisClient extends RedisClientBase {
    *
    * @param key0
    * @param pattern1
-   * @param offset_or_count2
-   * @param pattern3
    * @return Reply
    */
-  public ListenableFuture<Reply> sort(Object key0, Object pattern1, Object offset_or_count2, Object[] pattern3) throws RedisException {
+  public ListenableFuture<Reply> sort(Object key0, Object[] pattern1) throws RedisException {
     if (version < SORT_VERSION) throw new RedisException("Server does not support SORT");
     List list = new ArrayList();
     list.add(key0);
-    if (pattern1 != null) list.add(pattern1);
-    if (offset_or_count2 != null) list.add(offset_or_count2);
-    Collections.addAll(list, pattern3);
+    Collections.addAll(list, pattern1);
     return (ListenableFuture<Reply>) pipeline(SORT, new Command(SORT_BYTES, list.toArray(new Object[list.size()])));
   }
 
@@ -3874,13 +3866,13 @@ public class RedisClient extends RedisClientBase {
     if (version < SCRIPT_EXISTS_VERSION) throw new RedisException("Server does not support SCRIPT_EXISTS");
     List list = new ArrayList();
     Collections.addAll(list, script0);
-    return (ListenableFuture<Reply>) pipeline(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, list.toArray(new Object[list.size()])));
+    return (ListenableFuture<Reply>) pipeline(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, SCRIPT_EXISTS2_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public ListenableFuture<Reply> script_exists_(Object... arguments) throws RedisException {
     if (version < SCRIPT_EXISTS_VERSION) throw new RedisException("Server does not support SCRIPT_EXISTS");
-    return (ListenableFuture<Reply>) pipeline(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, arguments));
+    return (ListenableFuture<Reply>) pipeline(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, SCRIPT_EXISTS2_BYTES, arguments));
   }
 
   /**
@@ -3891,7 +3883,7 @@ public class RedisClient extends RedisClientBase {
    */
   public ListenableFuture<Reply> script_flush() throws RedisException {
     if (version < SCRIPT_FLUSH_VERSION) throw new RedisException("Server does not support SCRIPT_FLUSH");
-    return (ListenableFuture<Reply>) pipeline(SCRIPT_FLUSH, new Command(SCRIPT_FLUSH_BYTES));
+    return (ListenableFuture<Reply>) pipeline(SCRIPT_FLUSH, new Command(SCRIPT_FLUSH_BYTES, SCRIPT_FLUSH2_BYTES));
   }
 
   /**
@@ -3902,7 +3894,7 @@ public class RedisClient extends RedisClientBase {
    */
   public ListenableFuture<Reply> script_kill() throws RedisException {
     if (version < SCRIPT_KILL_VERSION) throw new RedisException("Server does not support SCRIPT_KILL");
-    return (ListenableFuture<Reply>) pipeline(SCRIPT_KILL, new Command(SCRIPT_KILL_BYTES));
+    return (ListenableFuture<Reply>) pipeline(SCRIPT_KILL, new Command(SCRIPT_KILL_BYTES, SCRIPT_KILL2_BYTES));
   }
 
   /**
@@ -3914,7 +3906,7 @@ public class RedisClient extends RedisClientBase {
    */
   public ListenableFuture<Reply> script_load(Object script0) throws RedisException {
     if (version < SCRIPT_LOAD_VERSION) throw new RedisException("Server does not support SCRIPT_LOAD");
-    return (ListenableFuture<Reply>) pipeline(SCRIPT_LOAD, new Command(SCRIPT_LOAD_BYTES, script0));
+    return (ListenableFuture<Reply>) pipeline(SCRIPT_LOAD, new Command(SCRIPT_LOAD_BYTES, SCRIPT_LOAD2_BYTES, script0));
   }
 
   /**
@@ -4429,14 +4421,24 @@ public class RedisClient extends RedisClientBase {
    * Intersect multiple sorted sets and store the resulting sorted set in a new key
    * Sorted_set
    *
-   * @param args
+   * @param destination0
+   * @param numkeys1
+   * @param key2
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> zinterstore(Object[] args) throws RedisException {
+  public ListenableFuture<IntegerReply> zinterstore(Object destination0, Object numkeys1, Object[] key2) throws RedisException {
     if (version < ZINTERSTORE_VERSION) throw new RedisException("Server does not support ZINTERSTORE");
     List list = new ArrayList();
-    Collections.addAll(list, args);
+    list.add(destination0);
+    list.add(numkeys1);
+    Collections.addAll(list, key2);
     return (ListenableFuture<IntegerReply>) pipeline(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<IntegerReply> zinterstore_(Object... arguments) throws RedisException {
+    if (version < ZINTERSTORE_VERSION) throw new RedisException("Server does not support ZINTERSTORE");
+    return (ListenableFuture<IntegerReply>) pipeline(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, arguments));
   }
 
   /**
@@ -4476,14 +4478,14 @@ public class RedisClient extends RedisClientBase {
    * @param offset_or_count4
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> zrangebyscore(Object key0, Object min1, Object max2, Object withscores3, Object offset_or_count4) throws RedisException {
+  public ListenableFuture<MultiBulkReply> zrangebyscore(Object key0, Object min1, Object max2, Object withscores3, Object[] offset_or_count4) throws RedisException {
     if (version < ZRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZRANGEBYSCORE");
     List list = new ArrayList();
     list.add(key0);
     list.add(min1);
     list.add(max2);
     if (withscores3 != null) list.add(withscores3);
-    if (offset_or_count4 != null) list.add(offset_or_count4);
+    Collections.addAll(list, offset_or_count4);
     return (ListenableFuture<MultiBulkReply>) pipeline(ZRANGEBYSCORE, new Command(ZRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
@@ -4593,14 +4595,14 @@ public class RedisClient extends RedisClientBase {
    * @param offset_or_count4
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> zrevrangebyscore(Object key0, Object max1, Object min2, Object withscores3, Object offset_or_count4) throws RedisException {
+  public ListenableFuture<MultiBulkReply> zrevrangebyscore(Object key0, Object max1, Object min2, Object withscores3, Object[] offset_or_count4) throws RedisException {
     if (version < ZREVRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZREVRANGEBYSCORE");
     List list = new ArrayList();
     list.add(key0);
     list.add(max1);
     list.add(min2);
     if (withscores3 != null) list.add(withscores3);
-    if (offset_or_count4 != null) list.add(offset_or_count4);
+    Collections.addAll(list, offset_or_count4);
     return (ListenableFuture<MultiBulkReply>) pipeline(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
   }
 

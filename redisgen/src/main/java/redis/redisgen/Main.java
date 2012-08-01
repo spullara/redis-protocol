@@ -91,7 +91,8 @@ public class Main {
     Set<String> ungenerated = new HashSet<String>(
             Arrays.asList(
                     "MULTI", "EXEC", "DISCARD", // Transactions
-                    "PSUBSCRIBE", "SUBSCRIBE", "UNSUBSCRIBE", "PUNSUBSCRIBE" // subscriptions
+                    "PSUBSCRIBE", "SUBSCRIBE", "UNSUBSCRIBE", "PUNSUBSCRIBE", // subscriptions
+                    "AUTH" // authentication
             )
     );
     final Set<String> genericReply = new HashSet<String>(Arrays.asList(
@@ -118,6 +119,7 @@ public class Main {
       final String groupName = key.substring(0, 1).toUpperCase() + key.substring(1);
       final String command = entry.getValue();
       if (ungenerated.contains(command)) continue;
+      final boolean splitCommand = command.contains(" ");
       final String safeCommand = command.replace(" ", "_");
       String cacheReply = cache.getProperty(command.toLowerCase());
       if (cacheReply == null) {
@@ -130,7 +132,10 @@ public class Main {
       final JsonNode commandNode = commandNodes.get(command);
       commands.add(new Object() {
         String group = groupName;
+        boolean split_command = splitCommand;
         String name = safeCommand;
+        String name1 = splitCommand ? name.substring(0, name.indexOf("_")) : name;
+        String name2 = splitCommand ? name.substring(name.indexOf("_") + 1) : "";
         String comment = commandNode.get("summary").getTextValue();
         boolean generic = finalReply.equals("") || genericReply.contains(name);
         String reply = generic ? "Reply" : finalReply;

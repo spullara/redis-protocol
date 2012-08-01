@@ -33,7 +33,11 @@ public class RedisClient extends RedisClientBase {
   }
   {{#commands}}
   
-  private static final String {{name}} = "{{name}}";
+  private static final String {{name}} = "{{name1}}";
+  {{#split_command}}
+  private static final String {{name}}2 = "{{name2}}";
+  private static final byte[] {{name}}2_BYTES = {{name}}2.getBytes(Charsets.US_ASCII);
+  {{/split_command}}
   private static final byte[] {{name}}_BYTES = {{name}}.getBytes(Charsets.US_ASCII);
   private static final int {{name}}_VERSION = parseVersion("{{version}}");
 

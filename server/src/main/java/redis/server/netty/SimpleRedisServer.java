@@ -13,12 +13,15 @@ import static java.lang.Integer.MAX_VALUE;
 import static redis.netty4.BulkReply.NIL_REPLY;
 import static redis.netty4.IntegerReply.integer;
 import static redis.netty4.StatusReply.OK;
+import static redis.netty4.StatusReply.QUIT;
 import static redis.util.Encoding.bytesToNum;
 import static redis.util.Encoding.numToBytes;
 
 public class SimpleRedisServer implements RedisServer {
 
+  private static final StatusReply PONG = new StatusReply("PONG");
   private long started = now();
+
   private BytesKeyObjectMap<Object> data = new BytesKeyObjectMap<Object>();
   private BytesKeyObjectMap<Long> expires = new BytesKeyObjectMap<Long>();
   private static int[] mask = {128, 64, 32, 16, 8, 4, 2, 1};
@@ -258,16 +261,19 @@ public class SimpleRedisServer implements RedisServer {
   private static Random r = new SecureRandom();
   private static Field tableField;
   private static Field nextField;
+  private static Field mapField;
   static {
     try {
       tableField = HashMap.class.getDeclaredField("table");
       tableField.setAccessible(true);
-      Class c = Class.forName("java.util.HashMap$Entry");
-      nextField = c.getDeclaredField("next");
+      nextField = Class.forName("java.util.HashMap$Entry").getDeclaredField("next");
       nextField.setAccessible(true);
+      mapField = HashSet.class.getDeclaredField("map");
+      mapField.setAccessible(true);
     } catch (Exception e) {
       e.printStackTrace();
       tableField = null;
+      nextField = null;
     }
   }
 
@@ -763,8 +769,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply auth(byte[] password0) throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -787,7 +792,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply ping() throws RedisException {
-    return new StatusReply("PONG");
+    return PONG;
   }
 
   /**
@@ -798,8 +803,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply quit() throws RedisException {
-    // TODO
-    return null;
+    return QUIT;
   }
 
   /**
@@ -811,8 +815,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply select(byte[] index0) throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -823,8 +826,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply bgrewriteaof() throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -835,8 +837,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply bgsave() throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -848,8 +849,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply config_get(byte[] parameter0) throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -862,8 +862,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply config_set(byte[] parameter0, byte[] value1) throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -874,8 +873,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply config_resetstat() throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -886,8 +884,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply dbsize() throws RedisException {
-    // TODO
-    return null;
+    return integer(data.size());
   }
 
   /**
@@ -899,8 +896,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply debug_object(byte[] key0) throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -911,8 +907,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply debug_segfault() throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -923,8 +918,8 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply flushall() throws RedisException {
-    // TODO
-    return null;
+    data.clear();
+    return OK;
   }
 
   /**
@@ -935,8 +930,8 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply flushdb() throws RedisException {
-    // TODO
-    return null;
+    data.clear();
+    return OK;
   }
 
   /**
@@ -962,8 +957,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply lastsave() throws RedisException {
-    // TODO
-    return null;
+    return integer(-1);
   }
 
   /**
@@ -974,7 +968,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply monitor() throws RedisException {
-    // TODO
+    // TODO: Blocking
     return null;
   }
 
@@ -986,7 +980,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply save() throws RedisException {
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -999,8 +993,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply shutdown(byte[] NOSAVE0, byte[] SAVE1) throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -1027,8 +1020,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply slowlog(byte[] subcommand0, byte[] argument1) throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -1039,7 +1031,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply sync() throws RedisException {
-    // TODO
+    // TODO: Blocking
     return null;
   }
 
@@ -1051,8 +1043,13 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public MultiBulkReply time() throws RedisException {
-    // TODO
-    return null;
+    long millis = System.currentTimeMillis();
+    long seconds = millis / 1000;
+    Reply[] replies = new Reply[] {
+            new BulkReply(numToBytes(seconds)),
+            new BulkReply(numToBytes((millis - seconds * 1000)*1000))
+    };
+    return new MultiBulkReply(replies);
   }
 
   /**
@@ -1434,8 +1431,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public BulkReply dump(byte[] key0) throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -1522,7 +1518,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply migrate(byte[] host0, byte[] port1, byte[] key2, byte[] destination_db3, byte[] timeout4) throws RedisException {
-    // TODO
+    // TODO: Multiserver
     return null;
   }
 
@@ -1536,8 +1532,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply move(byte[] key0, byte[] db1) throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -1550,8 +1545,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply object(byte[] subcommand0, byte[][] arguments1) throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -1649,30 +1643,33 @@ public class SimpleRedisServer implements RedisServer {
         return NIL_REPLY;
       }
       try {
-        Map.Entry[] table = (Map.Entry[]) tableField.get(data);
-        int length = table.length;
-        Map.Entry entry;
-        do {
-          entry = table[r.nextInt(length)];
-        } while(entry == null);
-
-        int entries = 0;
-        Map.Entry current = entry;
-        do {
-          entries++;
-          entry = current;
-          current = (Map.Entry) nextField.get(current);
-        } while (current != null);
-        int choose = r.nextInt(entries);
-        current = entry;
-        while (choose-- != 0) current = (Map.Entry) nextField.get(current);
-        BytesKey key = (BytesKey) current.getKey();
+        BytesKey key = getRandomKey(data);
         return new BulkReply(key.getBytes());
       } catch (Exception e) {
         throw new RedisException(e);
       }
     }
     return null;
+  }
+
+  private BytesKey getRandomKey(Map data1) throws IllegalAccessException {
+    Map.Entry[] table = (Map.Entry[]) tableField.get(data1);
+    int length = table.length;
+    Map.Entry entry;
+    do {
+      entry = table[r.nextInt(length)];
+    } while(entry == null);
+
+    int entries = 0;
+    Map.Entry current = entry;
+    do {
+      entries++;
+      current = (Map.Entry) nextField.get(current);
+    } while (current != null);
+    int choose = r.nextInt(entries);
+    current = entry;
+    while (choose-- != 0) current = (Map.Entry) nextField.get(current);
+    return (BytesKey) current.getKey();
   }
 
   /**
@@ -1731,13 +1728,19 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply restore(byte[] key0, byte[] ttl1, byte[] serialized_value2) throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
    * Sort the elements in a list, set or sorted set
    * Generic
+   *
+   * SORT key [BY pattern]
+   *          [LIMIT offset count]
+   *          [GET pattern [GET pattern ...]]
+   *          [ASC|DESC]
+   *          [ALPHA]
+   *          [STORE destination]
    *
    * @param key0
    * @param pattern1_offset_or_count2_pattern3
@@ -1805,7 +1808,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply unwatch() throws RedisException {
-    // TODO
+    // TODO: Transactions
     return null;
   }
 
@@ -1818,7 +1821,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply watch(byte[][] key0) throws RedisException {
-    // TODO
+    // TODO: Transactions
     return null;
   }
 
@@ -1833,8 +1836,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply eval(byte[] script0, byte[] numkeys1, byte[][] key2) throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -1848,8 +1850,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply evalsha(byte[] sha10, byte[] numkeys1, byte[][] key2) throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -1861,8 +1862,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply script_exists(byte[][] script0) throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -1873,8 +1873,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply script_flush() throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -1885,8 +1884,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply script_kill() throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -1898,8 +1896,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply script_load(byte[] script0) throws RedisException {
-    // TODO
-    return null;
+    throw new RedisException("Not supported");
   }
 
   /**
@@ -2164,7 +2161,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply publish(byte[] channel0, byte[] message1) throws RedisException {
-    // TODO
+    // TODO: Pubsub
     return null;
   }
 
@@ -2370,8 +2367,18 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public BulkReply spop(byte[] key0) throws RedisException {
-    // TODO
-    return null;
+    if (mapField == null || tableField == null) {
+      throw new RedisException("Not supported");
+    }
+    BytesKeySet set = _getset(key0, false);
+    if (set.size() == 0) return NIL_REPLY;
+    try {
+      BytesKey key = getRandomKey((Map) mapField.get(set));
+      set.remove(key);
+      return new BulkReply(key.getBytes());
+    } catch (IllegalAccessException e) {
+      throw new RedisException("Not supported");
+    }
   }
 
   /**
@@ -2383,8 +2390,17 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public BulkReply srandmember(byte[] key0) throws RedisException {
-    // TODO
-    return null;
+    if (mapField == null || tableField == null) {
+      throw new RedisException("Not supported");
+    }
+    BytesKeySet set = _getset(key0, false);
+    if (set.size() == 0) return NIL_REPLY;
+    try {
+      BytesKey key = getRandomKey((Map) mapField.get(set));
+      return new BulkReply(key.getBytes());
+    } catch (IllegalAccessException e) {
+      throw new RedisException("Not supported");
+    }
   }
 
   /**

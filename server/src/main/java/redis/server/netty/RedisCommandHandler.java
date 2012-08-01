@@ -4,13 +4,11 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
-import redis.netty4.BulkReply;
 import redis.netty4.Command;
 import redis.netty4.ErrorReply;
 import redis.netty4.Reply;
 import redis.netty4.StatusReply;
 import redis.util.BytesKey;
-import redis.util.Encoding;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -21,6 +19,7 @@ import com.google.common.base.Charsets;
 
 import static redis.netty4.ErrorReply.NYI_REPLY;
 import static redis.netty4.Reply.CRLF;
+import static redis.netty4.StatusReply.QUIT;
 import static redis.util.Encoding.numToBytes;
 
 /**
@@ -49,7 +48,11 @@ public class RedisCommandHandler extends ChannelInboundMessageHandlerAdapter<Com
           } catch (IllegalAccessException e) {
             throw new RedisException("Invalid server implementation");
           } catch (InvocationTargetException e) {
-            return new ErrorReply("ERR " + e.getTargetException().getMessage());
+            Throwable te = e.getTargetException();
+            if (!(te instanceof RedisException)) {
+              te.printStackTrace();
+            }
+            return new ErrorReply("ERR " + te.getMessage());
           } catch (Exception e) {
             return new ErrorReply("ERR " + e.getMessage());
           }
@@ -72,7 +75,9 @@ public class RedisCommandHandler extends ChannelInboundMessageHandlerAdapter<Com
     } else {
       reply = wrapper.execute(msg);
     }
-    if (msg.isInline()) {
+    if (reply == QUIT) {
+      ctx.close();
+    } else if (msg.isInline()) {
       if (reply == null) {
         os.writeBytes(CRLF);
       } else {

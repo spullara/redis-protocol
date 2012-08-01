@@ -39,6 +39,21 @@ public class AllCommandsTest {
   }
 
   @Test
+  public void testauth() throws IOException {
+    rc.config_set("requirepass", "test");
+    RedisClient authtest = new RedisClient("localhost", 6379);
+    try {
+      authtest.info();
+      fail("should have thrown");
+    } catch (RedisException re) {
+      assertEquals("ERR operation not permitted", re.getMessage());
+    }
+    rc.auth("test");
+    rc.config_set("requirepass", "");
+    authtest.info();
+  }
+
+  @Test
   public void append() {
     rc.del(a("mykey"));
     eq(5, rc.append("mykey", "Hello"));
@@ -170,7 +185,7 @@ public class AllCommandsTest {
     eq(1, rc.zadd(a("zset2", "1", "one")));
     eq(1, rc.zadd(a("zset2", "2", "two")));
     eq(1, rc.zadd(a("zset2", "3", "three")));
-    eq(2, rc.zinterstore(a("out", "2", "zset1", "zset2", WEIGHTS, "2", "3")));
+    eq(2, rc.zinterstore("out", 2, a("zset1", "zset2", WEIGHTS, "2", "3")));
     eq(a("one", "5", "two", "10"), rc.zrange("out", "0", "-1", WITHSCORES));
   }
 
