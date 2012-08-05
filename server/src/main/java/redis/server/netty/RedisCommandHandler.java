@@ -1,27 +1,20 @@
 package redis.server.netty;
 
-import io.netty.buffer.ByteBuf;
+import com.google.common.base.Charsets;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
-import redis.netty4.BulkReply;
 import redis.netty4.Command;
 import redis.netty4.ErrorReply;
 import redis.netty4.Reply;
-import redis.netty4.StatusReply;
 import redis.util.BytesKey;
-import redis.util.Encoding;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.common.base.Charsets;
-
 import static redis.netty4.ErrorReply.NYI_REPLY;
-import static redis.netty4.Reply.CRLF;
-import static redis.util.Encoding.numToBytes;
 
 /**
  * Handle decoded commands
@@ -64,7 +57,6 @@ public class RedisCommandHandler extends ChannelInboundMessageHandlerAdapter<Com
     for (int i = 0; i < name.length; i++) {
       name[i] = (byte) Character.toLowerCase(name[i]);
     }
-    ByteBuf os = ctx.nextOutboundByteBuffer();
     Wrapper wrapper = methods.get(new BytesKey(name));
     Reply reply;
     if (wrapper == null) {
@@ -72,34 +64,33 @@ public class RedisCommandHandler extends ChannelInboundMessageHandlerAdapter<Com
     } else {
       reply = wrapper.execute(msg);
     }
-    if (msg.isInline()) {
-      if (reply == null) {
-        os.writeBytes(CRLF);
+//    if (msg.isInline()) {
+//      if (reply == null) {
+//        os.writeBytes(CRLF);
+//      } else {
+//        Object o = reply.data();
+//        if (o instanceof String) {
+//          os.writeByte('+');
+//          os.writeBytes(((String) o).getBytes(Charsets.US_ASCII));
+//          os.writeBytes(CRLF);
+//        } else if (o instanceof byte[]) {
+//          os.writeByte('+');
+//          os.writeBytes((byte[]) o);
+//          os.writeBytes(CRLF);
+//        } else if (o instanceof Long) {
+//          os.writeByte(':');
+//          os.writeBytes(numToBytes((Long) o, true));
+//        } else {
+//          os.writeBytes("ERR invalid inline response".getBytes(Charsets.US_ASCII));
+//          os.writeBytes(CRLF);
+//        }
+//      }
+//    } else {
+    if (reply == null) {
+        ctx.write(NYI_REPLY);
       } else {
-        Object o = reply.data();
-        if (o instanceof String) {
-          os.writeByte('+');
-          os.writeBytes(((String) o).getBytes(Charsets.US_ASCII));
-          os.writeBytes(CRLF);
-        } else if (o instanceof byte[]) {
-          os.writeByte('+');
-          os.writeBytes((byte[]) o);
-          os.writeBytes(CRLF);
-        } else if (o instanceof Long) {
-          os.writeByte(':');
-          os.writeBytes(numToBytes((Long) o, true));
-        } else {
-          os.writeBytes("ERR invalid inline response".getBytes(Charsets.US_ASCII));
-          os.writeBytes(CRLF);
-        }
+        ctx.write(reply);
       }
-    } else {
-      if (reply == null) {
-        NYI_REPLY.write(os);
-      } else {
-        reply.write(os);
-      }
-    }
-    ctx.flush();
+//    }
   }
 }
