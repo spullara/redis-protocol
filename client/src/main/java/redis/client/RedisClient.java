@@ -538,6 +538,41 @@ public class RedisClient extends RedisClientBase {
     return (StatusReply) execute(BGSAVE, new Command(BGSAVE_BYTES));
   }
   
+  private static final String CLIENT_KILL = "CLIENT";
+  private static final String CLIENT_KILL2 = "KILL";
+  private static final byte[] CLIENT_KILL2_BYTES = CLIENT_KILL2.getBytes(Charsets.US_ASCII);
+  private static final byte[] CLIENT_KILL_BYTES = CLIENT_KILL.getBytes(Charsets.US_ASCII);
+  private static final int CLIENT_KILL_VERSION = parseVersion("2.4.0");
+
+  /**
+   * Kill the connection of a client
+   * Server
+   *
+   * @param ip_port0
+   * @return Reply
+   */
+  public Reply client_kill(Object ip_port0) throws RedisException {
+    if (version < CLIENT_KILL_VERSION) throw new RedisException("Server does not support CLIENT_KILL");
+    return (Reply) execute(CLIENT_KILL, new Command(CLIENT_KILL_BYTES, CLIENT_KILL2_BYTES, ip_port0));
+  }
+  
+  private static final String CLIENT_LIST = "CLIENT";
+  private static final String CLIENT_LIST2 = "LIST";
+  private static final byte[] CLIENT_LIST2_BYTES = CLIENT_LIST2.getBytes(Charsets.US_ASCII);
+  private static final byte[] CLIENT_LIST_BYTES = CLIENT_LIST.getBytes(Charsets.US_ASCII);
+  private static final int CLIENT_LIST_VERSION = parseVersion("2.4.0");
+
+  /**
+   * Get the list of client connections
+   * Server
+   *
+   * @return Reply
+   */
+  public Reply client_list() throws RedisException {
+    if (version < CLIENT_LIST_VERSION) throw new RedisException("Server does not support CLIENT_LIST");
+    return (Reply) execute(CLIENT_LIST, new Command(CLIENT_LIST_BYTES, CLIENT_LIST2_BYTES));
+  }
+  
   private static final String CONFIG_GET = "CONFIG";
   private static final String CONFIG_GET2 = "GET";
   private static final byte[] CONFIG_GET2_BYTES = CONFIG_GET2.getBytes(Charsets.US_ASCII);
@@ -3017,6 +3052,29 @@ public class RedisClient extends RedisClientBase {
   public ListenableFuture<StatusReply> bgsave() throws RedisException {
     if (version < BGSAVE_VERSION) throw new RedisException("Server does not support BGSAVE");
     return (ListenableFuture<StatusReply>) pipeline(BGSAVE, new Command(BGSAVE_BYTES));
+  }
+
+  /**
+   * Kill the connection of a client
+   * Server
+   *
+   * @param ip_port0
+   * @return Reply
+   */
+  public ListenableFuture<Reply> client_kill(Object ip_port0) throws RedisException {
+    if (version < CLIENT_KILL_VERSION) throw new RedisException("Server does not support CLIENT_KILL");
+    return (ListenableFuture<Reply>) pipeline(CLIENT_KILL, new Command(CLIENT_KILL_BYTES, CLIENT_KILL2_BYTES, ip_port0));
+  }
+
+  /**
+   * Get the list of client connections
+   * Server
+   *
+   * @return Reply
+   */
+  public ListenableFuture<Reply> client_list() throws RedisException {
+    if (version < CLIENT_LIST_VERSION) throw new RedisException("Server does not support CLIENT_LIST");
+    return (ListenableFuture<Reply>) pipeline(CLIENT_LIST, new Command(CLIENT_LIST_BYTES, CLIENT_LIST2_BYTES));
   }
 
   /**

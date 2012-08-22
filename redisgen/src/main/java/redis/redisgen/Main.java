@@ -201,7 +201,7 @@ public class Main {
                   boolean multiple = isMultiple;
                   String typename = "Object";
                   String name() {
-                    String name = (argName + finalArgNum).replace(" ", "_").replace("-", "_");
+                    String name = (argName + finalArgNum).replaceAll("[- :]", "_");
                     for (String s : skipped) {
                       name = s + "_" + name;
                     }
