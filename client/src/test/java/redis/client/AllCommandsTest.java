@@ -62,6 +62,20 @@ public class AllCommandsTest {
   }
 
   @Test
+  public void bitcount() {
+    rc.set("bitkey", "A");
+    eq(2, rc.bitcount("bitkey", null, null));
+  }
+
+  @Test
+  public void bitop() {
+    rc.set("bitkey1", "A");
+    rc.set("bitkey2", "B");
+    eq(1, rc.bitop("xor", "bitkey", new Object[] { "bitkey1", "bitkey2" }));
+    eq("\03".getBytes(), rc.get("bitkey").data());
+  }
+
+  @Test
   public void blpop() {
     rc.del(a("list1", "list2"));
     eq(3, rc.rpush("list1", a("a", "b", "c")));
@@ -327,6 +341,13 @@ public class AllCommandsTest {
 
   private void eq(long expected, IntegerReply actual) {
     assertEquals(expected, (long) actual.data());
+  }
+
+  private void eq(byte[] bytes1, byte[] bytes2) {
+    assertEquals(bytes1.length, bytes2.length);
+    for (int i = 0; i < bytes1.length; i++) {
+      assertEquals(bytes1[i], bytes2[i]);
+    }
   }
 
   private Object[] a(Object... args) {
