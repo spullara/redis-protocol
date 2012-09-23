@@ -2,10 +2,7 @@ package redis.client;
 
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.SettableFuture;
-import org.jredis.JRedis;
-import org.jredis.ri.alphazero.JRedisClient;
 import org.junit.Test;
-import redis.clients.jedis.Jedis;
 import redis.reply.BulkReply;
 import redis.reply.IntegerReply;
 import redis.reply.MultiBulkReply;
@@ -13,8 +10,9 @@ import redis.reply.StatusReply;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static junit.framework.Assert.assertEquals;
@@ -170,62 +168,6 @@ public class RedisClientTest {
     long end = System.currentTimeMillis();
     System.out.println("Blocking: " + (CALLS * 1000) / (end - start) + " calls per second");
   }
-
-  @Test
-  public void jredisBenchmark() throws IOException, org.jredis.RedisException {
-    long start = System.currentTimeMillis();
-    JRedis redisClient = new JRedisClient("localhost", 6379);
-    for (int i = 0; i < CALLS; i++) {
-      redisClient.set(numToBytes(i, false), VALUE);
-    }
-    long end = System.currentTimeMillis();
-    System.out.println("JRedis: " + (CALLS * 1000) / (end - start) + " calls per second");
-  }
-
-  @Test
-  public void jedisBenchmark() throws IOException {
-    long start = System.currentTimeMillis();
-    Jedis redisClient = new Jedis("localhost", 6379);
-    for (int i = 0; i < CALLS; i++) {
-      redisClient.set(numToBytes(i, false), VALUE);
-    }
-    long end = System.currentTimeMillis();
-    System.out.println("Jedis: " + (CALLS * 1000) / (end - start) + " calls per second");
-  }
-
-  @Test
-  public void benchmarkFutureGet() throws IOException, ExecutionException, InterruptedException {
-    long start = System.currentTimeMillis();
-    RedisClient.Pipeline redisClient = new RedisClient("localhost", 6379).pipeline();
-    for (int i = 0; i < CALLS; i++) {
-      redisClient.set(numToBytes(i, false), VALUE).get();
-    }
-    long end = System.currentTimeMillis();
-    System.out.println("Future: " + (CALLS * 1000) / (end - start) + " calls per second");
-  }
-
-  @Test
-  public void benchmarkListenFuture() throws IOException, InterruptedException {
-    final ExecutorService es = Executors.newSingleThreadExecutor();
-    final AtomicLong total = new AtomicLong(CALLS);
-    final long start = System.currentTimeMillis();
-    final RedisClient.Pipeline redisClient = new RedisClient("localhost", 6379).pipeline();
-    final CountDownLatch countDownLatch = new CountDownLatch(1);
-    new Runnable() {
-      @Override
-      public void run() {
-        if (total.decrementAndGet() == 0) {
-          countDownLatch.countDown();
-        } else {
-          redisClient.set(numToBytes(total.intValue(), false), VALUE).addListener(this, es);
-        }
-      }
-    }.run();
-    countDownLatch.await();
-    long end = System.currentTimeMillis();
-    System.out.println("ListenableFuture: " + (CALLS * 1000) / (end - start) + " calls per second");
-  }
-
 
   @SuppressWarnings("unchecked")
   @Test
