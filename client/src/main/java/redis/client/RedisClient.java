@@ -1,21 +1,16 @@
 package redis.client;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.concurrent.Executors;
-
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ListenableFuture;
-
 import redis.Command;
-import redis.reply.BulkReply;
-import redis.reply.IntegerReply;
-import redis.reply.MultiBulkReply;
-import redis.reply.Reply;
-import redis.reply.StatusReply;
+import redis.reply.*;
+
+import java.io.IOException;
+import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Executors;
 
 public class RedisClient extends RedisClientBase {
   protected Pipeline pipeline = new Pipeline();
@@ -2208,15 +2203,22 @@ public class RedisClient extends RedisClientBase {
   private static final int SRANDMEMBER_VERSION = parseVersion("1.0.0");
 
   /**
-   * Get a random member from a set
+   * Get one or multiple random members from a set
    * Set
    *
    * @param key0
+   * @param count1
    * @return BulkReply
    */
-  public BulkReply srandmember(Object key0) throws RedisException {
+  public BulkReply srandmember(Object key0, Object count1) throws RedisException {
     if (version < SRANDMEMBER_VERSION) throw new RedisException("Server does not support SRANDMEMBER");
-    return (BulkReply) execute(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, key0));
+    return (BulkReply) execute(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, key0, count1));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public BulkReply srandmember_(Object... arguments) throws RedisException {
+    if (version < SRANDMEMBER_VERSION) throw new RedisException("Server does not support SRANDMEMBER");
+    return (BulkReply) execute(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, arguments));
   }
   
   private static final String SREM = "SREM";
@@ -4346,15 +4348,22 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
-   * Get a random member from a set
+   * Get one or multiple random members from a set
    * Set
    *
    * @param key0
+   * @param count1
    * @return BulkReply
    */
-  public ListenableFuture<BulkReply> srandmember(Object key0) throws RedisException {
+  public ListenableFuture<BulkReply> srandmember(Object key0, Object count1) throws RedisException {
     if (version < SRANDMEMBER_VERSION) throw new RedisException("Server does not support SRANDMEMBER");
-    return (ListenableFuture<BulkReply>) pipeline(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, key0));
+    return (ListenableFuture<BulkReply>) pipeline(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, key0, count1));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<BulkReply> srandmember_(Object... arguments) throws RedisException {
+    if (version < SRANDMEMBER_VERSION) throw new RedisException("Server does not support SRANDMEMBER");
+    return (ListenableFuture<BulkReply>) pipeline(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, arguments));
   }
 
   /**
