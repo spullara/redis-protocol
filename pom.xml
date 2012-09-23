@@ -52,9 +52,9 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:git://github.com/spullara/redis-protocol.git</connection>
-    <developerConnection>scm:git:git://github.com/spullara/redis-protocol.git</developerConnection>
-    <url>scm:git:git://github.com/spullara/redis-protocol.git</url>
+    <connection>scm:git:git@github.com:spullara/redis-protocol.git</connection>
+    <developerConnection>scm:git:git@github.com:spullara/redis-protocol.git</developerConnection>
+    <url>scm:git:git@github.com:spullara/redis-protocol.git</url>
   </scm>
 
   <distributionManagement>
