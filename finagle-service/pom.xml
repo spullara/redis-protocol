@@ -10,6 +10,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
+  <groupId>com.github.spullara.redis</groupId>
   <artifactId>finagle-service</artifactId>
   <name>finagle-service</name>
   <url>http://github.com/spullara/redis-protocol</url>
