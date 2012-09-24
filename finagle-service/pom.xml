@@ -10,7 +10,7 @@
 
   <groupId>com.github.spullara.redis</groupId>
   <artifactId>finagle-service</artifactId>
-  <version>0.0.2</version>
+  <version>0.0.3-SNAPSHOT</version>
   <name>finagle-service</name>
   <url>http://github.com/spullara/redis-protocol</url>
   <description>A very fast Java redis redis.client.</description>
@@ -64,7 +64,7 @@
     <dependency>
       <groupId>com.github.spullara.redis</groupId>
       <artifactId>protocol</artifactId>
-      <version>0.3</version>
+      <version>0.4-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
