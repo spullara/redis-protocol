@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
     <groupId>com.twitter</groupId>
     <artifactId>scala-parent-292</artifactId>
@@ -12,6 +10,7 @@
 
   <groupId>com.github.spullara.redis</groupId>
   <artifactId>finagle-service</artifactId>
+  <version>0.0.2</version>
   <name>finagle-service</name>
   <url>http://github.com/spullara/redis-protocol</url>
   <description>A very fast Java redis redis.client.</description>
@@ -65,7 +64,7 @@
     <dependency>
       <groupId>com.github.spullara.redis</groupId>
       <artifactId>protocol</artifactId>
-      <version>0.3-SNAPSHOT</version>
+      <version>0.3</version>
     </dependency>
     <dependency>
       <groupId>com.twitter</groupId>
