@@ -41,10 +41,8 @@ public class RedisClientBase {
         try {
           // Attempt to decode a full reply from the channelbuffer
           Reply receive = redisDecoder.receive(channelBuffer);
-          synchronized (this) {
-            // If successful, grab the matching handler
-            replies.poll().handle(receive);
-          }
+          // If successful, grab the matching handler
+          replies.poll().handle(receive);
           // May be more to read
           if (channelBuffer.readable()) {
             // More than one message in the buffer, need to be careful
@@ -79,10 +77,9 @@ public class RedisClientBase {
       throw new AssertionError("Failed to write to memory");
     }
     Buffer buffer = new Buffer(channelBuffer);
-    synchronized (this) {
-      // The order read must match the order written
-      netSocket.write(buffer);
-      replies.offer(replyHandler);
-    }
+    // The order read must match the order written, vertx guarantees
+    // that this is only called from a single thread.
+    netSocket.write(buffer);
+    replies.offer(replyHandler);
   }
 }
