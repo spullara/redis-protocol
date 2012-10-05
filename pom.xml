@@ -16,6 +16,7 @@
     <module>benchmark</module>
     <module>finagle-service</module>
     <module>server</module>
+    <module>vertx</module>
   </modules>
   <packaging>pom</packaging>
 
