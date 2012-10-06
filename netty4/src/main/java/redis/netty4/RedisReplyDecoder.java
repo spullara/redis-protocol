@@ -70,8 +70,9 @@ public class RedisReplyDecoder extends ReplayingDecoder<Reply<?>, Void> {
     try {
       if (reply == null) {
         reply = new MultiBulkReply(this, is);
+      } else {
+        reply.read(this, is);
       }
-      reply.read(this, is);
       return reply;
     } finally {
       reply = null;
