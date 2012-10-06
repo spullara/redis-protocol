@@ -28,7 +28,7 @@ public class MultiBulkReply implements Reply<Reply[]> {
   private int index = 0;
 
   public MultiBulkReply(RedisReplyDecoder rd, ByteBuf is) throws IOException {
-    size = Decoders.readInteger(is);
+    size = RedisReplyDecoder.readInteger(is);
     if (size == -1) {
       replies = null;
     } else {

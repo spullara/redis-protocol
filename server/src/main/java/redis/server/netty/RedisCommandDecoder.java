@@ -1,14 +1,14 @@
 package redis.server.netty;
 
-import java.io.IOException;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufIndexFinder;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
 import redis.netty4.Command;
 
-import static redis.netty4.Decoders.readInteger;
+import java.io.IOException;
+
+import static redis.netty4.RedisReplyDecoder.readInteger;
 
 /**
  * Decode commands.
