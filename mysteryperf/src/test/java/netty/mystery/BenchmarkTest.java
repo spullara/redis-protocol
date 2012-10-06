@@ -5,12 +5,14 @@ import io.netty.buffer.Unpooled;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Test;
+import redis.RedisProtocol;
 import redis.netty.BulkReply;
 import redis.netty.MultiBulkReply;
 import redis.netty.RedisDecoder;
 import redis.netty.Reply;
 import redis.netty4.RedisReplyDecoder;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
@@ -46,6 +48,21 @@ public class BenchmarkTest {
       for (int j = 0; j < CALLS; j++) {
         redis.netty4.Reply receive = redisDecoder.receive(bb);
         bb.resetReaderIndex();
+      }
+      long end = System.currentTimeMillis();
+      long diff = end - start;
+      System.out.println(diff + " " + ((double)diff)/CALLS);
+      start = end;
+    }
+  }
+
+  @Test
+  public void baisBench() throws IOException {
+    byte[] multiBulkReply = getBytes();
+    long start = System.currentTimeMillis();
+    for (int i = 0; i < 10; i++) {
+      for (int j = 0; j < CALLS; j++) {
+        RedisProtocol.receive(new ByteArrayInputStream(multiBulkReply));
       }
       long end = System.currentTimeMillis();
       long diff = end - start;

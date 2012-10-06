@@ -26,6 +26,11 @@
       <version>0.4-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <groupId>com.github.spullara.redis</groupId>
+      <artifactId>protocol</artifactId>
+      <version>0.4-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.8.2</version>
