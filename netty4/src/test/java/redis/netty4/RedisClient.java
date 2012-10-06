@@ -1,17 +1,16 @@
 package redis.netty4;
 
-import java.net.InetSocketAddress;
-
 import com.google.common.base.Charsets;
-
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioEventLoop;
+import io.netty.channel.socket.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+
+import java.net.InetSocketAddress;
 
 import static redis.util.Encoding.numToBytes;
 
@@ -29,7 +28,7 @@ public class RedisClient {
 
   public static void main(String[] args) throws Exception {
     final SocketChannel ch = new NioSocketChannel();
-    new NioEventLoop().register(ch);
+    new NioEventLoopGroup().register(ch);
     final long start = System.currentTimeMillis();
     ch.pipeline().addLast(new RedisCommandEncoder(), new RedisReplyDecoder(),
             new ChannelInboundMessageHandlerAdapter<Reply<?>>() {

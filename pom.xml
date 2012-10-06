@@ -15,6 +15,7 @@
     <module>benchmark</module>
     <module>finagle-service</module>
     <module>server</module>
+    <module>netty4-client</module>
   </modules>
   <packaging>pom</packaging>
 
