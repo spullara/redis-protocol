@@ -16,6 +16,7 @@
     <module>finagle-service</module>
     <module>server</module>
     <module>netty4-client</module>
+    <module>vertx</module>
   </modules>
   <packaging>pom</packaging>
 
