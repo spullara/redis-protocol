@@ -1,15 +1,14 @@
 package redis.netty;
 
-import java.io.IOException;
-
 import com.google.common.base.Charsets;
-
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBufferIndexFinder;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 import org.jboss.netty.handler.codec.replay.VoidEnum;
+
+import java.io.IOException;
 
 /**
  * Netty codec for Redis
@@ -108,8 +107,9 @@ public class RedisDecoder extends ReplayingDecoder<VoidEnum> {
     try {
       if (reply == null) {
         reply = new MultiBulkReply(this, is);
+      } else {
+        reply.read(this, is);
       }
-      reply.read(this, is);
       return reply;
     } finally {
       reply = null;
