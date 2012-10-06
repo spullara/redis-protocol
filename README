@@ -40,7 +40,7 @@ Maven dependency:
     <dependency>
       <groupId>com.github.spullara.redis</groupId>
       <artifactId>client</artifactId>
-      <version>0.2</version>
+      <version>0.3</version>
     </dependency>
 
 Benchmarks
