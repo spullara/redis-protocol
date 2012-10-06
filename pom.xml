@@ -17,6 +17,7 @@
     <module>server</module>
     <module>netty4-client</module>
     <module>vertx</module>
+    <module>mysteryperf</module>
   </modules>
   <packaging>pom</packaging>
 
