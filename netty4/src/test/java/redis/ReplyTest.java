@@ -1,14 +1,18 @@
 package redis;
 
-import java.io.IOException;
-
 import com.google.common.base.Charsets;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.junit.Test;
-import redis.netty4.*;
+import redis.netty4.BulkReply;
+import redis.netty4.ErrorReply;
+import redis.netty4.IntegerReply;
+import redis.netty4.MultiBulkReply;
 import redis.netty4.RedisReplyDecoder;
+import redis.netty4.Reply;
+import redis.netty4.StatusReply;
+
+import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -23,7 +27,7 @@ public class ReplyTest {
     Reply receive;
     RedisReplyDecoder redisDecoder = new RedisReplyDecoder();
     {
-      os = Unpooled.dynamicBuffer();
+      os = Unpooled.buffer();
       String message = "OK";
       new StatusReply(message).write(os);
       receive = redisDecoder.receive(os);
@@ -31,7 +35,7 @@ public class ReplyTest {
       assertEquals(message, receive.data());
     }
     {
-      os = Unpooled.dynamicBuffer();
+      os = Unpooled.buffer();
       String message = "OK";
       new ErrorReply(message).write(os);
       receive = redisDecoder.receive(os);
@@ -39,7 +43,7 @@ public class ReplyTest {
       assertEquals(message, receive.data());
     }
     {
-      os = Unpooled.dynamicBuffer();
+      os = Unpooled.buffer();
       String message = "OK";
       new BulkReply(Unpooled.wrappedBuffer(message.getBytes())).write(os);
       receive = redisDecoder.receive(os);
@@ -47,7 +51,7 @@ public class ReplyTest {
       assertEquals(message, ((ByteBuf)receive.data()).toString(Charsets.US_ASCII));
     }
     {
-      os = Unpooled.dynamicBuffer();
+      os = Unpooled.buffer();
       long integer = 999;
       new IntegerReply(integer).write(os);
       receive = redisDecoder.receive(os);
@@ -55,7 +59,7 @@ public class ReplyTest {
       assertEquals(integer, receive.data());
     }
     {
-      os = Unpooled.dynamicBuffer();
+      os = Unpooled.buffer();
       String message = "OK";
       long integer = 999;
       new MultiBulkReply(new Reply[] {
