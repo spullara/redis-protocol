@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
 
 /**
  * More decoding.
@@ -42,12 +41,9 @@ public class Decoders {
     return size * sign;
   }
 
-  private static CharsetDecoder UTF8 = Charsets.UTF_8.newDecoder();
-  private static CharsetDecoder ASCII = Charsets.US_ASCII.newDecoder();
-
   public static String decodeUTF8(ByteBuffer bb) {
     try {
-      return UTF8.decode(bb).toString();
+      return Charsets.UTF_8.newDecoder().decode(bb).toString();
     } catch (CharacterCodingException e) {
       throw new IllegalArgumentException(e);
     }
@@ -55,7 +51,7 @@ public class Decoders {
 
   public static String decodeAscii(ByteBuffer bb) {
     try {
-      return ASCII.decode(bb).toString();
+      return Charsets.US_ASCII.newDecoder().decode(bb).toString();
     } catch (CharacterCodingException e) {
       throw new IllegalArgumentException(e);
     }

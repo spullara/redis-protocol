@@ -74,7 +74,11 @@ public class DynamicByteBuffer {
       for (ByteBuffer byteBuffer : byteBuffers) {
         size += byteBuffer.limit() - byteBuffer.remaining();
       }
+    } else {
+      first.flip();
+      return first;
     }
+
     ByteBuffer allocate = ByteBuffer.allocate(size);
     first.flip();
     allocate.put(first);
