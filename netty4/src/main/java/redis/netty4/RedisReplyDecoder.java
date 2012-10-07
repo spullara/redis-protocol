@@ -20,7 +20,11 @@ public class RedisReplyDecoder extends ReplayingDecoder<Reply<?>, Void> {
   private MultiBulkReply reply;
 
   public ByteBuf readBytes(ByteBuf is) throws IOException {
-    int size = Decoders.readInteger(is);
+    long l = Decoders.readLong(is);
+    if (l > Integer.MAX_VALUE) {
+      throw new IOException("Value too large");
+    }
+    int size = (int) l;
     if (size == -1) {
       return null;
     }
@@ -47,7 +51,7 @@ public class RedisReplyDecoder extends ReplayingDecoder<Reply<?>, Void> {
         return new ErrorReply(error);
       }
       case IntegerReply.MARKER: {
-        return new IntegerReply(Decoders.readInteger(is));
+        return new IntegerReply(Decoders.readLong(is));
       }
       case BulkReply.MARKER: {
         return new BulkReply(readBytes(is));

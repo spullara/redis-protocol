@@ -1,14 +1,14 @@
 package redis.server.netty;
 
-import java.io.IOException;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufIndexFinder;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
 import redis.netty4.Command;
 
-import static redis.netty4.Decoders.readInteger;
+import java.io.IOException;
+
+import static redis.netty4.Decoders.readLong;
 
 /**
  * Decode commands.
@@ -24,7 +24,11 @@ public class RedisCommandDecoder extends ReplayingDecoder<Command, Void> {
       int numArgs = bytes.length;
       for (int i = arguments; i < numArgs; i++) {
         if (in.readByte() == '$') {
-          int size = readInteger(in);
+          long l = readLong(in);
+          if (l > Integer.MAX_VALUE) {
+            throw new IOException("Value too large");
+          }
+          int size = (int) l;
           bytes[i] = new byte[size];
           in.readBytes(bytes[i]);
           if (in.bytesBefore(ByteBufIndexFinder.CRLF) != 0) {
@@ -45,7 +49,11 @@ public class RedisCommandDecoder extends ReplayingDecoder<Command, Void> {
       }
     }
     if (in.readByte() == '*') {
-      int numArgs = readInteger(in);
+      long l = readLong(in);
+      if (l > Integer.MAX_VALUE) {
+        throw new IOException("Too many arguments");
+      }
+      int numArgs = (int) l;
       if (numArgs < 0) {
         throw new RedisException("Invalid size: " + numArgs);
       }

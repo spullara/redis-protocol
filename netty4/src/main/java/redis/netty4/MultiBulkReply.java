@@ -1,17 +1,11 @@
 package redis.netty4;
 
+import com.google.common.base.Charsets;
 import io.netty.buffer.ByteBuf;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.google.common.base.Charsets;
+import java.util.*;
 
 import static redis.util.Encoding.NEG_ONE_WITH_CRLF;
 import static redis.util.Encoding.numToBytes;
@@ -28,7 +22,11 @@ public class MultiBulkReply implements Reply<Reply[]> {
   private int index = 0;
 
   public MultiBulkReply(RedisReplyDecoder rd, ByteBuf is) throws IOException {
-    size = Decoders.readInteger(is);
+    long l = Decoders.readLong(is);
+    if (l > Integer.MAX_VALUE) {
+      throw new IOException("Too many replies");
+    }
+    size = (int) l;
     if (size == -1) {
       replies = null;
     } else {

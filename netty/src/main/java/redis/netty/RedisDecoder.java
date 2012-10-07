@@ -26,11 +26,14 @@ public class RedisDecoder extends ReplayingDecoder<VoidEnum> {
   private MultiBulkReply reply;
 
   public ChannelBuffer readBytes(ChannelBuffer is) throws IOException {
-    int size = readInteger(is);
+    long size = readLong(is);
     if (size == -1) {
       return null;
     }
-    ChannelBuffer buffer = is.readSlice(size);
+    if (size > Integer.MAX_VALUE) {
+      throw new IOException("Value too large");
+    }
+    ChannelBuffer buffer = is.readSlice((int) size);
     int cr = is.readByte();
     int lf = is.readByte();
     if (cr != CR || lf != LF) {
@@ -39,8 +42,8 @@ public class RedisDecoder extends ReplayingDecoder<VoidEnum> {
     return buffer;
   }
 
-  public static int readInteger(ChannelBuffer is) throws IOException {
-    int size = 0;
+  public static long readLong(ChannelBuffer is) throws IOException {
+    long size = 0;
     int sign = 1;
     int read = is.readByte();
     if (read == '-') {
@@ -79,7 +82,7 @@ public class RedisDecoder extends ReplayingDecoder<VoidEnum> {
         return new ErrorReply(error);
       }
       case IntegerReply.MARKER: {
-        return new IntegerReply(readInteger(is));
+        return new IntegerReply(readLong(is));
       }
       case BulkReply.MARKER: {
         return new BulkReply(readBytes(is));

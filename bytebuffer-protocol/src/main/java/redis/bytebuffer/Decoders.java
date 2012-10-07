@@ -15,8 +15,8 @@ public class Decoders {
   public static final char LF = '\n';
   private static final char ZERO = '0';
 
-  public static int readInteger(ByteBuffer is) throws IOException {
-    int size = 0;
+  public static long readLong(ByteBuffer is) throws IOException {
+    long size = 0;
     int sign = 1;
     int read = is.get();
     if (read == '-') {

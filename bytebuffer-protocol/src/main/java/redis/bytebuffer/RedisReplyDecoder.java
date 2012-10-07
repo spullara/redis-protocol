@@ -17,13 +17,15 @@ public class RedisReplyDecoder {
   private MultiBulkReply reply;
 
   public ByteBuffer readBytes(ByteBuffer is) throws IOException {
-    int size = Decoders.readInteger(is);
+    long size = Decoders.readLong(is);
     if (size == -1) {
       return null;
+    } else if (size > Integer.MAX_VALUE) {
+      throw new IOException("Value too large");
     }
     ByteBuffer buffer = is.slice();
-    buffer.limit(size);
-    is.position(is.position() + size);
+    buffer.limit((int) size);
+    is.position(is.position() + (int) size);
     int cr = is.get();
     int lf = is.get();
     if (cr != Decoders.CR || lf != Decoders.LF) {
@@ -46,7 +48,7 @@ public class RedisReplyDecoder {
         return new ErrorReply(error);
       }
       case IntegerReply.MARKER: {
-        return new IntegerReply(Decoders.readInteger(is));
+        return new IntegerReply(Decoders.readLong(is));
       }
       case BulkReply.MARKER: {
         return new BulkReply(readBytes(is));
