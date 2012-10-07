@@ -26,7 +26,7 @@ public class RedisCommandDecoder extends ReplayingDecoder<Command, Void> {
         if (in.readByte() == '$') {
           long l = readLong(in);
           if (l > Integer.MAX_VALUE) {
-            throw new IOException("Value too large");
+            throw new IllegalArgumentException("Java only supports arrays up to " + Integer.MAX_VALUE + " in size");
           }
           int size = (int) l;
           bytes[i] = new byte[size];
@@ -51,7 +51,7 @@ public class RedisCommandDecoder extends ReplayingDecoder<Command, Void> {
     if (in.readByte() == '*') {
       long l = readLong(in);
       if (l > Integer.MAX_VALUE) {
-        throw new IOException("Too many arguments");
+        throw new IllegalArgumentException("Java only supports arrays up to " + Integer.MAX_VALUE + " in size");
       }
       int numArgs = (int) l;
       if (numArgs < 0) {

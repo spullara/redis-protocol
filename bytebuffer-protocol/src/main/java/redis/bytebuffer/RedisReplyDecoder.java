@@ -21,7 +21,7 @@ public class RedisReplyDecoder {
     if (size == -1) {
       return null;
     } else if (size > Integer.MAX_VALUE) {
-      throw new IOException("Value too large");
+      throw new IllegalArgumentException("Java only supports arrays up to " + Integer.MAX_VALUE + " in size");
     }
     ByteBuffer buffer = is.slice();
     buffer.limit((int) size);

@@ -31,7 +31,7 @@ public class RedisDecoder extends ReplayingDecoder<VoidEnum> {
       return null;
     }
     if (size > Integer.MAX_VALUE) {
-      throw new IOException("Value too large");
+      throw new IllegalArgumentException("Java only supports arrays up to " + Integer.MAX_VALUE + " in size");
     }
     ChannelBuffer buffer = is.readSlice((int) size);
     int cr = is.readByte();

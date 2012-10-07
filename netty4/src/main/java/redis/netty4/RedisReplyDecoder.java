@@ -22,7 +22,7 @@ public class RedisReplyDecoder extends ReplayingDecoder<Reply<?>, Void> {
   public ByteBuf readBytes(ByteBuf is) throws IOException {
     long l = Decoders.readLong(is);
     if (l > Integer.MAX_VALUE) {
-      throw new IOException("Value too large");
+      throw new IllegalArgumentException("Java only supports arrays up to " + Integer.MAX_VALUE + " in size");
     }
     int size = (int) l;
     if (size == -1) {
