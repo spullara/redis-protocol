@@ -5,11 +5,7 @@ import io.netty.buffer.ByteBuf;
 import java.io.IOException;
 
 /**
- * TODO: Edit this
- * <p/>
- * User: sam
- * Date: 7/15/12
- * Time: 11:24 AM
+ * Reads an ASCII encoded long from a ByteBuf.
  */
 public class Decoders {
   public static final char CR = '\r';
