@@ -163,13 +163,13 @@ public class SimpleRedisServer implements RedisServer {
   }
 
   @SuppressWarnings("unchecked")
-  private List<BytesKey> _getlist(byte[] key0, boolean create) throws RedisException {
+  private List<BytesValue> _getlist(byte[] key0, boolean create) throws RedisException {
     Object o = _get(key0);
     if (o instanceof List) {
-      return (List<BytesKey>) o;
+      return (List<BytesValue>) o;
     } else if (o == null) {
       if (create) {
-        ArrayList<BytesKey> list = new ArrayList<BytesKey>();
+        ArrayList<BytesValue> list = new ArrayList<BytesValue>();
         _put(key0, list);
         return list;
       } else {
@@ -1105,7 +1105,7 @@ public class SimpleRedisServer implements RedisServer {
   @Override
   public BulkReply lindex(byte[] key0, byte[] index1) throws RedisException {
     int index = _toposint(index1);
-    List<BytesKey> list = _getlist(key0, true);
+    List<BytesValue> list = _getlist(key0, true);
     if (list == null || list.size() >= index) {
       return NIL_REPLY;
     } else {
@@ -1126,7 +1126,7 @@ public class SimpleRedisServer implements RedisServer {
   @Override
   public IntegerReply linsert(byte[] key0, byte[] where1, byte[] pivot2, byte[] value3) throws RedisException {
     Where where = Where.valueOf(new String(where1).toUpperCase());
-    List<BytesKey> list = _getlist(key0, true);
+    List<BytesValue> list = _getlist(key0, true);
     BytesKey pivot = new BytesKey(pivot2);
     int i = list.indexOf(pivot);
     if (i == -1) {
@@ -1147,7 +1147,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply llen(byte[] key0) throws RedisException {
-    List<BytesKey> list = _getlist(key0, false);
+    List<BytesValue> list = _getlist(key0, false);
     return list == null ? integer(0) : integer(list.size());
   }
 
@@ -1160,7 +1160,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public BulkReply lpop(byte[] key0) throws RedisException {
-    List<BytesKey> list = _getlist(key0, false);
+    List<BytesValue> list = _getlist(key0, false);
     if (list == null || list.size() == 0) {
       return NIL_REPLY;
     } else {
@@ -1178,7 +1178,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply lpush(byte[] key0, byte[][] value1) throws RedisException {
-    List<BytesKey> list = _getlist(key0, true);
+    List<BytesValue> list = _getlist(key0, true);
     for (byte[] value : value1) {
       list.add(0, new BytesKey(value));
     }
@@ -1195,7 +1195,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply lpushx(byte[] key0, byte[] value1) throws RedisException {
-    List<BytesKey> list = _getlist(key0, false);
+    List<BytesValue> list = _getlist(key0, false);
     if (list == null) {
       return integer(0);
     } else {
@@ -1215,7 +1215,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public MultiBulkReply lrange(byte[] key0, byte[] start1, byte[] stop2) throws RedisException {
-    List<BytesKey> list = _getlist(key0, false);
+    List<BytesValue> list = _getlist(key0, false);
     if (list == null) {
       return MultiBulkReply.EMPTY;
     } else {
@@ -1243,7 +1243,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply lrem(byte[] key0, byte[] count1, byte[] value2) throws RedisException {
-    List<BytesKey> list = _getlist(key0, false);
+    List<BytesValue> list = _getlist(key0, false);
     if (list == null) {
       return integer(0);
     } else {
@@ -1285,7 +1285,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply lset(byte[] key0, byte[] index1, byte[] value2) throws RedisException {
-    List<BytesKey> list = _getlist(key0, false);
+    List<BytesValue> list = _getlist(key0, false);
     if (list == null) {
       throw noSuchKey();
     }
@@ -1310,7 +1310,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply ltrim(byte[] key0, byte[] start1, byte[] stop2) throws RedisException {
-    List<BytesKey> list = _getlist(key0, false);
+    List<BytesValue> list = _getlist(key0, false);
     if (list == null) {
       return OK;
     } else {
@@ -1332,7 +1332,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public BulkReply rpop(byte[] key0) throws RedisException {
-    List<BytesKey> list = _getlist(key0, false);
+    List<BytesValue> list = _getlist(key0, false);
     int l;
     if (list == null || (l = list.size()) == 0) {
       return NIL_REPLY;
@@ -1353,13 +1353,13 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public BulkReply rpoplpush(byte[] source0, byte[] destination1) throws RedisException {
-    List<BytesKey> source = _getlist(source0, false);
+    List<BytesValue> source = _getlist(source0, false);
     int l;
     if (source == null || (l = source.size()) == 0) {
       return NIL_REPLY;
     } else {
-      List<BytesKey> dest = _getlist(destination1, true);
-      BytesKey popped = source.get(l - 1);
+      List<BytesValue> dest = _getlist(destination1, true);
+      BytesValue popped = source.get(l - 1);
       source.remove(l - 1);
       dest.add(0, popped);
       return new BulkReply(popped.getBytes());
@@ -1376,7 +1376,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply rpush(byte[] key0, byte[][] value1) throws RedisException {
-    List<BytesKey> list = _getlist(key0, true);
+    List<BytesValue> list = _getlist(key0, true);
     for (byte[] bytes : value1) {
       list.add(new BytesKey(bytes));
     }
@@ -1393,7 +1393,7 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public IntegerReply rpushx(byte[] key0, byte[] value1) throws RedisException {
-    List<BytesKey> list = _getlist(key0, false);
+    List<BytesValue> list = _getlist(key0, false);
     if (list == null) {
       return integer(0);
     } else {

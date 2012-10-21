@@ -5,7 +5,7 @@ import io.netty.buffer.ByteBuf;
 import java.io.IOException;
 
 /**
- * Reads an ASCII encoded long from a ByteBuf.
+ * Reads an ASCII encoded long from a ByteBuf that ends with CRLF.
  */
 public class Decoders {
   public static final char CR = '\r';
@@ -13,28 +13,28 @@ public class Decoders {
   private static final char ZERO = '0';
 
   public static long readLong(ByteBuf is) throws IOException {
-    long size = 0;
-    int sign = 1;
+    long result = 0;
     int read = is.readByte();
+    boolean positive = true;
     if (read == '-') {
       read = is.readByte();
-      sign = -1;
+      positive = false;
     }
     do {
       if (read == CR) {
         if (is.readByte() == LF) {
-          break;
+          return positive ? result : -result;
+        } else {
+          throw new IllegalArgumentException("CR without LF");
         }
       }
       int value = read - ZERO;
       if (value >= 0 && value < 10) {
-        size *= 10;
-        size += value;
+        result = result * 10 + value;
       } else {
         throw new IOException("Invalid character in integer");
       }
       read = is.readByte();
     } while (true);
-    return size * sign;
   }
 }

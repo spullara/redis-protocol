@@ -1,5 +1,6 @@
 package redis.server.netty;
 
+import com.google.common.base.Charsets;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -7,15 +8,12 @@ import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 import redis.netty4.Command;
 import redis.netty4.ErrorReply;
 import redis.netty4.Reply;
-import redis.netty4.StatusReply;
 import redis.util.BytesKey;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.google.common.base.Charsets;
 
 import static redis.netty4.ErrorReply.NYI_REPLY;
 import static redis.netty4.Reply.CRLF;
@@ -61,11 +59,16 @@ public class RedisCommandHandler extends ChannelInboundMessageHandlerAdapter<Com
     }
   }
 
+  private static final byte LOWER_DIFF = 'a' - 'A';
+
   @Override
   public void messageReceived(ChannelHandlerContext ctx, Command msg) throws Exception {
     byte[] name = msg.getName();
     for (int i = 0; i < name.length; i++) {
-      name[i] = (byte) Character.toLowerCase(name[i]);
+      byte b = name[i];
+      if (b >= 'A' && b <= 'Z') {
+        name[i] = (byte) (b + LOWER_DIFF);
+      }
     }
     ByteBuf os = ctx.nextOutboundByteBuffer();
     Wrapper wrapper = methods.get(new BytesKey(name));
