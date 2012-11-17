@@ -219,7 +219,7 @@ public class SimpleRedisServer implements RedisServer {
           } else {
             if (b == c) found = true;
           }
-        } while(true);
+        } while (true);
         return found && matches(key, pattern, kp + 1, pp);
       default:
         // This matches and the rest
@@ -262,6 +262,7 @@ public class SimpleRedisServer implements RedisServer {
   private static Field tableField;
   private static Field nextField;
   private static Field mapField;
+
   static {
     try {
       tableField = HashMap.class.getDeclaredField("table");
@@ -1045,9 +1046,9 @@ public class SimpleRedisServer implements RedisServer {
   public MultiBulkReply time() throws RedisException {
     long millis = System.currentTimeMillis();
     long seconds = millis / 1000;
-    Reply[] replies = new Reply[] {
+    Reply[] replies = new Reply[]{
             new BulkReply(numToBytes(seconds)),
-            new BulkReply(numToBytes((millis - seconds * 1000)*1000))
+            new BulkReply(numToBytes((millis - seconds * 1000) * 1000))
     };
     return new MultiBulkReply(replies);
   }
@@ -1136,7 +1137,7 @@ public class SimpleRedisServer implements RedisServer {
     return integer(list.size());
   }
 
-  enum Where { BEFORE, AFTER }
+  enum Where {BEFORE, AFTER}
 
   /**
    * Get the length of a list
@@ -1658,7 +1659,7 @@ public class SimpleRedisServer implements RedisServer {
     Map.Entry entry;
     do {
       entry = table[r.nextInt(length)];
-    } while(entry == null);
+    } while (entry == null);
 
     int entries = 0;
     Map.Entry current = entry;
@@ -1734,16 +1735,17 @@ public class SimpleRedisServer implements RedisServer {
   /**
    * Sort the elements in a list, set or sorted set
    * Generic
-   *
+   * <p/>
    * SORT key [BY pattern]
-   *          [LIMIT offset count]
-   *          [GET pattern [GET pattern ...]]
-   *          [ASC|DESC]
-   *          [ALPHA]
-   *          [STORE destination]
+   * [LIMIT offset count]
+   * [GET pattern [GET pattern ...]]
+   * [ASC|DESC]
+   * [ALPHA]
+   * [STORE destination]
    *
    * @param key0
    * @param pattern1_offset_or_count2_pattern3
+   *
    * @return Reply
    */
   @Override
@@ -1769,7 +1771,7 @@ public class SimpleRedisServer implements RedisServer {
       if (aLong == null) {
         return integer(-1);
       } else {
-        return integer((aLong - now())/1000);
+        return integer((aLong - now()) / 1000);
       }
     }
   }
@@ -2389,15 +2391,49 @@ public class SimpleRedisServer implements RedisServer {
    * @return BulkReply
    */
   @Override
-  public BulkReply srandmember(byte[] key0) throws RedisException {
+  public Reply srandmember(byte[] key0, byte[] count1) throws RedisException {
     if (mapField == null || tableField == null) {
       throw new RedisException("Not supported");
     }
     BytesKeySet set = _getset(key0, false);
-    if (set.size() == 0) return NIL_REPLY;
+    int size = set.size();
     try {
-      BytesKey key = getRandomKey((Map) mapField.get(set));
-      return new BulkReply(key.getBytes());
+      if (count1 == null) {
+        if (size == 0) return NIL_REPLY;
+        BytesKey key = getRandomKey((Map) mapField.get(set));
+        return new BulkReply(key.getBytes());
+      } else {
+        int count = _toint(count1);
+        int distinct = count < 0 ? -1 : 1;
+        count *= distinct;
+        if (count >= size) {
+          Reply[] replies = new Reply[size];
+          Iterator<BytesKey> iterator = set.iterator();
+          for (int i = 0; i < size; i++) {
+            if (iterator.hasNext()) {
+              BytesKey next = iterator.next();
+              replies[i] = new BulkReply(next.getBytes());
+            }
+          }
+          return new MultiBulkReply(replies);
+        } else {
+          Reply[] replies = new Reply[count];
+          Set<BytesKey> found;
+          if (distinct > 0) {
+            found = new HashSet<BytesKey>(count);
+          } else {
+            found = null;
+          }
+          for (int i = 0; i < count; i++) {
+            BytesKey key;
+            do {
+              key = getRandomKey((Map) mapField.get(set));
+            } while (found != null && !found.add(key));
+            replies[i] = new BulkReply(key.getBytes());
+          }
+          return new MultiBulkReply(replies);
+        }
+      }
     } catch (IllegalAccessException e) {
       throw new RedisException("Not supported");
     }
@@ -2614,7 +2650,7 @@ public class SimpleRedisServer implements RedisServer {
         throw new RedisException("wrong number of arguments for '" + name + "' command");
       }
     }
-    del(new byte[][] { destination0 });
+    del(new byte[][]{destination0});
     ZSet destination = _getzset(destination0, true);
     for (int i = 0; i < numkeys; i++) {
       ZSet zset = _getzset(key2[i], false);
@@ -2663,7 +2699,7 @@ public class SimpleRedisServer implements RedisServer {
     return integer(destination.size());
   }
 
-  enum Aggregate { SUM, MIN, MAX }
+  enum Aggregate {SUM, MIN, MAX}
 
   /**
    * Return a range of members in a sorted set, by index
@@ -2915,7 +2951,7 @@ public class SimpleRedisServer implements RedisServer {
     boolean withscores = _checkcommand(withscores3, "withscores", true);
     ZSet zset = _getzset(key0, false);
     int size = zset.size();
-    int end = size - _torange(start1, size) -1 ;
+    int end = size - _torange(start1, size) - 1;
     int start = size - _torange(stop2, size) - 1;
     Iterator<ZSetEntry> iterator = zset.iterator();
     List<Reply<ByteBuf>> list = new ArrayList<Reply<ByteBuf>>();

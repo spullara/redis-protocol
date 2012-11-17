@@ -4,6 +4,9 @@ import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheException;
 import com.github.mustachejava.MustacheFactory;
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.Multimaps;
 import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
 import org.codehaus.jackson.JsonFactory;
@@ -13,7 +16,6 @@ import org.codehaus.jackson.map.MappingJsonFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import javax.annotation.Nullable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -24,10 +26,6 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.*;
-
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.Multimaps;
 
 /**
  * Generate client code for redis based on the protocol.
@@ -97,7 +95,8 @@ public class Main {
     );
     final Set<String> genericReply = new HashSet<String>(Arrays.asList(
             "SORT", // Can return an integer reply
-            "ZRANK", "ZREVRANK" // Two different return values
+            "ZRANK", "ZREVRANK", // Two different return values
+            "SRANDMEMBER" // Can return a bulk or multibulk reply depending on count
     ));
     final Set<String> multiples = new HashSet<String>(Arrays.asList(
             "ZADD"

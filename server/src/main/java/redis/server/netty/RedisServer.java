@@ -1110,13 +1110,14 @@ public interface RedisServer {
   public BulkReply spop(byte[] key0) throws RedisException;
 
   /**
-   * Get a random member from a set
+   * Get one or multiple random members from a set
    * Set
    *
    * @param key0
-   * @return BulkReply
+   * @param count1
+   * @return Reply
    */
-  public BulkReply srandmember(byte[] key0) throws RedisException;
+  public Reply srandmember(byte[] key0, byte[] count1) throws RedisException;
 
   /**
    * Remove one or more members from a set
