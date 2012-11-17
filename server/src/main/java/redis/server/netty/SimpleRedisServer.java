@@ -2406,33 +2406,22 @@ public class SimpleRedisServer implements RedisServer {
         int count = _toint(count1);
         int distinct = count < 0 ? -1 : 1;
         count *= distinct;
-        if (count >= size) {
-          Reply[] replies = new Reply[size];
-          Iterator<BytesKey> iterator = set.iterator();
-          for (int i = 0; i < size; i++) {
-            if (iterator.hasNext()) {
-              BytesKey next = iterator.next();
-              replies[i] = new BulkReply(next.getBytes());
-            }
-          }
-          return new MultiBulkReply(replies);
+        if (count > size && distinct > 0) count = size;
+        Reply[] replies = new Reply[count];
+        Set<BytesKey> found;
+        if (distinct > 0) {
+          found = new HashSet<BytesKey>(count);
         } else {
-          Reply[] replies = new Reply[count];
-          Set<BytesKey> found;
-          if (distinct > 0) {
-            found = new HashSet<BytesKey>(count);
-          } else {
-            found = null;
-          }
-          for (int i = 0; i < count; i++) {
-            BytesKey key;
-            do {
-              key = getRandomKey((Map) mapField.get(set));
-            } while (found != null && !found.add(key));
-            replies[i] = new BulkReply(key.getBytes());
-          }
-          return new MultiBulkReply(replies);
+          found = null;
         }
+        for (int i = 0; i < count; i++) {
+          BytesKey key;
+          do {
+            key = getRandomKey((Map) mapField.get(set));
+          } while (found != null && !found.add(key));
+          replies[i] = new BulkReply(key.getBytes());
+        }
+        return new MultiBulkReply(replies);
       }
     } catch (IllegalAccessException e) {
       throw new RedisException("Not supported");
