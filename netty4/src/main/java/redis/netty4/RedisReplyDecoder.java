@@ -14,6 +14,9 @@ import java.io.IOException;
 
 public class RedisReplyDecoder extends ReplayingDecoder<Reply<?>, Void> {
 
+  public static final char CR = '\r';
+  public static final char LF = '\n';
+  private static final char ZERO = '0';
   // We track the current multibulk reply in the case
   // where we do not get a complete reply in a single
   // decode invocation.
@@ -31,10 +34,36 @@ public class RedisReplyDecoder extends ReplayingDecoder<Reply<?>, Void> {
     ByteBuf buffer = is.readSlice(size);
     int cr = is.readByte();
     int lf = is.readByte();
-    if (cr != Decoders.CR || lf != Decoders.LF) {
+    if (cr != CR || lf != LF) {
       throw new IOException("Improper line ending: " + cr + ", " + lf);
     }
     return buffer;
+  }
+
+  public static int readInteger(ByteBuf is) throws IOException {
+    int size = 0;
+    int sign = 1;
+    int read = is.readByte();
+    if (read == '-') {
+      read = is.readByte();
+      sign = -1;
+    }
+    do {
+      if (read == CR) {
+        if (is.readByte() == LF) {
+          break;
+        }
+      }
+      int value = read - ZERO;
+      if (value >= 0 && value < 10) {
+        size *= 10;
+        size += value;
+      } else {
+        throw new IOException("Invalid character in integer");
+      }
+      read = is.readByte();
+    } while (true);
+    return size * sign;
   }
 
   public Reply receive(final ByteBuf is) throws IOException {
