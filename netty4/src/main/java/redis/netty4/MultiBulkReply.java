@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.*;
 
+import static redis.netty4.RedisReplyDecoder.readLong;
 import static redis.util.Encoding.NEG_ONE_WITH_CRLF;
 import static redis.util.Encoding.numToBytes;
 
@@ -22,7 +23,7 @@ public class MultiBulkReply implements Reply<Reply[]> {
   private int index = 0;
 
   public MultiBulkReply(RedisReplyDecoder rd, ByteBuf is) throws IOException {
-    long l = Decoders.readLong(is);
+    long l = readLong(is);
     if (l > Integer.MAX_VALUE) {
       throw new IllegalArgumentException("Java only supports arrays up to " + Integer.MAX_VALUE + " in size");
     }

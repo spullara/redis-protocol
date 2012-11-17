@@ -23,7 +23,7 @@ public class RedisReplyDecoder extends ReplayingDecoder<Reply<?>, Void> {
   private MultiBulkReply reply;
 
   public ByteBuf readBytes(ByteBuf is) throws IOException {
-    long l = Decoders.readLong(is);
+    long l = readLong(is);
     if (l > Integer.MAX_VALUE) {
       throw new IllegalArgumentException("Java only supports arrays up to " + Integer.MAX_VALUE + " in size");
     }
@@ -40,8 +40,8 @@ public class RedisReplyDecoder extends ReplayingDecoder<Reply<?>, Void> {
     return buffer;
   }
 
-  public static int readInteger(ByteBuf is) throws IOException {
-    int size = 0;
+  public static long readLong(ByteBuf is) throws IOException {
+    long size = 0;
     int sign = 1;
     int read = is.readByte();
     if (read == '-') {
@@ -80,7 +80,7 @@ public class RedisReplyDecoder extends ReplayingDecoder<Reply<?>, Void> {
         return new ErrorReply(error);
       }
       case IntegerReply.MARKER: {
-        return new IntegerReply(Decoders.readLong(is));
+        return new IntegerReply(readLong(is));
       }
       case BulkReply.MARKER: {
         return new BulkReply(readBytes(is));
