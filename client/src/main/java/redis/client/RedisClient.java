@@ -3,7 +3,11 @@ package redis.client;
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ListenableFuture;
 import redis.Command;
-import redis.reply.*;
+import redis.reply.BulkReply;
+import redis.reply.IntegerReply;
+import redis.reply.MultiBulkReply;
+import redis.reply.Reply;
+import redis.reply.StatusReply;
 
 import java.io.IOException;
 import java.net.Socket;
