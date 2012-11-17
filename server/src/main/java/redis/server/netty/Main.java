@@ -5,7 +5,7 @@ import com.sampullara.cli.Argument;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioEventLoop;
+import io.netty.channel.socket.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 
 /**
@@ -24,24 +24,25 @@ public class Main {
     }
 
     // Only execute the command handler in a single thread
-    final EventExecutor ee = new DefaultEventExecutor(1);
     final RedisCommandHandler commandHandler = new RedisCommandHandler(new SimpleRedisServer());
 
     // Configure the server.
     ServerBootstrap b = new ServerBootstrap();
+    final DefaultEventExecutorGroup group = new DefaultEventExecutorGroup(1);
     try {
-        b.eventLoop(new NioEventLoop(), new NioEventLoop())
-         .channel(new NioServerSocketChannel())
+        b.group(new NioEventLoopGroup(), new NioEventLoopGroup())
+         .channel(NioServerSocketChannel.class)
          .option(ChannelOption.SO_BACKLOG, 100)
          .localAddress(port)
          .childOption(ChannelOption.TCP_NODELAY, true)
          .childHandler(new ChannelInitializer<SocketChannel>() {
-             @Override
-             public void initChannel(SocketChannel ch) throws Exception {
-               ChannelPipeline p = ch.pipeline();
-               p.addLast(new RedisCommandDecoder());
-               p.addLast(ee, commandHandler);
-             }
+           @Override
+           public void initChannel(SocketChannel ch) throws Exception {
+             ChannelPipeline p = ch.pipeline();
+             p.addLast(group, new RedisCommandDecoder());
+             p.addLast(group, new RedisReplyEncoder());
+             p.addLast(group, commandHandler);
+           }
          });
 
         // Start the server.

@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 import redis.netty4.Command;
 import redis.netty4.ErrorReply;
+import redis.netty4.InlineReply;
 import redis.netty4.Reply;
 import redis.util.BytesKey;
 
@@ -16,9 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static redis.netty4.ErrorReply.NYI_REPLY;
-import static redis.netty4.Reply.CRLF;
 import static redis.netty4.StatusReply.QUIT;
-import static redis.util.Encoding.numToBytes;
 
 /**
  * Handle decoded commands
@@ -80,34 +79,18 @@ public class RedisCommandHandler extends ChannelInboundMessageHandlerAdapter<Com
     }
     if (reply == QUIT) {
       ctx.close();
-    } else if (msg.isInline()) {
-      if (reply == null) {
-        os.writeBytes(CRLF);
-      } else {
-        Object o = reply.data();
-        if (o instanceof String) {
-          os.writeByte('+');
-          os.writeBytes(((String) o).getBytes(Charsets.US_ASCII));
-          os.writeBytes(CRLF);
-        } else if (o instanceof byte[]) {
-          os.writeByte('+');
-          os.writeBytes((byte[]) o);
-          os.writeBytes(CRLF);
-        } else if (o instanceof Long) {
-          os.writeByte(':');
-          os.writeBytes(numToBytes((Long) o, true));
+    } else {
+      if (msg.isInline()) {
+        if (reply == null) {
+          reply = new InlineReply(null);
         } else {
-          os.writeBytes("ERR invalid inline response".getBytes(Charsets.US_ASCII));
-          os.writeBytes(CRLF);
+          reply = new InlineReply(reply.data());
         }
       }
-    } else {
       if (reply == null) {
-        NYI_REPLY.write(os);
-      } else {
-        reply.write(os);
+        reply = NYI_REPLY;
       }
+      ctx.write(reply);
     }
-    ctx.flush();
   }
 }
