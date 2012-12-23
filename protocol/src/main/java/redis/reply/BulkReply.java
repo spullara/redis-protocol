@@ -51,4 +51,9 @@ public class BulkReply implements Reply<byte[]> {
     os.write(bytes);
     os.write(CRLF);
   }
+
+  @Override
+  public String toString() {
+    return asAsciiString();
+  }
 }

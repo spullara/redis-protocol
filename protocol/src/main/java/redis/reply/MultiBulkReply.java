@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.base.Charsets;
 import redis.RedisProtocol;
 
 import static redis.util.Encoding.NEG_ONE_WITH_CRLF;
@@ -111,5 +112,10 @@ public class MultiBulkReply implements Reply<Reply[]> {
       }
     }
     return map;
+  }
+
+  @Override
+  public String toString() {
+    return asStringList(Charsets.US_ASCII).toString();
   }
 }

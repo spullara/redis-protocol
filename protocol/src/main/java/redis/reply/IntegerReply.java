@@ -31,4 +31,9 @@ public class IntegerReply implements Reply<Long> {
     os.write(RedisProtocol.toBytes(integer));
     os.write(CRLF);
   }
+
+  @Override
+  public String toString() {
+    return String.valueOf(integer);
+  }
 }

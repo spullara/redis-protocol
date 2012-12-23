@@ -32,4 +32,9 @@ public class ErrorReply implements Reply<String> {
     os.write(error.getBytes());
     os.write(CRLF);
   }
+
+  @Override
+  public String toString() {
+    return error;
+  }
 }
