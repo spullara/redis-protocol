@@ -1,0 +1,77 @@
+package redis.netty.client;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+
+import com.google.common.base.Charsets;
+
+import redis.Command;
+import redis.netty.BulkReply;
+import redis.netty.IntegerReply;
+import redis.netty.MultiBulkReply;
+import redis.netty.Reply;
+import redis.netty.StatusReply;
+
+import spullara.util.concurrent.Promise;
+
+public class RedisClient extends RedisClientBase {
+
+  public static Promise<RedisClient> connect(String host, int port) {
+    RedisClient redisClient = new RedisClient();
+    return (Promise<RedisClient>) RedisClientBase.connect(host, port, redisClient);
+  }
+
+  {{#commands}}
+  
+  private static final String {{name}} = "{{name1}}";
+  {{#split_command}}
+  private static final String {{name}}2 = "{{name2}}";
+  private static final byte[] {{name}}2_BYTES = {{name}}2.getBytes(Charsets.US_ASCII);
+  {{/split_command}}
+  private static final byte[] {{name}}_BYTES = {{name}}.getBytes(Charsets.US_ASCII);
+  private static final int {{name}}_VERSION = parseVersion("{{version}}");
+
+  /**
+   * {{comment}}
+   * {{group}}
+   *
+   {{#arguments}}
+   * @param {{name}}
+   {{/arguments}}
+   * @return {{reply}}
+   */
+  public Promise<{{$return}}{{reply}}{{/return}}> {{methodname}}({{#arguments}}{{^first}}, {{/first}}{{typename}}{{#multiple}}[]{{/multiple}} {{name}}{{/arguments}}) {
+    // if (version < {{name}}_VERSION) throw new RedisException("Server does not support {{name}}");
+    {{#usearray}}
+    List list = new ArrayList();
+    {{#arguments}}
+    {{#multiple}}
+    Collections.addAll(list, {{name}});
+    {{/multiple}}
+    {{^multiple}}
+    {{^optional}}
+    list.add({{name}});
+    {{/optional}}
+    {{#optional}}
+    if ({{name}} != null) list.add({{name}});
+    {{/optional}}
+    {{/multiple}}
+    {{/arguments}}
+    return (Promise<{{$return}}{{reply}}{{/return}}>) execute(new Command({{name}}_BYTES, {{#split_command}}{{name}}2_BYTES, {{/split_command}}list.toArray(new Object[list.size()])));
+    {{/usearray}}
+    {{^usearray}}
+    return (Promise<{{$return}}{{reply}}{{/return}}>) execute(new Command({{name}}_BYTES{{#split_command}}, {{name}}2_BYTES{{/split_command}}{{#arguments}}, {{name}}{{/arguments}}));
+    {{/usearray}}
+  }
+  {{#varargs}}
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public Promise<{{$return}}{{reply}}{{/return}}> {{methodname}}_(Object... arguments) {
+    // if (version < {{name}}_VERSION) throw new RedisException("Server does not support {{name}}");
+    return (Promise<{{$return}}{{reply}}{{/return}}>) execute(new Command({{name}}_BYTES, {{#split_command}}{{name}}2_BYTES, {{/split_command}}arguments));
+  }
+  {{/varargs}}
+
+  {{/commands}}
+}

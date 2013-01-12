@@ -9,6 +9,7 @@
     <module>protocol</module>
     <module>bytebuffer-protocol</module>
     <module>netty</module>
+    <module>netty-client</module>
     <module>netty4</module>
     <module>finagle</module>
     <module>client</module>
