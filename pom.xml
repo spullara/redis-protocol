@@ -8,6 +8,7 @@
     <module>util</module>
     <module>protocol</module>
     <module>netty</module>
+    <module>netty-client</module>
     <module>netty4</module>
     <module>finagle</module>
     <module>client</module>
