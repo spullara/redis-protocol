@@ -34,6 +34,7 @@ import java.util.*;
  * Date: 11/5/11
  * Time: 9:10 PM
  */
+@SuppressWarnings({"UnusedDeclaration", "FieldCanBeLocal"})
 public class Main {
 
   @Argument(alias = "l")
@@ -56,6 +57,7 @@ public class Main {
     add("object");
   }};
 
+  @SuppressWarnings("ResultOfMethodCallIgnored")
   public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException, MustacheException {
     try {
       Args.parse(Main.class, args);
@@ -231,7 +233,7 @@ public class Main {
       });
     }
 
-    Map ctx = new HashMap();
+    Map<String, Object> ctx = new HashMap<String, Object>();
     ctx.put("commands", commands);
     File base = new File(dest, pkg.replace(".", "/"));
     base.mkdirs();
