@@ -1,6 +1,9 @@
 package redis.netty.client;
 
+import com.google.common.base.Charsets;
+import com.google.common.primitives.UnsignedBytes;
 import org.jboss.netty.bootstrap.ClientBootstrap;
+import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
@@ -14,18 +17,24 @@ import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import redis.Command;
 import redis.netty.BulkReply;
+import redis.netty.MultiBulkReply;
 import redis.netty.RedisDecoder;
 import redis.netty.RedisEncoder;
+import redis.netty.Reply;
 import spullara.util.concurrent.Promise;
 import spullara.util.functions.Block;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
 import java.net.InetSocketAddress;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedTransferQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,6 +42,13 @@ import java.util.regex.Pattern;
  * Used by the generated code to execute commands.
  */
 public class RedisClientBase {
+
+  private static final byte[] MESSAGE = "message".getBytes(Charsets.US_ASCII);
+  private static final byte[] PMESSAGE = "pmessage".getBytes(Charsets.US_ASCII);
+  private static final byte[] SUBSCRIBE = "subscribe".getBytes(Charsets.US_ASCII);
+  private static final byte[] PSUBSCRIBE = "psubscribe".getBytes(Charsets.US_ASCII);
+  private static final byte[] UNSUBSCRIBE = "unsubscribe".getBytes(Charsets.US_ASCII);
+  private static final byte[] PUNSUBSCRIBE = "punsubscribe".getBytes(Charsets.US_ASCII);
 
   private Channel channel;
   private Queue<Promise> queue;
@@ -85,11 +101,16 @@ public class RedisClientBase {
     final SimpleChannelUpstreamHandler handler = new SimpleChannelUpstreamHandler() {
       @Override
       public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
+        Object message = e.getMessage();
         if (queue.isEmpty()) {
-          // Needed for pub/sub?
+          if (message instanceof MultiBulkReply) {
+            redisClient.handleMessage(message);
+          } else {
+            // Need some way to notify
+          }
         } else {
           Promise poll = queue.poll();
-          poll.set(e.getMessage());
+          poll.set(message);
         }
       }
 
@@ -169,19 +190,176 @@ public class RedisClientBase {
 
   protected synchronized <T> Promise<T> execute(Class<T> clazz, Command command) {
     final Promise<T> reply = new Promise<>();
-    channel.write(command).addListener(new ChannelFutureListener() {
+    if (subscribed.get()) {
+      reply.setException(new RedisException("Already subscribed, cannot send this command"));
+    } else {
+      channel.write(command).addListener(new ChannelFutureListener() {
+        @Override
+        public void operationComplete(ChannelFuture future) throws Exception {
+          // Tacit assumption that netty ensures the order
+          if (future.isSuccess()) {
+            queue.add(reply);
+          } else if (future.isCancelled()) {
+            reply.cancel(true);
+          } else {
+            reply.setException(future.getCause());
+          }
+        }
+      });
+    }
+    return reply;
+  }
+
+  // Publish/subscribe section
+
+  private AtomicBoolean subscribed = new AtomicBoolean();
+
+  private void subscribed() {
+    subscribed.set(true);
+  }
+
+  /**
+   * Subscribes the client to the specified channels.
+   *
+   * @param subscriptions
+   */
+  public synchronized Promise<Void> subscribe(Object... subscriptions) {
+    subscribed();
+    Promise<Void> result = new Promise<>();
+    channel.write(new Command(SUBSCRIBE, subscriptions)).addListener(wrapSubscribe(result));
+    return result;
+  }
+
+  private ChannelFutureListener wrapSubscribe(final Promise<Void> result) {
+    return new ChannelFutureListener() {
       @Override
       public void operationComplete(ChannelFuture future) throws Exception {
-        // Tacit assumption that netty ensures the order
         if (future.isSuccess()) {
-          queue.add(reply);
+          result.set(null);
         } else if (future.isCancelled()) {
-          reply.cancel(true);
+          result.cancel(true);
         } else {
-          reply.setException(future.getCause());
+          result.setException(future.getCause());
         }
       }
-    });
-    return reply;
+    };
+  }
+
+  /**
+   * Subscribes the client to the specified patterns.
+   *
+   * @param subscriptions
+   */
+  public synchronized Promise<Void> psubscribe(Object... subscriptions) {
+    subscribed();
+    Promise<Void> result = new Promise<>();
+    channel.write(new Command(PSUBSCRIBE, subscriptions)).addListener(wrapSubscribe(result));
+    return result;
+  }
+
+  /**
+   * Unsubscribes the client to the specified channels.
+   *
+   * @param subscriptions
+   */
+  public synchronized Promise<Void> unsubscribe(Object... subscriptions) {
+    subscribed();
+    Promise<Void> result = new Promise<>();
+    channel.write(new Command(UNSUBSCRIBE, subscriptions)).addListener(wrapSubscribe(result));
+    return result;
+  }
+
+  /**
+   * Unsubscribes the client to the specified patterns.
+   *
+   * @param subscriptions
+   */
+  public synchronized Promise<Void> punsubscribe(Object... subscriptions) {
+    subscribed();
+    Promise<Void> result = new Promise<>();
+    channel.write(new Command(PUNSUBSCRIBE, subscriptions)).addListener(wrapSubscribe(result));
+    return result;
+  }
+
+  private List<ReplyListener> replyListeners;
+
+  /**
+   * Add a reply listener to this client for subscriptions.
+   */
+  public synchronized void addListener(ReplyListener replyListener) {
+    if (replyListeners == null) {
+      replyListeners = new CopyOnWriteArrayList<>();
+    }
+    replyListeners.add(replyListener);
+  }
+
+  /**
+   * Remove a reply listener from this client.
+   */
+  public synchronized boolean removeListener(ReplyListener replyListener) {
+    return replyListeners != null && replyListeners.remove(replyListener);
+  }
+
+  private static Comparator<byte[]> BYTES = UnsignedBytes.lexicographicalComparator();
+
+  protected void handleMessage(Object message) {
+    MultiBulkReply reply = (MultiBulkReply) message;
+    Reply[] data = reply.data();
+    if (data.length != 3 && data.length != 4) {
+      throw new RedisException("Invalid subscription messsage");
+    }
+    for (ReplyListener replyListener : replyListeners) {
+      byte[] type = getBytes(data[0].data());
+      byte[] data1 = getBytes(data[1].data());
+      Object data2 = data[2].data();
+      switch (type.length) {
+        case 7:
+          if (BYTES.compare(type, MESSAGE) == 0) {
+            replyListener.message(data1, getBytes(data2));
+            continue;
+          }
+          break;
+        case 8:
+          if (BYTES.compare(type, PMESSAGE) == 0) {
+            replyListener.pmessage(data1, (byte[]) data2, ((ChannelBuffer) data[3].data()).array());
+            continue;
+          }
+          break;
+        case 9:
+          if (BYTES.compare(type, SUBSCRIBE) == 0) {
+            replyListener.subscribed(data1, ((Number) data2).intValue());
+            continue;
+          }
+          break;
+        case 10:
+          if (BYTES.compare(type, PSUBSCRIBE) == 0) {
+            replyListener.psubscribed(data1, ((Number) data2).intValue());
+            continue;
+          }
+          break;
+        case 11:
+          if (BYTES.compare(type, UNSUBSCRIBE) == 0) {
+            replyListener.unsubscribed(data1, ((Number) data2).intValue());
+            continue;
+          }
+          break;
+        case 12:
+          if (BYTES.compare(type, PUNSUBSCRIBE) == 0) {
+            replyListener.punsubscribed(data1, ((Number) data2).intValue());
+            continue;
+          }
+          break;
+        default:
+          break;
+      }
+      close();
+    }
+  }
+
+  private byte[] getBytes(Object data2) {
+    ChannelBuffer d = (ChannelBuffer) data2;
+    byte[] bytes = new byte[d.readableBytes()];
+    d.getBytes(d.readerIndex(), bytes);
+    return bytes;
   }
 }

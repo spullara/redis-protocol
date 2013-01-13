@@ -3,15 +3,18 @@ package redis.netty.client;
 import org.junit.Test;
 import redis.Command;
 import redis.netty.BulkReply;
+import redis.netty.IntegerReply;
 import redis.netty.StatusReply;
 import spullara.util.concurrent.Promise;
 import spullara.util.functions.Block;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.assertEquals;
@@ -233,4 +236,77 @@ public class RedisClientBaseTest {
     System.out.println("Completed " + total.get() / 5 + " per second");
   }
 
+  @Test
+  public void testPubSub() throws InterruptedException, ExecutionException {
+    final CountDownLatch done = new CountDownLatch(1);
+    final Promise<Void> wassubscribed = new Promise<>();
+    final AtomicReference<byte[]> gotmessage = new AtomicReference<>();
+    final AtomicLong listeners = new AtomicLong(0);
+    final AtomicBoolean failed = new AtomicBoolean();
+    RedisClient.connect("localhost", 6379).onSuccess(new Block<RedisClient>() {
+      @Override
+      public void apply(final RedisClient redisClient) {
+        redisClient.addListener(new ReplyListener() {
+          @Override
+          public void subscribed(byte[] name, int channels) {
+            wassubscribed.set(null);
+          }
+
+          @Override
+          public void psubscribed(byte[] name, int channels) {
+            failed.set(true);
+          }
+
+          @Override
+          public void unsubscribed(byte[] name, int channels) {
+            failed.set(true);
+          }
+
+          @Override
+          public void punsubscribed(byte[] name, int channels) {
+            failed.set(true);
+          }
+
+          @Override
+          public void message(byte[] channel, byte[] message) {
+            gotmessage.set(message);
+            redisClient.close();
+            done.countDown();
+          }
+
+          @Override
+          public void pmessage(byte[] pattern, byte[] channel, byte[] message) {
+            failed.set(true);
+          }
+        });
+        redisClient.subscribe("test").onSuccess(new Block<Void>() {
+          @Override
+          public void apply(Void aVoid) {
+            RedisClient.connect("localhost", 6379).onSuccess(new Block<RedisClient>() {
+              @Override
+              public void apply(final RedisClient redisClient) {
+                wassubscribed.onSuccess(new Block<Void>() {
+                  @Override
+                  public void apply(Void aVoid) {
+                    redisClient.publish("test", "hello").onSuccess(new Block<IntegerReply>() {
+                      @Override
+                      public void apply(IntegerReply integerReply) {
+                        listeners.set(integerReply.data());
+                        redisClient.close();
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
+    });
+    done.await(10000, TimeUnit.MILLISECONDS);
+    assertTrue(wassubscribed.get() == null);
+    assertEquals("hello", new String(gotmessage.get()));
+    assertEquals(1, listeners.get());
+    assertFalse(failed.get());
+  }
 }
