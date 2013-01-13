@@ -8,6 +8,7 @@ import spullara.util.concurrent.Promise;
 import spullara.util.functions.Block;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -157,21 +158,25 @@ public class RedisClientBaseTest {
     final int[] i = new int[1];
     RedisClient.connect("localhost", 6379).onSuccess(new Block<RedisClient>() {
       long start;
+      private Block<StatusReply> setBlock;
 
-      void go(RedisClient redisClient) {
+      void again(RedisClient redisClient) {
         apply(redisClient);
       }
 
       @Override
       public void apply(final RedisClient redisClient) {
-        if (start == 0) start = System.currentTimeMillis();
-        if (System.currentTimeMillis() - start < 5000) {
-          redisClient.set(String.valueOf(i[0]++), "test2").onSuccess(new Block<StatusReply>() {
+        if (start == 0) {
+          setBlock = new Block<StatusReply>() {
             @Override
             public void apply(StatusReply statusReply) {
-              go(redisClient);
+              again(redisClient);
             }
-          });
+          };
+          start = System.currentTimeMillis();
+        }
+        if (System.currentTimeMillis() - start < 5000) {
+          redisClient.set(String.valueOf(i[0]++), "test2").onSuccess(setBlock);
         } else {
           redisClient.close().onSuccess(new Block<Void>() {
             @Override
@@ -183,6 +188,39 @@ public class RedisClientBaseTest {
       }
     });
     done.await(6000, TimeUnit.MILLISECONDS);
-    System.out.println("Completed " + i[0]/5 + " per second");
+    System.out.println("Completed " + i[0] / 5 + " per second");
   }
+
+  @Test
+  public void testPipelinePerformance() throws InterruptedException {
+    final CountDownLatch done = new CountDownLatch(1);
+    final int[] i = new int[1];
+    RedisClient.connect("localhost", 6379).onSuccess(new Block<RedisClient>() {
+
+      @Override
+      public void apply(final RedisClient redisClient) {
+        try {
+          final Semaphore semaphore = new Semaphore(100);
+          Runnable release = new Runnable() {
+            @Override
+            public void run() {
+              semaphore.release();
+            }
+          };
+          long start = System.currentTimeMillis();
+          while (System.currentTimeMillis() - start < 5000) {
+            semaphore.acquire();
+            redisClient.set(String.valueOf(i[0]++), "test2").ensure(release);
+          }
+          semaphore.acquire(100);
+          done.countDown();
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+    });
+    done.await(6000, TimeUnit.MILLISECONDS);
+    System.out.println("Completed " + i[0] / 5 + " per second");
+  }
+
 }
