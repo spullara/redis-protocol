@@ -22,7 +22,6 @@ public class RedisClient extends RedisClientBase {
     RedisClient redisClient = new RedisClient();
     return RedisClientBase.connect(host, port, redisClient);
   }
-
   {{#commands}}
   
   private static final String {{name}} = "{{name1}}";

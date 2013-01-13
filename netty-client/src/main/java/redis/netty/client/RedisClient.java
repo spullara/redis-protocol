@@ -12,13 +12,14 @@ import spullara.util.concurrent.Promise;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 @SuppressWarnings("UnusedDeclaration")
 public class RedisClient extends RedisClientBase {
 
   public static Promise<RedisClient> connect(String host, int port) {
     RedisClient redisClient = new RedisClient();
-    return RedisClientBase.connect(host, port, redisClient);
+    return RedisClientBase.connect(host, port, redisClient, Executors.newCachedThreadPool());
   }
 
   

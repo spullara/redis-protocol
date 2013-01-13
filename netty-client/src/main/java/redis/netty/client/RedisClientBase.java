@@ -38,7 +38,7 @@ public class RedisClientBase {
   private Queue<Promise> queue;
 
   public static <T extends RedisClientBase> Promise<T> connect(String hostname, int port) {
-    return connect(hostname, port, (T) new RedisClientBase());
+    return connect(hostname, port, (T) new RedisClientBase(), Executors.newCachedThreadPool());
   }
 
   private static final Pattern versionMatcher = Pattern.compile(
@@ -79,8 +79,7 @@ public class RedisClientBase {
     return version;
   }
 
-  protected static <T extends RedisClientBase> Promise<T> connect(String hostname, int port, final T redisClient) {
-    ExecutorService executor = Executors.newCachedThreadPool();
+  public static <T extends RedisClientBase> Promise<T> connect(String hostname, int port, final T redisClient, ExecutorService executor) {
     final ClientBootstrap cb = new ClientBootstrap(new NioClientSocketChannelFactory(executor, executor));
     final Queue<Promise> queue = new LinkedTransferQueue<>();
     final SimpleChannelUpstreamHandler handler = new SimpleChannelUpstreamHandler() {
@@ -88,7 +87,6 @@ public class RedisClientBase {
       public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         if (queue.isEmpty()) {
           // Needed for pub/sub?
-          throw new AssertionError("Queue was empty");
         } else {
           Promise poll = queue.poll();
           poll.set(e.getMessage());
@@ -99,7 +97,6 @@ public class RedisClientBase {
       public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         if (queue.isEmpty()) {
           // Needed for pub/sub?
-          throw new AssertionError("Queue was empty");
         } else {
           Promise poll = queue.poll();
           poll.setException(e.getCause());
