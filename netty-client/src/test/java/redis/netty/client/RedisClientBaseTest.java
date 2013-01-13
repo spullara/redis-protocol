@@ -3,7 +3,7 @@ package redis.netty.client;
 import org.junit.Test;
 import redis.Command;
 import redis.netty.BulkReply;
-import redis.netty.Reply;
+import redis.netty.StatusReply;
 import spullara.util.concurrent.Promise;
 import spullara.util.functions.Block;
 
@@ -24,7 +24,7 @@ public class RedisClientBaseTest {
     final CountDownLatch connectLatch = new CountDownLatch(1);
     final AtomicBoolean success = new AtomicBoolean();
     final AtomicReference<RedisClientBase> client = new AtomicReference<>();
-    Promise<RedisClientBase> connect = RedisClientBase.connect("localhost", 6379);
+    Promise<RedisClientBase> connect = (Promise<RedisClientBase>) RedisClientBase.connect("localhost", 6379);
     connect.onSuccess(new Block<RedisClientBase>() {
       @Override
       public void apply(RedisClientBase redisClientBase) {
@@ -91,20 +91,18 @@ public class RedisClientBaseTest {
     RedisClientBase.connect("localhost", 6379).onSuccess(new Block<RedisClientBase>() {
       @Override
       public void apply(final RedisClientBase redisClientBase) {
-        redisClientBase.execute(new Command("set", "test", "test")).onSuccess(new Block<Reply>() {
+        redisClientBase.execute(StatusReply.class, new Command("set", "test", "test")).onSuccess(new Block<StatusReply>() {
           @Override
-          public void apply(Reply reply) {
+          public void apply(StatusReply reply) {
             if (reply.data().equals("OK")) {
-              redisClientBase.execute(new Command("get", "test")).onSuccess(new Block<Reply>() {
+              redisClientBase.execute(BulkReply.class, new Command("get", "test")).onSuccess(new Block<BulkReply>() {
                 @Override
-                public void apply(Reply reply) {
-                  if (reply instanceof BulkReply) {
-                    if (((BulkReply) reply).asAsciiString().equals("test")) {
-                      success.set(true);
-                    }
-                    done.countDown();
-                    redisClientBase.close();
+                public void apply(BulkReply reply) {
+                  if (reply.asAsciiString().equals("test")) {
+                    success.set(true);
                   }
+                  done.countDown();
+                  redisClientBase.close();
                 }
               });
             } else {

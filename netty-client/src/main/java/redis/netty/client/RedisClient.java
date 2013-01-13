@@ -1,14 +1,10 @@
 package redis.netty.client;
 
-import java.io.IOException;
-import java.net.Socket;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.concurrent.Executors;
 
 import com.google.common.base.Charsets;
-import com.google.common.util.concurrent.ListenableFuture;
 
 import redis.Command;
 import redis.netty.BulkReply;
@@ -19,11 +15,12 @@ import redis.netty.StatusReply;
 
 import spullara.util.concurrent.Promise;
 
+@SuppressWarnings("UnusedDeclaration")
 public class RedisClient extends RedisClientBase {
 
   public static Promise<RedisClient> connect(String host, int port) {
     RedisClient redisClient = new RedisClient();
-    return (Promise<RedisClient>) RedisClientBase.connect(host, port, redisClient);
+    return RedisClientBase.connect(host, port, redisClient);
   }
 
   
@@ -40,8 +37,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> append(Object key0, Object value1) {
-    // if (version < APPEND_VERSION) throw new RedisException("Server does not support APPEND");
-    return (Promise<IntegerReply>) execute(new Command(APPEND_BYTES, key0, value1));
+    if (version < APPEND_VERSION) return new Promise<>(new RedisException("Server does not support APPEND"));
+    return execute(IntegerReply.class, new Command(APPEND_BYTES, key0, value1));
   }
 
   
@@ -59,14 +56,14 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> bitcount(Object key0, Object start1, Object end2) {
-    // if (version < BITCOUNT_VERSION) throw new RedisException("Server does not support BITCOUNT");
-    return (Promise<IntegerReply>) execute(new Command(BITCOUNT_BYTES, key0, start1, end2));
+    if (version < BITCOUNT_VERSION) return new Promise<>(new RedisException("Server does not support BITCOUNT"));
+    return execute(IntegerReply.class, new Command(BITCOUNT_BYTES, key0, start1, end2));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<IntegerReply> bitcount_(Object... arguments) {
-    // if (version < BITCOUNT_VERSION) throw new RedisException("Server does not support BITCOUNT");
-    return (Promise<IntegerReply>) execute(new Command(BITCOUNT_BYTES, arguments));
+    if (version < BITCOUNT_VERSION) return new Promise<>(new RedisException("Server does not support BITCOUNT"));
+    return execute(IntegerReply.class, new Command(BITCOUNT_BYTES, arguments));
   }
 
   
@@ -84,18 +81,18 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> bitop(Object operation0, Object destkey1, Object[] key2) {
-    // if (version < BITOP_VERSION) throw new RedisException("Server does not support BITOP");
-    List list = new ArrayList();
+    if (version < BITOP_VERSION) return new Promise<>(new RedisException("Server does not support BITOP"));
+    List<Object> list = new ArrayList<>();
     list.add(operation0);
     list.add(destkey1);
     Collections.addAll(list, key2);
-    return (Promise<IntegerReply>) execute(new Command(BITOP_BYTES, list.toArray(new Object[list.size()])));
+    return execute(IntegerReply.class, new Command(BITOP_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<IntegerReply> bitop_(Object... arguments) {
-    // if (version < BITOP_VERSION) throw new RedisException("Server does not support BITOP");
-    return (Promise<IntegerReply>) execute(new Command(BITOP_BYTES, arguments));
+    if (version < BITOP_VERSION) return new Promise<>(new RedisException("Server does not support BITOP"));
+    return execute(IntegerReply.class, new Command(BITOP_BYTES, arguments));
   }
 
   
@@ -111,8 +108,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> decr(Object key0) {
-    // if (version < DECR_VERSION) throw new RedisException("Server does not support DECR");
-    return (Promise<IntegerReply>) execute(new Command(DECR_BYTES, key0));
+    if (version < DECR_VERSION) return new Promise<>(new RedisException("Server does not support DECR"));
+    return execute(IntegerReply.class, new Command(DECR_BYTES, key0));
   }
 
   
@@ -129,8 +126,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> decrby(Object key0, Object decrement1) {
-    // if (version < DECRBY_VERSION) throw new RedisException("Server does not support DECRBY");
-    return (Promise<IntegerReply>) execute(new Command(DECRBY_BYTES, key0, decrement1));
+    if (version < DECRBY_VERSION) return new Promise<>(new RedisException("Server does not support DECRBY"));
+    return execute(IntegerReply.class, new Command(DECRBY_BYTES, key0, decrement1));
   }
 
   
@@ -146,8 +143,8 @@ public class RedisClient extends RedisClientBase {
    * @return BulkReply
    */
   public Promise<BulkReply> get(Object key0) {
-    // if (version < GET_VERSION) throw new RedisException("Server does not support GET");
-    return (Promise<BulkReply>) execute(new Command(GET_BYTES, key0));
+    if (version < GET_VERSION) return new Promise<>(new RedisException("Server does not support GET"));
+    return execute(BulkReply.class, new Command(GET_BYTES, key0));
   }
 
   
@@ -164,8 +161,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> getbit(Object key0, Object offset1) {
-    // if (version < GETBIT_VERSION) throw new RedisException("Server does not support GETBIT");
-    return (Promise<IntegerReply>) execute(new Command(GETBIT_BYTES, key0, offset1));
+    if (version < GETBIT_VERSION) return new Promise<>(new RedisException("Server does not support GETBIT"));
+    return execute(IntegerReply.class, new Command(GETBIT_BYTES, key0, offset1));
   }
 
   
@@ -183,8 +180,8 @@ public class RedisClient extends RedisClientBase {
    * @return BulkReply
    */
   public Promise<BulkReply> getrange(Object key0, Object start1, Object end2) {
-    // if (version < GETRANGE_VERSION) throw new RedisException("Server does not support GETRANGE");
-    return (Promise<BulkReply>) execute(new Command(GETRANGE_BYTES, key0, start1, end2));
+    if (version < GETRANGE_VERSION) return new Promise<>(new RedisException("Server does not support GETRANGE"));
+    return execute(BulkReply.class, new Command(GETRANGE_BYTES, key0, start1, end2));
   }
 
   
@@ -201,8 +198,8 @@ public class RedisClient extends RedisClientBase {
    * @return BulkReply
    */
   public Promise<BulkReply> getset(Object key0, Object value1) {
-    // if (version < GETSET_VERSION) throw new RedisException("Server does not support GETSET");
-    return (Promise<BulkReply>) execute(new Command(GETSET_BYTES, key0, value1));
+    if (version < GETSET_VERSION) return new Promise<>(new RedisException("Server does not support GETSET"));
+    return execute(BulkReply.class, new Command(GETSET_BYTES, key0, value1));
   }
 
   
@@ -218,8 +215,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> incr(Object key0) {
-    // if (version < INCR_VERSION) throw new RedisException("Server does not support INCR");
-    return (Promise<IntegerReply>) execute(new Command(INCR_BYTES, key0));
+    if (version < INCR_VERSION) return new Promise<>(new RedisException("Server does not support INCR"));
+    return execute(IntegerReply.class, new Command(INCR_BYTES, key0));
   }
 
   
@@ -236,8 +233,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> incrby(Object key0, Object increment1) {
-    // if (version < INCRBY_VERSION) throw new RedisException("Server does not support INCRBY");
-    return (Promise<IntegerReply>) execute(new Command(INCRBY_BYTES, key0, increment1));
+    if (version < INCRBY_VERSION) return new Promise<>(new RedisException("Server does not support INCRBY"));
+    return execute(IntegerReply.class, new Command(INCRBY_BYTES, key0, increment1));
   }
 
   
@@ -254,8 +251,8 @@ public class RedisClient extends RedisClientBase {
    * @return BulkReply
    */
   public Promise<BulkReply> incrbyfloat(Object key0, Object increment1) {
-    // if (version < INCRBYFLOAT_VERSION) throw new RedisException("Server does not support INCRBYFLOAT");
-    return (Promise<BulkReply>) execute(new Command(INCRBYFLOAT_BYTES, key0, increment1));
+    if (version < INCRBYFLOAT_VERSION) return new Promise<>(new RedisException("Server does not support INCRBYFLOAT"));
+    return execute(BulkReply.class, new Command(INCRBYFLOAT_BYTES, key0, increment1));
   }
 
   
@@ -271,16 +268,16 @@ public class RedisClient extends RedisClientBase {
    * @return MultiBulkReply
    */
   public Promise<MultiBulkReply> mget(Object[] key0) {
-    // if (version < MGET_VERSION) throw new RedisException("Server does not support MGET");
-    List list = new ArrayList();
+    if (version < MGET_VERSION) return new Promise<>(new RedisException("Server does not support MGET"));
+    List<Object> list = new ArrayList<>();
     Collections.addAll(list, key0);
-    return (Promise<MultiBulkReply>) execute(new Command(MGET_BYTES, list.toArray(new Object[list.size()])));
+    return execute(MultiBulkReply.class, new Command(MGET_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<MultiBulkReply> mget_(Object... arguments) {
-    // if (version < MGET_VERSION) throw new RedisException("Server does not support MGET");
-    return (Promise<MultiBulkReply>) execute(new Command(MGET_BYTES, arguments));
+    if (version < MGET_VERSION) return new Promise<>(new RedisException("Server does not support MGET"));
+    return execute(MultiBulkReply.class, new Command(MGET_BYTES, arguments));
   }
 
   
@@ -296,16 +293,16 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> mset(Object[] key_or_value0) {
-    // if (version < MSET_VERSION) throw new RedisException("Server does not support MSET");
-    List list = new ArrayList();
+    if (version < MSET_VERSION) return new Promise<>(new RedisException("Server does not support MSET"));
+    List<Object> list = new ArrayList<>();
     Collections.addAll(list, key_or_value0);
-    return (Promise<StatusReply>) execute(new Command(MSET_BYTES, list.toArray(new Object[list.size()])));
+    return execute(StatusReply.class, new Command(MSET_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<StatusReply> mset_(Object... arguments) {
-    // if (version < MSET_VERSION) throw new RedisException("Server does not support MSET");
-    return (Promise<StatusReply>) execute(new Command(MSET_BYTES, arguments));
+    if (version < MSET_VERSION) return new Promise<>(new RedisException("Server does not support MSET"));
+    return execute(StatusReply.class, new Command(MSET_BYTES, arguments));
   }
 
   
@@ -321,16 +318,16 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> msetnx(Object[] key_or_value0) {
-    // if (version < MSETNX_VERSION) throw new RedisException("Server does not support MSETNX");
-    List list = new ArrayList();
+    if (version < MSETNX_VERSION) return new Promise<>(new RedisException("Server does not support MSETNX"));
+    List<Object> list = new ArrayList<>();
     Collections.addAll(list, key_or_value0);
-    return (Promise<IntegerReply>) execute(new Command(MSETNX_BYTES, list.toArray(new Object[list.size()])));
+    return execute(IntegerReply.class, new Command(MSETNX_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<IntegerReply> msetnx_(Object... arguments) {
-    // if (version < MSETNX_VERSION) throw new RedisException("Server does not support MSETNX");
-    return (Promise<IntegerReply>) execute(new Command(MSETNX_BYTES, arguments));
+    if (version < MSETNX_VERSION) return new Promise<>(new RedisException("Server does not support MSETNX"));
+    return execute(IntegerReply.class, new Command(MSETNX_BYTES, arguments));
   }
 
   
@@ -348,8 +345,8 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> psetex(Object key0, Object milliseconds1, Object value2) {
-    // if (version < PSETEX_VERSION) throw new RedisException("Server does not support PSETEX");
-    return (Promise<Reply>) execute(new Command(PSETEX_BYTES, key0, milliseconds1, value2));
+    if (version < PSETEX_VERSION) return new Promise<>(new RedisException("Server does not support PSETEX"));
+    return execute(Reply.class, new Command(PSETEX_BYTES, key0, milliseconds1, value2));
   }
 
   
@@ -366,8 +363,8 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> set(Object key0, Object value1) {
-    // if (version < SET_VERSION) throw new RedisException("Server does not support SET");
-    return (Promise<StatusReply>) execute(new Command(SET_BYTES, key0, value1));
+    if (version < SET_VERSION) return new Promise<>(new RedisException("Server does not support SET"));
+    return execute(StatusReply.class, new Command(SET_BYTES, key0, value1));
   }
 
   
@@ -385,8 +382,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> setbit(Object key0, Object offset1, Object value2) {
-    // if (version < SETBIT_VERSION) throw new RedisException("Server does not support SETBIT");
-    return (Promise<IntegerReply>) execute(new Command(SETBIT_BYTES, key0, offset1, value2));
+    if (version < SETBIT_VERSION) return new Promise<>(new RedisException("Server does not support SETBIT"));
+    return execute(IntegerReply.class, new Command(SETBIT_BYTES, key0, offset1, value2));
   }
 
   
@@ -404,8 +401,8 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> setex(Object key0, Object seconds1, Object value2) {
-    // if (version < SETEX_VERSION) throw new RedisException("Server does not support SETEX");
-    return (Promise<StatusReply>) execute(new Command(SETEX_BYTES, key0, seconds1, value2));
+    if (version < SETEX_VERSION) return new Promise<>(new RedisException("Server does not support SETEX"));
+    return execute(StatusReply.class, new Command(SETEX_BYTES, key0, seconds1, value2));
   }
 
   
@@ -422,8 +419,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> setnx(Object key0, Object value1) {
-    // if (version < SETNX_VERSION) throw new RedisException("Server does not support SETNX");
-    return (Promise<IntegerReply>) execute(new Command(SETNX_BYTES, key0, value1));
+    if (version < SETNX_VERSION) return new Promise<>(new RedisException("Server does not support SETNX"));
+    return execute(IntegerReply.class, new Command(SETNX_BYTES, key0, value1));
   }
 
   
@@ -441,8 +438,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> setrange(Object key0, Object offset1, Object value2) {
-    // if (version < SETRANGE_VERSION) throw new RedisException("Server does not support SETRANGE");
-    return (Promise<IntegerReply>) execute(new Command(SETRANGE_BYTES, key0, offset1, value2));
+    if (version < SETRANGE_VERSION) return new Promise<>(new RedisException("Server does not support SETRANGE"));
+    return execute(IntegerReply.class, new Command(SETRANGE_BYTES, key0, offset1, value2));
   }
 
   
@@ -458,8 +455,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> strlen(Object key0) {
-    // if (version < STRLEN_VERSION) throw new RedisException("Server does not support STRLEN");
-    return (Promise<IntegerReply>) execute(new Command(STRLEN_BYTES, key0));
+    if (version < STRLEN_VERSION) return new Promise<>(new RedisException("Server does not support STRLEN"));
+    return execute(IntegerReply.class, new Command(STRLEN_BYTES, key0));
   }
 
   
@@ -475,8 +472,8 @@ public class RedisClient extends RedisClientBase {
    * @return BulkReply
    */
   public Promise<BulkReply> echo(Object message0) {
-    // if (version < ECHO_VERSION) throw new RedisException("Server does not support ECHO");
-    return (Promise<BulkReply>) execute(new Command(ECHO_BYTES, message0));
+    if (version < ECHO_VERSION) return new Promise<>(new RedisException("Server does not support ECHO"));
+    return execute(BulkReply.class, new Command(ECHO_BYTES, message0));
   }
 
   
@@ -491,8 +488,8 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> ping() {
-    // if (version < PING_VERSION) throw new RedisException("Server does not support PING");
-    return (Promise<StatusReply>) execute(new Command(PING_BYTES));
+    if (version < PING_VERSION) return new Promise<>(new RedisException("Server does not support PING"));
+    return execute(StatusReply.class, new Command(PING_BYTES));
   }
 
   
@@ -507,8 +504,8 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> quit() {
-    // if (version < QUIT_VERSION) throw new RedisException("Server does not support QUIT");
-    return (Promise<StatusReply>) execute(new Command(QUIT_BYTES));
+    if (version < QUIT_VERSION) return new Promise<>(new RedisException("Server does not support QUIT"));
+    return execute(StatusReply.class, new Command(QUIT_BYTES));
   }
 
   
@@ -524,8 +521,8 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> select(Object index0) {
-    // if (version < SELECT_VERSION) throw new RedisException("Server does not support SELECT");
-    return (Promise<StatusReply>) execute(new Command(SELECT_BYTES, index0));
+    if (version < SELECT_VERSION) return new Promise<>(new RedisException("Server does not support SELECT"));
+    return execute(StatusReply.class, new Command(SELECT_BYTES, index0));
   }
 
   
@@ -540,8 +537,8 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> bgrewriteaof() {
-    // if (version < BGREWRITEAOF_VERSION) throw new RedisException("Server does not support BGREWRITEAOF");
-    return (Promise<StatusReply>) execute(new Command(BGREWRITEAOF_BYTES));
+    if (version < BGREWRITEAOF_VERSION) return new Promise<>(new RedisException("Server does not support BGREWRITEAOF"));
+    return execute(StatusReply.class, new Command(BGREWRITEAOF_BYTES));
   }
 
   
@@ -556,8 +553,8 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> bgsave() {
-    // if (version < BGSAVE_VERSION) throw new RedisException("Server does not support BGSAVE");
-    return (Promise<StatusReply>) execute(new Command(BGSAVE_BYTES));
+    if (version < BGSAVE_VERSION) return new Promise<>(new RedisException("Server does not support BGSAVE"));
+    return execute(StatusReply.class, new Command(BGSAVE_BYTES));
   }
 
   
@@ -575,8 +572,8 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> client_kill(Object ip_port0) {
-    // if (version < CLIENT_KILL_VERSION) throw new RedisException("Server does not support CLIENT_KILL");
-    return (Promise<Reply>) execute(new Command(CLIENT_KILL_BYTES, CLIENT_KILL2_BYTES, ip_port0));
+    if (version < CLIENT_KILL_VERSION) return new Promise<>(new RedisException("Server does not support CLIENT_KILL"));
+    return execute(Reply.class, new Command(CLIENT_KILL_BYTES, CLIENT_KILL2_BYTES, ip_port0));
   }
 
   
@@ -593,8 +590,8 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> client_list() {
-    // if (version < CLIENT_LIST_VERSION) throw new RedisException("Server does not support CLIENT_LIST");
-    return (Promise<Reply>) execute(new Command(CLIENT_LIST_BYTES, CLIENT_LIST2_BYTES));
+    if (version < CLIENT_LIST_VERSION) return new Promise<>(new RedisException("Server does not support CLIENT_LIST"));
+    return execute(Reply.class, new Command(CLIENT_LIST_BYTES, CLIENT_LIST2_BYTES));
   }
 
   
@@ -612,8 +609,8 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> config_get(Object parameter0) {
-    // if (version < CONFIG_GET_VERSION) throw new RedisException("Server does not support CONFIG_GET");
-    return (Promise<Reply>) execute(new Command(CONFIG_GET_BYTES, CONFIG_GET2_BYTES, parameter0));
+    if (version < CONFIG_GET_VERSION) return new Promise<>(new RedisException("Server does not support CONFIG_GET"));
+    return execute(Reply.class, new Command(CONFIG_GET_BYTES, CONFIG_GET2_BYTES, parameter0));
   }
 
   
@@ -632,8 +629,8 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> config_set(Object parameter0, Object value1) {
-    // if (version < CONFIG_SET_VERSION) throw new RedisException("Server does not support CONFIG_SET");
-    return (Promise<Reply>) execute(new Command(CONFIG_SET_BYTES, CONFIG_SET2_BYTES, parameter0, value1));
+    if (version < CONFIG_SET_VERSION) return new Promise<>(new RedisException("Server does not support CONFIG_SET"));
+    return execute(Reply.class, new Command(CONFIG_SET_BYTES, CONFIG_SET2_BYTES, parameter0, value1));
   }
 
   
@@ -650,8 +647,8 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> config_resetstat() {
-    // if (version < CONFIG_RESETSTAT_VERSION) throw new RedisException("Server does not support CONFIG_RESETSTAT");
-    return (Promise<Reply>) execute(new Command(CONFIG_RESETSTAT_BYTES, CONFIG_RESETSTAT2_BYTES));
+    if (version < CONFIG_RESETSTAT_VERSION) return new Promise<>(new RedisException("Server does not support CONFIG_RESETSTAT"));
+    return execute(Reply.class, new Command(CONFIG_RESETSTAT_BYTES, CONFIG_RESETSTAT2_BYTES));
   }
 
   
@@ -666,8 +663,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> dbsize() {
-    // if (version < DBSIZE_VERSION) throw new RedisException("Server does not support DBSIZE");
-    return (Promise<IntegerReply>) execute(new Command(DBSIZE_BYTES));
+    if (version < DBSIZE_VERSION) return new Promise<>(new RedisException("Server does not support DBSIZE"));
+    return execute(IntegerReply.class, new Command(DBSIZE_BYTES));
   }
 
   
@@ -685,8 +682,8 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> debug_object(Object key0) {
-    // if (version < DEBUG_OBJECT_VERSION) throw new RedisException("Server does not support DEBUG_OBJECT");
-    return (Promise<Reply>) execute(new Command(DEBUG_OBJECT_BYTES, DEBUG_OBJECT2_BYTES, key0));
+    if (version < DEBUG_OBJECT_VERSION) return new Promise<>(new RedisException("Server does not support DEBUG_OBJECT"));
+    return execute(Reply.class, new Command(DEBUG_OBJECT_BYTES, DEBUG_OBJECT2_BYTES, key0));
   }
 
   
@@ -703,8 +700,8 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> debug_segfault() {
-    // if (version < DEBUG_SEGFAULT_VERSION) throw new RedisException("Server does not support DEBUG_SEGFAULT");
-    return (Promise<Reply>) execute(new Command(DEBUG_SEGFAULT_BYTES, DEBUG_SEGFAULT2_BYTES));
+    if (version < DEBUG_SEGFAULT_VERSION) return new Promise<>(new RedisException("Server does not support DEBUG_SEGFAULT"));
+    return execute(Reply.class, new Command(DEBUG_SEGFAULT_BYTES, DEBUG_SEGFAULT2_BYTES));
   }
 
   
@@ -719,8 +716,8 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> flushall() {
-    // if (version < FLUSHALL_VERSION) throw new RedisException("Server does not support FLUSHALL");
-    return (Promise<StatusReply>) execute(new Command(FLUSHALL_BYTES));
+    if (version < FLUSHALL_VERSION) return new Promise<>(new RedisException("Server does not support FLUSHALL"));
+    return execute(StatusReply.class, new Command(FLUSHALL_BYTES));
   }
 
   
@@ -735,8 +732,8 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> flushdb() {
-    // if (version < FLUSHDB_VERSION) throw new RedisException("Server does not support FLUSHDB");
-    return (Promise<StatusReply>) execute(new Command(FLUSHDB_BYTES));
+    if (version < FLUSHDB_VERSION) return new Promise<>(new RedisException("Server does not support FLUSHDB"));
+    return execute(StatusReply.class, new Command(FLUSHDB_BYTES));
   }
 
   
@@ -751,8 +748,8 @@ public class RedisClient extends RedisClientBase {
    * @return BulkReply
    */
   public Promise<BulkReply> info() {
-    // if (version < INFO_VERSION) throw new RedisException("Server does not support INFO");
-    return (Promise<BulkReply>) execute(new Command(INFO_BYTES));
+    if (version < INFO_VERSION) return new Promise<>(new RedisException("Server does not support INFO"));
+    return execute(BulkReply.class, new Command(INFO_BYTES));
   }
 
   
@@ -767,8 +764,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> lastsave() {
-    // if (version < LASTSAVE_VERSION) throw new RedisException("Server does not support LASTSAVE");
-    return (Promise<IntegerReply>) execute(new Command(LASTSAVE_BYTES));
+    if (version < LASTSAVE_VERSION) return new Promise<>(new RedisException("Server does not support LASTSAVE"));
+    return execute(IntegerReply.class, new Command(LASTSAVE_BYTES));
   }
 
   
@@ -783,8 +780,8 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> monitor() {
-    // if (version < MONITOR_VERSION) throw new RedisException("Server does not support MONITOR");
-    return (Promise<Reply>) execute(new Command(MONITOR_BYTES));
+    if (version < MONITOR_VERSION) return new Promise<>(new RedisException("Server does not support MONITOR"));
+    return execute(Reply.class, new Command(MONITOR_BYTES));
   }
 
   
@@ -796,11 +793,11 @@ public class RedisClient extends RedisClientBase {
    * Synchronously save the dataset to disk
    * Server
    *
-   * @return StatusReply
+   * @return Reply
    */
-  public Promise<StatusReply> save() {
-    // if (version < SAVE_VERSION) throw new RedisException("Server does not support SAVE");
-    return (Promise<StatusReply>) execute(new Command(SAVE_BYTES));
+  public Promise<Reply> save() {
+    if (version < SAVE_VERSION) return new Promise<>(new RedisException("Server does not support SAVE"));
+    return execute(Reply.class, new Command(SAVE_BYTES));
   }
 
   
@@ -817,14 +814,14 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> shutdown(Object NOSAVE0, Object SAVE1) {
-    // if (version < SHUTDOWN_VERSION) throw new RedisException("Server does not support SHUTDOWN");
-    return (Promise<StatusReply>) execute(new Command(SHUTDOWN_BYTES, NOSAVE0, SAVE1));
+    if (version < SHUTDOWN_VERSION) return new Promise<>(new RedisException("Server does not support SHUTDOWN"));
+    return execute(StatusReply.class, new Command(SHUTDOWN_BYTES, NOSAVE0, SAVE1));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<StatusReply> shutdown_(Object... arguments) {
-    // if (version < SHUTDOWN_VERSION) throw new RedisException("Server does not support SHUTDOWN");
-    return (Promise<StatusReply>) execute(new Command(SHUTDOWN_BYTES, arguments));
+    if (version < SHUTDOWN_VERSION) return new Promise<>(new RedisException("Server does not support SHUTDOWN"));
+    return execute(StatusReply.class, new Command(SHUTDOWN_BYTES, arguments));
   }
 
   
@@ -841,8 +838,8 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> slaveof(Object host0, Object port1) {
-    // if (version < SLAVEOF_VERSION) throw new RedisException("Server does not support SLAVEOF");
-    return (Promise<StatusReply>) execute(new Command(SLAVEOF_BYTES, host0, port1));
+    if (version < SLAVEOF_VERSION) return new Promise<>(new RedisException("Server does not support SLAVEOF"));
+    return execute(StatusReply.class, new Command(SLAVEOF_BYTES, host0, port1));
   }
 
   
@@ -859,14 +856,14 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> slowlog(Object subcommand0, Object argument1) {
-    // if (version < SLOWLOG_VERSION) throw new RedisException("Server does not support SLOWLOG");
-    return (Promise<Reply>) execute(new Command(SLOWLOG_BYTES, subcommand0, argument1));
+    if (version < SLOWLOG_VERSION) return new Promise<>(new RedisException("Server does not support SLOWLOG"));
+    return execute(Reply.class, new Command(SLOWLOG_BYTES, subcommand0, argument1));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<Reply> slowlog_(Object... arguments) {
-    // if (version < SLOWLOG_VERSION) throw new RedisException("Server does not support SLOWLOG");
-    return (Promise<Reply>) execute(new Command(SLOWLOG_BYTES, arguments));
+    if (version < SLOWLOG_VERSION) return new Promise<>(new RedisException("Server does not support SLOWLOG"));
+    return execute(Reply.class, new Command(SLOWLOG_BYTES, arguments));
   }
 
   
@@ -881,8 +878,8 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> sync() {
-    // if (version < SYNC_VERSION) throw new RedisException("Server does not support SYNC");
-    return (Promise<Reply>) execute(new Command(SYNC_BYTES));
+    if (version < SYNC_VERSION) return new Promise<>(new RedisException("Server does not support SYNC"));
+    return execute(Reply.class, new Command(SYNC_BYTES));
   }
 
   
@@ -897,8 +894,8 @@ public class RedisClient extends RedisClientBase {
    * @return MultiBulkReply
    */
   public Promise<MultiBulkReply> time() {
-    // if (version < TIME_VERSION) throw new RedisException("Server does not support TIME");
-    return (Promise<MultiBulkReply>) execute(new Command(TIME_BYTES));
+    if (version < TIME_VERSION) return new Promise<>(new RedisException("Server does not support TIME"));
+    return execute(MultiBulkReply.class, new Command(TIME_BYTES));
   }
 
   
@@ -914,16 +911,16 @@ public class RedisClient extends RedisClientBase {
    * @return MultiBulkReply
    */
   public Promise<MultiBulkReply> blpop(Object[] key0) {
-    // if (version < BLPOP_VERSION) throw new RedisException("Server does not support BLPOP");
-    List list = new ArrayList();
+    if (version < BLPOP_VERSION) return new Promise<>(new RedisException("Server does not support BLPOP"));
+    List<Object> list = new ArrayList<>();
     Collections.addAll(list, key0);
-    return (Promise<MultiBulkReply>) execute(new Command(BLPOP_BYTES, list.toArray(new Object[list.size()])));
+    return execute(MultiBulkReply.class, new Command(BLPOP_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<MultiBulkReply> blpop_(Object... arguments) {
-    // if (version < BLPOP_VERSION) throw new RedisException("Server does not support BLPOP");
-    return (Promise<MultiBulkReply>) execute(new Command(BLPOP_BYTES, arguments));
+    if (version < BLPOP_VERSION) return new Promise<>(new RedisException("Server does not support BLPOP"));
+    return execute(MultiBulkReply.class, new Command(BLPOP_BYTES, arguments));
   }
 
   
@@ -939,16 +936,16 @@ public class RedisClient extends RedisClientBase {
    * @return MultiBulkReply
    */
   public Promise<MultiBulkReply> brpop(Object[] key0) {
-    // if (version < BRPOP_VERSION) throw new RedisException("Server does not support BRPOP");
-    List list = new ArrayList();
+    if (version < BRPOP_VERSION) return new Promise<>(new RedisException("Server does not support BRPOP"));
+    List<Object> list = new ArrayList<>();
     Collections.addAll(list, key0);
-    return (Promise<MultiBulkReply>) execute(new Command(BRPOP_BYTES, list.toArray(new Object[list.size()])));
+    return execute(MultiBulkReply.class, new Command(BRPOP_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<MultiBulkReply> brpop_(Object... arguments) {
-    // if (version < BRPOP_VERSION) throw new RedisException("Server does not support BRPOP");
-    return (Promise<MultiBulkReply>) execute(new Command(BRPOP_BYTES, arguments));
+    if (version < BRPOP_VERSION) return new Promise<>(new RedisException("Server does not support BRPOP"));
+    return execute(MultiBulkReply.class, new Command(BRPOP_BYTES, arguments));
   }
 
   
@@ -966,8 +963,8 @@ public class RedisClient extends RedisClientBase {
    * @return BulkReply
    */
   public Promise<BulkReply> brpoplpush(Object source0, Object destination1, Object timeout2) {
-    // if (version < BRPOPLPUSH_VERSION) throw new RedisException("Server does not support BRPOPLPUSH");
-    return (Promise<BulkReply>) execute(new Command(BRPOPLPUSH_BYTES, source0, destination1, timeout2));
+    if (version < BRPOPLPUSH_VERSION) return new Promise<>(new RedisException("Server does not support BRPOPLPUSH"));
+    return execute(BulkReply.class, new Command(BRPOPLPUSH_BYTES, source0, destination1, timeout2));
   }
 
   
@@ -984,8 +981,8 @@ public class RedisClient extends RedisClientBase {
    * @return BulkReply
    */
   public Promise<BulkReply> lindex(Object key0, Object index1) {
-    // if (version < LINDEX_VERSION) throw new RedisException("Server does not support LINDEX");
-    return (Promise<BulkReply>) execute(new Command(LINDEX_BYTES, key0, index1));
+    if (version < LINDEX_VERSION) return new Promise<>(new RedisException("Server does not support LINDEX"));
+    return execute(BulkReply.class, new Command(LINDEX_BYTES, key0, index1));
   }
 
   
@@ -1004,13 +1001,13 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> linsert(Object key0, Object where1, Object pivot2, Object value3) {
-    // if (version < LINSERT_VERSION) throw new RedisException("Server does not support LINSERT");
-    List list = new ArrayList();
+    if (version < LINSERT_VERSION) return new Promise<>(new RedisException("Server does not support LINSERT"));
+    List<Object> list = new ArrayList<>();
     list.add(key0);
     list.add(where1);
     list.add(pivot2);
     list.add(value3);
-    return (Promise<IntegerReply>) execute(new Command(LINSERT_BYTES, list.toArray(new Object[list.size()])));
+    return execute(IntegerReply.class, new Command(LINSERT_BYTES, list.toArray(new Object[list.size()])));
   }
 
   
@@ -1026,8 +1023,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> llen(Object key0) {
-    // if (version < LLEN_VERSION) throw new RedisException("Server does not support LLEN");
-    return (Promise<IntegerReply>) execute(new Command(LLEN_BYTES, key0));
+    if (version < LLEN_VERSION) return new Promise<>(new RedisException("Server does not support LLEN"));
+    return execute(IntegerReply.class, new Command(LLEN_BYTES, key0));
   }
 
   
@@ -1043,8 +1040,8 @@ public class RedisClient extends RedisClientBase {
    * @return BulkReply
    */
   public Promise<BulkReply> lpop(Object key0) {
-    // if (version < LPOP_VERSION) throw new RedisException("Server does not support LPOP");
-    return (Promise<BulkReply>) execute(new Command(LPOP_BYTES, key0));
+    if (version < LPOP_VERSION) return new Promise<>(new RedisException("Server does not support LPOP"));
+    return execute(BulkReply.class, new Command(LPOP_BYTES, key0));
   }
 
   
@@ -1061,17 +1058,17 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> lpush(Object key0, Object[] value1) {
-    // if (version < LPUSH_VERSION) throw new RedisException("Server does not support LPUSH");
-    List list = new ArrayList();
+    if (version < LPUSH_VERSION) return new Promise<>(new RedisException("Server does not support LPUSH"));
+    List<Object> list = new ArrayList<>();
     list.add(key0);
     Collections.addAll(list, value1);
-    return (Promise<IntegerReply>) execute(new Command(LPUSH_BYTES, list.toArray(new Object[list.size()])));
+    return execute(IntegerReply.class, new Command(LPUSH_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<IntegerReply> lpush_(Object... arguments) {
-    // if (version < LPUSH_VERSION) throw new RedisException("Server does not support LPUSH");
-    return (Promise<IntegerReply>) execute(new Command(LPUSH_BYTES, arguments));
+    if (version < LPUSH_VERSION) return new Promise<>(new RedisException("Server does not support LPUSH"));
+    return execute(IntegerReply.class, new Command(LPUSH_BYTES, arguments));
   }
 
   
@@ -1088,8 +1085,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> lpushx(Object key0, Object value1) {
-    // if (version < LPUSHX_VERSION) throw new RedisException("Server does not support LPUSHX");
-    return (Promise<IntegerReply>) execute(new Command(LPUSHX_BYTES, key0, value1));
+    if (version < LPUSHX_VERSION) return new Promise<>(new RedisException("Server does not support LPUSHX"));
+    return execute(IntegerReply.class, new Command(LPUSHX_BYTES, key0, value1));
   }
 
   
@@ -1107,8 +1104,8 @@ public class RedisClient extends RedisClientBase {
    * @return MultiBulkReply
    */
   public Promise<MultiBulkReply> lrange(Object key0, Object start1, Object stop2) {
-    // if (version < LRANGE_VERSION) throw new RedisException("Server does not support LRANGE");
-    return (Promise<MultiBulkReply>) execute(new Command(LRANGE_BYTES, key0, start1, stop2));
+    if (version < LRANGE_VERSION) return new Promise<>(new RedisException("Server does not support LRANGE"));
+    return execute(MultiBulkReply.class, new Command(LRANGE_BYTES, key0, start1, stop2));
   }
 
   
@@ -1126,8 +1123,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> lrem(Object key0, Object count1, Object value2) {
-    // if (version < LREM_VERSION) throw new RedisException("Server does not support LREM");
-    return (Promise<IntegerReply>) execute(new Command(LREM_BYTES, key0, count1, value2));
+    if (version < LREM_VERSION) return new Promise<>(new RedisException("Server does not support LREM"));
+    return execute(IntegerReply.class, new Command(LREM_BYTES, key0, count1, value2));
   }
 
   
@@ -1145,8 +1142,8 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> lset(Object key0, Object index1, Object value2) {
-    // if (version < LSET_VERSION) throw new RedisException("Server does not support LSET");
-    return (Promise<StatusReply>) execute(new Command(LSET_BYTES, key0, index1, value2));
+    if (version < LSET_VERSION) return new Promise<>(new RedisException("Server does not support LSET"));
+    return execute(StatusReply.class, new Command(LSET_BYTES, key0, index1, value2));
   }
 
   
@@ -1164,8 +1161,8 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> ltrim(Object key0, Object start1, Object stop2) {
-    // if (version < LTRIM_VERSION) throw new RedisException("Server does not support LTRIM");
-    return (Promise<StatusReply>) execute(new Command(LTRIM_BYTES, key0, start1, stop2));
+    if (version < LTRIM_VERSION) return new Promise<>(new RedisException("Server does not support LTRIM"));
+    return execute(StatusReply.class, new Command(LTRIM_BYTES, key0, start1, stop2));
   }
 
   
@@ -1181,8 +1178,8 @@ public class RedisClient extends RedisClientBase {
    * @return BulkReply
    */
   public Promise<BulkReply> rpop(Object key0) {
-    // if (version < RPOP_VERSION) throw new RedisException("Server does not support RPOP");
-    return (Promise<BulkReply>) execute(new Command(RPOP_BYTES, key0));
+    if (version < RPOP_VERSION) return new Promise<>(new RedisException("Server does not support RPOP"));
+    return execute(BulkReply.class, new Command(RPOP_BYTES, key0));
   }
 
   
@@ -1199,8 +1196,8 @@ public class RedisClient extends RedisClientBase {
    * @return BulkReply
    */
   public Promise<BulkReply> rpoplpush(Object source0, Object destination1) {
-    // if (version < RPOPLPUSH_VERSION) throw new RedisException("Server does not support RPOPLPUSH");
-    return (Promise<BulkReply>) execute(new Command(RPOPLPUSH_BYTES, source0, destination1));
+    if (version < RPOPLPUSH_VERSION) return new Promise<>(new RedisException("Server does not support RPOPLPUSH"));
+    return execute(BulkReply.class, new Command(RPOPLPUSH_BYTES, source0, destination1));
   }
 
   
@@ -1217,17 +1214,17 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> rpush(Object key0, Object[] value1) {
-    // if (version < RPUSH_VERSION) throw new RedisException("Server does not support RPUSH");
-    List list = new ArrayList();
+    if (version < RPUSH_VERSION) return new Promise<>(new RedisException("Server does not support RPUSH"));
+    List<Object> list = new ArrayList<>();
     list.add(key0);
     Collections.addAll(list, value1);
-    return (Promise<IntegerReply>) execute(new Command(RPUSH_BYTES, list.toArray(new Object[list.size()])));
+    return execute(IntegerReply.class, new Command(RPUSH_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<IntegerReply> rpush_(Object... arguments) {
-    // if (version < RPUSH_VERSION) throw new RedisException("Server does not support RPUSH");
-    return (Promise<IntegerReply>) execute(new Command(RPUSH_BYTES, arguments));
+    if (version < RPUSH_VERSION) return new Promise<>(new RedisException("Server does not support RPUSH"));
+    return execute(IntegerReply.class, new Command(RPUSH_BYTES, arguments));
   }
 
   
@@ -1244,8 +1241,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> rpushx(Object key0, Object value1) {
-    // if (version < RPUSHX_VERSION) throw new RedisException("Server does not support RPUSHX");
-    return (Promise<IntegerReply>) execute(new Command(RPUSHX_BYTES, key0, value1));
+    if (version < RPUSHX_VERSION) return new Promise<>(new RedisException("Server does not support RPUSHX"));
+    return execute(IntegerReply.class, new Command(RPUSHX_BYTES, key0, value1));
   }
 
   
@@ -1261,16 +1258,16 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> del(Object[] key0) {
-    // if (version < DEL_VERSION) throw new RedisException("Server does not support DEL");
-    List list = new ArrayList();
+    if (version < DEL_VERSION) return new Promise<>(new RedisException("Server does not support DEL"));
+    List<Object> list = new ArrayList<>();
     Collections.addAll(list, key0);
-    return (Promise<IntegerReply>) execute(new Command(DEL_BYTES, list.toArray(new Object[list.size()])));
+    return execute(IntegerReply.class, new Command(DEL_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<IntegerReply> del_(Object... arguments) {
-    // if (version < DEL_VERSION) throw new RedisException("Server does not support DEL");
-    return (Promise<IntegerReply>) execute(new Command(DEL_BYTES, arguments));
+    if (version < DEL_VERSION) return new Promise<>(new RedisException("Server does not support DEL"));
+    return execute(IntegerReply.class, new Command(DEL_BYTES, arguments));
   }
 
   
@@ -1286,8 +1283,8 @@ public class RedisClient extends RedisClientBase {
    * @return BulkReply
    */
   public Promise<BulkReply> dump(Object key0) {
-    // if (version < DUMP_VERSION) throw new RedisException("Server does not support DUMP");
-    return (Promise<BulkReply>) execute(new Command(DUMP_BYTES, key0));
+    if (version < DUMP_VERSION) return new Promise<>(new RedisException("Server does not support DUMP"));
+    return execute(BulkReply.class, new Command(DUMP_BYTES, key0));
   }
 
   
@@ -1303,8 +1300,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> exists(Object key0) {
-    // if (version < EXISTS_VERSION) throw new RedisException("Server does not support EXISTS");
-    return (Promise<IntegerReply>) execute(new Command(EXISTS_BYTES, key0));
+    if (version < EXISTS_VERSION) return new Promise<>(new RedisException("Server does not support EXISTS"));
+    return execute(IntegerReply.class, new Command(EXISTS_BYTES, key0));
   }
 
   
@@ -1321,8 +1318,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> expire(Object key0, Object seconds1) {
-    // if (version < EXPIRE_VERSION) throw new RedisException("Server does not support EXPIRE");
-    return (Promise<IntegerReply>) execute(new Command(EXPIRE_BYTES, key0, seconds1));
+    if (version < EXPIRE_VERSION) return new Promise<>(new RedisException("Server does not support EXPIRE"));
+    return execute(IntegerReply.class, new Command(EXPIRE_BYTES, key0, seconds1));
   }
 
   
@@ -1339,8 +1336,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> expireat(Object key0, Object timestamp1) {
-    // if (version < EXPIREAT_VERSION) throw new RedisException("Server does not support EXPIREAT");
-    return (Promise<IntegerReply>) execute(new Command(EXPIREAT_BYTES, key0, timestamp1));
+    if (version < EXPIREAT_VERSION) return new Promise<>(new RedisException("Server does not support EXPIREAT"));
+    return execute(IntegerReply.class, new Command(EXPIREAT_BYTES, key0, timestamp1));
   }
 
   
@@ -1356,8 +1353,8 @@ public class RedisClient extends RedisClientBase {
    * @return MultiBulkReply
    */
   public Promise<MultiBulkReply> keys(Object pattern0) {
-    // if (version < KEYS_VERSION) throw new RedisException("Server does not support KEYS");
-    return (Promise<MultiBulkReply>) execute(new Command(KEYS_BYTES, pattern0));
+    if (version < KEYS_VERSION) return new Promise<>(new RedisException("Server does not support KEYS"));
+    return execute(MultiBulkReply.class, new Command(KEYS_BYTES, pattern0));
   }
 
   
@@ -1377,14 +1374,14 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> migrate(Object host0, Object port1, Object key2, Object destination_db3, Object timeout4) {
-    // if (version < MIGRATE_VERSION) throw new RedisException("Server does not support MIGRATE");
-    List list = new ArrayList();
+    if (version < MIGRATE_VERSION) return new Promise<>(new RedisException("Server does not support MIGRATE"));
+    List<Object> list = new ArrayList<>();
     list.add(host0);
     list.add(port1);
     list.add(key2);
     list.add(destination_db3);
     list.add(timeout4);
-    return (Promise<StatusReply>) execute(new Command(MIGRATE_BYTES, list.toArray(new Object[list.size()])));
+    return execute(StatusReply.class, new Command(MIGRATE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   
@@ -1401,8 +1398,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> move(Object key0, Object db1) {
-    // if (version < MOVE_VERSION) throw new RedisException("Server does not support MOVE");
-    return (Promise<IntegerReply>) execute(new Command(MOVE_BYTES, key0, db1));
+    if (version < MOVE_VERSION) return new Promise<>(new RedisException("Server does not support MOVE"));
+    return execute(IntegerReply.class, new Command(MOVE_BYTES, key0, db1));
   }
 
   
@@ -1419,17 +1416,17 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> object(Object subcommand0, Object[] arguments1) {
-    // if (version < OBJECT_VERSION) throw new RedisException("Server does not support OBJECT");
-    List list = new ArrayList();
+    if (version < OBJECT_VERSION) return new Promise<>(new RedisException("Server does not support OBJECT"));
+    List<Object> list = new ArrayList<>();
     list.add(subcommand0);
     Collections.addAll(list, arguments1);
-    return (Promise<Reply>) execute(new Command(OBJECT_BYTES, list.toArray(new Object[list.size()])));
+    return execute(Reply.class, new Command(OBJECT_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<Reply> object_(Object... arguments) {
-    // if (version < OBJECT_VERSION) throw new RedisException("Server does not support OBJECT");
-    return (Promise<Reply>) execute(new Command(OBJECT_BYTES, arguments));
+    if (version < OBJECT_VERSION) return new Promise<>(new RedisException("Server does not support OBJECT"));
+    return execute(Reply.class, new Command(OBJECT_BYTES, arguments));
   }
 
   
@@ -1445,8 +1442,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> persist(Object key0) {
-    // if (version < PERSIST_VERSION) throw new RedisException("Server does not support PERSIST");
-    return (Promise<IntegerReply>) execute(new Command(PERSIST_BYTES, key0));
+    if (version < PERSIST_VERSION) return new Promise<>(new RedisException("Server does not support PERSIST"));
+    return execute(IntegerReply.class, new Command(PERSIST_BYTES, key0));
   }
 
   
@@ -1463,8 +1460,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> pexpire(Object key0, Object milliseconds1) {
-    // if (version < PEXPIRE_VERSION) throw new RedisException("Server does not support PEXPIRE");
-    return (Promise<IntegerReply>) execute(new Command(PEXPIRE_BYTES, key0, milliseconds1));
+    if (version < PEXPIRE_VERSION) return new Promise<>(new RedisException("Server does not support PEXPIRE"));
+    return execute(IntegerReply.class, new Command(PEXPIRE_BYTES, key0, milliseconds1));
   }
 
   
@@ -1481,8 +1478,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> pexpireat(Object key0, Object milliseconds_timestamp1) {
-    // if (version < PEXPIREAT_VERSION) throw new RedisException("Server does not support PEXPIREAT");
-    return (Promise<IntegerReply>) execute(new Command(PEXPIREAT_BYTES, key0, milliseconds_timestamp1));
+    if (version < PEXPIREAT_VERSION) return new Promise<>(new RedisException("Server does not support PEXPIREAT"));
+    return execute(IntegerReply.class, new Command(PEXPIREAT_BYTES, key0, milliseconds_timestamp1));
   }
 
   
@@ -1498,8 +1495,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> pttl(Object key0) {
-    // if (version < PTTL_VERSION) throw new RedisException("Server does not support PTTL");
-    return (Promise<IntegerReply>) execute(new Command(PTTL_BYTES, key0));
+    if (version < PTTL_VERSION) return new Promise<>(new RedisException("Server does not support PTTL"));
+    return execute(IntegerReply.class, new Command(PTTL_BYTES, key0));
   }
 
   
@@ -1514,8 +1511,8 @@ public class RedisClient extends RedisClientBase {
    * @return BulkReply
    */
   public Promise<BulkReply> randomkey() {
-    // if (version < RANDOMKEY_VERSION) throw new RedisException("Server does not support RANDOMKEY");
-    return (Promise<BulkReply>) execute(new Command(RANDOMKEY_BYTES));
+    if (version < RANDOMKEY_VERSION) return new Promise<>(new RedisException("Server does not support RANDOMKEY"));
+    return execute(BulkReply.class, new Command(RANDOMKEY_BYTES));
   }
 
   
@@ -1532,8 +1529,8 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> rename(Object key0, Object newkey1) {
-    // if (version < RENAME_VERSION) throw new RedisException("Server does not support RENAME");
-    return (Promise<StatusReply>) execute(new Command(RENAME_BYTES, key0, newkey1));
+    if (version < RENAME_VERSION) return new Promise<>(new RedisException("Server does not support RENAME"));
+    return execute(StatusReply.class, new Command(RENAME_BYTES, key0, newkey1));
   }
 
   
@@ -1550,8 +1547,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> renamenx(Object key0, Object newkey1) {
-    // if (version < RENAMENX_VERSION) throw new RedisException("Server does not support RENAMENX");
-    return (Promise<IntegerReply>) execute(new Command(RENAMENX_BYTES, key0, newkey1));
+    if (version < RENAMENX_VERSION) return new Promise<>(new RedisException("Server does not support RENAMENX"));
+    return execute(IntegerReply.class, new Command(RENAMENX_BYTES, key0, newkey1));
   }
 
   
@@ -1569,8 +1566,8 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> restore(Object key0, Object ttl1, Object serialized_value2) {
-    // if (version < RESTORE_VERSION) throw new RedisException("Server does not support RESTORE");
-    return (Promise<StatusReply>) execute(new Command(RESTORE_BYTES, key0, ttl1, serialized_value2));
+    if (version < RESTORE_VERSION) return new Promise<>(new RedisException("Server does not support RESTORE"));
+    return execute(StatusReply.class, new Command(RESTORE_BYTES, key0, ttl1, serialized_value2));
   }
 
   
@@ -1587,17 +1584,17 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> sort(Object key0, Object[] pattern1) {
-    // if (version < SORT_VERSION) throw new RedisException("Server does not support SORT");
-    List list = new ArrayList();
+    if (version < SORT_VERSION) return new Promise<>(new RedisException("Server does not support SORT"));
+    List<Object> list = new ArrayList<>();
     list.add(key0);
     Collections.addAll(list, pattern1);
-    return (Promise<Reply>) execute(new Command(SORT_BYTES, list.toArray(new Object[list.size()])));
+    return execute(Reply.class, new Command(SORT_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<Reply> sort_(Object... arguments) {
-    // if (version < SORT_VERSION) throw new RedisException("Server does not support SORT");
-    return (Promise<Reply>) execute(new Command(SORT_BYTES, arguments));
+    if (version < SORT_VERSION) return new Promise<>(new RedisException("Server does not support SORT"));
+    return execute(Reply.class, new Command(SORT_BYTES, arguments));
   }
 
   
@@ -1613,8 +1610,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> ttl(Object key0) {
-    // if (version < TTL_VERSION) throw new RedisException("Server does not support TTL");
-    return (Promise<IntegerReply>) execute(new Command(TTL_BYTES, key0));
+    if (version < TTL_VERSION) return new Promise<>(new RedisException("Server does not support TTL"));
+    return execute(IntegerReply.class, new Command(TTL_BYTES, key0));
   }
 
   
@@ -1630,8 +1627,8 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> type(Object key0) {
-    // if (version < TYPE_VERSION) throw new RedisException("Server does not support TYPE");
-    return (Promise<StatusReply>) execute(new Command(TYPE_BYTES, key0));
+    if (version < TYPE_VERSION) return new Promise<>(new RedisException("Server does not support TYPE"));
+    return execute(StatusReply.class, new Command(TYPE_BYTES, key0));
   }
 
   
@@ -1646,8 +1643,8 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> unwatch() {
-    // if (version < UNWATCH_VERSION) throw new RedisException("Server does not support UNWATCH");
-    return (Promise<StatusReply>) execute(new Command(UNWATCH_BYTES));
+    if (version < UNWATCH_VERSION) return new Promise<>(new RedisException("Server does not support UNWATCH"));
+    return execute(StatusReply.class, new Command(UNWATCH_BYTES));
   }
 
   
@@ -1663,16 +1660,16 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> watch(Object[] key0) {
-    // if (version < WATCH_VERSION) throw new RedisException("Server does not support WATCH");
-    List list = new ArrayList();
+    if (version < WATCH_VERSION) return new Promise<>(new RedisException("Server does not support WATCH"));
+    List<Object> list = new ArrayList<>();
     Collections.addAll(list, key0);
-    return (Promise<StatusReply>) execute(new Command(WATCH_BYTES, list.toArray(new Object[list.size()])));
+    return execute(StatusReply.class, new Command(WATCH_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<StatusReply> watch_(Object... arguments) {
-    // if (version < WATCH_VERSION) throw new RedisException("Server does not support WATCH");
-    return (Promise<StatusReply>) execute(new Command(WATCH_BYTES, arguments));
+    if (version < WATCH_VERSION) return new Promise<>(new RedisException("Server does not support WATCH"));
+    return execute(StatusReply.class, new Command(WATCH_BYTES, arguments));
   }
 
   
@@ -1690,18 +1687,18 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> eval(Object script0, Object numkeys1, Object[] key2) {
-    // if (version < EVAL_VERSION) throw new RedisException("Server does not support EVAL");
-    List list = new ArrayList();
+    if (version < EVAL_VERSION) return new Promise<>(new RedisException("Server does not support EVAL"));
+    List<Object> list = new ArrayList<>();
     list.add(script0);
     list.add(numkeys1);
     Collections.addAll(list, key2);
-    return (Promise<Reply>) execute(new Command(EVAL_BYTES, list.toArray(new Object[list.size()])));
+    return execute(Reply.class, new Command(EVAL_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<Reply> eval_(Object... arguments) {
-    // if (version < EVAL_VERSION) throw new RedisException("Server does not support EVAL");
-    return (Promise<Reply>) execute(new Command(EVAL_BYTES, arguments));
+    if (version < EVAL_VERSION) return new Promise<>(new RedisException("Server does not support EVAL"));
+    return execute(Reply.class, new Command(EVAL_BYTES, arguments));
   }
 
   
@@ -1719,18 +1716,18 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> evalsha(Object sha10, Object numkeys1, Object[] key2) {
-    // if (version < EVALSHA_VERSION) throw new RedisException("Server does not support EVALSHA");
-    List list = new ArrayList();
+    if (version < EVALSHA_VERSION) return new Promise<>(new RedisException("Server does not support EVALSHA"));
+    List<Object> list = new ArrayList<>();
     list.add(sha10);
     list.add(numkeys1);
     Collections.addAll(list, key2);
-    return (Promise<Reply>) execute(new Command(EVALSHA_BYTES, list.toArray(new Object[list.size()])));
+    return execute(Reply.class, new Command(EVALSHA_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<Reply> evalsha_(Object... arguments) {
-    // if (version < EVALSHA_VERSION) throw new RedisException("Server does not support EVALSHA");
-    return (Promise<Reply>) execute(new Command(EVALSHA_BYTES, arguments));
+    if (version < EVALSHA_VERSION) return new Promise<>(new RedisException("Server does not support EVALSHA"));
+    return execute(Reply.class, new Command(EVALSHA_BYTES, arguments));
   }
 
   
@@ -1748,16 +1745,16 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> script_exists(Object[] script0) {
-    // if (version < SCRIPT_EXISTS_VERSION) throw new RedisException("Server does not support SCRIPT_EXISTS");
-    List list = new ArrayList();
+    if (version < SCRIPT_EXISTS_VERSION) return new Promise<>(new RedisException("Server does not support SCRIPT_EXISTS"));
+    List<Object> list = new ArrayList<>();
     Collections.addAll(list, script0);
-    return (Promise<Reply>) execute(new Command(SCRIPT_EXISTS_BYTES, SCRIPT_EXISTS2_BYTES, list.toArray(new Object[list.size()])));
+    return execute(Reply.class, new Command(SCRIPT_EXISTS_BYTES, SCRIPT_EXISTS2_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<Reply> script_exists_(Object... arguments) {
-    // if (version < SCRIPT_EXISTS_VERSION) throw new RedisException("Server does not support SCRIPT_EXISTS");
-    return (Promise<Reply>) execute(new Command(SCRIPT_EXISTS_BYTES, SCRIPT_EXISTS2_BYTES, arguments));
+    if (version < SCRIPT_EXISTS_VERSION) return new Promise<>(new RedisException("Server does not support SCRIPT_EXISTS"));
+    return execute(Reply.class, new Command(SCRIPT_EXISTS_BYTES, SCRIPT_EXISTS2_BYTES, arguments));
   }
 
   
@@ -1774,8 +1771,8 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> script_flush() {
-    // if (version < SCRIPT_FLUSH_VERSION) throw new RedisException("Server does not support SCRIPT_FLUSH");
-    return (Promise<Reply>) execute(new Command(SCRIPT_FLUSH_BYTES, SCRIPT_FLUSH2_BYTES));
+    if (version < SCRIPT_FLUSH_VERSION) return new Promise<>(new RedisException("Server does not support SCRIPT_FLUSH"));
+    return execute(Reply.class, new Command(SCRIPT_FLUSH_BYTES, SCRIPT_FLUSH2_BYTES));
   }
 
   
@@ -1792,8 +1789,8 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> script_kill() {
-    // if (version < SCRIPT_KILL_VERSION) throw new RedisException("Server does not support SCRIPT_KILL");
-    return (Promise<Reply>) execute(new Command(SCRIPT_KILL_BYTES, SCRIPT_KILL2_BYTES));
+    if (version < SCRIPT_KILL_VERSION) return new Promise<>(new RedisException("Server does not support SCRIPT_KILL"));
+    return execute(Reply.class, new Command(SCRIPT_KILL_BYTES, SCRIPT_KILL2_BYTES));
   }
 
   
@@ -1811,8 +1808,8 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> script_load(Object script0) {
-    // if (version < SCRIPT_LOAD_VERSION) throw new RedisException("Server does not support SCRIPT_LOAD");
-    return (Promise<Reply>) execute(new Command(SCRIPT_LOAD_BYTES, SCRIPT_LOAD2_BYTES, script0));
+    if (version < SCRIPT_LOAD_VERSION) return new Promise<>(new RedisException("Server does not support SCRIPT_LOAD"));
+    return execute(Reply.class, new Command(SCRIPT_LOAD_BYTES, SCRIPT_LOAD2_BYTES, script0));
   }
 
   
@@ -1829,17 +1826,17 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> hdel(Object key0, Object[] field1) {
-    // if (version < HDEL_VERSION) throw new RedisException("Server does not support HDEL");
-    List list = new ArrayList();
+    if (version < HDEL_VERSION) return new Promise<>(new RedisException("Server does not support HDEL"));
+    List<Object> list = new ArrayList<>();
     list.add(key0);
     Collections.addAll(list, field1);
-    return (Promise<IntegerReply>) execute(new Command(HDEL_BYTES, list.toArray(new Object[list.size()])));
+    return execute(IntegerReply.class, new Command(HDEL_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<IntegerReply> hdel_(Object... arguments) {
-    // if (version < HDEL_VERSION) throw new RedisException("Server does not support HDEL");
-    return (Promise<IntegerReply>) execute(new Command(HDEL_BYTES, arguments));
+    if (version < HDEL_VERSION) return new Promise<>(new RedisException("Server does not support HDEL"));
+    return execute(IntegerReply.class, new Command(HDEL_BYTES, arguments));
   }
 
   
@@ -1856,8 +1853,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> hexists(Object key0, Object field1) {
-    // if (version < HEXISTS_VERSION) throw new RedisException("Server does not support HEXISTS");
-    return (Promise<IntegerReply>) execute(new Command(HEXISTS_BYTES, key0, field1));
+    if (version < HEXISTS_VERSION) return new Promise<>(new RedisException("Server does not support HEXISTS"));
+    return execute(IntegerReply.class, new Command(HEXISTS_BYTES, key0, field1));
   }
 
   
@@ -1874,8 +1871,8 @@ public class RedisClient extends RedisClientBase {
    * @return BulkReply
    */
   public Promise<BulkReply> hget(Object key0, Object field1) {
-    // if (version < HGET_VERSION) throw new RedisException("Server does not support HGET");
-    return (Promise<BulkReply>) execute(new Command(HGET_BYTES, key0, field1));
+    if (version < HGET_VERSION) return new Promise<>(new RedisException("Server does not support HGET"));
+    return execute(BulkReply.class, new Command(HGET_BYTES, key0, field1));
   }
 
   
@@ -1891,8 +1888,8 @@ public class RedisClient extends RedisClientBase {
    * @return MultiBulkReply
    */
   public Promise<MultiBulkReply> hgetall(Object key0) {
-    // if (version < HGETALL_VERSION) throw new RedisException("Server does not support HGETALL");
-    return (Promise<MultiBulkReply>) execute(new Command(HGETALL_BYTES, key0));
+    if (version < HGETALL_VERSION) return new Promise<>(new RedisException("Server does not support HGETALL"));
+    return execute(MultiBulkReply.class, new Command(HGETALL_BYTES, key0));
   }
 
   
@@ -1910,8 +1907,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> hincrby(Object key0, Object field1, Object increment2) {
-    // if (version < HINCRBY_VERSION) throw new RedisException("Server does not support HINCRBY");
-    return (Promise<IntegerReply>) execute(new Command(HINCRBY_BYTES, key0, field1, increment2));
+    if (version < HINCRBY_VERSION) return new Promise<>(new RedisException("Server does not support HINCRBY"));
+    return execute(IntegerReply.class, new Command(HINCRBY_BYTES, key0, field1, increment2));
   }
 
   
@@ -1929,8 +1926,8 @@ public class RedisClient extends RedisClientBase {
    * @return BulkReply
    */
   public Promise<BulkReply> hincrbyfloat(Object key0, Object field1, Object increment2) {
-    // if (version < HINCRBYFLOAT_VERSION) throw new RedisException("Server does not support HINCRBYFLOAT");
-    return (Promise<BulkReply>) execute(new Command(HINCRBYFLOAT_BYTES, key0, field1, increment2));
+    if (version < HINCRBYFLOAT_VERSION) return new Promise<>(new RedisException("Server does not support HINCRBYFLOAT"));
+    return execute(BulkReply.class, new Command(HINCRBYFLOAT_BYTES, key0, field1, increment2));
   }
 
   
@@ -1946,8 +1943,8 @@ public class RedisClient extends RedisClientBase {
    * @return MultiBulkReply
    */
   public Promise<MultiBulkReply> hkeys(Object key0) {
-    // if (version < HKEYS_VERSION) throw new RedisException("Server does not support HKEYS");
-    return (Promise<MultiBulkReply>) execute(new Command(HKEYS_BYTES, key0));
+    if (version < HKEYS_VERSION) return new Promise<>(new RedisException("Server does not support HKEYS"));
+    return execute(MultiBulkReply.class, new Command(HKEYS_BYTES, key0));
   }
 
   
@@ -1963,8 +1960,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> hlen(Object key0) {
-    // if (version < HLEN_VERSION) throw new RedisException("Server does not support HLEN");
-    return (Promise<IntegerReply>) execute(new Command(HLEN_BYTES, key0));
+    if (version < HLEN_VERSION) return new Promise<>(new RedisException("Server does not support HLEN"));
+    return execute(IntegerReply.class, new Command(HLEN_BYTES, key0));
   }
 
   
@@ -1981,17 +1978,17 @@ public class RedisClient extends RedisClientBase {
    * @return MultiBulkReply
    */
   public Promise<MultiBulkReply> hmget(Object key0, Object[] field1) {
-    // if (version < HMGET_VERSION) throw new RedisException("Server does not support HMGET");
-    List list = new ArrayList();
+    if (version < HMGET_VERSION) return new Promise<>(new RedisException("Server does not support HMGET"));
+    List<Object> list = new ArrayList<>();
     list.add(key0);
     Collections.addAll(list, field1);
-    return (Promise<MultiBulkReply>) execute(new Command(HMGET_BYTES, list.toArray(new Object[list.size()])));
+    return execute(MultiBulkReply.class, new Command(HMGET_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<MultiBulkReply> hmget_(Object... arguments) {
-    // if (version < HMGET_VERSION) throw new RedisException("Server does not support HMGET");
-    return (Promise<MultiBulkReply>) execute(new Command(HMGET_BYTES, arguments));
+    if (version < HMGET_VERSION) return new Promise<>(new RedisException("Server does not support HMGET"));
+    return execute(MultiBulkReply.class, new Command(HMGET_BYTES, arguments));
   }
 
   
@@ -2008,17 +2005,17 @@ public class RedisClient extends RedisClientBase {
    * @return StatusReply
    */
   public Promise<StatusReply> hmset(Object key0, Object[] field_or_value1) {
-    // if (version < HMSET_VERSION) throw new RedisException("Server does not support HMSET");
-    List list = new ArrayList();
+    if (version < HMSET_VERSION) return new Promise<>(new RedisException("Server does not support HMSET"));
+    List<Object> list = new ArrayList<>();
     list.add(key0);
     Collections.addAll(list, field_or_value1);
-    return (Promise<StatusReply>) execute(new Command(HMSET_BYTES, list.toArray(new Object[list.size()])));
+    return execute(StatusReply.class, new Command(HMSET_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<StatusReply> hmset_(Object... arguments) {
-    // if (version < HMSET_VERSION) throw new RedisException("Server does not support HMSET");
-    return (Promise<StatusReply>) execute(new Command(HMSET_BYTES, arguments));
+    if (version < HMSET_VERSION) return new Promise<>(new RedisException("Server does not support HMSET"));
+    return execute(StatusReply.class, new Command(HMSET_BYTES, arguments));
   }
 
   
@@ -2036,8 +2033,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> hset(Object key0, Object field1, Object value2) {
-    // if (version < HSET_VERSION) throw new RedisException("Server does not support HSET");
-    return (Promise<IntegerReply>) execute(new Command(HSET_BYTES, key0, field1, value2));
+    if (version < HSET_VERSION) return new Promise<>(new RedisException("Server does not support HSET"));
+    return execute(IntegerReply.class, new Command(HSET_BYTES, key0, field1, value2));
   }
 
   
@@ -2055,8 +2052,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> hsetnx(Object key0, Object field1, Object value2) {
-    // if (version < HSETNX_VERSION) throw new RedisException("Server does not support HSETNX");
-    return (Promise<IntegerReply>) execute(new Command(HSETNX_BYTES, key0, field1, value2));
+    if (version < HSETNX_VERSION) return new Promise<>(new RedisException("Server does not support HSETNX"));
+    return execute(IntegerReply.class, new Command(HSETNX_BYTES, key0, field1, value2));
   }
 
   
@@ -2072,8 +2069,8 @@ public class RedisClient extends RedisClientBase {
    * @return MultiBulkReply
    */
   public Promise<MultiBulkReply> hvals(Object key0) {
-    // if (version < HVALS_VERSION) throw new RedisException("Server does not support HVALS");
-    return (Promise<MultiBulkReply>) execute(new Command(HVALS_BYTES, key0));
+    if (version < HVALS_VERSION) return new Promise<>(new RedisException("Server does not support HVALS"));
+    return execute(MultiBulkReply.class, new Command(HVALS_BYTES, key0));
   }
 
   
@@ -2090,8 +2087,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> publish(Object channel0, Object message1) {
-    // if (version < PUBLISH_VERSION) throw new RedisException("Server does not support PUBLISH");
-    return (Promise<IntegerReply>) execute(new Command(PUBLISH_BYTES, channel0, message1));
+    if (version < PUBLISH_VERSION) return new Promise<>(new RedisException("Server does not support PUBLISH"));
+    return execute(IntegerReply.class, new Command(PUBLISH_BYTES, channel0, message1));
   }
 
   
@@ -2108,17 +2105,17 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> sadd(Object key0, Object[] member1) {
-    // if (version < SADD_VERSION) throw new RedisException("Server does not support SADD");
-    List list = new ArrayList();
+    if (version < SADD_VERSION) return new Promise<>(new RedisException("Server does not support SADD"));
+    List<Object> list = new ArrayList<>();
     list.add(key0);
     Collections.addAll(list, member1);
-    return (Promise<IntegerReply>) execute(new Command(SADD_BYTES, list.toArray(new Object[list.size()])));
+    return execute(IntegerReply.class, new Command(SADD_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<IntegerReply> sadd_(Object... arguments) {
-    // if (version < SADD_VERSION) throw new RedisException("Server does not support SADD");
-    return (Promise<IntegerReply>) execute(new Command(SADD_BYTES, arguments));
+    if (version < SADD_VERSION) return new Promise<>(new RedisException("Server does not support SADD"));
+    return execute(IntegerReply.class, new Command(SADD_BYTES, arguments));
   }
 
   
@@ -2134,8 +2131,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> scard(Object key0) {
-    // if (version < SCARD_VERSION) throw new RedisException("Server does not support SCARD");
-    return (Promise<IntegerReply>) execute(new Command(SCARD_BYTES, key0));
+    if (version < SCARD_VERSION) return new Promise<>(new RedisException("Server does not support SCARD"));
+    return execute(IntegerReply.class, new Command(SCARD_BYTES, key0));
   }
 
   
@@ -2151,16 +2148,16 @@ public class RedisClient extends RedisClientBase {
    * @return MultiBulkReply
    */
   public Promise<MultiBulkReply> sdiff(Object[] key0) {
-    // if (version < SDIFF_VERSION) throw new RedisException("Server does not support SDIFF");
-    List list = new ArrayList();
+    if (version < SDIFF_VERSION) return new Promise<>(new RedisException("Server does not support SDIFF"));
+    List<Object> list = new ArrayList<>();
     Collections.addAll(list, key0);
-    return (Promise<MultiBulkReply>) execute(new Command(SDIFF_BYTES, list.toArray(new Object[list.size()])));
+    return execute(MultiBulkReply.class, new Command(SDIFF_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<MultiBulkReply> sdiff_(Object... arguments) {
-    // if (version < SDIFF_VERSION) throw new RedisException("Server does not support SDIFF");
-    return (Promise<MultiBulkReply>) execute(new Command(SDIFF_BYTES, arguments));
+    if (version < SDIFF_VERSION) return new Promise<>(new RedisException("Server does not support SDIFF"));
+    return execute(MultiBulkReply.class, new Command(SDIFF_BYTES, arguments));
   }
 
   
@@ -2177,17 +2174,17 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> sdiffstore(Object destination0, Object[] key1) {
-    // if (version < SDIFFSTORE_VERSION) throw new RedisException("Server does not support SDIFFSTORE");
-    List list = new ArrayList();
+    if (version < SDIFFSTORE_VERSION) return new Promise<>(new RedisException("Server does not support SDIFFSTORE"));
+    List<Object> list = new ArrayList<>();
     list.add(destination0);
     Collections.addAll(list, key1);
-    return (Promise<IntegerReply>) execute(new Command(SDIFFSTORE_BYTES, list.toArray(new Object[list.size()])));
+    return execute(IntegerReply.class, new Command(SDIFFSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<IntegerReply> sdiffstore_(Object... arguments) {
-    // if (version < SDIFFSTORE_VERSION) throw new RedisException("Server does not support SDIFFSTORE");
-    return (Promise<IntegerReply>) execute(new Command(SDIFFSTORE_BYTES, arguments));
+    if (version < SDIFFSTORE_VERSION) return new Promise<>(new RedisException("Server does not support SDIFFSTORE"));
+    return execute(IntegerReply.class, new Command(SDIFFSTORE_BYTES, arguments));
   }
 
   
@@ -2203,16 +2200,16 @@ public class RedisClient extends RedisClientBase {
    * @return MultiBulkReply
    */
   public Promise<MultiBulkReply> sinter(Object[] key0) {
-    // if (version < SINTER_VERSION) throw new RedisException("Server does not support SINTER");
-    List list = new ArrayList();
+    if (version < SINTER_VERSION) return new Promise<>(new RedisException("Server does not support SINTER"));
+    List<Object> list = new ArrayList<>();
     Collections.addAll(list, key0);
-    return (Promise<MultiBulkReply>) execute(new Command(SINTER_BYTES, list.toArray(new Object[list.size()])));
+    return execute(MultiBulkReply.class, new Command(SINTER_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<MultiBulkReply> sinter_(Object... arguments) {
-    // if (version < SINTER_VERSION) throw new RedisException("Server does not support SINTER");
-    return (Promise<MultiBulkReply>) execute(new Command(SINTER_BYTES, arguments));
+    if (version < SINTER_VERSION) return new Promise<>(new RedisException("Server does not support SINTER"));
+    return execute(MultiBulkReply.class, new Command(SINTER_BYTES, arguments));
   }
 
   
@@ -2229,17 +2226,17 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> sinterstore(Object destination0, Object[] key1) {
-    // if (version < SINTERSTORE_VERSION) throw new RedisException("Server does not support SINTERSTORE");
-    List list = new ArrayList();
+    if (version < SINTERSTORE_VERSION) return new Promise<>(new RedisException("Server does not support SINTERSTORE"));
+    List<Object> list = new ArrayList<>();
     list.add(destination0);
     Collections.addAll(list, key1);
-    return (Promise<IntegerReply>) execute(new Command(SINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
+    return execute(IntegerReply.class, new Command(SINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<IntegerReply> sinterstore_(Object... arguments) {
-    // if (version < SINTERSTORE_VERSION) throw new RedisException("Server does not support SINTERSTORE");
-    return (Promise<IntegerReply>) execute(new Command(SINTERSTORE_BYTES, arguments));
+    if (version < SINTERSTORE_VERSION) return new Promise<>(new RedisException("Server does not support SINTERSTORE"));
+    return execute(IntegerReply.class, new Command(SINTERSTORE_BYTES, arguments));
   }
 
   
@@ -2256,8 +2253,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> sismember(Object key0, Object member1) {
-    // if (version < SISMEMBER_VERSION) throw new RedisException("Server does not support SISMEMBER");
-    return (Promise<IntegerReply>) execute(new Command(SISMEMBER_BYTES, key0, member1));
+    if (version < SISMEMBER_VERSION) return new Promise<>(new RedisException("Server does not support SISMEMBER"));
+    return execute(IntegerReply.class, new Command(SISMEMBER_BYTES, key0, member1));
   }
 
   
@@ -2273,8 +2270,8 @@ public class RedisClient extends RedisClientBase {
    * @return MultiBulkReply
    */
   public Promise<MultiBulkReply> smembers(Object key0) {
-    // if (version < SMEMBERS_VERSION) throw new RedisException("Server does not support SMEMBERS");
-    return (Promise<MultiBulkReply>) execute(new Command(SMEMBERS_BYTES, key0));
+    if (version < SMEMBERS_VERSION) return new Promise<>(new RedisException("Server does not support SMEMBERS"));
+    return execute(MultiBulkReply.class, new Command(SMEMBERS_BYTES, key0));
   }
 
   
@@ -2292,8 +2289,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> smove(Object source0, Object destination1, Object member2) {
-    // if (version < SMOVE_VERSION) throw new RedisException("Server does not support SMOVE");
-    return (Promise<IntegerReply>) execute(new Command(SMOVE_BYTES, source0, destination1, member2));
+    if (version < SMOVE_VERSION) return new Promise<>(new RedisException("Server does not support SMOVE"));
+    return execute(IntegerReply.class, new Command(SMOVE_BYTES, source0, destination1, member2));
   }
 
   
@@ -2309,8 +2306,8 @@ public class RedisClient extends RedisClientBase {
    * @return BulkReply
    */
   public Promise<BulkReply> spop(Object key0) {
-    // if (version < SPOP_VERSION) throw new RedisException("Server does not support SPOP");
-    return (Promise<BulkReply>) execute(new Command(SPOP_BYTES, key0));
+    if (version < SPOP_VERSION) return new Promise<>(new RedisException("Server does not support SPOP"));
+    return execute(BulkReply.class, new Command(SPOP_BYTES, key0));
   }
 
   
@@ -2324,17 +2321,17 @@ public class RedisClient extends RedisClientBase {
    *
    * @param key0
    * @param count1
-   * @return BulkReply
+   * @return Reply
    */
-  public Promise<BulkReply> srandmember(Object key0, Object count1) {
-    // if (version < SRANDMEMBER_VERSION) throw new RedisException("Server does not support SRANDMEMBER");
-    return (Promise<BulkReply>) execute(new Command(SRANDMEMBER_BYTES, key0, count1));
+  public Promise<Reply> srandmember(Object key0, Object count1) {
+    if (version < SRANDMEMBER_VERSION) return new Promise<>(new RedisException("Server does not support SRANDMEMBER"));
+    return execute(Reply.class, new Command(SRANDMEMBER_BYTES, key0, count1));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public Promise<BulkReply> srandmember_(Object... arguments) {
-    // if (version < SRANDMEMBER_VERSION) throw new RedisException("Server does not support SRANDMEMBER");
-    return (Promise<BulkReply>) execute(new Command(SRANDMEMBER_BYTES, arguments));
+  public Promise<Reply> srandmember_(Object... arguments) {
+    if (version < SRANDMEMBER_VERSION) return new Promise<>(new RedisException("Server does not support SRANDMEMBER"));
+    return execute(Reply.class, new Command(SRANDMEMBER_BYTES, arguments));
   }
 
   
@@ -2351,17 +2348,17 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> srem(Object key0, Object[] member1) {
-    // if (version < SREM_VERSION) throw new RedisException("Server does not support SREM");
-    List list = new ArrayList();
+    if (version < SREM_VERSION) return new Promise<>(new RedisException("Server does not support SREM"));
+    List<Object> list = new ArrayList<>();
     list.add(key0);
     Collections.addAll(list, member1);
-    return (Promise<IntegerReply>) execute(new Command(SREM_BYTES, list.toArray(new Object[list.size()])));
+    return execute(IntegerReply.class, new Command(SREM_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<IntegerReply> srem_(Object... arguments) {
-    // if (version < SREM_VERSION) throw new RedisException("Server does not support SREM");
-    return (Promise<IntegerReply>) execute(new Command(SREM_BYTES, arguments));
+    if (version < SREM_VERSION) return new Promise<>(new RedisException("Server does not support SREM"));
+    return execute(IntegerReply.class, new Command(SREM_BYTES, arguments));
   }
 
   
@@ -2377,16 +2374,16 @@ public class RedisClient extends RedisClientBase {
    * @return MultiBulkReply
    */
   public Promise<MultiBulkReply> sunion(Object[] key0) {
-    // if (version < SUNION_VERSION) throw new RedisException("Server does not support SUNION");
-    List list = new ArrayList();
+    if (version < SUNION_VERSION) return new Promise<>(new RedisException("Server does not support SUNION"));
+    List<Object> list = new ArrayList<>();
     Collections.addAll(list, key0);
-    return (Promise<MultiBulkReply>) execute(new Command(SUNION_BYTES, list.toArray(new Object[list.size()])));
+    return execute(MultiBulkReply.class, new Command(SUNION_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<MultiBulkReply> sunion_(Object... arguments) {
-    // if (version < SUNION_VERSION) throw new RedisException("Server does not support SUNION");
-    return (Promise<MultiBulkReply>) execute(new Command(SUNION_BYTES, arguments));
+    if (version < SUNION_VERSION) return new Promise<>(new RedisException("Server does not support SUNION"));
+    return execute(MultiBulkReply.class, new Command(SUNION_BYTES, arguments));
   }
 
   
@@ -2403,17 +2400,17 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> sunionstore(Object destination0, Object[] key1) {
-    // if (version < SUNIONSTORE_VERSION) throw new RedisException("Server does not support SUNIONSTORE");
-    List list = new ArrayList();
+    if (version < SUNIONSTORE_VERSION) return new Promise<>(new RedisException("Server does not support SUNIONSTORE"));
+    List<Object> list = new ArrayList<>();
     list.add(destination0);
     Collections.addAll(list, key1);
-    return (Promise<IntegerReply>) execute(new Command(SUNIONSTORE_BYTES, list.toArray(new Object[list.size()])));
+    return execute(IntegerReply.class, new Command(SUNIONSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<IntegerReply> sunionstore_(Object... arguments) {
-    // if (version < SUNIONSTORE_VERSION) throw new RedisException("Server does not support SUNIONSTORE");
-    return (Promise<IntegerReply>) execute(new Command(SUNIONSTORE_BYTES, arguments));
+    if (version < SUNIONSTORE_VERSION) return new Promise<>(new RedisException("Server does not support SUNIONSTORE"));
+    return execute(IntegerReply.class, new Command(SUNIONSTORE_BYTES, arguments));
   }
 
   
@@ -2429,8 +2426,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> zadd(Object[] args) {
-    // if (version < ZADD_VERSION) throw new RedisException("Server does not support ZADD");
-    return (Promise<IntegerReply>) execute(new Command(ZADD_BYTES, args));
+    if (version < ZADD_VERSION) return new Promise<>(new RedisException("Server does not support ZADD"));
+    return execute(IntegerReply.class, new Command(ZADD_BYTES, args));
   }
 
   
@@ -2446,8 +2443,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> zcard(Object key0) {
-    // if (version < ZCARD_VERSION) throw new RedisException("Server does not support ZCARD");
-    return (Promise<IntegerReply>) execute(new Command(ZCARD_BYTES, key0));
+    if (version < ZCARD_VERSION) return new Promise<>(new RedisException("Server does not support ZCARD"));
+    return execute(IntegerReply.class, new Command(ZCARD_BYTES, key0));
   }
 
   
@@ -2465,8 +2462,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> zcount(Object key0, Object min1, Object max2) {
-    // if (version < ZCOUNT_VERSION) throw new RedisException("Server does not support ZCOUNT");
-    return (Promise<IntegerReply>) execute(new Command(ZCOUNT_BYTES, key0, min1, max2));
+    if (version < ZCOUNT_VERSION) return new Promise<>(new RedisException("Server does not support ZCOUNT"));
+    return execute(IntegerReply.class, new Command(ZCOUNT_BYTES, key0, min1, max2));
   }
 
   
@@ -2484,8 +2481,8 @@ public class RedisClient extends RedisClientBase {
    * @return BulkReply
    */
   public Promise<BulkReply> zincrby(Object key0, Object increment1, Object member2) {
-    // if (version < ZINCRBY_VERSION) throw new RedisException("Server does not support ZINCRBY");
-    return (Promise<BulkReply>) execute(new Command(ZINCRBY_BYTES, key0, increment1, member2));
+    if (version < ZINCRBY_VERSION) return new Promise<>(new RedisException("Server does not support ZINCRBY"));
+    return execute(BulkReply.class, new Command(ZINCRBY_BYTES, key0, increment1, member2));
   }
 
   
@@ -2503,18 +2500,18 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> zinterstore(Object destination0, Object numkeys1, Object[] key2) {
-    // if (version < ZINTERSTORE_VERSION) throw new RedisException("Server does not support ZINTERSTORE");
-    List list = new ArrayList();
+    if (version < ZINTERSTORE_VERSION) return new Promise<>(new RedisException("Server does not support ZINTERSTORE"));
+    List<Object> list = new ArrayList<>();
     list.add(destination0);
     list.add(numkeys1);
     Collections.addAll(list, key2);
-    return (Promise<IntegerReply>) execute(new Command(ZINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
+    return execute(IntegerReply.class, new Command(ZINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<IntegerReply> zinterstore_(Object... arguments) {
-    // if (version < ZINTERSTORE_VERSION) throw new RedisException("Server does not support ZINTERSTORE");
-    return (Promise<IntegerReply>) execute(new Command(ZINTERSTORE_BYTES, arguments));
+    if (version < ZINTERSTORE_VERSION) return new Promise<>(new RedisException("Server does not support ZINTERSTORE"));
+    return execute(IntegerReply.class, new Command(ZINTERSTORE_BYTES, arguments));
   }
 
   
@@ -2533,19 +2530,19 @@ public class RedisClient extends RedisClientBase {
    * @return MultiBulkReply
    */
   public Promise<MultiBulkReply> zrange(Object key0, Object start1, Object stop2, Object withscores3) {
-    // if (version < ZRANGE_VERSION) throw new RedisException("Server does not support ZRANGE");
-    List list = new ArrayList();
+    if (version < ZRANGE_VERSION) return new Promise<>(new RedisException("Server does not support ZRANGE"));
+    List<Object> list = new ArrayList<>();
     list.add(key0);
     list.add(start1);
     list.add(stop2);
     if (withscores3 != null) list.add(withscores3);
-    return (Promise<MultiBulkReply>) execute(new Command(ZRANGE_BYTES, list.toArray(new Object[list.size()])));
+    return execute(MultiBulkReply.class, new Command(ZRANGE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<MultiBulkReply> zrange_(Object... arguments) {
-    // if (version < ZRANGE_VERSION) throw new RedisException("Server does not support ZRANGE");
-    return (Promise<MultiBulkReply>) execute(new Command(ZRANGE_BYTES, arguments));
+    if (version < ZRANGE_VERSION) return new Promise<>(new RedisException("Server does not support ZRANGE"));
+    return execute(MultiBulkReply.class, new Command(ZRANGE_BYTES, arguments));
   }
 
   
@@ -2565,20 +2562,20 @@ public class RedisClient extends RedisClientBase {
    * @return MultiBulkReply
    */
   public Promise<MultiBulkReply> zrangebyscore(Object key0, Object min1, Object max2, Object withscores3, Object[] offset_or_count4) {
-    // if (version < ZRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZRANGEBYSCORE");
-    List list = new ArrayList();
+    if (version < ZRANGEBYSCORE_VERSION) return new Promise<>(new RedisException("Server does not support ZRANGEBYSCORE"));
+    List<Object> list = new ArrayList<>();
     list.add(key0);
     list.add(min1);
     list.add(max2);
     if (withscores3 != null) list.add(withscores3);
     Collections.addAll(list, offset_or_count4);
-    return (Promise<MultiBulkReply>) execute(new Command(ZRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
+    return execute(MultiBulkReply.class, new Command(ZRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<MultiBulkReply> zrangebyscore_(Object... arguments) {
-    // if (version < ZRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZRANGEBYSCORE");
-    return (Promise<MultiBulkReply>) execute(new Command(ZRANGEBYSCORE_BYTES, arguments));
+    if (version < ZRANGEBYSCORE_VERSION) return new Promise<>(new RedisException("Server does not support ZRANGEBYSCORE"));
+    return execute(MultiBulkReply.class, new Command(ZRANGEBYSCORE_BYTES, arguments));
   }
 
   
@@ -2595,8 +2592,8 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> zrank(Object key0, Object member1) {
-    // if (version < ZRANK_VERSION) throw new RedisException("Server does not support ZRANK");
-    return (Promise<Reply>) execute(new Command(ZRANK_BYTES, key0, member1));
+    if (version < ZRANK_VERSION) return new Promise<>(new RedisException("Server does not support ZRANK"));
+    return execute(Reply.class, new Command(ZRANK_BYTES, key0, member1));
   }
 
   
@@ -2613,17 +2610,17 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> zrem(Object key0, Object[] member1) {
-    // if (version < ZREM_VERSION) throw new RedisException("Server does not support ZREM");
-    List list = new ArrayList();
+    if (version < ZREM_VERSION) return new Promise<>(new RedisException("Server does not support ZREM"));
+    List<Object> list = new ArrayList<>();
     list.add(key0);
     Collections.addAll(list, member1);
-    return (Promise<IntegerReply>) execute(new Command(ZREM_BYTES, list.toArray(new Object[list.size()])));
+    return execute(IntegerReply.class, new Command(ZREM_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<IntegerReply> zrem_(Object... arguments) {
-    // if (version < ZREM_VERSION) throw new RedisException("Server does not support ZREM");
-    return (Promise<IntegerReply>) execute(new Command(ZREM_BYTES, arguments));
+    if (version < ZREM_VERSION) return new Promise<>(new RedisException("Server does not support ZREM"));
+    return execute(IntegerReply.class, new Command(ZREM_BYTES, arguments));
   }
 
   
@@ -2641,8 +2638,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> zremrangebyrank(Object key0, Object start1, Object stop2) {
-    // if (version < ZREMRANGEBYRANK_VERSION) throw new RedisException("Server does not support ZREMRANGEBYRANK");
-    return (Promise<IntegerReply>) execute(new Command(ZREMRANGEBYRANK_BYTES, key0, start1, stop2));
+    if (version < ZREMRANGEBYRANK_VERSION) return new Promise<>(new RedisException("Server does not support ZREMRANGEBYRANK"));
+    return execute(IntegerReply.class, new Command(ZREMRANGEBYRANK_BYTES, key0, start1, stop2));
   }
 
   
@@ -2660,8 +2657,8 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> zremrangebyscore(Object key0, Object min1, Object max2) {
-    // if (version < ZREMRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZREMRANGEBYSCORE");
-    return (Promise<IntegerReply>) execute(new Command(ZREMRANGEBYSCORE_BYTES, key0, min1, max2));
+    if (version < ZREMRANGEBYSCORE_VERSION) return new Promise<>(new RedisException("Server does not support ZREMRANGEBYSCORE"));
+    return execute(IntegerReply.class, new Command(ZREMRANGEBYSCORE_BYTES, key0, min1, max2));
   }
 
   
@@ -2680,19 +2677,19 @@ public class RedisClient extends RedisClientBase {
    * @return MultiBulkReply
    */
   public Promise<MultiBulkReply> zrevrange(Object key0, Object start1, Object stop2, Object withscores3) {
-    // if (version < ZREVRANGE_VERSION) throw new RedisException("Server does not support ZREVRANGE");
-    List list = new ArrayList();
+    if (version < ZREVRANGE_VERSION) return new Promise<>(new RedisException("Server does not support ZREVRANGE"));
+    List<Object> list = new ArrayList<>();
     list.add(key0);
     list.add(start1);
     list.add(stop2);
     if (withscores3 != null) list.add(withscores3);
-    return (Promise<MultiBulkReply>) execute(new Command(ZREVRANGE_BYTES, list.toArray(new Object[list.size()])));
+    return execute(MultiBulkReply.class, new Command(ZREVRANGE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<MultiBulkReply> zrevrange_(Object... arguments) {
-    // if (version < ZREVRANGE_VERSION) throw new RedisException("Server does not support ZREVRANGE");
-    return (Promise<MultiBulkReply>) execute(new Command(ZREVRANGE_BYTES, arguments));
+    if (version < ZREVRANGE_VERSION) return new Promise<>(new RedisException("Server does not support ZREVRANGE"));
+    return execute(MultiBulkReply.class, new Command(ZREVRANGE_BYTES, arguments));
   }
 
   
@@ -2712,20 +2709,20 @@ public class RedisClient extends RedisClientBase {
    * @return MultiBulkReply
    */
   public Promise<MultiBulkReply> zrevrangebyscore(Object key0, Object max1, Object min2, Object withscores3, Object[] offset_or_count4) {
-    // if (version < ZREVRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZREVRANGEBYSCORE");
-    List list = new ArrayList();
+    if (version < ZREVRANGEBYSCORE_VERSION) return new Promise<>(new RedisException("Server does not support ZREVRANGEBYSCORE"));
+    List<Object> list = new ArrayList<>();
     list.add(key0);
     list.add(max1);
     list.add(min2);
     if (withscores3 != null) list.add(withscores3);
     Collections.addAll(list, offset_or_count4);
-    return (Promise<MultiBulkReply>) execute(new Command(ZREVRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
+    return execute(MultiBulkReply.class, new Command(ZREVRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<MultiBulkReply> zrevrangebyscore_(Object... arguments) {
-    // if (version < ZREVRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZREVRANGEBYSCORE");
-    return (Promise<MultiBulkReply>) execute(new Command(ZREVRANGEBYSCORE_BYTES, arguments));
+    if (version < ZREVRANGEBYSCORE_VERSION) return new Promise<>(new RedisException("Server does not support ZREVRANGEBYSCORE"));
+    return execute(MultiBulkReply.class, new Command(ZREVRANGEBYSCORE_BYTES, arguments));
   }
 
   
@@ -2742,8 +2739,8 @@ public class RedisClient extends RedisClientBase {
    * @return Reply
    */
   public Promise<Reply> zrevrank(Object key0, Object member1) {
-    // if (version < ZREVRANK_VERSION) throw new RedisException("Server does not support ZREVRANK");
-    return (Promise<Reply>) execute(new Command(ZREVRANK_BYTES, key0, member1));
+    if (version < ZREVRANK_VERSION) return new Promise<>(new RedisException("Server does not support ZREVRANK"));
+    return execute(Reply.class, new Command(ZREVRANK_BYTES, key0, member1));
   }
 
   
@@ -2760,8 +2757,8 @@ public class RedisClient extends RedisClientBase {
    * @return BulkReply
    */
   public Promise<BulkReply> zscore(Object key0, Object member1) {
-    // if (version < ZSCORE_VERSION) throw new RedisException("Server does not support ZSCORE");
-    return (Promise<BulkReply>) execute(new Command(ZSCORE_BYTES, key0, member1));
+    if (version < ZSCORE_VERSION) return new Promise<>(new RedisException("Server does not support ZSCORE"));
+    return execute(BulkReply.class, new Command(ZSCORE_BYTES, key0, member1));
   }
 
   
@@ -2779,18 +2776,18 @@ public class RedisClient extends RedisClientBase {
    * @return IntegerReply
    */
   public Promise<IntegerReply> zunionstore(Object destination0, Object numkeys1, Object[] key2) {
-    // if (version < ZUNIONSTORE_VERSION) throw new RedisException("Server does not support ZUNIONSTORE");
-    List list = new ArrayList();
+    if (version < ZUNIONSTORE_VERSION) return new Promise<>(new RedisException("Server does not support ZUNIONSTORE"));
+    List<Object> list = new ArrayList<>();
     list.add(destination0);
     list.add(numkeys1);
     Collections.addAll(list, key2);
-    return (Promise<IntegerReply>) execute(new Command(ZUNIONSTORE_BYTES, list.toArray(new Object[list.size()])));
+    return execute(IntegerReply.class, new Command(ZUNIONSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
   public Promise<IntegerReply> zunionstore_(Object... arguments) {
-    // if (version < ZUNIONSTORE_VERSION) throw new RedisException("Server does not support ZUNIONSTORE");
-    return (Promise<IntegerReply>) execute(new Command(ZUNIONSTORE_BYTES, arguments));
+    if (version < ZUNIONSTORE_VERSION) return new Promise<>(new RedisException("Server does not support ZUNIONSTORE"));
+    return execute(IntegerReply.class, new Command(ZUNIONSTORE_BYTES, arguments));
   }
 
 }

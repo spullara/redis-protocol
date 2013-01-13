@@ -1,20 +1,21 @@
 package redis.client;
 
+import java.io.IOException;
+import java.net.Socket;
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.concurrent.Executors;
+
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ListenableFuture;
+
 import redis.Command;
 import redis.reply.BulkReply;
 import redis.reply.IntegerReply;
 import redis.reply.MultiBulkReply;
 import redis.reply.Reply;
 import redis.reply.StatusReply;
-
-import java.io.IOException;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Executors;
 
 public class RedisClient extends RedisClientBase {
   protected Pipeline pipeline = new Pipeline();
@@ -2212,17 +2213,17 @@ public class RedisClient extends RedisClientBase {
    *
    * @param key0
    * @param count1
-   * @return BulkReply
+   * @return Reply
    */
-  public BulkReply srandmember(Object key0, Object count1) throws RedisException {
+  public Reply srandmember(Object key0, Object count1) throws RedisException {
     if (version < SRANDMEMBER_VERSION) throw new RedisException("Server does not support SRANDMEMBER");
-    return (BulkReply) execute(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, key0, count1));
+    return (Reply) execute(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, key0, count1));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public BulkReply srandmember_(Object... arguments) throws RedisException {
+  public Reply srandmember_(Object... arguments) throws RedisException {
     if (version < SRANDMEMBER_VERSION) throw new RedisException("Server does not support SRANDMEMBER");
-    return (BulkReply) execute(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, arguments));
+    return (Reply) execute(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, arguments));
   }
   
   private static final String SREM = "SREM";
@@ -2314,9 +2315,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply zadd(Object[] args) throws RedisException {
     if (version < ZADD_VERSION) throw new RedisException("Server does not support ZADD");
-    List list = new ArrayList();
-    Collections.addAll(list, args);
-    return (IntegerReply) execute(ZADD, new Command(ZADD_BYTES, list.toArray(new Object[list.size()])));
+    return (IntegerReply) execute(ZADD, new Command(ZADD_BYTES, args));
   }
   
   private static final String ZCARD = "ZCARD";
@@ -4357,17 +4356,17 @@ public class RedisClient extends RedisClientBase {
    *
    * @param key0
    * @param count1
-   * @return BulkReply
+   * @return Reply
    */
-  public ListenableFuture<BulkReply> srandmember(Object key0, Object count1) throws RedisException {
+  public ListenableFuture<Reply> srandmember(Object key0, Object count1) throws RedisException {
     if (version < SRANDMEMBER_VERSION) throw new RedisException("Server does not support SRANDMEMBER");
-    return (ListenableFuture<BulkReply>) pipeline(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, key0, count1));
+    return (ListenableFuture<Reply>) pipeline(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, key0, count1));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<BulkReply> srandmember_(Object... arguments) throws RedisException {
+  public ListenableFuture<Reply> srandmember_(Object... arguments) throws RedisException {
     if (version < SRANDMEMBER_VERSION) throw new RedisException("Server does not support SRANDMEMBER");
-    return (ListenableFuture<BulkReply>) pipeline(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, arguments));
+    return (ListenableFuture<Reply>) pipeline(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, arguments));
   }
 
   /**
@@ -4443,9 +4442,7 @@ public class RedisClient extends RedisClientBase {
    */
   public ListenableFuture<IntegerReply> zadd(Object[] args) throws RedisException {
     if (version < ZADD_VERSION) throw new RedisException("Server does not support ZADD");
-    List list = new ArrayList();
-    Collections.addAll(list, args);
-    return (ListenableFuture<IntegerReply>) pipeline(ZADD, new Command(ZADD_BYTES, list.toArray(new Object[list.size()])));
+    return (ListenableFuture<IntegerReply>) pipeline(ZADD, new Command(ZADD_BYTES, args));
   }
 
   /**

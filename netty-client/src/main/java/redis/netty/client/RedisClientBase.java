@@ -1,20 +1,31 @@
 package redis.netty.client;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.*;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFuture;
+import org.jboss.netty.channel.ChannelFutureListener;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.channel.ChannelPipeline;
+import org.jboss.netty.channel.ChannelPipelineFactory;
+import org.jboss.netty.channel.Channels;
+import org.jboss.netty.channel.ExceptionEvent;
+import org.jboss.netty.channel.MessageEvent;
+import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import redis.Command;
+import redis.netty.BulkReply;
 import redis.netty.RedisDecoder;
 import redis.netty.RedisEncoder;
-import redis.netty.Reply;
 import spullara.util.concurrent.Promise;
+import spullara.util.functions.Block;
 
+import java.io.BufferedReader;
+import java.io.StringReader;
 import java.net.InetSocketAddress;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedTransferQueue;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -26,15 +37,34 @@ public class RedisClientBase {
   private Channel channel;
   private Queue<Promise> queue;
 
-  public static Promise<? extends RedisClientBase> connect(String hostname, int port) {
-    return connect(hostname, port, new RedisClientBase());
+  public static <T extends RedisClientBase> Promise<T> connect(String hostname, int port) {
+    return connect(hostname, port, (T) new RedisClientBase());
   }
 
   private static final Pattern versionMatcher = Pattern.compile(
           "([0-9]+)\\.([0-9]+)(\\.([0-9]+))?");
   protected int version = 9999999;
 
-  public static int parseVersion(String value) {
+  protected void parseInfo(BulkReply info) {
+    try {
+      BufferedReader br = new BufferedReader(new StringReader(info.asUTF8String()));
+      String line;
+      while ((line = br.readLine()) != null) {
+        int index = line.indexOf(':');
+        if (index != -1) {
+          String name = line.substring(0, index);
+          String value = line.substring(index + 1);
+          if ("redis_version".equals(name)) {
+            this.version = parseVersion(value);
+          }
+        }
+      }
+    } catch (Exception re) {
+      // Server requires AUTH, check later
+    }
+  }
+
+  protected static int parseVersion(String value) {
     int version = 0;
     Matcher matcher = versionMatcher.matcher(value);
     if (matcher.matches()) {
@@ -49,7 +79,7 @@ public class RedisClientBase {
     return version;
   }
 
-  protected static Promise<? extends RedisClientBase> connect(String hostname, int port, final RedisClientBase redisClientBase) {
+  protected static <T extends RedisClientBase> Promise<T> connect(String hostname, int port, final T redisClientBase) {
     ExecutorService executor = Executors.newCachedThreadPool();
     final ClientBootstrap cb = new ClientBootstrap(new NioClientSocketChannelFactory(executor, executor));
     final Queue<Promise> queue = new LinkedTransferQueue<>();
@@ -86,13 +116,24 @@ public class RedisClientBase {
       }
     });
     ChannelFuture redis = cb.connect(new InetSocketAddress(hostname, port));
-    final Promise<RedisClientBase> redisClientBasePromise = new Promise<>();
+    final Promise<T> redisClientBasePromise = new Promise<>();
     redis.addListener(new ChannelFutureListener() {
       @Override
       public void operationComplete(ChannelFuture channelFuture) throws Exception {
         if (channelFuture.isSuccess()) {
           redisClientBase.init(channelFuture.getChannel(), queue);
-          redisClientBasePromise.set(redisClientBase);
+          redisClientBase.execute(BulkReply.class, new Command("INFO")).onSuccess(new Block<BulkReply>() {
+            @Override
+            public void apply(BulkReply bulkReply) {
+              redisClientBase.parseInfo(bulkReply);
+              redisClientBasePromise.set(redisClientBase);
+            }
+          }).onFailure(new Block<Throwable>() {
+            @Override
+            public void apply(Throwable throwable) {
+              redisClientBasePromise.setException(throwable);
+            }
+          });
         } else if (channelFuture.isCancelled()) {
           redisClientBasePromise.cancel(true);
         } else {
@@ -128,8 +169,8 @@ public class RedisClientBase {
     return closed;
   }
 
-  protected synchronized Promise<? extends Reply> execute(Command command) {
-    Promise<Reply> reply = new Promise<>();
+  protected synchronized <T> Promise<T> execute(Class<T> clazz, Command command) {
+    Promise<T> reply = new Promise<>();
     queue.add(reply);
     channel.write(command);
     return reply;
