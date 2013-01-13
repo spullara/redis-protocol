@@ -309,4 +309,57 @@ public class RedisClientBaseTest {
     assertEquals(1, listeners.get());
     assertFalse(failed.get());
   }
+
+  @Test
+  public void testPubSubPerformance() throws InterruptedException {
+    final CountDownLatch done = new CountDownLatch(1);
+    final Semaphore semaphore = new Semaphore(100);
+    final AtomicInteger total = new AtomicInteger();
+    Promise<RedisClient> redisClient = RedisClient.connect("localhost", 6379).onSuccess(new Block<RedisClient>() {
+      @Override
+      public void apply(RedisClient redisClient) {
+        redisClient.addListener(new MessageListener() {
+          @Override
+          public void message(byte[] channel, byte[] message) {
+            semaphore.release();
+            total.incrementAndGet();
+          }
+
+          @Override
+          public void pmessage(byte[] pattern, byte[] channel, byte[] message) {
+          }
+        });
+        redisClient.subscribe("test").onSuccess(new Block<Void>() {
+          @Override
+          public void apply(Void aVoid) {
+            RedisClient.connect("localhost", 6379).onSuccess(new Block<RedisClient>() {
+              @Override
+              public void apply(final RedisClient redisClient) {
+                new Thread(new Runnable() {
+                  @Override
+                  public void run() {
+                    long start = System.currentTimeMillis();
+                    while (System.currentTimeMillis() - start < 5000) {
+                      semaphore.acquireUninterruptibly();
+                      redisClient.publish("test", "hello");
+                    }
+                    redisClient.close();
+                    done.countDown();
+                  }
+                }).start();
+              }
+            });
+          }
+        });
+      }
+    });
+    done.await(6000, TimeUnit.MILLISECONDS);
+    redisClient.onSuccess(new Block<RedisClient>() {
+      @Override
+      public void apply(RedisClient redisClient) {
+        redisClient.close();
+      }
+    });
+    System.out.println(total.get() / 5 + " per second");
+  }
 }
