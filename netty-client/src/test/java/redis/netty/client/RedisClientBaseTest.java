@@ -17,6 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Test the base redis client. Default redis required.
@@ -200,27 +201,35 @@ public class RedisClientBaseTest {
 
       @Override
       public void apply(final RedisClient redisClient) {
-        try {
-          final Semaphore semaphore = new Semaphore(100);
-          Runnable release = new Runnable() {
+          new Thread(new Runnable() {
             @Override
             public void run() {
-              semaphore.release();
+              try {
+                final Semaphore semaphore = new Semaphore(100);
+                Runnable release = new Runnable() {
+                  @Override
+                  public void run() {
+                    semaphore.release();
+                  }
+                };
+                long start = System.currentTimeMillis();
+                while (System.currentTimeMillis() - start < 5000) {
+                  semaphore.acquire();
+                  redisClient.set(String.valueOf(total.getAndIncrement()), "test2").ensure(release);
+                }
+                semaphore.acquire(100);
+                done.countDown();
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              }
             }
-          };
-          long start = System.currentTimeMillis();
-          while (System.currentTimeMillis() - start < 5000) {
-            semaphore.acquire();
-            redisClient.set(String.valueOf(total.getAndIncrement()), "test2").ensure(release);
-          }
-          semaphore.acquire(100);
-          done.countDown();
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
+          }).start();
       }
     });
     done.await(6000, TimeUnit.MILLISECONDS);
+    if (total.get() == 100) {
+      fail("Failed to complete any requests");
+    }
     System.out.println("Completed " + total.get() / 5 + " per second");
   }
 

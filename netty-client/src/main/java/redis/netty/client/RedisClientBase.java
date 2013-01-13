@@ -79,7 +79,7 @@ public class RedisClientBase {
     return version;
   }
 
-  protected static <T extends RedisClientBase> Promise<T> connect(String hostname, int port, final T redisClientBase) {
+  protected static <T extends RedisClientBase> Promise<T> connect(String hostname, int port, final T redisClient) {
     ExecutorService executor = Executors.newCachedThreadPool();
     final ClientBootstrap cb = new ClientBootstrap(new NioClientSocketChannelFactory(executor, executor));
     final Queue<Promise> queue = new LinkedTransferQueue<>();
@@ -88,6 +88,7 @@ public class RedisClientBase {
       public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
         if (queue.isEmpty()) {
           // Needed for pub/sub?
+          throw new AssertionError("Queue was empty");
         } else {
           Promise poll = queue.poll();
           poll.set(e.getMessage());
@@ -98,6 +99,7 @@ public class RedisClientBase {
       public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         if (queue.isEmpty()) {
           // Needed for pub/sub?
+          throw new AssertionError("Queue was empty");
         } else {
           Promise poll = queue.poll();
           poll.setException(e.getCause());
@@ -115,18 +117,17 @@ public class RedisClientBase {
         return pipeline;
       }
     });
-    ChannelFuture redis = cb.connect(new InetSocketAddress(hostname, port));
     final Promise<T> redisClientBasePromise = new Promise<>();
-    redis.addListener(new ChannelFutureListener() {
+    cb.connect(new InetSocketAddress(hostname, port)).addListener(new ChannelFutureListener() {
       @Override
       public void operationComplete(ChannelFuture channelFuture) throws Exception {
         if (channelFuture.isSuccess()) {
-          redisClientBase.init(channelFuture.getChannel(), queue);
-          redisClientBase.execute(BulkReply.class, new Command("INFO")).onSuccess(new Block<BulkReply>() {
+          redisClient.init(channelFuture.getChannel(), queue);
+          redisClient.execute(BulkReply.class, new Command("INFO")).onSuccess(new Block<BulkReply>() {
             @Override
             public void apply(BulkReply bulkReply) {
-              redisClientBase.parseInfo(bulkReply);
-              redisClientBasePromise.set(redisClientBase);
+              redisClient.parseInfo(bulkReply);
+              redisClientBasePromise.set(redisClient);
             }
           }).onFailure(new Block<Throwable>() {
             @Override
@@ -170,9 +171,20 @@ public class RedisClientBase {
   }
 
   protected synchronized <T> Promise<T> execute(Class<T> clazz, Command command) {
-    Promise<T> reply = new Promise<>();
-    queue.add(reply);
-    channel.write(command);
+    final Promise<T> reply = new Promise<>();
+    channel.write(command).addListener(new ChannelFutureListener() {
+      @Override
+      public void operationComplete(ChannelFuture future) throws Exception {
+        // Tacit assumption that netty ensures the order
+        if (future.isSuccess()) {
+          queue.add(reply);
+        } else if (future.isCancelled()) {
+          reply.cancel(true);
+        } else {
+          reply.setException(future.getCause());
+        }
+      }
+    });
     return reply;
   }
 }
