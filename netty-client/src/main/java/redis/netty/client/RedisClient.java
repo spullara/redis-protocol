@@ -1,19 +1,17 @@
 package redis.netty.client;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
-
 import com.google.common.base.Charsets;
-
 import redis.Command;
 import redis.netty.BulkReply;
 import redis.netty.IntegerReply;
 import redis.netty.MultiBulkReply;
 import redis.netty.Reply;
 import redis.netty.StatusReply;
-
 import spullara.util.concurrent.Promise;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @SuppressWarnings("UnusedDeclaration")
 public class RedisClient extends RedisClientBase {
