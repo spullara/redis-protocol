@@ -11,6 +11,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.assertEquals;
@@ -194,7 +195,7 @@ public class RedisClientBaseTest {
   @Test
   public void testPipelinePerformance() throws InterruptedException {
     final CountDownLatch done = new CountDownLatch(1);
-    final int[] i = new int[1];
+    final AtomicInteger total = new AtomicInteger();
     RedisClient.connect("localhost", 6379).onSuccess(new Block<RedisClient>() {
 
       @Override
@@ -210,7 +211,7 @@ public class RedisClientBaseTest {
           long start = System.currentTimeMillis();
           while (System.currentTimeMillis() - start < 5000) {
             semaphore.acquire();
-            redisClient.set(String.valueOf(i[0]++), "test2").ensure(release);
+            redisClient.set(String.valueOf(total.getAndIncrement()), "test2").ensure(release);
           }
           semaphore.acquire(100);
           done.countDown();
@@ -220,7 +221,7 @@ public class RedisClientBaseTest {
       }
     });
     done.await(6000, TimeUnit.MILLISECONDS);
-    System.out.println("Completed " + i[0] / 5 + " per second");
+    System.out.println("Completed " + total.get() / 5 + " per second");
   }
 
 }
