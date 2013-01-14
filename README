@@ -20,6 +20,9 @@ loader/
 
 netty/
   A netty 3.5.X compatible codecs for building Redis clients
+netty-client/
+  Complete client except for MULTI/EXEC.
+
 netty4/
   A netty 4.0.0.Alpha1 compatible codec for building Redis clients
 
