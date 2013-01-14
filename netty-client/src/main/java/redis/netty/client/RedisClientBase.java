@@ -188,17 +188,21 @@ public class RedisClientBase {
     return closed;
   }
 
-  protected synchronized <T> Promise<T> execute(Class<T> clazz, Command command) {
+  protected <T> Promise<T> execute(Class<T> clazz, Command command) {
     final Promise<T> reply = new Promise<>();
     if (subscribed.get()) {
       reply.setException(new RedisException("Already subscribed, cannot send this command"));
     } else {
-      channel.write(command).addListener(new ChannelFutureListener() {
+      ChannelFuture write;
+      synchronized (channel) {
+        queue.add(reply);
+        write = channel.write(command);
+      }
+      write.addListener(new ChannelFutureListener() {
         @Override
         public void operationComplete(ChannelFuture future) throws Exception {
-          // Tacit assumption that netty ensures the order
           if (future.isSuccess()) {
-            queue.add(reply);
+            // Netty doesn't call these in order
           } else if (future.isCancelled()) {
             reply.cancel(true);
           } else {
@@ -223,7 +227,7 @@ public class RedisClientBase {
    *
    * @param subscriptions
    */
-  public synchronized Promise<Void> subscribe(Object... subscriptions) {
+  public Promise<Void> subscribe(Object... subscriptions) {
     subscribed();
     Promise<Void> result = new Promise<>();
     channel.write(new Command(SUBSCRIBE, subscriptions)).addListener(wrapSubscribe(result));
@@ -250,7 +254,7 @@ public class RedisClientBase {
    *
    * @param subscriptions
    */
-  public synchronized Promise<Void> psubscribe(Object... subscriptions) {
+  public Promise<Void> psubscribe(Object... subscriptions) {
     subscribed();
     Promise<Void> result = new Promise<>();
     channel.write(new Command(PSUBSCRIBE, subscriptions)).addListener(wrapSubscribe(result));
@@ -262,7 +266,7 @@ public class RedisClientBase {
    *
    * @param subscriptions
    */
-  public synchronized Promise<Void> unsubscribe(Object... subscriptions) {
+  public Promise<Void> unsubscribe(Object... subscriptions) {
     subscribed();
     Promise<Void> result = new Promise<>();
     channel.write(new Command(UNSUBSCRIBE, subscriptions)).addListener(wrapSubscribe(result));
@@ -274,30 +278,27 @@ public class RedisClientBase {
    *
    * @param subscriptions
    */
-  public synchronized Promise<Void> punsubscribe(Object... subscriptions) {
+  public Promise<Void> punsubscribe(Object... subscriptions) {
     subscribed();
     Promise<Void> result = new Promise<>();
     channel.write(new Command(PUNSUBSCRIBE, subscriptions)).addListener(wrapSubscribe(result));
     return result;
   }
 
-  private List<ReplyListener> replyListeners;
+  private List<ReplyListener> replyListeners = new CopyOnWriteArrayList<>();
 
   /**
    * Add a reply listener to this client for subscriptions.
    */
-  public synchronized void addListener(ReplyListener replyListener) {
-    if (replyListeners == null) {
-      replyListeners = new CopyOnWriteArrayList<>();
-    }
+  public void addListener(ReplyListener replyListener) {
     replyListeners.add(replyListener);
   }
 
   /**
    * Remove a reply listener from this client.
    */
-  public synchronized boolean removeListener(ReplyListener replyListener) {
-    return replyListeners != null && replyListeners.remove(replyListener);
+  public boolean removeListener(ReplyListener replyListener) {
+    return replyListeners.remove(replyListener);
   }
 
   private static Comparator<byte[]> BYTES = UnsignedBytes.lexicographicalComparator();

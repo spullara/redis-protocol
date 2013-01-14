@@ -218,7 +218,8 @@ public class RedisClientBaseTest {
                 long start = System.currentTimeMillis();
                 while (System.currentTimeMillis() - start < 5000) {
                   semaphore.acquire();
-                  redisClient.set(String.valueOf(total.getAndIncrement()), "test2").ensure(release);
+                  String current = String.valueOf(total.getAndIncrement());
+                  redisClient.set(current, current).ensure(release);
                 }
                 semaphore.acquire(100);
                 done.countDown();
@@ -234,6 +235,65 @@ public class RedisClientBaseTest {
       fail("Failed to complete any requests");
     }
     System.out.println("Completed " + total.get() / 5 + " per second");
+  }
+
+  @Test
+  public void testPipelineConcurrency() throws InterruptedException {
+    final CountDownLatch done = new CountDownLatch(1);
+    final AtomicInteger total = new AtomicInteger();
+    final AtomicInteger errors = new AtomicInteger();
+    RedisClient.connect("localhost", 6379).onSuccess(new Block<RedisClient>() {
+      @Override
+      public void apply(final RedisClient redisClient) {
+          new Thread(new Runnable() {
+            @Override
+            public void run() {
+              try {
+                final Semaphore semaphore = new Semaphore(100);
+                Runnable release = new Runnable() {
+                  @Override
+                  public void run() {
+                    semaphore.release();
+                  }
+                };
+                long start = System.currentTimeMillis();
+                while (System.currentTimeMillis() - start < 1000) {
+                  semaphore.acquire();
+                  final String current = String.valueOf(total.getAndIncrement());
+                  redisClient.set(current, current).ensure(release).onSuccess(new Block<StatusReply>() {
+                    @Override
+                    public void apply(StatusReply statusReply) {
+                      redisClient.get(current).onSuccess(new Block<BulkReply>() {
+                        @Override
+                        public void apply(BulkReply bulkReply) {
+                          if (!bulkReply.asAsciiString().equals(current)) {
+                            errors.incrementAndGet();
+                          }
+                        }
+                      }).onFailure(new Block<Throwable>() {
+                        @Override
+                        public void apply(Throwable throwable) {
+                          errors.incrementAndGet();
+                        }
+                      });
+                    }
+                  });
+                }
+                semaphore.acquire(100);
+                done.countDown();
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              }
+            }
+          }).start();
+      }
+    });
+    done.await(6000, TimeUnit.MILLISECONDS);
+    System.out.println("Completed " + total.get() / 5 + " per second");
+    assertEquals(0, errors.get());
+    if (total.get() == 100) {
+      fail("Failed to complete any requests");
+    }
   }
 
   @Test
