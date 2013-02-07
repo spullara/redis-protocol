@@ -1107,7 +1107,7 @@ public class SimpleRedisServer implements RedisServer {
   public BulkReply lindex(byte[] key0, byte[] index1) throws RedisException {
     int index = _toposint(index1);
     List<BytesValue> list = _getlist(key0, true);
-    if (list == null || list.size() >= index) {
+    if (list == null || list.size() <= index) {
       return NIL_REPLY;
     } else {
       return new BulkReply(list.get(index).getBytes());
