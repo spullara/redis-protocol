@@ -1152,7 +1152,7 @@ public class SimpleRedisServer implements RedisServer {
   public BulkReply lindex(byte[] key0, byte[] index1) throws RedisException {
     int index = _toposint(index1);
     List<BytesValue> list = _getlist(key0, true);
-    if (list == null || list.size() >= index) {
+    if (list == null || list.size() <= index) {
       return NIL_REPLY;
     } else {
       return new BulkReply(list.get(index).getBytes());
@@ -1541,10 +1541,19 @@ public class SimpleRedisServer implements RedisServer {
   @Override
   public MultiBulkReply keys(byte[] pattern0) throws RedisException {
     List<Reply<ByteBuf>> replies = new ArrayList<Reply<ByteBuf>>();
-    for (Object o : data.keySet()) {
-      BytesKey key = (BytesKey) o;
+    Iterator<Object> it = data.keySet().iterator();
+    while(it.hasNext()) {        
+      BytesKey key = (BytesKey) it.next();
       byte[] bytes = key.getBytes();
-      if (matches(bytes, pattern0, 0, 0)) {
+      boolean expired = false;
+      Long l = expires.get(key);
+      if (l != null) {
+        if (l < now()) {
+          expired = true;
+          it.remove();
+        }
+      }
+      if (matches(bytes, pattern0, 0, 0) && !expired) {
         replies.add(new BulkReply(bytes));
       }
     }
