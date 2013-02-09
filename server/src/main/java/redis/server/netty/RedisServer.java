@@ -230,15 +230,6 @@ public interface RedisServer {
   public IntegerReply strlen(byte[] key0) throws RedisException;
 
   /**
-   * Authenticate to the server
-   * Connection
-   *
-   * @param password0
-   * @return StatusReply
-   */
-  public StatusReply auth(byte[] password0) throws RedisException;
-
-  /**
    * Echo the given string
    * Connection
    *
@@ -287,6 +278,40 @@ public interface RedisServer {
    * @return StatusReply
    */
   public StatusReply bgsave() throws RedisException;
+
+  /**
+   * Kill the connection of a client
+   * Server
+   *
+   * @param ip_port0
+   * @return Reply
+   */
+  public Reply client_kill(byte[] ip_port0) throws RedisException;
+
+  /**
+   * Get the list of client connections
+   * Server
+   *
+   * @return Reply
+   */
+  public Reply client_list() throws RedisException;
+
+  /**
+   * Get the current connection name
+   * Server
+   *
+   * @return Reply
+   */
+  public Reply client_getname() throws RedisException;
+
+  /**
+   * Set the current connection name
+   * Server
+   *
+   * @param connection_name0
+   * @return Reply
+   */
+  public Reply client_setname(byte[] connection_name0) throws RedisException;
 
   /**
    * Get the value of a configuration parameter
@@ -360,9 +385,10 @@ public interface RedisServer {
    * Get information and statistics about the server
    * Server
    *
+   * @param section0
    * @return BulkReply
    */
-  public BulkReply info() throws RedisException;
+  public BulkReply info(byte[] section0) throws RedisException;
 
   /**
    * Get the UNIX time stamp of the last successful save to disk
@@ -1218,7 +1244,8 @@ public interface RedisServer {
    * @param key0
    * @param min1
    * @param max2
-   * @param withscores_offset_or_count4
+   * @param withscores3
+   * @param offset_or_count4
    * @return MultiBulkReply
    */
   public MultiBulkReply zrangebyscore(byte[] key0, byte[] min1, byte[] max2, byte[][] withscores_offset_or_count4) throws RedisException;
@@ -1284,7 +1311,8 @@ public interface RedisServer {
    * @param key0
    * @param max1
    * @param min2
-   * @param withscores_offset_or_count4
+   * @param withscores3
+   * @param offset_or_count4
    * @return MultiBulkReply
    */
   public MultiBulkReply zrevrangebyscore(byte[] key0, byte[] max1, byte[] min2, byte[][] withscores_offset_or_count4) throws RedisException;

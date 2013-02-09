@@ -768,7 +768,6 @@ public class SimpleRedisServer implements RedisServer {
    * @param password0
    * @return StatusReply
    */
-  @Override
   public StatusReply auth(byte[] password0) throws RedisException {
     throw new RedisException("Not supported");
   }
@@ -838,6 +837,52 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply bgsave() throws RedisException {
+    throw new RedisException("Not supported");
+  }
+
+  /**
+   * Kill the connection of a client
+   * Server
+   *
+   * @param ip_port0
+   * @return Reply
+   */
+  @Override
+  public Reply client_kill(byte[] ip_port0) throws RedisException {
+    throw new RedisException("Not supported");
+  }
+
+  /**
+   * Get the list of client connections
+   * Server
+   *
+   * @return Reply
+   */
+  @Override
+  public Reply client_list() throws RedisException {
+    throw new RedisException("Not supported");
+  }
+
+  /**
+   * Get the current connection name
+   * Server
+   *
+   * @return Reply
+   */
+  @Override
+  public Reply client_getname() throws RedisException {
+    throw new RedisException("Not supported");
+  }
+
+  /**
+   * Set the current connection name
+   * Server
+   *
+   * @param connection_name0
+   * @return Reply
+   */
+  @Override
+  public Reply client_setname(byte[] connection_name0) throws RedisException {
     throw new RedisException("Not supported");
   }
 
@@ -942,7 +987,7 @@ public class SimpleRedisServer implements RedisServer {
    * @return BulkReply
    */
   @Override
-  public BulkReply info() throws RedisException {
+  public BulkReply info(byte[] section) throws RedisException {
     StringBuilder sb = new StringBuilder();
     sb.append("redis_version:2.6.0\n");
     sb.append("keys:").append(data.size()).append("\n");

@@ -11,11 +11,11 @@
     <module>netty</module>
     <module>netty-client</module>
     <module>netty4</module>
-    <module>finagle</module>
+<!--    <module>finagle</module> -->
     <module>client</module>
     <module>redisgen</module>
     <module>benchmark</module>
-    <module>finagle-service</module>
+<!--    <module>finagle-service</module> -->
     <module>server</module>
     <module>netty4-client</module>
   </modules>

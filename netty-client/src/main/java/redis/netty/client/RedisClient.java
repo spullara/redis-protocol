@@ -19,9 +19,8 @@ public class RedisClient extends RedisClientBase {
 
   public static Promise<RedisClient> connect(String host, int port) {
     RedisClient redisClient = new RedisClient();
-    return RedisClientBase.connect(host, port, redisClient, Executors.newCachedThreadPool());
+    return RedisClientBase.connect(host, port, redisClient, Executors.newSingleThreadExecutor());
   }
-
   
   private static final String APPEND = "APPEND";
   private static final byte[] APPEND_BYTES = APPEND.getBytes(Charsets.US_ASCII);
@@ -594,6 +593,43 @@ public class RedisClient extends RedisClientBase {
   }
 
   
+  private static final String CLIENT_GETNAME = "CLIENT";
+  private static final String CLIENT_GETNAME2 = "GETNAME";
+  private static final byte[] CLIENT_GETNAME2_BYTES = CLIENT_GETNAME2.getBytes(Charsets.US_ASCII);
+  private static final byte[] CLIENT_GETNAME_BYTES = CLIENT_GETNAME.getBytes(Charsets.US_ASCII);
+  private static final int CLIENT_GETNAME_VERSION = parseVersion("2.6.9");
+
+  /**
+   * Get the current connection name
+   * Server
+   *
+   * @return Reply
+   */
+  public Promise<Reply> client_getname() {
+    if (version < CLIENT_GETNAME_VERSION) return new Promise<>(new RedisException("Server does not support CLIENT_GETNAME"));
+    return execute(Reply.class, new Command(CLIENT_GETNAME_BYTES, CLIENT_GETNAME2_BYTES));
+  }
+
+  
+  private static final String CLIENT_SETNAME = "CLIENT";
+  private static final String CLIENT_SETNAME2 = "SETNAME";
+  private static final byte[] CLIENT_SETNAME2_BYTES = CLIENT_SETNAME2.getBytes(Charsets.US_ASCII);
+  private static final byte[] CLIENT_SETNAME_BYTES = CLIENT_SETNAME.getBytes(Charsets.US_ASCII);
+  private static final int CLIENT_SETNAME_VERSION = parseVersion("2.6.9");
+
+  /**
+   * Set the current connection name
+   * Server
+   *
+   * @param connection_name0
+   * @return Reply
+   */
+  public Promise<Reply> client_setname(Object connection_name0) {
+    if (version < CLIENT_SETNAME_VERSION) return new Promise<>(new RedisException("Server does not support CLIENT_SETNAME"));
+    return execute(Reply.class, new Command(CLIENT_SETNAME_BYTES, CLIENT_SETNAME2_BYTES, connection_name0));
+  }
+
+  
   private static final String CONFIG_GET = "CONFIG";
   private static final String CONFIG_GET2 = "GET";
   private static final byte[] CONFIG_GET2_BYTES = CONFIG_GET2.getBytes(Charsets.US_ASCII);
@@ -744,11 +780,18 @@ public class RedisClient extends RedisClientBase {
    * Get information and statistics about the server
    * Server
    *
+   * @param section0
    * @return BulkReply
    */
-  public Promise<BulkReply> info() {
+  public Promise<BulkReply> info(Object section0) {
     if (version < INFO_VERSION) return new Promise<>(new RedisException("Server does not support INFO"));
-    return execute(BulkReply.class, new Command(INFO_BYTES));
+    return execute(BulkReply.class, new Command(INFO_BYTES, section0));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public Promise<BulkReply> info_(Object... arguments) {
+    if (version < INFO_VERSION) return new Promise<>(new RedisException("Server does not support INFO"));
+    return execute(BulkReply.class, new Command(INFO_BYTES, arguments));
   }
 
   
