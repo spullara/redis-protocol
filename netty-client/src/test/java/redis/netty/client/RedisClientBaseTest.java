@@ -330,6 +330,10 @@ public class RedisClientBaseTest {
           @Override
           public void message(byte[] channel, byte[] message) {
             gotmessage.set(message);
+            try {
+              Thread.sleep(100);
+            } catch (InterruptedException e) {
+            }
             redisClient.close();
             done.countDown();
           }
