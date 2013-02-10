@@ -7,17 +7,14 @@
   <modules>
     <module>util</module>
     <module>protocol</module>
-    <module>bytebuffer-protocol</module>
-    <module>netty</module>
-    <module>netty-client</module>
-    <module>netty4</module>
-<!--    <module>finagle</module> -->
     <module>client</module>
     <module>redisgen</module>
     <module>benchmark</module>
-<!--    <module>finagle-service</module> -->
-    <module>server</module>
+    <module>netty</module>
+    <module>netty-client</module>
+    <module>netty4</module>
     <module>netty4-client</module>
+    <module>netty4-server</module>
   </modules>
   <packaging>pom</packaging>
 
@@ -75,7 +72,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>12.0</version>
+      <version>13.0.1</version>
     </dependency>
 
     <!-- CLI -->

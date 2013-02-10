@@ -2,21 +2,19 @@ A very fast Redis client for the JVM.
 
 Description of each module:
 
+redisgen/
+  Scrapes the redis.io/commands page and produce various typed clients and servers, very extensible
+
+util/
+  Some common encoding and data structures
 client/
   Leverages the protocol module for encoding and decoding. Supports both synchronous
   and asynchronous pipelined requests from the RedisClient. Supports 2.6 commands.
 protocol/
   Redis protocol encoder / decoder based on input/outputstreams. This is the
   fastest implementation if blocking i/o is ok for your use case.
-
 benchmark/
   A redis-benchmark clone that uses this Java client for comparison testing.
-
-redisgen/
-  Scrapes the redis.io/commands page and produce various clients and servers
-
-loader/
-  Utility to parse HDFS line-oriented files and load them into Redis
 
 netty/
   A netty 3.5.X compatible codecs for building Redis clients
@@ -25,18 +23,18 @@ netty-client/
 
 netty4/
   A netty 4.0.0.Alpha1 compatible codec for building Redis clients
-
-finagle/
-  A finagle 5.X compatible netty codec factory for building Redis clients
-finagle-service/
-  A finagle 5.X compatible service that doesn't use netty
-
+netty4-server/
+  A very high performance in-JVM memory redis server clone
 
 util/
   Some library functions used by both the blocking client and the netty clients
 
-server/
-  An attempt at a server again
+In the experiments branch you can find:
+  - finagle
+  - vertx
+  - NIO bytebuffers
+  - HBase Loader
+  - and more!
 
 Maven dependency:
 
