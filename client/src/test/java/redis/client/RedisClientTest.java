@@ -3,6 +3,7 @@ package redis.client;
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.SettableFuture;
 import org.junit.Test;
+import redis.Command;
 import redis.reply.BulkReply;
 import redis.reply.IntegerReply;
 import redis.reply.MultiBulkReply;
@@ -174,6 +175,7 @@ public class RedisClientTest {
   public void benchmarkPipeline() throws IOException, ExecutionException, InterruptedException {
     long start = System.currentTimeMillis();
     RedisClient redisClient = new RedisClient("localhost", 6379);
+    redisClient.execute("INFO", new Command("INFO", "server"));
     RedisClient.Pipeline pipeline = redisClient.pipeline();
     int PIPELINE_CALLS = 50;
     Future<StatusReply>[] replies = new Future[PIPELINE_CALLS];

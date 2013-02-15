@@ -1,12 +1,7 @@
 package redis.client;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.concurrent.ExecutionException;
-
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ListenableFuture;
-
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -15,9 +10,20 @@ import redis.reply.IntegerReply;
 import redis.reply.MultiBulkReply;
 import redis.reply.StatusReply;
 
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.fail;
-import static redis.client.RedisClientBase.*;
+import static redis.client.RedisClientBase.ALPHA;
+import static redis.client.RedisClientBase.BY;
+import static redis.client.RedisClientBase.DESC;
+import static redis.client.RedisClientBase.GET;
+import static redis.client.RedisClientBase.LIMIT;
+import static redis.client.RedisClientBase.STORE;
+import static redis.client.RedisClientBase.WEIGHTS;
+import static redis.client.RedisClientBase.WITHSCORES;
 
 public class AllCommandsTest {
 
@@ -43,14 +49,14 @@ public class AllCommandsTest {
     rc.config_set("requirepass", "test");
     RedisClient authtest = new RedisClient("localhost", 6379);
     try {
-      authtest.info();
+      authtest.info(null);
       fail("should have thrown");
     } catch (RedisException re) {
       assertEquals("ERR operation not permitted", re.getMessage());
     }
     rc.auth("test");
     rc.config_set("requirepass", "");
-    authtest.info();
+    authtest.info(null);
   }
 
   @Test

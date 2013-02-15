@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <parent>
-    <groupId>com.github.spullara.redis</groupId>
     <artifactId>redis</artifactId>
+    <groupId>com.github.spullara.redis</groupId>
     <version>0.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>netty4</artifactId>
-  <name>netty4</name>
+  <artifactId>server</artifactId>
+  <name>server</name>
 
   <dependencies>
     <dependency>
-      <groupId>io.netty</groupId>
-      <artifactId>netty</artifactId>
-      <version>4.0.0.Alpha5</version>
+      <groupId>com.github.spullara.redis</groupId>
+      <artifactId>netty4</artifactId>
+      <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.github.spullara.redis</groupId>
-      <artifactId>util</artifactId>
+      <artifactId>protocol</artifactId>
       <version>0.5-SNAPSHOT</version>
     </dependency>
   </dependencies>

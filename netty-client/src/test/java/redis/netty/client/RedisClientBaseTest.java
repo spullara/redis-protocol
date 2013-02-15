@@ -298,7 +298,7 @@ public class RedisClientBaseTest {
 
   @Test
   public void testPubSub() throws InterruptedException, ExecutionException {
-    final CountDownLatch done = new CountDownLatch(1);
+    final CountDownLatch done = new CountDownLatch(2);
     final Promise<Void> wassubscribed = new Promise<>();
     final AtomicReference<byte[]> gotmessage = new AtomicReference<>();
     final AtomicLong listeners = new AtomicLong(0);
@@ -353,6 +353,7 @@ public class RedisClientBaseTest {
                       public void apply(IntegerReply integerReply) {
                         listeners.set(integerReply.data());
                         redisClient.close();
+                        done.countDown();
                       }
                     });
                   }
