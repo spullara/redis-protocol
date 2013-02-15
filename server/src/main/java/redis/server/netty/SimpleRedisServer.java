@@ -1495,6 +1495,9 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public MultiBulkReply keys(byte[] pattern0) throws RedisException {
+    if (pattern0 == null) {
+      throw new RedisException("wrong number of arguments for KEYS");
+    }
     List<Reply<ByteBuf>> replies = new ArrayList<Reply<ByteBuf>>();
     Iterator<Object> it = data.keySet().iterator();
     while(it.hasNext()) {        
