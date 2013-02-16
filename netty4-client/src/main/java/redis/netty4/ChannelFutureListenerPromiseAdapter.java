@@ -21,8 +21,6 @@ public class ChannelFutureListenerPromiseAdapter<T> implements ChannelFutureList
   public void operationComplete(ChannelFuture channelFuture) throws Exception {
     if (channelFuture.isSuccess()) {
       promise.set(client);
-    } else if (channelFuture.isCancelled()) {
-      promise.cancel(true);
     } else {
       promise.setException(channelFuture.cause());
     }

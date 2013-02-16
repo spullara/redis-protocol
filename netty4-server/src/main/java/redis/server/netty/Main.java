@@ -5,8 +5,11 @@ import com.sampullara.cli.Argument;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioEventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.logging.ByteLoggingHandler;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 
 /**
  * Redis server
@@ -39,8 +42,9 @@ public class Main {
            @Override
            public void initChannel(SocketChannel ch) throws Exception {
              ChannelPipeline p = ch.pipeline();
-             p.addLast(group, new RedisCommandDecoder());
-             p.addLast(group, new RedisReplyEncoder());
+//             p.addLast(new ByteLoggingHandler(LogLevel.INFO));
+             p.addLast(new RedisCommandDecoder());
+             p.addLast(new RedisReplyEncoder());
              p.addLast(group, commandHandler);
            }
          });

@@ -13,7 +13,7 @@ import static redis.netty4.RedisReplyDecoder.readLong;
 /**
  * Decode commands.
  */
-public class RedisCommandDecoder extends ReplayingDecoder<Command, Void> {
+public class RedisCommandDecoder extends ReplayingDecoder<Void> {
 
   private byte[][] bytes;
   private int arguments = 0;
@@ -72,7 +72,7 @@ public class RedisCommandDecoder extends ReplayingDecoder<Command, Void> {
   }
 
   @Override
-  public ByteBuf newInboundBuffer(ChannelHandlerContext ctx) throws Exception {
-    return super.newInboundBuffer(ctx);
+  protected ByteBuf newInboundBuffer0(ChannelHandlerContext ctx) throws Exception {
+    return ctx.alloc().directBuffer();
   }
 }

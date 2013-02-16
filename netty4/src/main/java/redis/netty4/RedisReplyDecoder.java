@@ -12,7 +12,7 @@ import java.io.IOException;
  * Netty codec for Redis
  */
 
-public class RedisReplyDecoder extends ReplayingDecoder<Reply<?>, Void> {
+public class RedisReplyDecoder extends ReplayingDecoder<Void> {
 
   public static final char CR = '\r';
   public static final char LF = '\n';
@@ -115,7 +115,7 @@ public class RedisReplyDecoder extends ReplayingDecoder<Reply<?>, Void> {
   }
 
   @Override
-  public Reply<?> decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
+  public Object decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
     return receive(byteBuf);
   }
 }

@@ -9,10 +9,6 @@ import redis.netty4.Reply;
  * Write a reply.
  */
 public class RedisReplyEncoder extends MessageToByteEncoder<Reply> {
-  public RedisReplyEncoder() {
-    super(Reply.class);
-  }
-
   @Override
   public void encode(ChannelHandlerContext ctx, Reply msg, ByteBuf out) throws Exception {
     msg.write(out);
