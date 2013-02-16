@@ -61,6 +61,11 @@ public class RedisCommandHandler extends ChannelInboundMessageHandlerAdapter<Com
   private static final byte LOWER_DIFF = 'a' - 'A';
 
   @Override
+  public void endMessageReceived(ChannelHandlerContext ctx) throws Exception {
+    ctx.flush();
+  }
+
+  @Override
   public void messageReceived(ChannelHandlerContext ctx, Command msg) throws Exception {
     byte[] name = msg.getName();
     for (int i = 0; i < name.length; i++) {
@@ -69,7 +74,6 @@ public class RedisCommandHandler extends ChannelInboundMessageHandlerAdapter<Com
         name[i] = (byte) (b + LOWER_DIFF);
       }
     }
-    ByteBuf os = ctx.nextOutboundByteBuffer();
     Wrapper wrapper = methods.get(new BytesKey(name));
     Reply reply;
     if (wrapper == null) {
@@ -90,7 +94,7 @@ public class RedisCommandHandler extends ChannelInboundMessageHandlerAdapter<Com
       if (reply == null) {
         reply = NYI_REPLY;
       }
-      ctx.write(reply);
+      ctx.nextOutboundMessageBuffer().add(reply);
     }
   }
 }

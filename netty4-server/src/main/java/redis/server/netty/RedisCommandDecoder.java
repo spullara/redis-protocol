@@ -70,4 +70,9 @@ public class RedisCommandDecoder extends ReplayingDecoder<Command, Void> {
       return new Command(b, true);
     }
   }
+
+  @Override
+  public ByteBuf newInboundBuffer(ChannelHandlerContext ctx) throws Exception {
+    return super.newInboundBuffer(ctx);
+  }
 }
