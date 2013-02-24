@@ -12,15 +12,22 @@ import spullara.util.concurrent.Promise;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @SuppressWarnings("UnusedDeclaration")
 public class RedisClient extends RedisClientBase {
 
-  public static Promise<RedisClient> connect(String host, int port) {
+  private static ExecutorService defaultExecutor;
+
+  public static synchronized Promise<RedisClient> connect(String host, int port) {
+    if (defaultExecutor == null) {
+      defaultExecutor = Executors.newCachedThreadPool();
+    }
     RedisClient redisClient = new RedisClient();
-    return RedisClientBase.connect(host, port, redisClient, Executors.newSingleThreadExecutor());
+    return RedisClientBase.connect(host, port, redisClient, defaultExecutor);
   }
+
   
   private static final String APPEND = "APPEND";
   private static final byte[] APPEND_BYTES = APPEND.getBytes(Charsets.US_ASCII);

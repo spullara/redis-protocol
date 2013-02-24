@@ -151,6 +151,11 @@ public class RedisClientBaseTest {
           }
         });
       }
+    }).onFailure(new Block<Throwable>() {
+      @Override
+      public void apply(Throwable throwable) {
+        throwable.printStackTrace();
+      }
     });
     done.await(5000, TimeUnit.MILLISECONDS);
     assertEquals("OK", setOK.get().data());
