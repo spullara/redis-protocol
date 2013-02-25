@@ -28,7 +28,6 @@ public class RedisClient extends RedisClientBase {
     return RedisClientBase.connect(host, port, redisClient, defaultExecutor);
   }
 
-  
   private static final String APPEND = "APPEND";
   private static final byte[] APPEND_BYTES = APPEND.getBytes(Charsets.US_ASCII);
   private static final int APPEND_VERSION = parseVersion("2.0.0");
@@ -46,7 +45,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(APPEND_BYTES, key0, value1));
   }
 
-  
   private static final String BITCOUNT = "BITCOUNT";
   private static final byte[] BITCOUNT_BYTES = BITCOUNT.getBytes(Charsets.US_ASCII);
   private static final int BITCOUNT_VERSION = parseVersion("2.6.0");
@@ -71,7 +69,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(BITCOUNT_BYTES, arguments));
   }
 
-  
   private static final String BITOP = "BITOP";
   private static final byte[] BITOP_BYTES = BITOP.getBytes(Charsets.US_ASCII);
   private static final int BITOP_VERSION = parseVersion("2.6.0");
@@ -100,7 +97,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(BITOP_BYTES, arguments));
   }
 
-  
   private static final String DECR = "DECR";
   private static final byte[] DECR_BYTES = DECR.getBytes(Charsets.US_ASCII);
   private static final int DECR_VERSION = parseVersion("1.0.0");
@@ -117,7 +113,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(DECR_BYTES, key0));
   }
 
-  
   private static final String DECRBY = "DECRBY";
   private static final byte[] DECRBY_BYTES = DECRBY.getBytes(Charsets.US_ASCII);
   private static final int DECRBY_VERSION = parseVersion("1.0.0");
@@ -135,7 +130,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(DECRBY_BYTES, key0, decrement1));
   }
 
-  
   private static final String GET = "GET";
   private static final byte[] GET_BYTES = GET.getBytes(Charsets.US_ASCII);
   private static final int GET_VERSION = parseVersion("1.0.0");
@@ -152,7 +146,6 @@ public class RedisClient extends RedisClientBase {
     return execute(BulkReply.class, new Command(GET_BYTES, key0));
   }
 
-  
   private static final String GETBIT = "GETBIT";
   private static final byte[] GETBIT_BYTES = GETBIT.getBytes(Charsets.US_ASCII);
   private static final int GETBIT_VERSION = parseVersion("2.2.0");
@@ -170,7 +163,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(GETBIT_BYTES, key0, offset1));
   }
 
-  
   private static final String GETRANGE = "GETRANGE";
   private static final byte[] GETRANGE_BYTES = GETRANGE.getBytes(Charsets.US_ASCII);
   private static final int GETRANGE_VERSION = parseVersion("2.4.0");
@@ -189,7 +181,6 @@ public class RedisClient extends RedisClientBase {
     return execute(BulkReply.class, new Command(GETRANGE_BYTES, key0, start1, end2));
   }
 
-  
   private static final String GETSET = "GETSET";
   private static final byte[] GETSET_BYTES = GETSET.getBytes(Charsets.US_ASCII);
   private static final int GETSET_VERSION = parseVersion("1.0.0");
@@ -207,7 +198,6 @@ public class RedisClient extends RedisClientBase {
     return execute(BulkReply.class, new Command(GETSET_BYTES, key0, value1));
   }
 
-  
   private static final String INCR = "INCR";
   private static final byte[] INCR_BYTES = INCR.getBytes(Charsets.US_ASCII);
   private static final int INCR_VERSION = parseVersion("1.0.0");
@@ -224,7 +214,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(INCR_BYTES, key0));
   }
 
-  
   private static final String INCRBY = "INCRBY";
   private static final byte[] INCRBY_BYTES = INCRBY.getBytes(Charsets.US_ASCII);
   private static final int INCRBY_VERSION = parseVersion("1.0.0");
@@ -242,7 +231,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(INCRBY_BYTES, key0, increment1));
   }
 
-  
   private static final String INCRBYFLOAT = "INCRBYFLOAT";
   private static final byte[] INCRBYFLOAT_BYTES = INCRBYFLOAT.getBytes(Charsets.US_ASCII);
   private static final int INCRBYFLOAT_VERSION = parseVersion("2.6.0");
@@ -260,7 +248,6 @@ public class RedisClient extends RedisClientBase {
     return execute(BulkReply.class, new Command(INCRBYFLOAT_BYTES, key0, increment1));
   }
 
-  
   private static final String MGET = "MGET";
   private static final byte[] MGET_BYTES = MGET.getBytes(Charsets.US_ASCII);
   private static final int MGET_VERSION = parseVersion("1.0.0");
@@ -285,7 +272,6 @@ public class RedisClient extends RedisClientBase {
     return execute(MultiBulkReply.class, new Command(MGET_BYTES, arguments));
   }
 
-  
   private static final String MSET = "MSET";
   private static final byte[] MSET_BYTES = MSET.getBytes(Charsets.US_ASCII);
   private static final int MSET_VERSION = parseVersion("1.0.1");
@@ -310,7 +296,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(MSET_BYTES, arguments));
   }
 
-  
   private static final String MSETNX = "MSETNX";
   private static final byte[] MSETNX_BYTES = MSETNX.getBytes(Charsets.US_ASCII);
   private static final int MSETNX_VERSION = parseVersion("1.0.1");
@@ -335,7 +320,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(MSETNX_BYTES, arguments));
   }
 
-  
   private static final String PSETEX = "PSETEX";
   private static final byte[] PSETEX_BYTES = PSETEX.getBytes(Charsets.US_ASCII);
   private static final int PSETEX_VERSION = parseVersion("2.6.0");
@@ -354,7 +338,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(PSETEX_BYTES, key0, milliseconds1, value2));
   }
 
-  
   private static final String SET = "SET";
   private static final byte[] SET_BYTES = SET.getBytes(Charsets.US_ASCII);
   private static final int SET_VERSION = parseVersion("1.0.0");
@@ -372,7 +355,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(SET_BYTES, key0, value1));
   }
 
-  
   private static final String SETBIT = "SETBIT";
   private static final byte[] SETBIT_BYTES = SETBIT.getBytes(Charsets.US_ASCII);
   private static final int SETBIT_VERSION = parseVersion("2.2.0");
@@ -391,7 +373,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(SETBIT_BYTES, key0, offset1, value2));
   }
 
-  
   private static final String SETEX = "SETEX";
   private static final byte[] SETEX_BYTES = SETEX.getBytes(Charsets.US_ASCII);
   private static final int SETEX_VERSION = parseVersion("2.0.0");
@@ -410,7 +391,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(SETEX_BYTES, key0, seconds1, value2));
   }
 
-  
   private static final String SETNX = "SETNX";
   private static final byte[] SETNX_BYTES = SETNX.getBytes(Charsets.US_ASCII);
   private static final int SETNX_VERSION = parseVersion("1.0.0");
@@ -428,7 +408,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(SETNX_BYTES, key0, value1));
   }
 
-  
   private static final String SETRANGE = "SETRANGE";
   private static final byte[] SETRANGE_BYTES = SETRANGE.getBytes(Charsets.US_ASCII);
   private static final int SETRANGE_VERSION = parseVersion("2.2.0");
@@ -447,7 +426,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(SETRANGE_BYTES, key0, offset1, value2));
   }
 
-  
   private static final String STRLEN = "STRLEN";
   private static final byte[] STRLEN_BYTES = STRLEN.getBytes(Charsets.US_ASCII);
   private static final int STRLEN_VERSION = parseVersion("2.2.0");
@@ -464,7 +442,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(STRLEN_BYTES, key0));
   }
 
-  
   private static final String ECHO = "ECHO";
   private static final byte[] ECHO_BYTES = ECHO.getBytes(Charsets.US_ASCII);
   private static final int ECHO_VERSION = parseVersion("1.0.0");
@@ -481,7 +458,6 @@ public class RedisClient extends RedisClientBase {
     return execute(BulkReply.class, new Command(ECHO_BYTES, message0));
   }
 
-  
   private static final String PING = "PING";
   private static final byte[] PING_BYTES = PING.getBytes(Charsets.US_ASCII);
   private static final int PING_VERSION = parseVersion("1.0.0");
@@ -497,7 +473,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(PING_BYTES));
   }
 
-  
   private static final String QUIT = "QUIT";
   private static final byte[] QUIT_BYTES = QUIT.getBytes(Charsets.US_ASCII);
   private static final int QUIT_VERSION = parseVersion("1.0.0");
@@ -513,7 +488,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(QUIT_BYTES));
   }
 
-  
   private static final String SELECT = "SELECT";
   private static final byte[] SELECT_BYTES = SELECT.getBytes(Charsets.US_ASCII);
   private static final int SELECT_VERSION = parseVersion("1.0.0");
@@ -530,7 +504,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(SELECT_BYTES, index0));
   }
 
-  
   private static final String BGREWRITEAOF = "BGREWRITEAOF";
   private static final byte[] BGREWRITEAOF_BYTES = BGREWRITEAOF.getBytes(Charsets.US_ASCII);
   private static final int BGREWRITEAOF_VERSION = parseVersion("1.0.0");
@@ -546,7 +519,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(BGREWRITEAOF_BYTES));
   }
 
-  
   private static final String BGSAVE = "BGSAVE";
   private static final byte[] BGSAVE_BYTES = BGSAVE.getBytes(Charsets.US_ASCII);
   private static final int BGSAVE_VERSION = parseVersion("1.0.0");
@@ -562,7 +534,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(BGSAVE_BYTES));
   }
 
-  
   private static final String CLIENT_KILL = "CLIENT";
   private static final String CLIENT_KILL2 = "KILL";
   private static final byte[] CLIENT_KILL2_BYTES = CLIENT_KILL2.getBytes(Charsets.US_ASCII);
@@ -581,7 +552,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(CLIENT_KILL_BYTES, CLIENT_KILL2_BYTES, ip_port0));
   }
 
-  
   private static final String CLIENT_LIST = "CLIENT";
   private static final String CLIENT_LIST2 = "LIST";
   private static final byte[] CLIENT_LIST2_BYTES = CLIENT_LIST2.getBytes(Charsets.US_ASCII);
@@ -599,7 +569,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(CLIENT_LIST_BYTES, CLIENT_LIST2_BYTES));
   }
 
-  
   private static final String CLIENT_GETNAME = "CLIENT";
   private static final String CLIENT_GETNAME2 = "GETNAME";
   private static final byte[] CLIENT_GETNAME2_BYTES = CLIENT_GETNAME2.getBytes(Charsets.US_ASCII);
@@ -617,7 +586,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(CLIENT_GETNAME_BYTES, CLIENT_GETNAME2_BYTES));
   }
 
-  
   private static final String CLIENT_SETNAME = "CLIENT";
   private static final String CLIENT_SETNAME2 = "SETNAME";
   private static final byte[] CLIENT_SETNAME2_BYTES = CLIENT_SETNAME2.getBytes(Charsets.US_ASCII);
@@ -636,7 +604,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(CLIENT_SETNAME_BYTES, CLIENT_SETNAME2_BYTES, connection_name0));
   }
 
-  
   private static final String CONFIG_GET = "CONFIG";
   private static final String CONFIG_GET2 = "GET";
   private static final byte[] CONFIG_GET2_BYTES = CONFIG_GET2.getBytes(Charsets.US_ASCII);
@@ -655,7 +622,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(CONFIG_GET_BYTES, CONFIG_GET2_BYTES, parameter0));
   }
 
-  
   private static final String CONFIG_SET = "CONFIG";
   private static final String CONFIG_SET2 = "SET";
   private static final byte[] CONFIG_SET2_BYTES = CONFIG_SET2.getBytes(Charsets.US_ASCII);
@@ -675,7 +641,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(CONFIG_SET_BYTES, CONFIG_SET2_BYTES, parameter0, value1));
   }
 
-  
   private static final String CONFIG_RESETSTAT = "CONFIG";
   private static final String CONFIG_RESETSTAT2 = "RESETSTAT";
   private static final byte[] CONFIG_RESETSTAT2_BYTES = CONFIG_RESETSTAT2.getBytes(Charsets.US_ASCII);
@@ -693,7 +658,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(CONFIG_RESETSTAT_BYTES, CONFIG_RESETSTAT2_BYTES));
   }
 
-  
   private static final String DBSIZE = "DBSIZE";
   private static final byte[] DBSIZE_BYTES = DBSIZE.getBytes(Charsets.US_ASCII);
   private static final int DBSIZE_VERSION = parseVersion("1.0.0");
@@ -709,7 +673,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(DBSIZE_BYTES));
   }
 
-  
   private static final String DEBUG_OBJECT = "DEBUG";
   private static final String DEBUG_OBJECT2 = "OBJECT";
   private static final byte[] DEBUG_OBJECT2_BYTES = DEBUG_OBJECT2.getBytes(Charsets.US_ASCII);
@@ -728,7 +691,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(DEBUG_OBJECT_BYTES, DEBUG_OBJECT2_BYTES, key0));
   }
 
-  
   private static final String DEBUG_SEGFAULT = "DEBUG";
   private static final String DEBUG_SEGFAULT2 = "SEGFAULT";
   private static final byte[] DEBUG_SEGFAULT2_BYTES = DEBUG_SEGFAULT2.getBytes(Charsets.US_ASCII);
@@ -746,7 +708,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(DEBUG_SEGFAULT_BYTES, DEBUG_SEGFAULT2_BYTES));
   }
 
-  
   private static final String FLUSHALL = "FLUSHALL";
   private static final byte[] FLUSHALL_BYTES = FLUSHALL.getBytes(Charsets.US_ASCII);
   private static final int FLUSHALL_VERSION = parseVersion("1.0.0");
@@ -762,7 +723,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(FLUSHALL_BYTES));
   }
 
-  
   private static final String FLUSHDB = "FLUSHDB";
   private static final byte[] FLUSHDB_BYTES = FLUSHDB.getBytes(Charsets.US_ASCII);
   private static final int FLUSHDB_VERSION = parseVersion("1.0.0");
@@ -778,7 +738,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(FLUSHDB_BYTES));
   }
 
-  
   private static final String INFO = "INFO";
   private static final byte[] INFO_BYTES = INFO.getBytes(Charsets.US_ASCII);
   private static final int INFO_VERSION = parseVersion("1.0.0");
@@ -801,7 +760,6 @@ public class RedisClient extends RedisClientBase {
     return execute(BulkReply.class, new Command(INFO_BYTES, arguments));
   }
 
-  
   private static final String LASTSAVE = "LASTSAVE";
   private static final byte[] LASTSAVE_BYTES = LASTSAVE.getBytes(Charsets.US_ASCII);
   private static final int LASTSAVE_VERSION = parseVersion("1.0.0");
@@ -817,7 +775,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(LASTSAVE_BYTES));
   }
 
-  
   private static final String MONITOR = "MONITOR";
   private static final byte[] MONITOR_BYTES = MONITOR.getBytes(Charsets.US_ASCII);
   private static final int MONITOR_VERSION = parseVersion("1.0.0");
@@ -833,7 +790,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(MONITOR_BYTES));
   }
 
-  
   private static final String SAVE = "SAVE";
   private static final byte[] SAVE_BYTES = SAVE.getBytes(Charsets.US_ASCII);
   private static final int SAVE_VERSION = parseVersion("1.0.0");
@@ -849,7 +805,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(SAVE_BYTES));
   }
 
-  
   private static final String SHUTDOWN = "SHUTDOWN";
   private static final byte[] SHUTDOWN_BYTES = SHUTDOWN.getBytes(Charsets.US_ASCII);
   private static final int SHUTDOWN_VERSION = parseVersion("1.0.0");
@@ -873,7 +828,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(SHUTDOWN_BYTES, arguments));
   }
 
-  
   private static final String SLAVEOF = "SLAVEOF";
   private static final byte[] SLAVEOF_BYTES = SLAVEOF.getBytes(Charsets.US_ASCII);
   private static final int SLAVEOF_VERSION = parseVersion("1.0.0");
@@ -891,7 +845,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(SLAVEOF_BYTES, host0, port1));
   }
 
-  
   private static final String SLOWLOG = "SLOWLOG";
   private static final byte[] SLOWLOG_BYTES = SLOWLOG.getBytes(Charsets.US_ASCII);
   private static final int SLOWLOG_VERSION = parseVersion("2.2.12");
@@ -915,7 +868,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(SLOWLOG_BYTES, arguments));
   }
 
-  
   private static final String SYNC = "SYNC";
   private static final byte[] SYNC_BYTES = SYNC.getBytes(Charsets.US_ASCII);
   private static final int SYNC_VERSION = parseVersion("1.0.0");
@@ -931,7 +883,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(SYNC_BYTES));
   }
 
-  
   private static final String TIME = "TIME";
   private static final byte[] TIME_BYTES = TIME.getBytes(Charsets.US_ASCII);
   private static final int TIME_VERSION = parseVersion("2.6.0");
@@ -947,7 +898,6 @@ public class RedisClient extends RedisClientBase {
     return execute(MultiBulkReply.class, new Command(TIME_BYTES));
   }
 
-  
   private static final String BLPOP = "BLPOP";
   private static final byte[] BLPOP_BYTES = BLPOP.getBytes(Charsets.US_ASCII);
   private static final int BLPOP_VERSION = parseVersion("2.0.0");
@@ -972,7 +922,6 @@ public class RedisClient extends RedisClientBase {
     return execute(MultiBulkReply.class, new Command(BLPOP_BYTES, arguments));
   }
 
-  
   private static final String BRPOP = "BRPOP";
   private static final byte[] BRPOP_BYTES = BRPOP.getBytes(Charsets.US_ASCII);
   private static final int BRPOP_VERSION = parseVersion("2.0.0");
@@ -997,7 +946,6 @@ public class RedisClient extends RedisClientBase {
     return execute(MultiBulkReply.class, new Command(BRPOP_BYTES, arguments));
   }
 
-  
   private static final String BRPOPLPUSH = "BRPOPLPUSH";
   private static final byte[] BRPOPLPUSH_BYTES = BRPOPLPUSH.getBytes(Charsets.US_ASCII);
   private static final int BRPOPLPUSH_VERSION = parseVersion("2.2.0");
@@ -1016,7 +964,6 @@ public class RedisClient extends RedisClientBase {
     return execute(BulkReply.class, new Command(BRPOPLPUSH_BYTES, source0, destination1, timeout2));
   }
 
-  
   private static final String LINDEX = "LINDEX";
   private static final byte[] LINDEX_BYTES = LINDEX.getBytes(Charsets.US_ASCII);
   private static final int LINDEX_VERSION = parseVersion("1.0.0");
@@ -1034,7 +981,6 @@ public class RedisClient extends RedisClientBase {
     return execute(BulkReply.class, new Command(LINDEX_BYTES, key0, index1));
   }
 
-  
   private static final String LINSERT = "LINSERT";
   private static final byte[] LINSERT_BYTES = LINSERT.getBytes(Charsets.US_ASCII);
   private static final int LINSERT_VERSION = parseVersion("2.2.0");
@@ -1059,7 +1005,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(LINSERT_BYTES, list.toArray(new Object[list.size()])));
   }
 
-  
   private static final String LLEN = "LLEN";
   private static final byte[] LLEN_BYTES = LLEN.getBytes(Charsets.US_ASCII);
   private static final int LLEN_VERSION = parseVersion("1.0.0");
@@ -1076,7 +1021,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(LLEN_BYTES, key0));
   }
 
-  
   private static final String LPOP = "LPOP";
   private static final byte[] LPOP_BYTES = LPOP.getBytes(Charsets.US_ASCII);
   private static final int LPOP_VERSION = parseVersion("1.0.0");
@@ -1093,7 +1037,6 @@ public class RedisClient extends RedisClientBase {
     return execute(BulkReply.class, new Command(LPOP_BYTES, key0));
   }
 
-  
   private static final String LPUSH = "LPUSH";
   private static final byte[] LPUSH_BYTES = LPUSH.getBytes(Charsets.US_ASCII);
   private static final int LPUSH_VERSION = parseVersion("1.0.0");
@@ -1120,7 +1063,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(LPUSH_BYTES, arguments));
   }
 
-  
   private static final String LPUSHX = "LPUSHX";
   private static final byte[] LPUSHX_BYTES = LPUSHX.getBytes(Charsets.US_ASCII);
   private static final int LPUSHX_VERSION = parseVersion("2.2.0");
@@ -1138,7 +1080,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(LPUSHX_BYTES, key0, value1));
   }
 
-  
   private static final String LRANGE = "LRANGE";
   private static final byte[] LRANGE_BYTES = LRANGE.getBytes(Charsets.US_ASCII);
   private static final int LRANGE_VERSION = parseVersion("1.0.0");
@@ -1157,7 +1098,6 @@ public class RedisClient extends RedisClientBase {
     return execute(MultiBulkReply.class, new Command(LRANGE_BYTES, key0, start1, stop2));
   }
 
-  
   private static final String LREM = "LREM";
   private static final byte[] LREM_BYTES = LREM.getBytes(Charsets.US_ASCII);
   private static final int LREM_VERSION = parseVersion("1.0.0");
@@ -1176,7 +1116,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(LREM_BYTES, key0, count1, value2));
   }
 
-  
   private static final String LSET = "LSET";
   private static final byte[] LSET_BYTES = LSET.getBytes(Charsets.US_ASCII);
   private static final int LSET_VERSION = parseVersion("1.0.0");
@@ -1195,7 +1134,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(LSET_BYTES, key0, index1, value2));
   }
 
-  
   private static final String LTRIM = "LTRIM";
   private static final byte[] LTRIM_BYTES = LTRIM.getBytes(Charsets.US_ASCII);
   private static final int LTRIM_VERSION = parseVersion("1.0.0");
@@ -1214,7 +1152,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(LTRIM_BYTES, key0, start1, stop2));
   }
 
-  
   private static final String RPOP = "RPOP";
   private static final byte[] RPOP_BYTES = RPOP.getBytes(Charsets.US_ASCII);
   private static final int RPOP_VERSION = parseVersion("1.0.0");
@@ -1231,7 +1168,6 @@ public class RedisClient extends RedisClientBase {
     return execute(BulkReply.class, new Command(RPOP_BYTES, key0));
   }
 
-  
   private static final String RPOPLPUSH = "RPOPLPUSH";
   private static final byte[] RPOPLPUSH_BYTES = RPOPLPUSH.getBytes(Charsets.US_ASCII);
   private static final int RPOPLPUSH_VERSION = parseVersion("1.2.0");
@@ -1249,7 +1185,6 @@ public class RedisClient extends RedisClientBase {
     return execute(BulkReply.class, new Command(RPOPLPUSH_BYTES, source0, destination1));
   }
 
-  
   private static final String RPUSH = "RPUSH";
   private static final byte[] RPUSH_BYTES = RPUSH.getBytes(Charsets.US_ASCII);
   private static final int RPUSH_VERSION = parseVersion("1.0.0");
@@ -1276,7 +1211,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(RPUSH_BYTES, arguments));
   }
 
-  
   private static final String RPUSHX = "RPUSHX";
   private static final byte[] RPUSHX_BYTES = RPUSHX.getBytes(Charsets.US_ASCII);
   private static final int RPUSHX_VERSION = parseVersion("2.2.0");
@@ -1294,7 +1228,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(RPUSHX_BYTES, key0, value1));
   }
 
-  
   private static final String DEL = "DEL";
   private static final byte[] DEL_BYTES = DEL.getBytes(Charsets.US_ASCII);
   private static final int DEL_VERSION = parseVersion("1.0.0");
@@ -1319,7 +1252,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(DEL_BYTES, arguments));
   }
 
-  
   private static final String DUMP = "DUMP";
   private static final byte[] DUMP_BYTES = DUMP.getBytes(Charsets.US_ASCII);
   private static final int DUMP_VERSION = parseVersion("2.6.0");
@@ -1336,7 +1268,6 @@ public class RedisClient extends RedisClientBase {
     return execute(BulkReply.class, new Command(DUMP_BYTES, key0));
   }
 
-  
   private static final String EXISTS = "EXISTS";
   private static final byte[] EXISTS_BYTES = EXISTS.getBytes(Charsets.US_ASCII);
   private static final int EXISTS_VERSION = parseVersion("1.0.0");
@@ -1353,7 +1284,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(EXISTS_BYTES, key0));
   }
 
-  
   private static final String EXPIRE = "EXPIRE";
   private static final byte[] EXPIRE_BYTES = EXPIRE.getBytes(Charsets.US_ASCII);
   private static final int EXPIRE_VERSION = parseVersion("1.0.0");
@@ -1371,7 +1301,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(EXPIRE_BYTES, key0, seconds1));
   }
 
-  
   private static final String EXPIREAT = "EXPIREAT";
   private static final byte[] EXPIREAT_BYTES = EXPIREAT.getBytes(Charsets.US_ASCII);
   private static final int EXPIREAT_VERSION = parseVersion("1.2.0");
@@ -1389,7 +1318,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(EXPIREAT_BYTES, key0, timestamp1));
   }
 
-  
   private static final String KEYS = "KEYS";
   private static final byte[] KEYS_BYTES = KEYS.getBytes(Charsets.US_ASCII);
   private static final int KEYS_VERSION = parseVersion("1.0.0");
@@ -1406,7 +1334,6 @@ public class RedisClient extends RedisClientBase {
     return execute(MultiBulkReply.class, new Command(KEYS_BYTES, pattern0));
   }
 
-  
   private static final String MIGRATE = "MIGRATE";
   private static final byte[] MIGRATE_BYTES = MIGRATE.getBytes(Charsets.US_ASCII);
   private static final int MIGRATE_VERSION = parseVersion("2.6.0");
@@ -1433,7 +1360,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(MIGRATE_BYTES, list.toArray(new Object[list.size()])));
   }
 
-  
   private static final String MOVE = "MOVE";
   private static final byte[] MOVE_BYTES = MOVE.getBytes(Charsets.US_ASCII);
   private static final int MOVE_VERSION = parseVersion("1.0.0");
@@ -1451,7 +1377,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(MOVE_BYTES, key0, db1));
   }
 
-  
   private static final String OBJECT = "OBJECT";
   private static final byte[] OBJECT_BYTES = OBJECT.getBytes(Charsets.US_ASCII);
   private static final int OBJECT_VERSION = parseVersion("2.2.3");
@@ -1478,7 +1403,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(OBJECT_BYTES, arguments));
   }
 
-  
   private static final String PERSIST = "PERSIST";
   private static final byte[] PERSIST_BYTES = PERSIST.getBytes(Charsets.US_ASCII);
   private static final int PERSIST_VERSION = parseVersion("2.2.0");
@@ -1495,7 +1419,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(PERSIST_BYTES, key0));
   }
 
-  
   private static final String PEXPIRE = "PEXPIRE";
   private static final byte[] PEXPIRE_BYTES = PEXPIRE.getBytes(Charsets.US_ASCII);
   private static final int PEXPIRE_VERSION = parseVersion("2.6.0");
@@ -1513,7 +1436,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(PEXPIRE_BYTES, key0, milliseconds1));
   }
 
-  
   private static final String PEXPIREAT = "PEXPIREAT";
   private static final byte[] PEXPIREAT_BYTES = PEXPIREAT.getBytes(Charsets.US_ASCII);
   private static final int PEXPIREAT_VERSION = parseVersion("2.6.0");
@@ -1531,7 +1453,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(PEXPIREAT_BYTES, key0, milliseconds_timestamp1));
   }
 
-  
   private static final String PTTL = "PTTL";
   private static final byte[] PTTL_BYTES = PTTL.getBytes(Charsets.US_ASCII);
   private static final int PTTL_VERSION = parseVersion("2.6.0");
@@ -1548,7 +1469,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(PTTL_BYTES, key0));
   }
 
-  
   private static final String RANDOMKEY = "RANDOMKEY";
   private static final byte[] RANDOMKEY_BYTES = RANDOMKEY.getBytes(Charsets.US_ASCII);
   private static final int RANDOMKEY_VERSION = parseVersion("1.0.0");
@@ -1564,7 +1484,6 @@ public class RedisClient extends RedisClientBase {
     return execute(BulkReply.class, new Command(RANDOMKEY_BYTES));
   }
 
-  
   private static final String RENAME = "RENAME";
   private static final byte[] RENAME_BYTES = RENAME.getBytes(Charsets.US_ASCII);
   private static final int RENAME_VERSION = parseVersion("1.0.0");
@@ -1582,7 +1501,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(RENAME_BYTES, key0, newkey1));
   }
 
-  
   private static final String RENAMENX = "RENAMENX";
   private static final byte[] RENAMENX_BYTES = RENAMENX.getBytes(Charsets.US_ASCII);
   private static final int RENAMENX_VERSION = parseVersion("1.0.0");
@@ -1600,7 +1518,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(RENAMENX_BYTES, key0, newkey1));
   }
 
-  
   private static final String RESTORE = "RESTORE";
   private static final byte[] RESTORE_BYTES = RESTORE.getBytes(Charsets.US_ASCII);
   private static final int RESTORE_VERSION = parseVersion("2.6.0");
@@ -1619,7 +1536,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(RESTORE_BYTES, key0, ttl1, serialized_value2));
   }
 
-  
   private static final String SORT = "SORT";
   private static final byte[] SORT_BYTES = SORT.getBytes(Charsets.US_ASCII);
   private static final int SORT_VERSION = parseVersion("1.0.0");
@@ -1646,7 +1562,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(SORT_BYTES, arguments));
   }
 
-  
   private static final String TTL = "TTL";
   private static final byte[] TTL_BYTES = TTL.getBytes(Charsets.US_ASCII);
   private static final int TTL_VERSION = parseVersion("1.0.0");
@@ -1663,7 +1578,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(TTL_BYTES, key0));
   }
 
-  
   private static final String TYPE = "TYPE";
   private static final byte[] TYPE_BYTES = TYPE.getBytes(Charsets.US_ASCII);
   private static final int TYPE_VERSION = parseVersion("1.0.0");
@@ -1680,7 +1594,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(TYPE_BYTES, key0));
   }
 
-  
   private static final String UNWATCH = "UNWATCH";
   private static final byte[] UNWATCH_BYTES = UNWATCH.getBytes(Charsets.US_ASCII);
   private static final int UNWATCH_VERSION = parseVersion("2.2.0");
@@ -1696,7 +1609,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(UNWATCH_BYTES));
   }
 
-  
   private static final String WATCH = "WATCH";
   private static final byte[] WATCH_BYTES = WATCH.getBytes(Charsets.US_ASCII);
   private static final int WATCH_VERSION = parseVersion("2.2.0");
@@ -1721,7 +1633,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(WATCH_BYTES, arguments));
   }
 
-  
   private static final String EVAL = "EVAL";
   private static final byte[] EVAL_BYTES = EVAL.getBytes(Charsets.US_ASCII);
   private static final int EVAL_VERSION = parseVersion("2.6.0");
@@ -1750,7 +1661,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(EVAL_BYTES, arguments));
   }
 
-  
   private static final String EVALSHA = "EVALSHA";
   private static final byte[] EVALSHA_BYTES = EVALSHA.getBytes(Charsets.US_ASCII);
   private static final int EVALSHA_VERSION = parseVersion("2.6.0");
@@ -1779,7 +1689,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(EVALSHA_BYTES, arguments));
   }
 
-  
   private static final String SCRIPT_EXISTS = "SCRIPT";
   private static final String SCRIPT_EXISTS2 = "EXISTS";
   private static final byte[] SCRIPT_EXISTS2_BYTES = SCRIPT_EXISTS2.getBytes(Charsets.US_ASCII);
@@ -1806,7 +1715,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(SCRIPT_EXISTS_BYTES, SCRIPT_EXISTS2_BYTES, arguments));
   }
 
-  
   private static final String SCRIPT_FLUSH = "SCRIPT";
   private static final String SCRIPT_FLUSH2 = "FLUSH";
   private static final byte[] SCRIPT_FLUSH2_BYTES = SCRIPT_FLUSH2.getBytes(Charsets.US_ASCII);
@@ -1824,7 +1732,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(SCRIPT_FLUSH_BYTES, SCRIPT_FLUSH2_BYTES));
   }
 
-  
   private static final String SCRIPT_KILL = "SCRIPT";
   private static final String SCRIPT_KILL2 = "KILL";
   private static final byte[] SCRIPT_KILL2_BYTES = SCRIPT_KILL2.getBytes(Charsets.US_ASCII);
@@ -1842,7 +1749,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(SCRIPT_KILL_BYTES, SCRIPT_KILL2_BYTES));
   }
 
-  
   private static final String SCRIPT_LOAD = "SCRIPT";
   private static final String SCRIPT_LOAD2 = "LOAD";
   private static final byte[] SCRIPT_LOAD2_BYTES = SCRIPT_LOAD2.getBytes(Charsets.US_ASCII);
@@ -1861,7 +1767,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(SCRIPT_LOAD_BYTES, SCRIPT_LOAD2_BYTES, script0));
   }
 
-  
   private static final String HDEL = "HDEL";
   private static final byte[] HDEL_BYTES = HDEL.getBytes(Charsets.US_ASCII);
   private static final int HDEL_VERSION = parseVersion("2.0.0");
@@ -1888,7 +1793,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(HDEL_BYTES, arguments));
   }
 
-  
   private static final String HEXISTS = "HEXISTS";
   private static final byte[] HEXISTS_BYTES = HEXISTS.getBytes(Charsets.US_ASCII);
   private static final int HEXISTS_VERSION = parseVersion("2.0.0");
@@ -1906,7 +1810,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(HEXISTS_BYTES, key0, field1));
   }
 
-  
   private static final String HGET = "HGET";
   private static final byte[] HGET_BYTES = HGET.getBytes(Charsets.US_ASCII);
   private static final int HGET_VERSION = parseVersion("2.0.0");
@@ -1924,7 +1827,6 @@ public class RedisClient extends RedisClientBase {
     return execute(BulkReply.class, new Command(HGET_BYTES, key0, field1));
   }
 
-  
   private static final String HGETALL = "HGETALL";
   private static final byte[] HGETALL_BYTES = HGETALL.getBytes(Charsets.US_ASCII);
   private static final int HGETALL_VERSION = parseVersion("2.0.0");
@@ -1941,7 +1843,6 @@ public class RedisClient extends RedisClientBase {
     return execute(MultiBulkReply.class, new Command(HGETALL_BYTES, key0));
   }
 
-  
   private static final String HINCRBY = "HINCRBY";
   private static final byte[] HINCRBY_BYTES = HINCRBY.getBytes(Charsets.US_ASCII);
   private static final int HINCRBY_VERSION = parseVersion("2.0.0");
@@ -1960,7 +1861,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(HINCRBY_BYTES, key0, field1, increment2));
   }
 
-  
   private static final String HINCRBYFLOAT = "HINCRBYFLOAT";
   private static final byte[] HINCRBYFLOAT_BYTES = HINCRBYFLOAT.getBytes(Charsets.US_ASCII);
   private static final int HINCRBYFLOAT_VERSION = parseVersion("2.6.0");
@@ -1979,7 +1879,6 @@ public class RedisClient extends RedisClientBase {
     return execute(BulkReply.class, new Command(HINCRBYFLOAT_BYTES, key0, field1, increment2));
   }
 
-  
   private static final String HKEYS = "HKEYS";
   private static final byte[] HKEYS_BYTES = HKEYS.getBytes(Charsets.US_ASCII);
   private static final int HKEYS_VERSION = parseVersion("2.0.0");
@@ -1996,7 +1895,6 @@ public class RedisClient extends RedisClientBase {
     return execute(MultiBulkReply.class, new Command(HKEYS_BYTES, key0));
   }
 
-  
   private static final String HLEN = "HLEN";
   private static final byte[] HLEN_BYTES = HLEN.getBytes(Charsets.US_ASCII);
   private static final int HLEN_VERSION = parseVersion("2.0.0");
@@ -2013,7 +1911,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(HLEN_BYTES, key0));
   }
 
-  
   private static final String HMGET = "HMGET";
   private static final byte[] HMGET_BYTES = HMGET.getBytes(Charsets.US_ASCII);
   private static final int HMGET_VERSION = parseVersion("2.0.0");
@@ -2040,7 +1937,6 @@ public class RedisClient extends RedisClientBase {
     return execute(MultiBulkReply.class, new Command(HMGET_BYTES, arguments));
   }
 
-  
   private static final String HMSET = "HMSET";
   private static final byte[] HMSET_BYTES = HMSET.getBytes(Charsets.US_ASCII);
   private static final int HMSET_VERSION = parseVersion("2.0.0");
@@ -2067,7 +1963,6 @@ public class RedisClient extends RedisClientBase {
     return execute(StatusReply.class, new Command(HMSET_BYTES, arguments));
   }
 
-  
   private static final String HSET = "HSET";
   private static final byte[] HSET_BYTES = HSET.getBytes(Charsets.US_ASCII);
   private static final int HSET_VERSION = parseVersion("2.0.0");
@@ -2086,7 +1981,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(HSET_BYTES, key0, field1, value2));
   }
 
-  
   private static final String HSETNX = "HSETNX";
   private static final byte[] HSETNX_BYTES = HSETNX.getBytes(Charsets.US_ASCII);
   private static final int HSETNX_VERSION = parseVersion("2.0.0");
@@ -2105,7 +1999,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(HSETNX_BYTES, key0, field1, value2));
   }
 
-  
   private static final String HVALS = "HVALS";
   private static final byte[] HVALS_BYTES = HVALS.getBytes(Charsets.US_ASCII);
   private static final int HVALS_VERSION = parseVersion("2.0.0");
@@ -2122,7 +2015,6 @@ public class RedisClient extends RedisClientBase {
     return execute(MultiBulkReply.class, new Command(HVALS_BYTES, key0));
   }
 
-  
   private static final String PUBLISH = "PUBLISH";
   private static final byte[] PUBLISH_BYTES = PUBLISH.getBytes(Charsets.US_ASCII);
   private static final int PUBLISH_VERSION = parseVersion("2.0.0");
@@ -2140,7 +2032,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(PUBLISH_BYTES, channel0, message1));
   }
 
-  
   private static final String SADD = "SADD";
   private static final byte[] SADD_BYTES = SADD.getBytes(Charsets.US_ASCII);
   private static final int SADD_VERSION = parseVersion("1.0.0");
@@ -2167,7 +2058,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(SADD_BYTES, arguments));
   }
 
-  
   private static final String SCARD = "SCARD";
   private static final byte[] SCARD_BYTES = SCARD.getBytes(Charsets.US_ASCII);
   private static final int SCARD_VERSION = parseVersion("1.0.0");
@@ -2184,7 +2074,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(SCARD_BYTES, key0));
   }
 
-  
   private static final String SDIFF = "SDIFF";
   private static final byte[] SDIFF_BYTES = SDIFF.getBytes(Charsets.US_ASCII);
   private static final int SDIFF_VERSION = parseVersion("1.0.0");
@@ -2209,7 +2098,6 @@ public class RedisClient extends RedisClientBase {
     return execute(MultiBulkReply.class, new Command(SDIFF_BYTES, arguments));
   }
 
-  
   private static final String SDIFFSTORE = "SDIFFSTORE";
   private static final byte[] SDIFFSTORE_BYTES = SDIFFSTORE.getBytes(Charsets.US_ASCII);
   private static final int SDIFFSTORE_VERSION = parseVersion("1.0.0");
@@ -2236,7 +2124,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(SDIFFSTORE_BYTES, arguments));
   }
 
-  
   private static final String SINTER = "SINTER";
   private static final byte[] SINTER_BYTES = SINTER.getBytes(Charsets.US_ASCII);
   private static final int SINTER_VERSION = parseVersion("1.0.0");
@@ -2261,7 +2148,6 @@ public class RedisClient extends RedisClientBase {
     return execute(MultiBulkReply.class, new Command(SINTER_BYTES, arguments));
   }
 
-  
   private static final String SINTERSTORE = "SINTERSTORE";
   private static final byte[] SINTERSTORE_BYTES = SINTERSTORE.getBytes(Charsets.US_ASCII);
   private static final int SINTERSTORE_VERSION = parseVersion("1.0.0");
@@ -2288,7 +2174,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(SINTERSTORE_BYTES, arguments));
   }
 
-  
   private static final String SISMEMBER = "SISMEMBER";
   private static final byte[] SISMEMBER_BYTES = SISMEMBER.getBytes(Charsets.US_ASCII);
   private static final int SISMEMBER_VERSION = parseVersion("1.0.0");
@@ -2306,7 +2191,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(SISMEMBER_BYTES, key0, member1));
   }
 
-  
   private static final String SMEMBERS = "SMEMBERS";
   private static final byte[] SMEMBERS_BYTES = SMEMBERS.getBytes(Charsets.US_ASCII);
   private static final int SMEMBERS_VERSION = parseVersion("1.0.0");
@@ -2323,7 +2207,6 @@ public class RedisClient extends RedisClientBase {
     return execute(MultiBulkReply.class, new Command(SMEMBERS_BYTES, key0));
   }
 
-  
   private static final String SMOVE = "SMOVE";
   private static final byte[] SMOVE_BYTES = SMOVE.getBytes(Charsets.US_ASCII);
   private static final int SMOVE_VERSION = parseVersion("1.0.0");
@@ -2342,7 +2225,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(SMOVE_BYTES, source0, destination1, member2));
   }
 
-  
   private static final String SPOP = "SPOP";
   private static final byte[] SPOP_BYTES = SPOP.getBytes(Charsets.US_ASCII);
   private static final int SPOP_VERSION = parseVersion("1.0.0");
@@ -2359,7 +2241,6 @@ public class RedisClient extends RedisClientBase {
     return execute(BulkReply.class, new Command(SPOP_BYTES, key0));
   }
 
-  
   private static final String SRANDMEMBER = "SRANDMEMBER";
   private static final byte[] SRANDMEMBER_BYTES = SRANDMEMBER.getBytes(Charsets.US_ASCII);
   private static final int SRANDMEMBER_VERSION = parseVersion("1.0.0");
@@ -2383,7 +2264,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(SRANDMEMBER_BYTES, arguments));
   }
 
-  
   private static final String SREM = "SREM";
   private static final byte[] SREM_BYTES = SREM.getBytes(Charsets.US_ASCII);
   private static final int SREM_VERSION = parseVersion("1.0.0");
@@ -2410,7 +2290,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(SREM_BYTES, arguments));
   }
 
-  
   private static final String SUNION = "SUNION";
   private static final byte[] SUNION_BYTES = SUNION.getBytes(Charsets.US_ASCII);
   private static final int SUNION_VERSION = parseVersion("1.0.0");
@@ -2435,7 +2314,6 @@ public class RedisClient extends RedisClientBase {
     return execute(MultiBulkReply.class, new Command(SUNION_BYTES, arguments));
   }
 
-  
   private static final String SUNIONSTORE = "SUNIONSTORE";
   private static final byte[] SUNIONSTORE_BYTES = SUNIONSTORE.getBytes(Charsets.US_ASCII);
   private static final int SUNIONSTORE_VERSION = parseVersion("1.0.0");
@@ -2462,7 +2340,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(SUNIONSTORE_BYTES, arguments));
   }
 
-  
   private static final String ZADD = "ZADD";
   private static final byte[] ZADD_BYTES = ZADD.getBytes(Charsets.US_ASCII);
   private static final int ZADD_VERSION = parseVersion("1.2.0");
@@ -2479,7 +2356,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(ZADD_BYTES, args));
   }
 
-  
   private static final String ZCARD = "ZCARD";
   private static final byte[] ZCARD_BYTES = ZCARD.getBytes(Charsets.US_ASCII);
   private static final int ZCARD_VERSION = parseVersion("1.2.0");
@@ -2496,7 +2372,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(ZCARD_BYTES, key0));
   }
 
-  
   private static final String ZCOUNT = "ZCOUNT";
   private static final byte[] ZCOUNT_BYTES = ZCOUNT.getBytes(Charsets.US_ASCII);
   private static final int ZCOUNT_VERSION = parseVersion("2.0.0");
@@ -2515,7 +2390,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(ZCOUNT_BYTES, key0, min1, max2));
   }
 
-  
   private static final String ZINCRBY = "ZINCRBY";
   private static final byte[] ZINCRBY_BYTES = ZINCRBY.getBytes(Charsets.US_ASCII);
   private static final int ZINCRBY_VERSION = parseVersion("1.2.0");
@@ -2534,7 +2408,6 @@ public class RedisClient extends RedisClientBase {
     return execute(BulkReply.class, new Command(ZINCRBY_BYTES, key0, increment1, member2));
   }
 
-  
   private static final String ZINTERSTORE = "ZINTERSTORE";
   private static final byte[] ZINTERSTORE_BYTES = ZINTERSTORE.getBytes(Charsets.US_ASCII);
   private static final int ZINTERSTORE_VERSION = parseVersion("2.0.0");
@@ -2563,7 +2436,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(ZINTERSTORE_BYTES, arguments));
   }
 
-  
   private static final String ZRANGE = "ZRANGE";
   private static final byte[] ZRANGE_BYTES = ZRANGE.getBytes(Charsets.US_ASCII);
   private static final int ZRANGE_VERSION = parseVersion("1.2.0");
@@ -2594,7 +2466,6 @@ public class RedisClient extends RedisClientBase {
     return execute(MultiBulkReply.class, new Command(ZRANGE_BYTES, arguments));
   }
 
-  
   private static final String ZRANGEBYSCORE = "ZRANGEBYSCORE";
   private static final byte[] ZRANGEBYSCORE_BYTES = ZRANGEBYSCORE.getBytes(Charsets.US_ASCII);
   private static final int ZRANGEBYSCORE_VERSION = parseVersion("1.0.5");
@@ -2627,7 +2498,6 @@ public class RedisClient extends RedisClientBase {
     return execute(MultiBulkReply.class, new Command(ZRANGEBYSCORE_BYTES, arguments));
   }
 
-  
   private static final String ZRANK = "ZRANK";
   private static final byte[] ZRANK_BYTES = ZRANK.getBytes(Charsets.US_ASCII);
   private static final int ZRANK_VERSION = parseVersion("2.0.0");
@@ -2645,7 +2515,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(ZRANK_BYTES, key0, member1));
   }
 
-  
   private static final String ZREM = "ZREM";
   private static final byte[] ZREM_BYTES = ZREM.getBytes(Charsets.US_ASCII);
   private static final int ZREM_VERSION = parseVersion("1.2.0");
@@ -2672,7 +2541,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(ZREM_BYTES, arguments));
   }
 
-  
   private static final String ZREMRANGEBYRANK = "ZREMRANGEBYRANK";
   private static final byte[] ZREMRANGEBYRANK_BYTES = ZREMRANGEBYRANK.getBytes(Charsets.US_ASCII);
   private static final int ZREMRANGEBYRANK_VERSION = parseVersion("2.0.0");
@@ -2691,7 +2559,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(ZREMRANGEBYRANK_BYTES, key0, start1, stop2));
   }
 
-  
   private static final String ZREMRANGEBYSCORE = "ZREMRANGEBYSCORE";
   private static final byte[] ZREMRANGEBYSCORE_BYTES = ZREMRANGEBYSCORE.getBytes(Charsets.US_ASCII);
   private static final int ZREMRANGEBYSCORE_VERSION = parseVersion("1.2.0");
@@ -2710,7 +2577,6 @@ public class RedisClient extends RedisClientBase {
     return execute(IntegerReply.class, new Command(ZREMRANGEBYSCORE_BYTES, key0, min1, max2));
   }
 
-  
   private static final String ZREVRANGE = "ZREVRANGE";
   private static final byte[] ZREVRANGE_BYTES = ZREVRANGE.getBytes(Charsets.US_ASCII);
   private static final int ZREVRANGE_VERSION = parseVersion("1.2.0");
@@ -2741,7 +2607,6 @@ public class RedisClient extends RedisClientBase {
     return execute(MultiBulkReply.class, new Command(ZREVRANGE_BYTES, arguments));
   }
 
-  
   private static final String ZREVRANGEBYSCORE = "ZREVRANGEBYSCORE";
   private static final byte[] ZREVRANGEBYSCORE_BYTES = ZREVRANGEBYSCORE.getBytes(Charsets.US_ASCII);
   private static final int ZREVRANGEBYSCORE_VERSION = parseVersion("2.2.0");
@@ -2774,7 +2639,6 @@ public class RedisClient extends RedisClientBase {
     return execute(MultiBulkReply.class, new Command(ZREVRANGEBYSCORE_BYTES, arguments));
   }
 
-  
   private static final String ZREVRANK = "ZREVRANK";
   private static final byte[] ZREVRANK_BYTES = ZREVRANK.getBytes(Charsets.US_ASCII);
   private static final int ZREVRANK_VERSION = parseVersion("2.0.0");
@@ -2792,7 +2656,6 @@ public class RedisClient extends RedisClientBase {
     return execute(Reply.class, new Command(ZREVRANK_BYTES, key0, member1));
   }
 
-  
   private static final String ZSCORE = "ZSCORE";
   private static final byte[] ZSCORE_BYTES = ZSCORE.getBytes(Charsets.US_ASCII);
   private static final int ZSCORE_VERSION = parseVersion("1.2.0");
@@ -2810,7 +2673,6 @@ public class RedisClient extends RedisClientBase {
     return execute(BulkReply.class, new Command(ZSCORE_BYTES, key0, member1));
   }
 
-  
   private static final String ZUNIONSTORE = "ZUNIONSTORE";
   private static final byte[] ZUNIONSTORE_BYTES = ZUNIONSTORE.getBytes(Charsets.US_ASCII);
   private static final int ZUNIONSTORE_VERSION = parseVersion("2.0.0");
@@ -2838,5 +2700,4 @@ public class RedisClient extends RedisClientBase {
     if (version < ZUNIONSTORE_VERSION) return new Promise<>(new RedisException("Server does not support ZUNIONSTORE"));
     return execute(IntegerReply.class, new Command(ZUNIONSTORE_BYTES, arguments));
   }
-
 }
