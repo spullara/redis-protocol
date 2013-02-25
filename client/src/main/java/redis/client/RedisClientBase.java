@@ -1,5 +1,19 @@
 package redis.client;
 
+import com.google.common.base.Charsets;
+import com.google.common.primitives.SignedBytes;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.SettableFuture;
+import redis.Command;
+import redis.RedisProtocol;
+import redis.reply.BulkReply;
+import redis.reply.ErrorReply;
+import redis.reply.MultiBulkReply;
+import redis.reply.Reply;
+import redis.reply.StatusReply;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
@@ -15,21 +29,6 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.common.base.Charsets;
-import com.google.common.primitives.SignedBytes;
-import com.google.common.util.concurrent.ListenableFuture;
-import com.google.common.util.concurrent.ListeningExecutorService;
-import com.google.common.util.concurrent.MoreExecutors;
-import com.google.common.util.concurrent.SettableFuture;
-
-import redis.Command;
-import redis.RedisProtocol;
-import redis.reply.BulkReply;
-import redis.reply.ErrorReply;
-import redis.reply.MultiBulkReply;
-import redis.reply.Reply;
-import redis.reply.StatusReply;
 
 /**
  * The lowest layer that talks directly with the redis protocol.
@@ -108,7 +107,7 @@ public class RedisClientBase {
 
   public synchronized ListenableFuture<? extends Reply> pipeline(String name, Command command) throws RedisException {
     if (subscribed) {
-      throw new RedisException("You can only issue subscription commands once subscribed");
+      throw new RedisException("You are subscribed and cannot create a pipeline");
     }
     try {
       redisProtocol.sendAsync(command);
@@ -164,7 +163,7 @@ public class RedisClientBase {
       throw new RedisException("Use the pipeline API when using transactions");
     }
     if (subscribed) {
-      throw new RedisException("You can only issue subscription commands once subscribed");
+      throw new RedisException("You are subscribed and must use the original pipeline to execute commands");
     }
     try {
       if (pipelined.get() == 0) {

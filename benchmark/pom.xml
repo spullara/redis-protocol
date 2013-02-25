@@ -3,7 +3,7 @@
   <parent>
     <artifactId>redis</artifactId>
     <groupId>com.github.spullara.redis</groupId>
-    <version>0.4-SNAPSHOT</version>
+    <version>0.5-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -14,7 +14,7 @@
     <dependency>
       <groupId>com.github.spullara.redis</groupId>
       <artifactId>client</artifactId>
-      <version>0.4-SNAPSHOT</version>
+      <version>0.5-SNAPSHOT</version>
     </dependency>
   </dependencies>
 

@@ -1,0 +1,87 @@
+package redis.netty.client;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.ArrayList;
+
+import com.google.common.base.Charsets;
+
+import redis.Command;
+import redis.netty.BulkReply;
+import redis.netty.IntegerReply;
+import redis.netty.MultiBulkReply;
+import redis.netty.Reply;
+import redis.netty.StatusReply;
+
+import spullara.util.concurrent.Promise;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+@SuppressWarnings("UnusedDeclaration")
+public class RedisClient extends RedisClientBase {
+
+  private static ExecutorService defaultExecutor;
+
+  public static synchronized Promise<RedisClient> connect(String host, int port) {
+    if (defaultExecutor == null) {
+      defaultExecutor = Executors.newCachedThreadPool();
+    }
+    RedisClient redisClient = new RedisClient();
+    return RedisClientBase.connect(host, port, redisClient, defaultExecutor);
+  }
+  {{#commands}}
+
+  private static final String {{name}} = "{{name1}}";
+  {{#split_command}}
+  private static final String {{name}}2 = "{{name2}}";
+  private static final byte[] {{name}}2_BYTES = {{name}}2.getBytes(Charsets.US_ASCII);
+  {{/split_command}}
+  private static final byte[] {{name}}_BYTES = {{name}}.getBytes(Charsets.US_ASCII);
+  private static final int {{name}}_VERSION = parseVersion("{{version}}");
+
+  /**
+   * {{comment}}
+   * {{group}}
+   *
+   {{#arguments}}
+   * @param {{name}}
+   {{/arguments}}
+   * @return {{reply}}
+   */
+  public Promise<{{$return}}{{reply}}{{/return}}> {{methodname}}({{#arguments}}{{^first}}, {{/first}}{{typename}}{{#multiple}}[]{{/multiple}} {{name}}{{/arguments}}) {
+    if (version < {{name}}_VERSION) return new Promise<>(new RedisException("Server does not support {{name}}"));
+    {{#usearray}}
+    List<Object> list = new ArrayList<>();
+    {{#arguments}}
+    {{#multiple}}
+    Collections.addAll(list, {{name}});
+    {{/multiple}}
+    {{^multiple}}
+    {{^optional}}
+    list.add({{name}});
+    {{/optional}}
+    {{#optional}}
+    if ({{name}} != null) list.add({{name}});
+    {{/optional}}
+    {{/multiple}}
+    {{/arguments}}
+    return execute({{reply}}.class, new Command({{name}}_BYTES, {{#split_command}}{{name}}2_BYTES, {{/split_command}}list.toArray(new Object[list.size()])));
+    {{/usearray}}
+    {{^usearray}}
+    return execute({{reply}}.class, new Command({{name}}_BYTES{{#split_command}}, {{name}}2_BYTES{{/split_command}}{{#arguments}}, {{name}}{{/arguments}}));
+    {{/usearray}}
+  }
+  {{#varargs}}
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public Promise<{{$return}}{{reply}}{{/return}}> {{methodname}}_(Object... arguments) {
+    if (version < {{name}}_VERSION) return new Promise<>(new RedisException("Server does not support {{name}}"));
+    return execute({{reply}}.class, new Command({{name}}_BYTES, {{#split_command}}{{name}}2_BYTES, {{/split_command}}arguments));
+  }
+  {{/varargs}}
+  {{/commands}}
+}

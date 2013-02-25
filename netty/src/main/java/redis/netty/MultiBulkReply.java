@@ -1,19 +1,11 @@
 package redis.netty;
 
+import com.google.common.base.Charsets;
 import org.jboss.netty.buffer.ChannelBuffer;
-import redis.Command;
-import redis.util.Encoding;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import com.google.common.base.Charsets;
+import java.util.*;
 
 import static redis.util.Encoding.NEG_ONE_WITH_CRLF;
 import static redis.util.Encoding.numToBytes;
@@ -28,7 +20,11 @@ public class MultiBulkReply implements Reply<Reply[]> {
   private int index = 0;
 
   public MultiBulkReply(RedisDecoder rd, ChannelBuffer is) throws IOException {
-    size = RedisDecoder.readInteger(is);
+    long l = RedisDecoder.readLong(is);
+    if (l > Integer.MAX_VALUE) {
+      throw new IllegalArgumentException("Java only supports arrays up to " + Integer.MAX_VALUE + " in size");
+    }
+    size = (int) l;
     if (size == -1) {
       replies = null;
     } else {

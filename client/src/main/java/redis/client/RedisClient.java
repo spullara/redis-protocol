@@ -3,7 +3,11 @@ package redis.client;
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ListenableFuture;
 import redis.Command;
-import redis.reply.*;
+import redis.reply.BulkReply;
+import redis.reply.IntegerReply;
+import redis.reply.MultiBulkReply;
+import redis.reply.Reply;
+import redis.reply.StatusReply;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -568,6 +572,41 @@ public class RedisClient extends RedisClientBase {
     return (Reply) execute(CLIENT_LIST, new Command(CLIENT_LIST_BYTES, CLIENT_LIST2_BYTES));
   }
   
+  private static final String CLIENT_GETNAME = "CLIENT";
+  private static final String CLIENT_GETNAME2 = "GETNAME";
+  private static final byte[] CLIENT_GETNAME2_BYTES = CLIENT_GETNAME2.getBytes(Charsets.US_ASCII);
+  private static final byte[] CLIENT_GETNAME_BYTES = CLIENT_GETNAME.getBytes(Charsets.US_ASCII);
+  private static final int CLIENT_GETNAME_VERSION = parseVersion("2.6.9");
+
+  /**
+   * Get the current connection name
+   * Server
+   *
+   * @return Reply
+   */
+  public Reply client_getname() throws RedisException {
+    if (version < CLIENT_GETNAME_VERSION) throw new RedisException("Server does not support CLIENT_GETNAME");
+    return (Reply) execute(CLIENT_GETNAME, new Command(CLIENT_GETNAME_BYTES, CLIENT_GETNAME2_BYTES));
+  }
+  
+  private static final String CLIENT_SETNAME = "CLIENT";
+  private static final String CLIENT_SETNAME2 = "SETNAME";
+  private static final byte[] CLIENT_SETNAME2_BYTES = CLIENT_SETNAME2.getBytes(Charsets.US_ASCII);
+  private static final byte[] CLIENT_SETNAME_BYTES = CLIENT_SETNAME.getBytes(Charsets.US_ASCII);
+  private static final int CLIENT_SETNAME_VERSION = parseVersion("2.6.9");
+
+  /**
+   * Set the current connection name
+   * Server
+   *
+   * @param connection_name0
+   * @return Reply
+   */
+  public Reply client_setname(Object connection_name0) throws RedisException {
+    if (version < CLIENT_SETNAME_VERSION) throw new RedisException("Server does not support CLIENT_SETNAME");
+    return (Reply) execute(CLIENT_SETNAME, new Command(CLIENT_SETNAME_BYTES, CLIENT_SETNAME2_BYTES, connection_name0));
+  }
+  
   private static final String CONFIG_GET = "CONFIG";
   private static final String CONFIG_GET2 = "GET";
   private static final byte[] CONFIG_GET2_BYTES = CONFIG_GET2.getBytes(Charsets.US_ASCII);
@@ -710,11 +749,18 @@ public class RedisClient extends RedisClientBase {
    * Get information and statistics about the server
    * Server
    *
+   * @param section0
    * @return BulkReply
    */
-  public BulkReply info() throws RedisException {
+  public BulkReply info(Object section0) throws RedisException {
     if (version < INFO_VERSION) throw new RedisException("Server does not support INFO");
-    return (BulkReply) execute(INFO, new Command(INFO_BYTES));
+    return (BulkReply) execute(INFO, new Command(INFO_BYTES, section0));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public BulkReply info_(Object... arguments) throws RedisException {
+    if (version < INFO_VERSION) throw new RedisException("Server does not support INFO");
+    return (BulkReply) execute(INFO, new Command(INFO_BYTES, arguments));
   }
   
   private static final String LASTSAVE = "LASTSAVE";
@@ -2208,17 +2254,17 @@ public class RedisClient extends RedisClientBase {
    *
    * @param key0
    * @param count1
-   * @return BulkReply
+   * @return Reply
    */
-  public BulkReply srandmember(Object key0, Object count1) throws RedisException {
+  public Reply srandmember(Object key0, Object count1) throws RedisException {
     if (version < SRANDMEMBER_VERSION) throw new RedisException("Server does not support SRANDMEMBER");
-    return (BulkReply) execute(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, key0, count1));
+    return (Reply) execute(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, key0, count1));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public BulkReply srandmember_(Object... arguments) throws RedisException {
+  public Reply srandmember_(Object... arguments) throws RedisException {
     if (version < SRANDMEMBER_VERSION) throw new RedisException("Server does not support SRANDMEMBER");
-    return (BulkReply) execute(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, arguments));
+    return (Reply) execute(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, arguments));
   }
   
   private static final String SREM = "SREM";
@@ -2310,9 +2356,7 @@ public class RedisClient extends RedisClientBase {
    */
   public IntegerReply zadd(Object[] args) throws RedisException {
     if (version < ZADD_VERSION) throw new RedisException("Server does not support ZADD");
-    List list = new ArrayList();
-    Collections.addAll(list, args);
-    return (IntegerReply) execute(ZADD, new Command(ZADD_BYTES, list.toArray(new Object[list.size()])));
+    return (IntegerReply) execute(ZADD, new Command(ZADD_BYTES, args));
   }
   
   private static final String ZCARD = "ZCARD";
@@ -3080,6 +3124,29 @@ public class RedisClient extends RedisClientBase {
   }
 
   /**
+   * Get the current connection name
+   * Server
+   *
+   * @return Reply
+   */
+  public ListenableFuture<Reply> client_getname() throws RedisException {
+    if (version < CLIENT_GETNAME_VERSION) throw new RedisException("Server does not support CLIENT_GETNAME");
+    return (ListenableFuture<Reply>) pipeline(CLIENT_GETNAME, new Command(CLIENT_GETNAME_BYTES, CLIENT_GETNAME2_BYTES));
+  }
+
+  /**
+   * Set the current connection name
+   * Server
+   *
+   * @param connection_name0
+   * @return Reply
+   */
+  public ListenableFuture<Reply> client_setname(Object connection_name0) throws RedisException {
+    if (version < CLIENT_SETNAME_VERSION) throw new RedisException("Server does not support CLIENT_SETNAME");
+    return (ListenableFuture<Reply>) pipeline(CLIENT_SETNAME, new Command(CLIENT_SETNAME_BYTES, CLIENT_SETNAME2_BYTES, connection_name0));
+  }
+
+  /**
    * Get the value of a configuration parameter
    * Server
    *
@@ -3175,11 +3242,18 @@ public class RedisClient extends RedisClientBase {
    * Get information and statistics about the server
    * Server
    *
+   * @param section0
    * @return BulkReply
    */
-  public ListenableFuture<BulkReply> info() throws RedisException {
+  public ListenableFuture<BulkReply> info(Object section0) throws RedisException {
     if (version < INFO_VERSION) throw new RedisException("Server does not support INFO");
-    return (ListenableFuture<BulkReply>) pipeline(INFO, new Command(INFO_BYTES));
+    return (ListenableFuture<BulkReply>) pipeline(INFO, new Command(INFO_BYTES, section0));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<BulkReply> info_(Object... arguments) throws RedisException {
+    if (version < INFO_VERSION) throw new RedisException("Server does not support INFO");
+    return (ListenableFuture<BulkReply>) pipeline(INFO, new Command(INFO_BYTES, arguments));
   }
 
   /**
@@ -4353,17 +4427,17 @@ public class RedisClient extends RedisClientBase {
    *
    * @param key0
    * @param count1
-   * @return BulkReply
+   * @return Reply
    */
-  public ListenableFuture<BulkReply> srandmember(Object key0, Object count1) throws RedisException {
+  public ListenableFuture<Reply> srandmember(Object key0, Object count1) throws RedisException {
     if (version < SRANDMEMBER_VERSION) throw new RedisException("Server does not support SRANDMEMBER");
-    return (ListenableFuture<BulkReply>) pipeline(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, key0, count1));
+    return (ListenableFuture<Reply>) pipeline(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, key0, count1));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<BulkReply> srandmember_(Object... arguments) throws RedisException {
+  public ListenableFuture<Reply> srandmember_(Object... arguments) throws RedisException {
     if (version < SRANDMEMBER_VERSION) throw new RedisException("Server does not support SRANDMEMBER");
-    return (ListenableFuture<BulkReply>) pipeline(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, arguments));
+    return (ListenableFuture<Reply>) pipeline(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, arguments));
   }
 
   /**
@@ -4439,9 +4513,7 @@ public class RedisClient extends RedisClientBase {
    */
   public ListenableFuture<IntegerReply> zadd(Object[] args) throws RedisException {
     if (version < ZADD_VERSION) throw new RedisException("Server does not support ZADD");
-    List list = new ArrayList();
-    Collections.addAll(list, args);
-    return (ListenableFuture<IntegerReply>) pipeline(ZADD, new Command(ZADD_BYTES, list.toArray(new Object[list.size()])));
+    return (ListenableFuture<IntegerReply>) pipeline(ZADD, new Command(ZADD_BYTES, args));
   }
 
   /**

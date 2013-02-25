@@ -7,11 +7,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.github.spullara.redis</groupId>
-  <artifactId>netty4-client</artifactId>
+  <artifactId>netty-client</artifactId>
   <version>0.5-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>netty4-client</name>
+  <name>netty-client</name>
   <url>http://maven.apache.org</url>
 
   <properties>
@@ -21,13 +21,19 @@
   <dependencies>
     <dependency>
       <groupId>com.github.spullara.redis</groupId>
-      <artifactId>netty4</artifactId>
+      <artifactId>netty</artifactId>
       <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.github.spullara.java</groupId>
       <artifactId>concurrent6</artifactId>
       <version>0.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.webbitserver</groupId>
+      <artifactId>webbit</artifactId>
+      <version>0.4.14</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

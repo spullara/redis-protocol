@@ -4,14 +4,13 @@ import com.google.common.base.Charsets;
 import org.junit.Test;
 import redis.reply.BulkReply;
 import redis.reply.MultiBulkReply;
-import redis.util.Encoding;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
-import static redis.util.Encoding.*;
+import static redis.util.Encoding.numToBytes;
 
 /**
  * Some low level tests
@@ -71,8 +70,10 @@ public class CommandTest {
     byte[] multiBulkReply = baos.toByteArray();
     long start = System.currentTimeMillis();
     for (int i = 0; i < 10; i++) {
+      ByteArrayInputStream is = new ByteArrayInputStream(multiBulkReply);
       for (int j = 0; j < 100000; j++) {
-        RedisProtocol.receive(new ByteArrayInputStream(multiBulkReply));
+        RedisProtocol.receive(is);
+        is.reset();
       }
       long end = System.currentTimeMillis();
       long diff = end - start;

@@ -12,7 +12,7 @@ import java.io.IOException;
  * Netty codec for Redis
  */
 
-public class RedisReplyDecoder extends ReplayingDecoder<Reply<?>, Void> {
+public class RedisReplyDecoder extends ReplayingDecoder<Void> {
 
   public static final char CR = '\r';
   public static final char LF = '\n';
@@ -23,7 +23,11 @@ public class RedisReplyDecoder extends ReplayingDecoder<Reply<?>, Void> {
   private MultiBulkReply reply;
 
   public ByteBuf readBytes(ByteBuf is) throws IOException {
-    int size = readInteger(is);
+    long l = readLong(is);
+    if (l > Integer.MAX_VALUE) {
+      throw new IllegalArgumentException("Java only supports arrays up to " + Integer.MAX_VALUE + " in size");
+    }
+    int size = (int) l;
     if (size == -1) {
       return null;
     }
@@ -36,8 +40,8 @@ public class RedisReplyDecoder extends ReplayingDecoder<Reply<?>, Void> {
     return buffer;
   }
 
-  public static int readInteger(ByteBuf is) throws IOException {
-    int size = 0;
+  public static long readLong(ByteBuf is) throws IOException {
+    long size = 0;
     int sign = 1;
     int read = is.readByte();
     if (read == '-') {
@@ -76,7 +80,7 @@ public class RedisReplyDecoder extends ReplayingDecoder<Reply<?>, Void> {
         return new ErrorReply(error);
       }
       case IntegerReply.MARKER: {
-        return new IntegerReply(readInteger(is));
+        return new IntegerReply(readLong(is));
       }
       case BulkReply.MARKER: {
         return new BulkReply(readBytes(is));
@@ -92,7 +96,9 @@ public class RedisReplyDecoder extends ReplayingDecoder<Reply<?>, Void> {
 
   @Override
   public void checkpoint() {
-    super.checkpoint();
+    if (internalBuffer() != null) {
+      super.checkpoint();
+    }
   }
 
   public MultiBulkReply decodeMultiBulkReply(ByteBuf is) throws IOException {
@@ -109,7 +115,7 @@ public class RedisReplyDecoder extends ReplayingDecoder<Reply<?>, Void> {
   }
 
   @Override
-  public Reply<?> decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
+  public Object decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
     return receive(byteBuf);
   }
 }
