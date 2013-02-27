@@ -33,7 +33,7 @@ public class BenchmarkTest {
       }
       long end = System.currentTimeMillis();
       long diff = end - start;
-      System.out.println(diff + " " + ((double)diff)/ CALLS);
+      System.out.println("ChannelBuffer: " + diff + " " + ((double)diff)/ CALLS);
       start = end;
     }
   }
@@ -51,7 +51,7 @@ public class BenchmarkTest {
       }
       long end = System.currentTimeMillis();
       long diff = end - start;
-      System.out.println(diff + " " + ((double)diff)/CALLS);
+      System.out.println("ByteBuf: " + diff + " " + ((double)diff)/CALLS);
       start = end;
     }
   }
@@ -66,7 +66,7 @@ public class BenchmarkTest {
       }
       long end = System.currentTimeMillis();
       long diff = end - start;
-      System.out.println(diff + " " + ((double)diff)/CALLS);
+      System.out.println("BAIS: " + diff + " " + ((double)diff)/CALLS);
       start = end;
     }
   }

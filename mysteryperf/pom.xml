@@ -18,17 +18,17 @@
     <dependency>
       <groupId>com.github.spullara.redis</groupId>
       <artifactId>netty</artifactId>
-      <version>0.4-SNAPSHOT</version>
+      <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.github.spullara.redis</groupId>
       <artifactId>netty4</artifactId>
-      <version>0.4-SNAPSHOT</version>
+      <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.github.spullara.redis</groupId>
       <artifactId>protocol</artifactId>
-      <version>0.4-SNAPSHOT</version>
+      <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
