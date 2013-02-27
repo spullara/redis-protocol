@@ -7,8 +7,8 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>server</artifactId>
-  <name>server</name>
+  <artifactId>netty4-server</artifactId>
+  <name>netty4-server</name>
 
   <dependencies>
     <dependency>
