@@ -60,6 +60,23 @@ public class Command {
     this.objects = objects;
   }
 
+  public String getCommandName() {
+    Object name = this.name;
+    if (name == null) {
+      name = objects[0];
+      if (name == null) {
+        return "";
+      }
+    }
+    if (name instanceof String) {
+      return (String) name;
+    } else if (name instanceof byte[]) {
+      return new String((byte[])name, Charsets.US_ASCII);
+    } else {
+      return name.toString();
+    }
+  }
+
   public void write(OutputStream os) throws IOException {
     writeDirect(os, name, object1, object2, object3, objects);
   }

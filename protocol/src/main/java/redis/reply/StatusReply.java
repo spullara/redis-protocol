@@ -37,4 +37,9 @@ public class StatusReply implements Reply<String> {
     os.write(statusBytes);
     os.write(CRLF);
   }
+
+  @Override
+  public String toString() {
+    return status;
+  }
 }

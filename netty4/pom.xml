@@ -13,8 +13,8 @@
   <dependencies>
     <dependency>
       <groupId>io.netty</groupId>
-      <artifactId>netty-all</artifactId>
-      <version>4.0.0.Beta1</version>
+      <artifactId>netty</artifactId>
+      <version>4.0.0.Alpha7</version>
     </dependency>
     <dependency>
       <groupId>com.github.spullara.redis</groupId>
