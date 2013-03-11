@@ -8,11 +8,7 @@ import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.SettableFuture;
 import redis.Command;
 import redis.RedisProtocol;
-import redis.reply.BulkReply;
-import redis.reply.ErrorReply;
-import redis.reply.MultiBulkReply;
-import redis.reply.Reply;
-import redis.reply.StatusReply;
+import redis.reply.*;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,11 +17,7 @@ import java.net.Socket;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -50,6 +42,10 @@ public class RedisClientBase {
   public static final byte[] STORE = "STORE".getBytes();
   public static final byte[] GET = "GET".getBytes();
 
+  // Needed for reconnection
+  private final String host;
+  private final int port;
+
   // Single threaded pipelining
   private ListeningExecutorService es;
   protected RedisProtocol redisProtocol;
@@ -58,14 +54,28 @@ public class RedisClientBase {
   protected AtomicInteger pipelined = new AtomicInteger(0);
   protected int version = 9999999;
 
-  protected RedisClientBase(Socket socket, ExecutorService executorService) throws RedisException {
+  protected RedisClientBase(String host, int port, ExecutorService executorService) throws RedisException {
+    this.host = host;
+    this.port = port;
+    es = MoreExecutors.listeningDecorator(executorService);
+    connect();
+  }
+
+  private boolean connect() throws RedisException {
     try {
-      redisProtocol = new RedisProtocol(socket);
+      if (subscribed || tx) {
+        return false;
+      }
+      redisProtocol = new RedisProtocol(new Socket(host, port));
       parseInfo();
+      return true;
     } catch (IOException e) {
       throw new RedisException("Could not connect", e);
+    } finally {
+      subscribed = false;
+      tx = false;
+      retrying = false;
     }
-    es = MoreExecutors.listeningDecorator(executorService);
   }
 
   private void parseInfo() {
@@ -112,6 +122,7 @@ public class RedisClientBase {
     try {
       redisProtocol.sendAsync(command);
     } catch (IOException e) {
+      connect();
       throw new RedisException("Failed to execute: " + name, e);
     }
     pipelined.incrementAndGet();
@@ -158,6 +169,8 @@ public class RedisClientBase {
     }
   }
 
+  private boolean retrying = false;
+
   public synchronized Reply execute(String name, Command command) throws RedisException {
     if (tx) {
       throw new RedisException("Use the pipeline API when using transactions");
@@ -176,9 +189,15 @@ public class RedisClientBase {
       } else {
         return pipeline(name, command).get();
       }
-    } catch (RedisException re) {
-      throw re;
-    } catch (Exception e) {
+    } catch (IOException e) {
+      if (!retrying && connect()) {
+        retrying = true;
+        execute(name, command);
+      }
+      throw new RedisException("I/O Failure: " + name, e);
+    } catch (InterruptedException e) {
+      throw new RedisException("Interrupted: " + name, e);
+    } catch (ExecutionException e) {
       throw new RedisException("Failed to execute: " + name, e);
     }
   }
@@ -250,6 +269,7 @@ public class RedisClientBase {
         }
       });
     } catch (IOException e) {
+      connect();
       throw new RedisException(e);
     }
   }
@@ -291,6 +311,7 @@ public class RedisClientBase {
     try {
       redisProtocol.sendAsync(new Command(SUBSCRIBE, subscriptions));
     } catch (IOException e) {
+      connect();
       throw new RedisException("Failed to subscribe", e);
     }
   }
@@ -305,6 +326,7 @@ public class RedisClientBase {
     try {
       redisProtocol.sendAsync(new Command(PSUBSCRIBE, subscriptions));
     } catch (IOException e) {
+      connect();
       throw new RedisException("Failed to subscribe", e);
     }
   }
@@ -319,6 +341,7 @@ public class RedisClientBase {
     try {
       redisProtocol.sendAsync(new Command(UNSUBSCRIBE, subscriptions));
     } catch (IOException e) {
+      connect();
       throw new RedisException("Failed to subscribe", e);
     }
   }
@@ -333,6 +356,7 @@ public class RedisClientBase {
     try {
       redisProtocol.sendAsync(new Command(PUNSUBSCRIBE, subscriptions));
     } catch (IOException e) {
+      connect();
       throw new RedisException("Failed to subscribe", e);
     }
   }

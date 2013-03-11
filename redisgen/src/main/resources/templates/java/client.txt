@@ -1,10 +1,10 @@
 package redis.client;
 
 import java.io.IOException;
-import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.google.common.base.Charsets;
@@ -21,11 +21,11 @@ public class RedisClient extends RedisClientBase {
   protected Pipeline pipeline = new Pipeline();
 
   public RedisClient(String host, int port) throws IOException {
-    this(new Socket(host, port));
+    this(host, port, Executors.newSingleThreadExecutor());
   }
 
-  public RedisClient(Socket socket) throws IOException {
-    super(socket, Executors.newSingleThreadExecutor());
+  public RedisClient(String host, int port, ExecutorService es) throws IOException {
+    super(host, port, es);
   }
 
   public Pipeline pipeline() {

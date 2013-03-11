@@ -1,7 +1,15 @@
 package redis.client;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ListenableFuture;
+
 import redis.Command;
 import redis.reply.BulkReply;
 import redis.reply.IntegerReply;
@@ -9,22 +17,15 @@ import redis.reply.MultiBulkReply;
 import redis.reply.Reply;
 import redis.reply.StatusReply;
 
-import java.io.IOException;
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.Executors;
-
 public class RedisClient extends RedisClientBase {
   protected Pipeline pipeline = new Pipeline();
 
   public RedisClient(String host, int port) throws IOException {
-    this(new Socket(host, port));
+    this(host, port, Executors.newSingleThreadExecutor());
   }
 
-  public RedisClient(Socket socket) throws IOException {
-    super(socket, Executors.newSingleThreadExecutor());
+  public RedisClient(String host, int port, ExecutorService es) throws IOException {
+    super(host, port, es);
   }
 
   public Pipeline pipeline() {
@@ -801,11 +802,11 @@ public class RedisClient extends RedisClientBase {
    * Synchronously save the dataset to disk
    * Server
    *
-   * @return Reply
+   * @return StatusReply
    */
-  public Reply save() throws RedisException {
+  public StatusReply save() throws RedisException {
     if (version < SAVE_VERSION) throw new RedisException("Server does not support SAVE");
-    return (Reply) execute(SAVE, new Command(SAVE_BYTES));
+    return (StatusReply) execute(SAVE, new Command(SAVE_BYTES));
   }
   
   private static final String SHUTDOWN = "SHUTDOWN";
@@ -3282,11 +3283,11 @@ public class RedisClient extends RedisClientBase {
    * Synchronously save the dataset to disk
    * Server
    *
-   * @return Reply
+   * @return StatusReply
    */
-  public ListenableFuture<Reply> save() throws RedisException {
+  public ListenableFuture<StatusReply> save() throws RedisException {
     if (version < SAVE_VERSION) throw new RedisException("Server does not support SAVE");
-    return (ListenableFuture<Reply>) pipeline(SAVE, new Command(SAVE_BYTES));
+    return (ListenableFuture<StatusReply>) pipeline(SAVE, new Command(SAVE_BYTES));
   }
 
   /**
