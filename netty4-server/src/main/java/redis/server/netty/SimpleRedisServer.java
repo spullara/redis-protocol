@@ -299,9 +299,10 @@ public class SimpleRedisServer implements RedisServer {
     Object o = _get(key0);
     int length1 = value1.length;
     if (o instanceof byte[]) {
-      int length0 = ((byte[]) o).length;
+      byte[] src = (byte[]) o;
+      int length0 = src.length;
       byte[] bytes = new byte[length0 + length1];
-      System.arraycopy(o, 0, bytes, 0, length0);
+      System.arraycopy(src, 0, bytes, 0, length0);
       System.arraycopy(value1, 0, bytes, length0, length1);
       _put(key0, bytes);
       return integer(bytes.length);
@@ -332,7 +333,7 @@ public class SimpleRedisServer implements RedisServer {
       int e = _torange(end2, size);
       if (e < s) e = s;
       int total = 0;
-      for (int i = (int) s; i <= e; i++) {
+      for (int i = s; i <= e; i++) {
         int b = bytes[i] & 0xFF;
         for (int j = 0; j < 8; j++) {
           if ((b & mask[j]) != 0) {
@@ -492,7 +493,7 @@ public class SimpleRedisServer implements RedisServer {
     if (e < s) e = s;
     int length = e - s + 1;
     byte[] out = new byte[length];
-    System.arraycopy(bytes, (int) s, out, 0, length);
+    System.arraycopy(bytes, s, out, 0, length);
     return new BulkReply(out);
   }
 
@@ -738,7 +739,7 @@ public class SimpleRedisServer implements RedisServer {
   public IntegerReply setrange(byte[] key0, byte[] offset1, byte[] value2) throws RedisException {
     byte[] bytes = _getbytes(key0);
     int offset = _toposint(offset1);
-    int length = (int) (value2.length + offset);
+    int length = value2.length + offset;
     if (bytes.length < length) {
       byte[] tmp = bytes;
       bytes = new byte[length];
