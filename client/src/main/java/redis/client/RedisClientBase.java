@@ -135,14 +135,14 @@ public class RedisClientBase {
             Reply reply = redisProtocol.receiveAsync();
             if (reply instanceof ErrorReply) {
               set.setException(new RedisException(((ErrorReply) reply).data()));
-            }
-            if (reply instanceof StatusReply) {
+            } else if (reply instanceof StatusReply) {
               if ("QUEUED".equals(((StatusReply) reply).data())) {
                 txReplies.offer(set);
                 return;
               }
+            } else {
+              set.set(reply);
             }
-            set.set(reply);
           } catch (IOException e) {
             throw new RedisException("Failed to receive queueing result");
           } finally {
@@ -233,44 +233,73 @@ public class RedisClientBase {
     return multi;
   }
 
-  public synchronized StatusReply discard() {
-    if (subscribed) {
-      throw new RedisException("You can only issue subscription commands once subscribed");
+  public StatusReply discard() {
+    ListenableFuture<StatusReply> discard;
+    synchronized (this) {
+      if (subscribed) {
+        throw new RedisException("You can only issue subscription commands once subscribed");
+      }
+      if (tx) {
+        tx = false;
+        discard = es.submit(new Callable<StatusReply>() {
+          @Override
+          public StatusReply call() {
+            synchronized (RedisClientBase.this) {
+              SettableFuture<Reply> txReply;
+              while ((txReply = txReplies.poll()) != null) {
+                txReply.setException(new RedisException("Discarded"));
+              }
+              return (StatusReply) execute("DISCARD", DISCARD);
+            }
+          }
+        });
+      } else {
+        throw new RedisException("Not in a transaction");
+      }
     }
-    tx = false;
-    for (SettableFuture<Reply> txReply : txReplies) {
-      txReply.setException(new RedisException("Discarded"));
+    try {
+      return discard.get();
+    } catch (Exception e) {
+      throw new RedisException("Failed to discard the transaction", e);
     }
-    return (StatusReply) execute("DISCARD", DISCARD);
   }
 
   public synchronized Future<Boolean> exec() {
     if (subscribed) {
       throw new RedisException("You can only issue subscription commands once subscribed");
     }
-    tx = false;
-    try {
-      redisProtocol.sendAsync(EXEC);
-      return es.submit(new Callable<Boolean>() {
-        @Override
-        public Boolean call() throws Exception {
-          MultiBulkReply execReply = (MultiBulkReply) redisProtocol.receiveAsync();
-          if (execReply.data() == null) {
-            for (SettableFuture<Reply> txReply : txReplies) {
-              txReply.setException(new RedisException("Transaction failed"));
+    if (tx) {
+      tx = false;
+      try {
+        redisProtocol.sendAsync(EXEC);
+        return es.submit(new Callable<Boolean>() {
+          @Override
+          public Boolean call() throws Exception {
+            Reply maybeReply = redisProtocol.receiveAsync();
+            if (maybeReply instanceof ErrorReply) {
+              ErrorReply errorReply = (ErrorReply) maybeReply;
+              throw new RedisException(errorReply.data());
             }
-            return false;
+            MultiBulkReply execReply = (MultiBulkReply) maybeReply;
+            if (execReply.data() == null) {
+              for (SettableFuture<Reply> txReply : txReplies) {
+                txReply.setException(new RedisException("Transaction failed"));
+              }
+              return false;
+            }
+            for (Reply reply : execReply.data()) {
+              SettableFuture<Reply> poll = txReplies.poll();
+              poll.set(reply);
+            }
+            return true;
           }
-          for (Reply reply : execReply.data()) {
-            SettableFuture<Reply> poll = txReplies.poll();
-            poll.set(reply);
-          }
-          return true;
-        }
-      });
-    } catch (IOException e) {
-      connect();
-      throw new RedisException(e);
+        });
+      } catch (IOException e) {
+        connect();
+        throw new RedisException(e);
+      }
+    } else {
+      throw new RedisException("Not in a transaction");
     }
   }
 

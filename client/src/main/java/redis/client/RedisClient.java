@@ -86,7 +86,7 @@ public class RedisClient extends RedisClientBase {
    * @param key2
    * @return IntegerReply
    */
-  public IntegerReply bitop(Object operation0, Object destkey1, Object[] key2) throws RedisException {
+  public IntegerReply bitop(Object operation0, Object destkey1, Object... key2) throws RedisException {
     if (version < BITOP_VERSION) throw new RedisException("Server does not support BITOP");
     List list = new ArrayList();
     list.add(operation0);
@@ -263,7 +263,7 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public MultiBulkReply mget(Object[] key0) throws RedisException {
+  public MultiBulkReply mget(Object... key0) throws RedisException {
     if (version < MGET_VERSION) throw new RedisException("Server does not support MGET");
     List list = new ArrayList();
     Collections.addAll(list, key0);
@@ -287,7 +287,7 @@ public class RedisClient extends RedisClientBase {
    * @param key_or_value0
    * @return StatusReply
    */
-  public StatusReply mset(Object[] key_or_value0) throws RedisException {
+  public StatusReply mset(Object... key_or_value0) throws RedisException {
     if (version < MSET_VERSION) throw new RedisException("Server does not support MSET");
     List list = new ArrayList();
     Collections.addAll(list, key_or_value0);
@@ -311,7 +311,7 @@ public class RedisClient extends RedisClientBase {
    * @param key_or_value0
    * @return IntegerReply
    */
-  public IntegerReply msetnx(Object[] key_or_value0) throws RedisException {
+  public IntegerReply msetnx(Object... key_or_value0) throws RedisException {
     if (version < MSETNX_VERSION) throw new RedisException("Server does not support MSETNX");
     List list = new ArrayList();
     Collections.addAll(list, key_or_value0);
@@ -352,11 +352,22 @@ public class RedisClient extends RedisClientBase {
    *
    * @param key0
    * @param value1
+   * @param seconds2
    * @return StatusReply
    */
-  public StatusReply set(Object key0, Object value1) throws RedisException {
+  public StatusReply set(Object key0, Object value1, Object... seconds2) throws RedisException {
     if (version < SET_VERSION) throw new RedisException("Server does not support SET");
-    return (StatusReply) execute(SET, new Command(SET_BYTES, key0, value1));
+    List list = new ArrayList();
+    list.add(key0);
+    list.add(value1);
+    Collections.addAll(list, seconds2);
+    return (StatusReply) execute(SET, new Command(SET_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public StatusReply set_(Object... arguments) throws RedisException {
+    if (version < SET_VERSION) throw new RedisException("Server does not support SET");
+    return (StatusReply) execute(SET, new Command(SET_BYTES, arguments));
   }
   
   private static final String SETBIT = "SETBIT";
@@ -913,7 +924,7 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public MultiBulkReply blpop(Object[] key0) throws RedisException {
+  public MultiBulkReply blpop(Object... key0) throws RedisException {
     if (version < BLPOP_VERSION) throw new RedisException("Server does not support BLPOP");
     List list = new ArrayList();
     Collections.addAll(list, key0);
@@ -937,7 +948,7 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public MultiBulkReply brpop(Object[] key0) throws RedisException {
+  public MultiBulkReply brpop(Object... key0) throws RedisException {
     if (version < BRPOP_VERSION) throw new RedisException("Server does not support BRPOP");
     List list = new ArrayList();
     Collections.addAll(list, key0);
@@ -961,11 +972,11 @@ public class RedisClient extends RedisClientBase {
    * @param source0
    * @param destination1
    * @param timeout2
-   * @return BulkReply
+   * @return Reply
    */
-  public BulkReply brpoplpush(Object source0, Object destination1, Object timeout2) throws RedisException {
+  public Reply brpoplpush(Object source0, Object destination1, Object timeout2) throws RedisException {
     if (version < BRPOPLPUSH_VERSION) throw new RedisException("Server does not support BRPOPLPUSH");
-    return (BulkReply) execute(BRPOPLPUSH, new Command(BRPOPLPUSH_BYTES, source0, destination1, timeout2));
+    return (Reply) execute(BRPOPLPUSH, new Command(BRPOPLPUSH_BYTES, source0, destination1, timeout2));
   }
   
   private static final String LINDEX = "LINDEX";
@@ -1053,7 +1064,7 @@ public class RedisClient extends RedisClientBase {
    * @param value1
    * @return IntegerReply
    */
-  public IntegerReply lpush(Object key0, Object[] value1) throws RedisException {
+  public IntegerReply lpush(Object key0, Object... value1) throws RedisException {
     if (version < LPUSH_VERSION) throw new RedisException("Server does not support LPUSH");
     List list = new ArrayList();
     list.add(key0);
@@ -1201,7 +1212,7 @@ public class RedisClient extends RedisClientBase {
    * @param value1
    * @return IntegerReply
    */
-  public IntegerReply rpush(Object key0, Object[] value1) throws RedisException {
+  public IntegerReply rpush(Object key0, Object... value1) throws RedisException {
     if (version < RPUSH_VERSION) throw new RedisException("Server does not support RPUSH");
     List list = new ArrayList();
     list.add(key0);
@@ -1243,7 +1254,7 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return IntegerReply
    */
-  public IntegerReply del(Object[] key0) throws RedisException {
+  public IntegerReply del(Object... key0) throws RedisException {
     if (version < DEL_VERSION) throw new RedisException("Server does not support DEL");
     List list = new ArrayList();
     Collections.addAll(list, key0);
@@ -1393,7 +1404,7 @@ public class RedisClient extends RedisClientBase {
    * @param arguments1
    * @return Reply
    */
-  public Reply object(Object subcommand0, Object[] arguments1) throws RedisException {
+  public Reply object(Object subcommand0, Object... arguments1) throws RedisException {
     if (version < OBJECT_VERSION) throw new RedisException("Server does not support OBJECT");
     List list = new ArrayList();
     list.add(subcommand0);
@@ -1552,7 +1563,7 @@ public class RedisClient extends RedisClientBase {
    * @param pattern1
    * @return Reply
    */
-  public Reply sort(Object key0, Object[] pattern1) throws RedisException {
+  public Reply sort(Object key0, Object... pattern1) throws RedisException {
     if (version < SORT_VERSION) throw new RedisException("Server does not support SORT");
     List list = new ArrayList();
     list.add(key0);
@@ -1624,7 +1635,7 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return StatusReply
    */
-  public StatusReply watch(Object[] key0) throws RedisException {
+  public StatusReply watch(Object... key0) throws RedisException {
     if (version < WATCH_VERSION) throw new RedisException("Server does not support WATCH");
     List list = new ArrayList();
     Collections.addAll(list, key0);
@@ -1650,7 +1661,7 @@ public class RedisClient extends RedisClientBase {
    * @param key2
    * @return Reply
    */
-  public Reply eval(Object script0, Object numkeys1, Object[] key2) throws RedisException {
+  public Reply eval(Object script0, Object numkeys1, Object... key2) throws RedisException {
     if (version < EVAL_VERSION) throw new RedisException("Server does not support EVAL");
     List list = new ArrayList();
     list.add(script0);
@@ -1678,7 +1689,7 @@ public class RedisClient extends RedisClientBase {
    * @param key2
    * @return Reply
    */
-  public Reply evalsha(Object sha10, Object numkeys1, Object[] key2) throws RedisException {
+  public Reply evalsha(Object sha10, Object numkeys1, Object... key2) throws RedisException {
     if (version < EVALSHA_VERSION) throw new RedisException("Server does not support EVALSHA");
     List list = new ArrayList();
     list.add(sha10);
@@ -1706,7 +1717,7 @@ public class RedisClient extends RedisClientBase {
    * @param script0
    * @return Reply
    */
-  public Reply script_exists(Object[] script0) throws RedisException {
+  public Reply script_exists(Object... script0) throws RedisException {
     if (version < SCRIPT_EXISTS_VERSION) throw new RedisException("Server does not support SCRIPT_EXISTS");
     List list = new ArrayList();
     Collections.addAll(list, script0);
@@ -1783,7 +1794,7 @@ public class RedisClient extends RedisClientBase {
    * @param field1
    * @return IntegerReply
    */
-  public IntegerReply hdel(Object key0, Object[] field1) throws RedisException {
+  public IntegerReply hdel(Object key0, Object... field1) throws RedisException {
     if (version < HDEL_VERSION) throw new RedisException("Server does not support HDEL");
     List list = new ArrayList();
     list.add(key0);
@@ -1927,7 +1938,7 @@ public class RedisClient extends RedisClientBase {
    * @param field1
    * @return MultiBulkReply
    */
-  public MultiBulkReply hmget(Object key0, Object[] field1) throws RedisException {
+  public MultiBulkReply hmget(Object key0, Object... field1) throws RedisException {
     if (version < HMGET_VERSION) throw new RedisException("Server does not support HMGET");
     List list = new ArrayList();
     list.add(key0);
@@ -1953,7 +1964,7 @@ public class RedisClient extends RedisClientBase {
    * @param field_or_value1
    * @return StatusReply
    */
-  public StatusReply hmset(Object key0, Object[] field_or_value1) throws RedisException {
+  public StatusReply hmset(Object key0, Object... field_or_value1) throws RedisException {
     if (version < HMSET_VERSION) throw new RedisException("Server does not support HMSET");
     List list = new ArrayList();
     list.add(key0);
@@ -2048,7 +2059,7 @@ public class RedisClient extends RedisClientBase {
    * @param member1
    * @return IntegerReply
    */
-  public IntegerReply sadd(Object key0, Object[] member1) throws RedisException {
+  public IntegerReply sadd(Object key0, Object... member1) throws RedisException {
     if (version < SADD_VERSION) throw new RedisException("Server does not support SADD");
     List list = new ArrayList();
     list.add(key0);
@@ -2089,7 +2100,7 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public MultiBulkReply sdiff(Object[] key0) throws RedisException {
+  public MultiBulkReply sdiff(Object... key0) throws RedisException {
     if (version < SDIFF_VERSION) throw new RedisException("Server does not support SDIFF");
     List list = new ArrayList();
     Collections.addAll(list, key0);
@@ -2114,7 +2125,7 @@ public class RedisClient extends RedisClientBase {
    * @param key1
    * @return IntegerReply
    */
-  public IntegerReply sdiffstore(Object destination0, Object[] key1) throws RedisException {
+  public IntegerReply sdiffstore(Object destination0, Object... key1) throws RedisException {
     if (version < SDIFFSTORE_VERSION) throw new RedisException("Server does not support SDIFFSTORE");
     List list = new ArrayList();
     list.add(destination0);
@@ -2139,7 +2150,7 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public MultiBulkReply sinter(Object[] key0) throws RedisException {
+  public MultiBulkReply sinter(Object... key0) throws RedisException {
     if (version < SINTER_VERSION) throw new RedisException("Server does not support SINTER");
     List list = new ArrayList();
     Collections.addAll(list, key0);
@@ -2164,7 +2175,7 @@ public class RedisClient extends RedisClientBase {
    * @param key1
    * @return IntegerReply
    */
-  public IntegerReply sinterstore(Object destination0, Object[] key1) throws RedisException {
+  public IntegerReply sinterstore(Object destination0, Object... key1) throws RedisException {
     if (version < SINTERSTORE_VERSION) throw new RedisException("Server does not support SINTERSTORE");
     List list = new ArrayList();
     list.add(destination0);
@@ -2280,7 +2291,7 @@ public class RedisClient extends RedisClientBase {
    * @param member1
    * @return IntegerReply
    */
-  public IntegerReply srem(Object key0, Object[] member1) throws RedisException {
+  public IntegerReply srem(Object key0, Object... member1) throws RedisException {
     if (version < SREM_VERSION) throw new RedisException("Server does not support SREM");
     List list = new ArrayList();
     list.add(key0);
@@ -2305,7 +2316,7 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public MultiBulkReply sunion(Object[] key0) throws RedisException {
+  public MultiBulkReply sunion(Object... key0) throws RedisException {
     if (version < SUNION_VERSION) throw new RedisException("Server does not support SUNION");
     List list = new ArrayList();
     Collections.addAll(list, key0);
@@ -2330,7 +2341,7 @@ public class RedisClient extends RedisClientBase {
    * @param key1
    * @return IntegerReply
    */
-  public IntegerReply sunionstore(Object destination0, Object[] key1) throws RedisException {
+  public IntegerReply sunionstore(Object destination0, Object... key1) throws RedisException {
     if (version < SUNIONSTORE_VERSION) throw new RedisException("Server does not support SUNIONSTORE");
     List list = new ArrayList();
     list.add(destination0);
@@ -2355,7 +2366,7 @@ public class RedisClient extends RedisClientBase {
    * @param args
    * @return IntegerReply
    */
-  public IntegerReply zadd(Object[] args) throws RedisException {
+  public IntegerReply zadd(Object... args) throws RedisException {
     if (version < ZADD_VERSION) throw new RedisException("Server does not support ZADD");
     return (IntegerReply) execute(ZADD, new Command(ZADD_BYTES, args));
   }
@@ -2425,7 +2436,7 @@ public class RedisClient extends RedisClientBase {
    * @param key2
    * @return IntegerReply
    */
-  public IntegerReply zinterstore(Object destination0, Object numkeys1, Object[] key2) throws RedisException {
+  public IntegerReply zinterstore(Object destination0, Object numkeys1, Object... key2) throws RedisException {
     if (version < ZINTERSTORE_VERSION) throw new RedisException("Server does not support ZINTERSTORE");
     List list = new ArrayList();
     list.add(destination0);
@@ -2485,7 +2496,7 @@ public class RedisClient extends RedisClientBase {
    * @param offset_or_count4
    * @return MultiBulkReply
    */
-  public MultiBulkReply zrangebyscore(Object key0, Object min1, Object max2, Object withscores3, Object[] offset_or_count4) throws RedisException {
+  public MultiBulkReply zrangebyscore(Object key0, Object min1, Object max2, Object withscores3, Object... offset_or_count4) throws RedisException {
     if (version < ZRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZRANGEBYSCORE");
     List list = new ArrayList();
     list.add(key0);
@@ -2531,7 +2542,7 @@ public class RedisClient extends RedisClientBase {
    * @param member1
    * @return IntegerReply
    */
-  public IntegerReply zrem(Object key0, Object[] member1) throws RedisException {
+  public IntegerReply zrem(Object key0, Object... member1) throws RedisException {
     if (version < ZREM_VERSION) throw new RedisException("Server does not support ZREM");
     List list = new ArrayList();
     list.add(key0);
@@ -2626,7 +2637,7 @@ public class RedisClient extends RedisClientBase {
    * @param offset_or_count4
    * @return MultiBulkReply
    */
-  public MultiBulkReply zrevrangebyscore(Object key0, Object max1, Object min2, Object withscores3, Object[] offset_or_count4) throws RedisException {
+  public MultiBulkReply zrevrangebyscore(Object key0, Object max1, Object min2, Object withscores3, Object... offset_or_count4) throws RedisException {
     if (version < ZREVRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZREVRANGEBYSCORE");
     List list = new ArrayList();
     list.add(key0);
@@ -2690,7 +2701,7 @@ public class RedisClient extends RedisClientBase {
    * @param key2
    * @return IntegerReply
    */
-  public IntegerReply zunionstore(Object destination0, Object numkeys1, Object[] key2) throws RedisException {
+  public IntegerReply zunionstore(Object destination0, Object numkeys1, Object... key2) throws RedisException {
     if (version < ZUNIONSTORE_VERSION) throw new RedisException("Server does not support ZUNIONSTORE");
     List list = new ArrayList();
     list.add(destination0);
@@ -2749,7 +2760,7 @@ public class RedisClient extends RedisClientBase {
    * @param key2
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> bitop(Object operation0, Object destkey1, Object[] key2) throws RedisException {
+  public ListenableFuture<IntegerReply> bitop(Object operation0, Object destkey1, Object... key2) throws RedisException {
     if (version < BITOP_VERSION) throw new RedisException("Server does not support BITOP");
     List list = new ArrayList();
     list.add(operation0);
@@ -2886,7 +2897,7 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> mget(Object[] key0) throws RedisException {
+  public ListenableFuture<MultiBulkReply> mget(Object... key0) throws RedisException {
     if (version < MGET_VERSION) throw new RedisException("Server does not support MGET");
     List list = new ArrayList();
     Collections.addAll(list, key0);
@@ -2906,7 +2917,7 @@ public class RedisClient extends RedisClientBase {
    * @param key_or_value0
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> mset(Object[] key_or_value0) throws RedisException {
+  public ListenableFuture<StatusReply> mset(Object... key_or_value0) throws RedisException {
     if (version < MSET_VERSION) throw new RedisException("Server does not support MSET");
     List list = new ArrayList();
     Collections.addAll(list, key_or_value0);
@@ -2926,7 +2937,7 @@ public class RedisClient extends RedisClientBase {
    * @param key_or_value0
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> msetnx(Object[] key_or_value0) throws RedisException {
+  public ListenableFuture<IntegerReply> msetnx(Object... key_or_value0) throws RedisException {
     if (version < MSETNX_VERSION) throw new RedisException("Server does not support MSETNX");
     List list = new ArrayList();
     Collections.addAll(list, key_or_value0);
@@ -2959,11 +2970,22 @@ public class RedisClient extends RedisClientBase {
    *
    * @param key0
    * @param value1
+   * @param seconds2
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> set(Object key0, Object value1) throws RedisException {
+  public ListenableFuture<StatusReply> set(Object key0, Object value1, Object... seconds2) throws RedisException {
     if (version < SET_VERSION) throw new RedisException("Server does not support SET");
-    return (ListenableFuture<StatusReply>) pipeline(SET, new Command(SET_BYTES, key0, value1));
+    List list = new ArrayList();
+    list.add(key0);
+    list.add(value1);
+    Collections.addAll(list, seconds2);
+    return (ListenableFuture<StatusReply>) pipeline(SET, new Command(SET_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public ListenableFuture<StatusReply> set_(Object... arguments) throws RedisException {
+    if (version < SET_VERSION) throw new RedisException("Server does not support SET");
+    return (ListenableFuture<StatusReply>) pipeline(SET, new Command(SET_BYTES, arguments));
   }
 
   /**
@@ -3370,7 +3392,7 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> blpop(Object[] key0) throws RedisException {
+  public ListenableFuture<MultiBulkReply> blpop(Object... key0) throws RedisException {
     if (version < BLPOP_VERSION) throw new RedisException("Server does not support BLPOP");
     List list = new ArrayList();
     Collections.addAll(list, key0);
@@ -3390,7 +3412,7 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> brpop(Object[] key0) throws RedisException {
+  public ListenableFuture<MultiBulkReply> brpop(Object... key0) throws RedisException {
     if (version < BRPOP_VERSION) throw new RedisException("Server does not support BRPOP");
     List list = new ArrayList();
     Collections.addAll(list, key0);
@@ -3410,11 +3432,11 @@ public class RedisClient extends RedisClientBase {
    * @param source0
    * @param destination1
    * @param timeout2
-   * @return BulkReply
+   * @return Reply
    */
-  public ListenableFuture<BulkReply> brpoplpush(Object source0, Object destination1, Object timeout2) throws RedisException {
+  public ListenableFuture<Reply> brpoplpush(Object source0, Object destination1, Object timeout2) throws RedisException {
     if (version < BRPOPLPUSH_VERSION) throw new RedisException("Server does not support BRPOPLPUSH");
-    return (ListenableFuture<BulkReply>) pipeline(BRPOPLPUSH, new Command(BRPOPLPUSH_BYTES, source0, destination1, timeout2));
+    return (ListenableFuture<Reply>) pipeline(BRPOPLPUSH, new Command(BRPOPLPUSH_BYTES, source0, destination1, timeout2));
   }
 
   /**
@@ -3482,7 +3504,7 @@ public class RedisClient extends RedisClientBase {
    * @param value1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> lpush(Object key0, Object[] value1) throws RedisException {
+  public ListenableFuture<IntegerReply> lpush(Object key0, Object... value1) throws RedisException {
     if (version < LPUSH_VERSION) throw new RedisException("Server does not support LPUSH");
     List list = new ArrayList();
     list.add(key0);
@@ -3598,7 +3620,7 @@ public class RedisClient extends RedisClientBase {
    * @param value1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> rpush(Object key0, Object[] value1) throws RedisException {
+  public ListenableFuture<IntegerReply> rpush(Object key0, Object... value1) throws RedisException {
     if (version < RPUSH_VERSION) throw new RedisException("Server does not support RPUSH");
     List list = new ArrayList();
     list.add(key0);
@@ -3632,7 +3654,7 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> del(Object[] key0) throws RedisException {
+  public ListenableFuture<IntegerReply> del(Object... key0) throws RedisException {
     if (version < DEL_VERSION) throw new RedisException("Server does not support DEL");
     List list = new ArrayList();
     Collections.addAll(list, key0);
@@ -3750,7 +3772,7 @@ public class RedisClient extends RedisClientBase {
    * @param arguments1
    * @return Reply
    */
-  public ListenableFuture<Reply> object(Object subcommand0, Object[] arguments1) throws RedisException {
+  public ListenableFuture<Reply> object(Object subcommand0, Object... arguments1) throws RedisException {
     if (version < OBJECT_VERSION) throw new RedisException("Server does not support OBJECT");
     List list = new ArrayList();
     list.add(subcommand0);
@@ -3873,7 +3895,7 @@ public class RedisClient extends RedisClientBase {
    * @param pattern1
    * @return Reply
    */
-  public ListenableFuture<Reply> sort(Object key0, Object[] pattern1) throws RedisException {
+  public ListenableFuture<Reply> sort(Object key0, Object... pattern1) throws RedisException {
     if (version < SORT_VERSION) throw new RedisException("Server does not support SORT");
     List list = new ArrayList();
     list.add(key0);
@@ -3929,7 +3951,7 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> watch(Object[] key0) throws RedisException {
+  public ListenableFuture<StatusReply> watch(Object... key0) throws RedisException {
     if (version < WATCH_VERSION) throw new RedisException("Server does not support WATCH");
     List list = new ArrayList();
     Collections.addAll(list, key0);
@@ -3951,7 +3973,7 @@ public class RedisClient extends RedisClientBase {
    * @param key2
    * @return Reply
    */
-  public ListenableFuture<Reply> eval(Object script0, Object numkeys1, Object[] key2) throws RedisException {
+  public ListenableFuture<Reply> eval(Object script0, Object numkeys1, Object... key2) throws RedisException {
     if (version < EVAL_VERSION) throw new RedisException("Server does not support EVAL");
     List list = new ArrayList();
     list.add(script0);
@@ -3975,7 +3997,7 @@ public class RedisClient extends RedisClientBase {
    * @param key2
    * @return Reply
    */
-  public ListenableFuture<Reply> evalsha(Object sha10, Object numkeys1, Object[] key2) throws RedisException {
+  public ListenableFuture<Reply> evalsha(Object sha10, Object numkeys1, Object... key2) throws RedisException {
     if (version < EVALSHA_VERSION) throw new RedisException("Server does not support EVALSHA");
     List list = new ArrayList();
     list.add(sha10);
@@ -3997,7 +4019,7 @@ public class RedisClient extends RedisClientBase {
    * @param script0
    * @return Reply
    */
-  public ListenableFuture<Reply> script_exists(Object[] script0) throws RedisException {
+  public ListenableFuture<Reply> script_exists(Object... script0) throws RedisException {
     if (version < SCRIPT_EXISTS_VERSION) throw new RedisException("Server does not support SCRIPT_EXISTS");
     List list = new ArrayList();
     Collections.addAll(list, script0);
@@ -4052,7 +4074,7 @@ public class RedisClient extends RedisClientBase {
    * @param field1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> hdel(Object key0, Object[] field1) throws RedisException {
+  public ListenableFuture<IntegerReply> hdel(Object key0, Object... field1) throws RedisException {
     if (version < HDEL_VERSION) throw new RedisException("Server does not support HDEL");
     List list = new ArrayList();
     list.add(key0);
@@ -4164,7 +4186,7 @@ public class RedisClient extends RedisClientBase {
    * @param field1
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> hmget(Object key0, Object[] field1) throws RedisException {
+  public ListenableFuture<MultiBulkReply> hmget(Object key0, Object... field1) throws RedisException {
     if (version < HMGET_VERSION) throw new RedisException("Server does not support HMGET");
     List list = new ArrayList();
     list.add(key0);
@@ -4186,7 +4208,7 @@ public class RedisClient extends RedisClientBase {
    * @param field_or_value1
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> hmset(Object key0, Object[] field_or_value1) throws RedisException {
+  public ListenableFuture<StatusReply> hmset(Object key0, Object... field_or_value1) throws RedisException {
     if (version < HMSET_VERSION) throw new RedisException("Server does not support HMSET");
     List list = new ArrayList();
     list.add(key0);
@@ -4261,7 +4283,7 @@ public class RedisClient extends RedisClientBase {
    * @param member1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> sadd(Object key0, Object[] member1) throws RedisException {
+  public ListenableFuture<IntegerReply> sadd(Object key0, Object... member1) throws RedisException {
     if (version < SADD_VERSION) throw new RedisException("Server does not support SADD");
     List list = new ArrayList();
     list.add(key0);
@@ -4294,7 +4316,7 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> sdiff(Object[] key0) throws RedisException {
+  public ListenableFuture<MultiBulkReply> sdiff(Object... key0) throws RedisException {
     if (version < SDIFF_VERSION) throw new RedisException("Server does not support SDIFF");
     List list = new ArrayList();
     Collections.addAll(list, key0);
@@ -4315,7 +4337,7 @@ public class RedisClient extends RedisClientBase {
    * @param key1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> sdiffstore(Object destination0, Object[] key1) throws RedisException {
+  public ListenableFuture<IntegerReply> sdiffstore(Object destination0, Object... key1) throws RedisException {
     if (version < SDIFFSTORE_VERSION) throw new RedisException("Server does not support SDIFFSTORE");
     List list = new ArrayList();
     list.add(destination0);
@@ -4336,7 +4358,7 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> sinter(Object[] key0) throws RedisException {
+  public ListenableFuture<MultiBulkReply> sinter(Object... key0) throws RedisException {
     if (version < SINTER_VERSION) throw new RedisException("Server does not support SINTER");
     List list = new ArrayList();
     Collections.addAll(list, key0);
@@ -4357,7 +4379,7 @@ public class RedisClient extends RedisClientBase {
    * @param key1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> sinterstore(Object destination0, Object[] key1) throws RedisException {
+  public ListenableFuture<IntegerReply> sinterstore(Object destination0, Object... key1) throws RedisException {
     if (version < SINTERSTORE_VERSION) throw new RedisException("Server does not support SINTERSTORE");
     List list = new ArrayList();
     list.add(destination0);
@@ -4449,7 +4471,7 @@ public class RedisClient extends RedisClientBase {
    * @param member1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> srem(Object key0, Object[] member1) throws RedisException {
+  public ListenableFuture<IntegerReply> srem(Object key0, Object... member1) throws RedisException {
     if (version < SREM_VERSION) throw new RedisException("Server does not support SREM");
     List list = new ArrayList();
     list.add(key0);
@@ -4470,7 +4492,7 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> sunion(Object[] key0) throws RedisException {
+  public ListenableFuture<MultiBulkReply> sunion(Object... key0) throws RedisException {
     if (version < SUNION_VERSION) throw new RedisException("Server does not support SUNION");
     List list = new ArrayList();
     Collections.addAll(list, key0);
@@ -4491,7 +4513,7 @@ public class RedisClient extends RedisClientBase {
    * @param key1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> sunionstore(Object destination0, Object[] key1) throws RedisException {
+  public ListenableFuture<IntegerReply> sunionstore(Object destination0, Object... key1) throws RedisException {
     if (version < SUNIONSTORE_VERSION) throw new RedisException("Server does not support SUNIONSTORE");
     List list = new ArrayList();
     list.add(destination0);
@@ -4512,7 +4534,7 @@ public class RedisClient extends RedisClientBase {
    * @param args
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> zadd(Object[] args) throws RedisException {
+  public ListenableFuture<IntegerReply> zadd(Object... args) throws RedisException {
     if (version < ZADD_VERSION) throw new RedisException("Server does not support ZADD");
     return (ListenableFuture<IntegerReply>) pipeline(ZADD, new Command(ZADD_BYTES, args));
   }
@@ -4566,7 +4588,7 @@ public class RedisClient extends RedisClientBase {
    * @param key2
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> zinterstore(Object destination0, Object numkeys1, Object[] key2) throws RedisException {
+  public ListenableFuture<IntegerReply> zinterstore(Object destination0, Object numkeys1, Object... key2) throws RedisException {
     if (version < ZINTERSTORE_VERSION) throw new RedisException("Server does not support ZINTERSTORE");
     List list = new ArrayList();
     list.add(destination0);
@@ -4618,7 +4640,7 @@ public class RedisClient extends RedisClientBase {
    * @param offset_or_count4
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> zrangebyscore(Object key0, Object min1, Object max2, Object withscores3, Object[] offset_or_count4) throws RedisException {
+  public ListenableFuture<MultiBulkReply> zrangebyscore(Object key0, Object min1, Object max2, Object withscores3, Object... offset_or_count4) throws RedisException {
     if (version < ZRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZRANGEBYSCORE");
     List list = new ArrayList();
     list.add(key0);
@@ -4656,7 +4678,7 @@ public class RedisClient extends RedisClientBase {
    * @param member1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> zrem(Object key0, Object[] member1) throws RedisException {
+  public ListenableFuture<IntegerReply> zrem(Object key0, Object... member1) throws RedisException {
     if (version < ZREM_VERSION) throw new RedisException("Server does not support ZREM");
     List list = new ArrayList();
     list.add(key0);
@@ -4735,7 +4757,7 @@ public class RedisClient extends RedisClientBase {
    * @param offset_or_count4
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> zrevrangebyscore(Object key0, Object max1, Object min2, Object withscores3, Object[] offset_or_count4) throws RedisException {
+  public ListenableFuture<MultiBulkReply> zrevrangebyscore(Object key0, Object max1, Object min2, Object withscores3, Object... offset_or_count4) throws RedisException {
     if (version < ZREVRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZREVRANGEBYSCORE");
     List list = new ArrayList();
     list.add(key0);
@@ -4787,7 +4809,7 @@ public class RedisClient extends RedisClientBase {
    * @param key2
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> zunionstore(Object destination0, Object numkeys1, Object[] key2) throws RedisException {
+  public ListenableFuture<IntegerReply> zunionstore(Object destination0, Object numkeys1, Object... key2) throws RedisException {
     if (version < ZUNIONSTORE_VERSION) throw new RedisException("Server does not support ZUNIONSTORE");
     List list = new ArrayList();
     list.add(destination0);

@@ -7,7 +7,7 @@
    {{/arguments}}
    * @return {{reply}}
    */
-  public {{$return}}{{reply}}{{/return}} {{methodname}}({{#arguments}}{{^first}}, {{/first}}{{typename}}{{#multiple}}[]{{/multiple}} {{name}}{{/arguments}}) throws RedisException {
+  public {{$return}}{{reply}}{{/return}} {{methodname}}({{#arguments}}{{^first}}, {{/first}}{{typename}}{{#multiple}}...{{/multiple}} {{name}}{{/arguments}}) throws RedisException {
     if (version < {{name}}_VERSION) throw new RedisException("Server does not support {{name}}");
     {{#usearray}}
     List list = new ArrayList();
