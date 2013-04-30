@@ -40,6 +40,18 @@ public class RedisProtocol {
   }
 
   /**
+   * Create a new RedisProtocol using provided input and output streams.
+   *
+   * @param is a buffered input stream is required
+   * @param os a buffered input stream is required
+   * @throws IOException
+   */
+  public RedisProtocol(BufferedInputStream is, OutputStream os) {
+    this.is = is;
+    this.os = os;
+  }
+
+  /**
    * Read fixed size field from the stream.
    *
    * @param is

@@ -138,7 +138,6 @@ public class RedisClientBase {
             } else if (reply instanceof StatusReply) {
               if ("QUEUED".equals(((StatusReply) reply).data())) {
                 txReplies.offer(set);
-                return;
               }
             } else {
               set.set(reply);
