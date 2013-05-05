@@ -161,6 +161,7 @@ public class RedisClientTest {
   
   @Test
   public void benchmark() throws IOException {
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
     long start = System.currentTimeMillis();
     RedisClient redisClient = new RedisClient("localhost", 6379);
     for (int i = 0; i < CALLS; i++) {
@@ -173,6 +174,7 @@ public class RedisClientTest {
   @SuppressWarnings("unchecked")
   @Test
   public void benchmarkPipeline() throws IOException, ExecutionException, InterruptedException {
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
     long start = System.currentTimeMillis();
     RedisClient redisClient = new RedisClient("localhost", 6379);
     redisClient.execute("INFO", new Command("INFO", "server"));
@@ -193,6 +195,7 @@ public class RedisClientTest {
 
   @Test
   public void benchmarkPubsub() throws IOException, ExecutionException, InterruptedException {
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
     long start = System.currentTimeMillis();
     byte[] hello = "hello".getBytes();
     byte[] test = "test".getBytes();
@@ -225,6 +228,7 @@ public class RedisClientTest {
 
   @Test
   public void benchmarkPubsubPipelined() throws IOException, ExecutionException, InterruptedException {
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
     long start = System.currentTimeMillis();
     byte[] hello = "hello".getBytes();
     byte[] test = "test".getBytes();

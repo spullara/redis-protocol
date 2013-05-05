@@ -164,6 +164,7 @@ public class RedisClientBaseTest {
 
   @Test
   public void testSerialPerformance() throws InterruptedException {
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
     final CountDownLatch done = new CountDownLatch(1);
     final int[] i = new int[1];
     RedisClient.connect("localhost", 6379).onSuccess(new Block<RedisClient>() {
@@ -203,6 +204,7 @@ public class RedisClientBaseTest {
 
   @Test
   public void testPipelinePerformance() throws InterruptedException {
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
     final CountDownLatch done = new CountDownLatch(1);
     final AtomicInteger total = new AtomicInteger();
     RedisClient.connect("localhost", 6379).onSuccess(new Block<RedisClient>() {
@@ -244,6 +246,7 @@ public class RedisClientBaseTest {
 
   @Test
   public void testPipelineConcurrency() throws InterruptedException {
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
     final CountDownLatch done = new CountDownLatch(1);
     final AtomicInteger total = new AtomicInteger();
     final AtomicInteger errors = new AtomicInteger();
@@ -378,6 +381,7 @@ public class RedisClientBaseTest {
 
   @Test
   public void testPubSubPerformance() throws InterruptedException {
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
     final CountDownLatch done = new CountDownLatch(1);
     final Semaphore semaphore = new Semaphore(100);
     final AtomicInteger total = new AtomicInteger();

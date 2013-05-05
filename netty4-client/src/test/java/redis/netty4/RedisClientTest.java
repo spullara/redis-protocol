@@ -57,6 +57,7 @@ public class RedisClientTest {
 
   @Test
   public void testBenchmark() throws InterruptedException {
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
     final CountDownLatch countDownLatch = new CountDownLatch(1);
     final AtomicInteger calls = new AtomicInteger(0);
 
@@ -91,6 +92,7 @@ public class RedisClientTest {
 
   @Test
   public void testPipelinedBenchmark() throws ExecutionException, InterruptedException {
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
     long start = System.currentTimeMillis();
     RedisClientBase client = connect("localhost", 6379).get();
     final Semaphore semaphore = new Semaphore(100);
