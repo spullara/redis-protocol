@@ -25,7 +25,7 @@ public class ReplyTest {
   public void testReadWrite() throws IOException {
     ByteBuf os;
     Reply receive;
-    RedisReplyDecoder redisDecoder = new RedisReplyDecoder();
+    RedisReplyDecoder redisDecoder = new RedisReplyDecoder(false);
     {
       os = Unpooled.buffer();
       String message = "OK";

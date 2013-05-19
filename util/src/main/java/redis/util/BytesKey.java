@@ -18,8 +18,11 @@ public class BytesKey extends BytesValue implements Comparable<BytesKey> {
 
   @Override
   public boolean equals(Object o) {
-    BytesKey other = (BytesKey) o;
-    return o instanceof BytesKey && hashCode == other.hashCode && equals(bytes, other.bytes);
+    if (o instanceof BytesKey) {
+      BytesKey other = (BytesKey) o;
+      return hashCode == other.hashCode && equals(bytes, other.bytes);
+    }
+    return false;
   }
 
   public BytesKey(byte[] bytes) {
