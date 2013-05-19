@@ -1,10 +1,6 @@
 package redis;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
 import com.google.common.base.Charsets;
-
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.junit.Test;
@@ -12,6 +8,9 @@ import redis.netty4.BulkReply;
 import redis.netty4.MultiBulkReply;
 import redis.netty4.RedisReplyDecoder;
 import redis.netty4.Reply;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
 import static redis.util.Encoding.numToBytes;
@@ -72,7 +71,7 @@ public class CommandTest {
     }
     byte[] multiBulkReply = baos.toByteArray();
     long start = System.currentTimeMillis();
-    RedisReplyDecoder redisDecoder = new RedisReplyDecoder();
+    RedisReplyDecoder redisDecoder = new RedisReplyDecoder(false);
     ByteBuf cb = Unpooled.wrappedBuffer(multiBulkReply);
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 100000; j++) {

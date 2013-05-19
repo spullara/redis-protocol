@@ -3,6 +3,7 @@ package redis.netty4;
 import com.google.common.base.Charsets;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufIndexFinder;
+import io.netty.buffer.MessageBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ReplayingDecoder;
 
@@ -21,6 +22,16 @@ public class RedisReplyDecoder extends ReplayingDecoder<Void> {
   // where we do not get a complete reply in a single
   // decode invocation.
   private MultiBulkReply reply;
+
+  public RedisReplyDecoder() {
+    this(true);
+  }
+
+  public RedisReplyDecoder(boolean checkpointEnabled) {
+    this.checkpointEnabled = checkpointEnabled;
+  }
+
+  private boolean checkpointEnabled;
 
   public ByteBuf readBytes(ByteBuf is) throws IOException {
     long l = readLong(is);
@@ -96,7 +107,7 @@ public class RedisReplyDecoder extends ReplayingDecoder<Void> {
 
   @Override
   public void checkpoint() {
-    if (internalBuffer() != null) {
+    if (checkpointEnabled) {
       super.checkpoint();
     }
   }
@@ -114,8 +125,18 @@ public class RedisReplyDecoder extends ReplayingDecoder<Void> {
     }
   }
 
+  /**
+   * Decode the from one {@link io.netty.buffer.ByteBuf} to an other. This method will be called till either the input
+   * {@link io.netty.buffer.ByteBuf} has nothing to read anymore, till nothing was read from the input {@link io.netty.buffer.ByteBuf} or till
+   * this method returns {@code null}.
+   *
+   * @param ctx the {@link io.netty.channel.ChannelHandlerContext} which this {@link io.netty.handler.codec.ByteToByteDecoder} belongs to
+   * @param in  the {@link io.netty.buffer.ByteBuf} from which to read data
+   * @param out the {@link io.netty.buffer.MessageBuf} to which decoded messages should be added
+   * @throws Exception is thrown if an error accour
+   */
   @Override
-  public Object decode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) throws Exception {
-    return receive(byteBuf);
+  protected void decode(ChannelHandlerContext ctx, ByteBuf in, MessageBuf<Object> out) throws Exception {
+    out.add(receive(in));
   }
 }
