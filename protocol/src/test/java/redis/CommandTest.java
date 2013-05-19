@@ -16,6 +16,7 @@ import static redis.util.Encoding.numToBytes;
  * Some low level tests
  */
 public class CommandTest {
+
   @Test
   public void testNumToBytes() {
     assertEquals("-12345678", new String(numToBytes(-12345678, false)));
@@ -30,6 +31,7 @@ public class CommandTest {
 
   @Test
   public void benchmark() {
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
     long diff;
     long total;
     {
@@ -59,6 +61,7 @@ public class CommandTest {
 
   @Test
   public void freelsBench() throws IOException {
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     baos.write(MultiBulkReply.MARKER);
     baos.write("100\r\n".getBytes());

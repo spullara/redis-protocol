@@ -15,6 +15,7 @@ import java.util.concurrent.ExecutionException;
 public class BenchmarkTest {
   @Test
   public void runBenchmark() throws IOException, ExecutionException, InterruptedException {
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
     Benchmark.main(new String[0]);
   }
 }

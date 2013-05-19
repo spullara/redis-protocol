@@ -98,7 +98,8 @@ public class Main {
     final Set<String> genericReply = new HashSet<String>(Arrays.asList(
             "SORT", // Can return an integer reply
             "ZRANK", "ZREVRANK", // Two different return values
-            "SRANDMEMBER" // Can return a bulk or multibulk reply depending on count
+            "SRANDMEMBER", // Can return a bulk or multibulk reply depending on count
+            "BRPOPLPUSH" // If the timeout occurs it returns a Nil multi-bulk reply instead of a bulk reply
     ));
     final Set<String> multiples = new HashSet<String>(Arrays.asList(
             "ZADD"
