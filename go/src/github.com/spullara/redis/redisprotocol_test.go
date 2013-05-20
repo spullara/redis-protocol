@@ -1,11 +1,11 @@
 package redis
 
 import (
-	"testing"
-	"strings"
-	"fmt"
-	"bytes"
 	"bufio"
+	"bytes"
+	"fmt"
+	"strings"
+	"testing"
 )
 
 func Test_readLong(t *testing.T) {

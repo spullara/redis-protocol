@@ -9,9 +9,9 @@ package redis
 
 import "io"
 import (
+	"bufio"
 	"errors"
 	"fmt"
-	"bufio"
 )
 
 const (
@@ -60,7 +60,7 @@ func ReceiveBufferedReader(br *bufio.Reader) (reply Reply, err error) {
 		if err != nil {
 			return nil, err
 		}
-		return &StatusReply {
+		return &StatusReply{
 			bytes: line,
 		}, nil
 	case ErrorMarker:
@@ -68,7 +68,7 @@ func ReceiveBufferedReader(br *bufio.Reader) (reply Reply, err error) {
 		if err != nil {
 			return nil, err
 		}
-		return &ErrorReply {
+		return &ErrorReply{
 			bytes: line,
 		}, nil
 	case IntegerMarker:
@@ -76,7 +76,7 @@ func ReceiveBufferedReader(br *bufio.Reader) (reply Reply, err error) {
 		if err != nil {
 			return nil, err
 		}
-		return &IntegerReply {
+		return &IntegerReply{
 			integer: integer,
 		}, nil
 	case BulkMarker:
@@ -84,7 +84,7 @@ func ReceiveBufferedReader(br *bufio.Reader) (reply Reply, err error) {
 		if err != nil {
 			return nil, err
 		}
-		return &BulkReply {
+		return &BulkReply{
 			bytes: bytes,
 		}, nil
 	case MultiBulkMarker:
@@ -93,7 +93,7 @@ func ReceiveBufferedReader(br *bufio.Reader) (reply Reply, err error) {
 			return nil, err
 		}
 		if size == -1 {
-			return &MultiBulkReply {
+			return &MultiBulkReply{
 				replies: nil,
 			}, nil
 		} else {
@@ -107,7 +107,7 @@ func ReceiveBufferedReader(br *bufio.Reader) (reply Reply, err error) {
 					return nil, err
 				}
 			}
-			return &MultiBulkReply {
+			return &MultiBulkReply{
 				replies: replies,
 			}, nil
 		}
@@ -194,4 +194,3 @@ func readLong(in *bufio.Reader) (result int64, err error) {
 	}
 	return -1, err
 }
-
