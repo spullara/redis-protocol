@@ -39,3 +39,18 @@ func Test_readBytes(t *testing.T) {
 	}
 }
 
+func Benchmark_freelsBench(b *testing.B) {
+	buffer := bytes.NewBuffer(make([]byte, 0))
+	buffer.WriteByte(MultiBulkMarker)
+	buffer.WriteString("100\r\n")
+	for i := 0; i < 100; i++ {
+		buffer.WriteByte(BulkMarker)
+		buffer.WriteString("6\r\n")
+		buffer.WriteString("foobar\r\n")
+	}
+	in := bytes.NewReader(buffer.Bytes())
+	for i := 0; i < b.N; i++ {
+		Receive(in)
+		in.Seek(0, 0)
+	}
+}
