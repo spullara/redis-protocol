@@ -1,10 +1,6 @@
 package redis;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
 import com.google.common.base.Charsets;
-
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.junit.Test;
@@ -12,6 +8,9 @@ import redis.netty.BulkReply;
 import redis.netty.MultiBulkReply;
 import redis.netty.RedisDecoder;
 import redis.netty.Reply;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 import static junit.framework.Assert.assertEquals;
 import static redis.util.Encoding.numToBytes;
@@ -83,7 +82,7 @@ public class CommandTest {
       }
       long end = System.currentTimeMillis();
       long diff = end - start;
-      System.out.println(diff + " " + ((double)diff)/100000);
+      System.out.println(diff + " " + ((double)diff * 1000000)/100000 + " ns/op");
       start = end;
     }
   }

@@ -82,7 +82,7 @@ public class CommandTest {
       }
       long end = System.currentTimeMillis();
       long diff = end - start;
-      System.out.println(diff + " " + ((double)diff)/100000);
+      System.out.println(diff + " " + ((double)diff * 1000000)/100000 + " ns/op");
       start = end;
     }
   }

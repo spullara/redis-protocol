@@ -49,6 +49,7 @@ func Benchmark_freelsBench(b *testing.B) {
 		buffer.WriteString("foobar\r\n")
 	}
 	in := bytes.NewReader(buffer.Bytes())
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		Receive(in)
 		in.Seek(0, 0)

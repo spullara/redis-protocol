@@ -1,5 +1,5 @@
 /**
- * TODO: Edit this
+ * Parsing the RedisProtocol
  *
  * User: sam
  * Date: 5/19/13
