@@ -72,10 +72,11 @@ public class RedisProtocol {
     }
     byte[] bytes = new byte[(int) size];
     int total = 0;
-    while (total < bytes.length && (read = is.read(bytes, total, bytes.length - total)) != -1) {
+    int length = bytes.length;
+    while (total < length && (read = is.read(bytes, total, length - total)) != -1) {
       total += read;
     }
-    if (total < bytes.length) {
+    if (total < length) {
       throw new IOException("Failed to read enough bytes: " + total);
     }
     int cr = is.read();
