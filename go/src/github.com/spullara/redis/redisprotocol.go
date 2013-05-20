@@ -49,8 +49,7 @@ func (reply *ErrorReply) Error() (err string) {
 	return string(reply.bytes)
 }
 
-func Receive(in io.Reader) (reply Reply, err error) {
-	br := bufio.NewReader(in)
+func ReceiveBufferedReader(br *bufio.Reader) (reply Reply, err error) {
 	code, err := br.ReadByte()
 	if err != nil {
 		return nil, err
@@ -119,9 +118,11 @@ func Receive(in io.Reader) (reply Reply, err error) {
 	panic("Should not reach here")
 }
 
+func Receive(in io.Reader) (reply Reply, err error) {
+	return ReceiveBufferedReader(bufio.NewReader(in))
+}
 
-func readBytes(in io.Reader) (bytes []byte, err error) {
-	br := bufio.NewReader(in)
+func readBytes(br *bufio.Reader) (bytes []byte, err error) {
 	size, err := readLong(br)
 	if err != nil {
 		return nil, err
@@ -178,7 +179,7 @@ func readLong(in *bufio.Reader) (result int64, err error) {
 				return -1, err
 			}
 			if read == 10 {
-				return number*int64(sign), nil
+				return number * int64(sign), nil
 			} else {
 				return -1, errors.New("Bad line ending")
 			}

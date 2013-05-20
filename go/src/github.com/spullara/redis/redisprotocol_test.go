@@ -1,10 +1,3 @@
-/**
- * TODO: Edit this
- *
- * User: sam
- * Date: 5/19/13
- * Time: 6:20 PM
- */
 package redis
 
 import (
@@ -31,7 +24,7 @@ func Test_readLong(t *testing.T) {
 }
 
 func Test_readBytes(t *testing.T) {
-	result, err := readBytes(strings.NewReader("3\r\nSam\r\n"))
+	result, err := readBytes(bufio.NewReader(strings.NewReader("3\r\nSam\r\n")))
 	if err != nil {
 		t.Error("Read error", err)
 	} else if !bytes.Equal([]byte("Sam"), result) {
@@ -48,10 +41,20 @@ func Benchmark_freelsBench(b *testing.B) {
 		buffer.WriteString("6\r\n")
 		buffer.WriteString("foobar\r\n")
 	}
-	in := bytes.NewReader(buffer.Bytes())
+	br := bytes.NewReader(buffer.Bytes())
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		Receive(in)
-		in.Seek(0, 0)
+		reply, err := Receive(br)
+		if err != nil {
+			b.Error("Failed", err)
+		}
+		multibulk, ok := reply.(*MultiBulkReply)
+		if !ok {
+			b.Error("Wrong type", multibulk, reply)
+		}
+		if len(multibulk.replies) != 100 {
+			b.Error("Invalid number of replies", multibulk.replies)
+		}
+		br.Seek(0, 0)
 	}
 }
