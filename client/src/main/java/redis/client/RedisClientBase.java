@@ -99,11 +99,13 @@ public class RedisClientBase {
         }
       }
     } catch (RedisException re) {
+      // Sadly no specific error code for this beyond the text
       if (re.getMessage().equals("ERR operation not permitted")) {
-        // Server is either authenticated
+        // Server is either authenticated and we will try again when AUTH command is sent
         parseAttempted = false;
       } else { // or
-        // is a non-standard redis implementation
+        // is a non-standard redis implementation, e.g. Twemproxy
+        // https://github.com/spullara/redis-protocol/issues/22
         connect();
       }
     } catch (Exception e) {
