@@ -132,7 +132,7 @@ public class RedisProtocol {
   public static Reply receive(InputStream is) throws IOException {
     int code = is.read();
     if (code == -1) {
-      return null;
+      throw new EOFException();
     }
     switch (code) {
       case StatusReply.MARKER: {
