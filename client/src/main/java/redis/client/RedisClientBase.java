@@ -78,23 +78,36 @@ public class RedisClientBase {
     }
   }
 
+  private boolean parseAttempted;
+
   private void parseInfo() {
+    if (parseAttempted) return; else parseAttempted = true;
     try {
       BulkReply info = (BulkReply) execute("INFO", new Command("INFO"));
-      BufferedReader br = new BufferedReader(new StringReader(new String(info.data())));
-      String line;
-      while ((line = br.readLine()) != null) {
-        int index = line.indexOf(':');
-        if (index != -1) {
-          String name = line.substring(0, index);
-          String value = line.substring(index + 1);
-          if ("redis_version".equals(name)) {
-            this.version = parseVersion(value);
+      if (info != null && info.data() != null) {
+        BufferedReader br = new BufferedReader(new StringReader(new String(info.data())));
+        String line;
+        while ((line = br.readLine()) != null) {
+          int index = line.indexOf(':');
+          if (index != -1) {
+            String name = line.substring(0, index);
+            String value = line.substring(index + 1);
+            if ("redis_version".equals(name)) {
+              this.version = parseVersion(value);
+            }
           }
         }
       }
-    } catch (Exception re) {
-      // Server requires AUTH, check later
+    } catch (RedisException re) {
+      if (re.getMessage().equals("ERR operation not permitted")) {
+        // Server is either authenticated
+        parseAttempted = false;
+      } else { // or
+        // is a non-standard redis implementation
+        connect();
+      }
+    } catch (Exception e) {
+      // Ignore, don't try again
     }
   }
 
