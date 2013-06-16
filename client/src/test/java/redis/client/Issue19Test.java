@@ -26,9 +26,14 @@ public class Issue19Test {
     Command cmd = new Command(name.getBytes(Charsets.UTF_8),"foo");
     ListenableFuture<? extends Reply> f = client.pipeline(name, cmd);
     try {
-      Future<Boolean> exec = client.exec();
-      exec.get();
-      f.get();
+      // Fixed in 2.6.5
+      if (client.version < 20605) {
+        Future<Boolean> exec = client.exec();
+        exec.get();
+        f.get();
+      } else {
+        f.get();
+      }
       fail("Should have gotten an error");
     } catch (ExecutionException re) {
       Throwable cause = re.getCause();
