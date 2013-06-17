@@ -302,7 +302,11 @@ public class RedisClientBase {
             }
             for (Reply reply : execReply.data()) {
               SettableFuture<Reply> poll = txReplies.poll();
-              poll.set(reply);
+              if (reply instanceof ErrorReply) {
+                poll.setException(new RedisException((String) reply.data()));
+              } else {
+                poll.set(reply);
+              }
             }
             return true;
           }
