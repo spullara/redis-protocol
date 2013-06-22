@@ -2,13 +2,13 @@
   <parent>
     <artifactId>redis</artifactId>
     <groupId>com.github.spullara.redis</groupId>
-    <version>0.7</version>
+    <version>0.8-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.github.spullara.redis</groupId>
   <artifactId>netty4-client</artifactId>
-  <version>0.7</version>
+  <version>0.8-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>netty4-client</name>
@@ -22,7 +22,7 @@
     <dependency>
       <groupId>com.github.spullara.redis</groupId>
       <artifactId>netty4</artifactId>
-      <version>0.7</version>
+      <version>0.8-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.github.spullara.java</groupId>
