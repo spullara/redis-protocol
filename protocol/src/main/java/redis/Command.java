@@ -44,6 +44,10 @@ public class Command {
     this(name, object1, null, null, null);
   }
 
+  public Command(Object name, Object object1, Object[] objects) {
+    this(name, object1, null, null, objects);
+  }
+
   public Command(Object name, Object object1, Object object2) {
     this(name, object1, object2, null, null);
   }

@@ -70,6 +70,8 @@ public class MultiBulkReply implements Reply<Reply[]> {
     for (Reply reply : replies) {
       if (reply instanceof BulkReply) {
         strings.add(((BulkReply) reply).asString(charset));
+      } else if (reply instanceof IntegerReply) {
+        strings.add(reply.data().toString());
       } else {
         throw new IllegalArgumentException("Could not convert " + reply + " to a string");
       }
