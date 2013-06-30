@@ -17,6 +17,7 @@ import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
 import redis.Command;
 import redis.netty.BulkReply;
+import redis.netty.ErrorReply;
 import redis.netty.MultiBulkReply;
 import redis.netty.RedisDecoder;
 import redis.netty.RedisEncoder;
@@ -110,7 +111,11 @@ public class RedisClientBase {
           }
         } else {
           Promise poll = queue.poll();
-          poll.set(message);
+          if (message instanceof ErrorReply) {
+            poll.setException(new RedisException(((ErrorReply) message).data()));
+          } else {
+            poll.set(message);
+          }
         }
       }
 

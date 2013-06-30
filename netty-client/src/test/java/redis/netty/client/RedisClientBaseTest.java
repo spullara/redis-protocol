@@ -92,6 +92,18 @@ public class RedisClientBaseTest {
   }
 
   @Test
+  public void testError() throws ExecutionException, InterruptedException {
+    try {
+      RedisClient client = RedisClient.connect("localhost", 6379).get();
+      client.set("test", "value").get();
+      client.hgetall("test").get();
+      fail("Should have failed");
+    } catch (ExecutionException ee) {
+      assertTrue(ee.getCause() instanceof RedisException);
+    }
+  }
+
+  @Test
   public void testExecute() throws Exception {
     final CountDownLatch done = new CountDownLatch(1);
     final AtomicBoolean success = new AtomicBoolean();
@@ -211,30 +223,30 @@ public class RedisClientBaseTest {
 
       @Override
       public void apply(final RedisClient redisClient) {
-          new Thread(new Runnable() {
-            @Override
-            public void run() {
-              try {
-                final Semaphore semaphore = new Semaphore(100);
-                Runnable release = new Runnable() {
-                  @Override
-                  public void run() {
-                    semaphore.release();
-                  }
-                };
-                long start = System.currentTimeMillis();
-                while (System.currentTimeMillis() - start < 5000) {
-                  semaphore.acquire();
-                  String current = String.valueOf(total.getAndIncrement());
-                  redisClient.set(current, current).ensure(release);
+        new Thread(new Runnable() {
+          @Override
+          public void run() {
+            try {
+              final Semaphore semaphore = new Semaphore(100);
+              Runnable release = new Runnable() {
+                @Override
+                public void run() {
+                  semaphore.release();
                 }
-                semaphore.acquire(100);
-                done.countDown();
-              } catch (InterruptedException e) {
-                e.printStackTrace();
+              };
+              long start = System.currentTimeMillis();
+              while (System.currentTimeMillis() - start < 5000) {
+                semaphore.acquire();
+                String current = String.valueOf(total.getAndIncrement());
+                redisClient.set(current, current).ensure(release);
               }
+              semaphore.acquire(100);
+              done.countDown();
+            } catch (InterruptedException e) {
+              e.printStackTrace();
             }
-          }).start();
+          }
+        }).start();
       }
     });
     done.await(6000, TimeUnit.MILLISECONDS);
@@ -253,47 +265,47 @@ public class RedisClientBaseTest {
     RedisClient.connect("localhost", 6379).onSuccess(new Block<RedisClient>() {
       @Override
       public void apply(final RedisClient redisClient) {
-          new Thread(new Runnable() {
-            @Override
-            public void run() {
-              try {
-                final Semaphore semaphore = new Semaphore(100);
-                Runnable release = new Runnable() {
+        new Thread(new Runnable() {
+          @Override
+          public void run() {
+            try {
+              final Semaphore semaphore = new Semaphore(100);
+              Runnable release = new Runnable() {
+                @Override
+                public void run() {
+                  semaphore.release();
+                }
+              };
+              long start = System.currentTimeMillis();
+              while (System.currentTimeMillis() - start < 1000) {
+                semaphore.acquire();
+                final String current = String.valueOf(total.getAndIncrement());
+                redisClient.set(current, current).ensure(release).onSuccess(new Block<StatusReply>() {
                   @Override
-                  public void run() {
-                    semaphore.release();
-                  }
-                };
-                long start = System.currentTimeMillis();
-                while (System.currentTimeMillis() - start < 1000) {
-                  semaphore.acquire();
-                  final String current = String.valueOf(total.getAndIncrement());
-                  redisClient.set(current, current).ensure(release).onSuccess(new Block<StatusReply>() {
-                    @Override
-                    public void apply(StatusReply statusReply) {
-                      redisClient.get(current).onSuccess(new Block<BulkReply>() {
-                        @Override
-                        public void apply(BulkReply bulkReply) {
-                          if (!bulkReply.asAsciiString().equals(current)) {
-                            errors.incrementAndGet();
-                          }
-                        }
-                      }).onFailure(new Block<Throwable>() {
-                        @Override
-                        public void apply(Throwable throwable) {
+                  public void apply(StatusReply statusReply) {
+                    redisClient.get(current).onSuccess(new Block<BulkReply>() {
+                      @Override
+                      public void apply(BulkReply bulkReply) {
+                        if (!bulkReply.asAsciiString().equals(current)) {
                           errors.incrementAndGet();
                         }
-                      });
-                    }
-                  });
-                }
-                semaphore.acquire(100);
-                done.countDown();
-              } catch (InterruptedException e) {
-                e.printStackTrace();
+                      }
+                    }).onFailure(new Block<Throwable>() {
+                      @Override
+                      public void apply(Throwable throwable) {
+                        errors.incrementAndGet();
+                      }
+                    });
+                  }
+                });
               }
+              semaphore.acquire(100);
+              done.countDown();
+            } catch (InterruptedException e) {
+              e.printStackTrace();
             }
-          }).start();
+          }
+        }).start();
       }
     });
     done.await(6000, TimeUnit.MILLISECONDS);
