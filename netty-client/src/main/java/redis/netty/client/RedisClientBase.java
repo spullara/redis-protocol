@@ -194,9 +194,10 @@ public class RedisClientBase {
       public void set(T value) {
         // Check the type and fail if the wrong type
         if (!clazz.isInstance(value)) {
-          throw new IllegalStateException("Incorrect type for " + value + " should be " + clazz.getName());
+          setException(new RedisException("Incorrect type for " + value + " should be " + clazz.getName() + " but is " + value.getClass().getName()));
+        } else {
+          super.set(value);
         }
-        super.set(value);
       }
     };
     if (subscribed.get()) {
