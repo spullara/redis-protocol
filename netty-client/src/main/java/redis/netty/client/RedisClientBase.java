@@ -188,8 +188,17 @@ public class RedisClientBase {
     return closed;
   }
 
-  protected <T> Promise<T> execute(Class<T> clazz, Command command) {
-    final Promise<T> reply = new Promise<>();
+  protected <T> Promise<T> execute(final Class<T> clazz, Command command) {
+    final Promise<T> reply = new Promise<T>() {
+      @Override
+      public void set(T value) {
+        // Check the type and fail if the wrong type
+        if (!clazz.isInstance(value)) {
+          throw new IllegalStateException("Incorrect type for " + value + " should be " + clazz.getName());
+        }
+        super.set(value);
+      }
+    };
     if (subscribed.get()) {
       reply.setException(new RedisException("Already subscribed, cannot send this command"));
     } else {
