@@ -130,12 +130,13 @@ public class RedisClientBase {
       }
     };
     final RedisEncoder encoder = new RedisEncoder();
+    final RedisDecoder decoder = new RedisDecoder();
     cb.setPipelineFactory(new ChannelPipelineFactory() {
       @Override
       public ChannelPipeline getPipeline() throws Exception {
         ChannelPipeline pipeline = Channels.pipeline();
         pipeline.addLast("redisEncoder", encoder);
-        pipeline.addLast("redisDecoder", new RedisDecoder());
+        pipeline.addLast("redisDecoder", decoder);
         pipeline.addLast("result", handler);
         return pipeline;
       }

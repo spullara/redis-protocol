@@ -9,6 +9,8 @@ import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 import org.jboss.netty.handler.codec.replay.VoidEnum;
 
 import java.io.IOException;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.Semaphore;
 
 /**
  * Netty codec for Redis
@@ -69,6 +71,14 @@ public class RedisDecoder extends ReplayingDecoder<VoidEnum> {
   }
 
   public Reply receive(final ChannelBuffer is) throws IOException {
+    // We may be in the middle of a large multibulk reply
+    if (reply != null) {
+      return decodeMultiBulkReply(is);
+    }
+    return receiveReply(is);
+  }
+
+  public Reply receiveReply(ChannelBuffer is) throws IOException {
     int code = is.readByte();
     switch (code) {
       case StatusReply.MARKER: {
@@ -109,13 +119,17 @@ public class RedisDecoder extends ReplayingDecoder<VoidEnum> {
   public MultiBulkReply decodeMultiBulkReply(ChannelBuffer is) throws IOException {
     try {
       if (reply == null) {
-        reply = new MultiBulkReply(this, is);
-      } else {
-        reply.read(this, is);
+        reply = new MultiBulkReply();
+        checkpoint();
       }
+      reply.read(this, is);
       return reply;
     } finally {
-      reply = null;
+      // If we throw a replay exception we won't be
+      // done yet and will need to contiue parsing.
+      if (reply != null && reply.isDone()) {
+        reply = null;
+      }
     }
   }
 }
