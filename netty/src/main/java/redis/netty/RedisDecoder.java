@@ -9,8 +9,6 @@ import org.jboss.netty.handler.codec.replay.ReplayingDecoder;
 import org.jboss.netty.handler.codec.replay.VoidEnum;
 
 import java.io.IOException;
-import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.Semaphore;
 
 /**
  * Netty codec for Redis
@@ -75,10 +73,10 @@ public class RedisDecoder extends ReplayingDecoder<VoidEnum> {
     if (reply != null) {
       return decodeMultiBulkReply(is);
     }
-    return receiveReply(is);
+    return readReply(is);
   }
 
-  public Reply receiveReply(ChannelBuffer is) throws IOException {
+  public Reply readReply(ChannelBuffer is) throws IOException {
     int code = is.readByte();
     switch (code) {
       case StatusReply.MARKER: {
@@ -98,7 +96,12 @@ public class RedisDecoder extends ReplayingDecoder<VoidEnum> {
         return new BulkReply(readBytes(is));
       }
       case MultiBulkReply.MARKER: {
-        return decodeMultiBulkReply(is);
+        if (reply == null) {
+          return decodeMultiBulkReply(is);
+        } else {
+          // This is an internal MBR in an MBR.
+          return new RedisDecoder().decodeMultiBulkReply(is);
+        }
       }
       default: {
         throw new IOException("Unexpected character in stream: " + code);

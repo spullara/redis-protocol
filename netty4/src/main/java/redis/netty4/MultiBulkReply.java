@@ -18,30 +18,32 @@ public class MultiBulkReply implements Reply<Reply[]> {
   public static final char MARKER = '*';
   public static final MultiBulkReply EMPTY = new MultiBulkReply(new Reply[0]);
 
-  private final Reply[] replies;
-  private final int size;
+  private Reply[] replies;
+  private int size = -2;
   private int index = 0;
 
-  public MultiBulkReply(RedisReplyDecoder rd, ByteBuf is) throws IOException {
-    long l = readLong(is);
-    if (l > Integer.MAX_VALUE) {
-      throw new IllegalArgumentException("Java only supports arrays up to " + Integer.MAX_VALUE + " in size");
-    }
-    size = (int) l;
-    if (size == -1) {
-      replies = null;
-    } else {
-      if (size < 0) {
-        throw new IllegalArgumentException("Invalid size: " + size);
-      }
-      replies = new Reply[size];
-      read(rd, is);
-    }
+  public MultiBulkReply() {
   }
 
   public void read(RedisReplyDecoder rd, ByteBuf is) throws IOException {
+    if (size == -2) {
+      long l = readLong(is);
+      if (l > Integer.MAX_VALUE) {
+        throw new IllegalArgumentException("Java only supports arrays up to " + Integer.MAX_VALUE + " in size");
+      }
+      size = (int) l;
+      if (size == -1) {
+        replies = null;
+      } else {
+        if (size < 0) {
+          throw new IllegalArgumentException("Invalid size: " + size);
+        }
+        replies = new Reply[size];
+      }
+      rd.checkpoint();
+    }
     for (int i = index; i < size; i++) {
-      replies[i] = rd.receive(is);
+      replies[i] = rd.readReply(is);
       index = i + 1;
       rd.checkpoint();
     }

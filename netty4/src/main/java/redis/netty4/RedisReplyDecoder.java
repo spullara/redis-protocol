@@ -78,6 +78,13 @@ public class RedisReplyDecoder extends ReplayingDecoder<Void> {
   }
 
   public Reply receive(final ByteBuf is) throws IOException {
+    if (reply != null) {
+      return decodeMultiBulkReply(is);
+    }
+    return readReply(is);
+  }
+
+  public Reply readReply(ByteBuf is) throws IOException {
     int code = is.readByte();
     switch (code) {
       case StatusReply.MARKER: {
@@ -97,7 +104,11 @@ public class RedisReplyDecoder extends ReplayingDecoder<Void> {
         return new BulkReply(readBytes(is));
       }
       case MultiBulkReply.MARKER: {
-        return decodeMultiBulkReply(is);
+        if (reply == null) {
+          return decodeMultiBulkReply(is);
+        } else {
+          return new RedisReplyDecoder(false).decodeMultiBulkReply(is);
+        }
       }
       default: {
         throw new IOException("Unexpected character in stream: " + code);
@@ -115,10 +126,10 @@ public class RedisReplyDecoder extends ReplayingDecoder<Void> {
   public MultiBulkReply decodeMultiBulkReply(ByteBuf is) throws IOException {
     try {
       if (reply == null) {
-        reply = new MultiBulkReply(this, is);
-      } else {
-        reply.read(this, is);
+        reply = new MultiBulkReply();
+        checkpoint();
       }
+      reply.read(this, is);
       return reply;
     } finally {
       reply = null;

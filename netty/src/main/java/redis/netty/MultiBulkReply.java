@@ -37,7 +37,7 @@ public class MultiBulkReply implements Reply<Reply[]> {
       rd.checkpoint();
     }
     for (int i = index; i < size; i++) {
-      replies[i] = rd.receiveReply(is);
+      replies[i] = rd.readReply(is);
       index = i + 1;
       rd.checkpoint();
     }
@@ -48,7 +48,6 @@ public class MultiBulkReply implements Reply<Reply[]> {
 
   public MultiBulkReply(Reply[] replies) {
     this.replies = replies;
-    size = replies.length;
   }
 
   @Override

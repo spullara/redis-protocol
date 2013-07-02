@@ -88,7 +88,7 @@ public class RedisClientBaseTest {
     });
     done.await(5000, TimeUnit.MILLISECONDS);
     assertFalse(success.get());
-    assertEquals("Connection refused", failure.get().getMessage());
+    assertTrue("Connection not refused", failure.get().getMessage().startsWith("Connection refused"));
   }
 
   @Test
