@@ -45,6 +45,8 @@ public class RedisClientBase {
   // Needed for reconnection
   private final String host;
   private final int port;
+	private int db = 0;
+	private String passwd = null;
 
   // Single threaded pipelining
   private ListeningExecutorService es;
@@ -54,9 +56,11 @@ public class RedisClientBase {
   protected AtomicInteger pipelined = new AtomicInteger(0);
   protected int version = 9999999;
 
-  protected RedisClientBase(String host, int port, ExecutorService executorService) throws RedisException {
+  protected RedisClientBase(String host, int port, int db, String passwd, ExecutorService executorService) throws RedisException {
     this.host = host;
     this.port = port;
+    this.db = db;
+    this.passwd = passwd;
     es = MoreExecutors.listeningDecorator(executorService);
     connect();
   }
@@ -68,6 +72,10 @@ public class RedisClientBase {
       }
       redisProtocol = new RedisProtocol(new Socket(host, port));
       parseInfo();
+      if (passwd != null)
+      	auth(passwd);
+      if (db != 0)
+      	select(db);
       return true;
     } catch (IOException e) {
       throw new RedisException("Could not connect", e);
@@ -431,6 +439,22 @@ public class RedisClientBase {
     // Now that we are successful, parse the info
     parseInfo();
     return statusReply;
+  }
+  
+  protected static final String SELECT = "SELECT";
+  protected static final byte[] SELECT_BYTES = SELECT.getBytes(Charsets.US_ASCII);
+  protected static final int SELECT_VERSION = parseVersion("1.0.0");
+
+  /**
+   * Change the selected database for the current connection
+   * Connection
+   *
+   * @param index0
+   * @return StatusReply
+   */
+  public StatusReply select(Object index0) throws RedisException {
+    if (version < SELECT_VERSION) throw new RedisException("Server does not support SELECT");
+    return (StatusReply) execute(SELECT, new Command(SELECT_BYTES, index0));
   }
 
   private class SubscriptionsDispatcher implements Runnable {

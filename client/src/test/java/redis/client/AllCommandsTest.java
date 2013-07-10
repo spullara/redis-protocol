@@ -43,6 +43,23 @@ public class AllCommandsTest {
     rc.close();
     rc2.close();
   }
+  
+
+  @Test
+  public void testDefaultAuthDB() throws IOException {
+  	rc.config_set("requirepass", "test");
+  	RedisClient test = new RedisClient("localhost", 6379, 1, "test");
+  	try {
+  	test.set("foo", "bar");
+  	} catch (RedisException e) {
+  		fail("default passwd failed");
+  	}
+  	test.config_set("requirepass", "");
+  	rc.select(1);
+  	if (!new String(rc.get("foo").data()).equals("bar"))
+  		fail("default db failed");
+  	rc.del("foo");
+  }
 
   @Test
   public void testauth() throws IOException {
