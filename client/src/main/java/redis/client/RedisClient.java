@@ -21,11 +21,15 @@ public class RedisClient extends RedisClientBase {
   protected Pipeline pipeline = new Pipeline();
 
   public RedisClient(String host, int port) throws IOException {
-    this(host, port, Executors.newSingleThreadExecutor());
+    this(host, port, 0, null, Executors.newSingleThreadExecutor());
   }
 
-  public RedisClient(String host, int port, ExecutorService es) throws IOException {
-    super(host, port, es);
+  public RedisClient(String host, int port, int db, String passwd) throws IOException {
+    this(host, port, db, passwd, Executors.newSingleThreadExecutor());
+  }
+
+  public RedisClient(String host, int port, int db, String passwd, ExecutorService es) throws IOException {
+    super(host, port, db, passwd, es);
   }
 
   public Pipeline pipeline() {
@@ -501,22 +505,6 @@ public class RedisClient extends RedisClientBase {
   public StatusReply quit() throws RedisException {
     if (version < QUIT_VERSION) throw new RedisException("Server does not support QUIT");
     return (StatusReply) execute(QUIT, new Command(QUIT_BYTES));
-  }
-  
-  private static final String SELECT = "SELECT";
-  private static final byte[] SELECT_BYTES = SELECT.getBytes(Charsets.US_ASCII);
-  private static final int SELECT_VERSION = parseVersion("1.0.0");
-
-  /**
-   * Change the selected database for the current connection
-   * Connection
-   *
-   * @param index0
-   * @return StatusReply
-   */
-  public StatusReply select(Object index0) throws RedisException {
-    if (version < SELECT_VERSION) throw new RedisException("Server does not support SELECT");
-    return (StatusReply) execute(SELECT, new Command(SELECT_BYTES, index0));
   }
   
   private static final String BGREWRITEAOF = "BGREWRITEAOF";
