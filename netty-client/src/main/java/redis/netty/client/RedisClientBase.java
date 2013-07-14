@@ -35,6 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedTransferQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -194,6 +195,8 @@ public class RedisClientBase {
     return closed;
   }
 
+  private final Semaphore writerLock = new Semaphore(1);
+
   protected <T> Promise<T> execute(final Class<T> clazz, Command command) {
     final Promise<T> reply = new Promise<T>() {
       @Override
@@ -210,13 +213,13 @@ public class RedisClientBase {
       reply.setException(new RedisException("Already subscribed, cannot send this command"));
     } else {
       ChannelFuture write;
-      synchronized (channel) {
-        queue.add(reply);
-        write = channel.write(command);
-      }
+      writerLock.acquireUninterruptibly();
+      queue.add(reply);
+      write = channel.write(command);
       write.addListener(new ChannelFutureListener() {
         @Override
         public void operationComplete(ChannelFuture future) throws Exception {
+          writerLock.release();
           if (future.isSuccess()) {
             // Netty doesn't call these in order
           } else if (future.isCancelled()) {
