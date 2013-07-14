@@ -54,6 +54,7 @@ public class RedisClientBase {
 
   private Channel channel;
   private Queue<Promise> queue;
+  private ExecutorService executor;
 
   public static <T extends RedisClientBase> Promise<T> connect(String hostname, int port) {
     return connect(hostname, port, (T) new RedisClientBase(), Executors.newCachedThreadPool());
@@ -97,7 +98,7 @@ public class RedisClientBase {
     return version;
   }
 
-  public static <T extends RedisClientBase> Promise<T> connect(String hostname, int port, final T redisClient, ExecutorService executor) {
+  public static <T extends RedisClientBase> Promise<T> connect(String hostname, int port, final T redisClient, final ExecutorService executor) {
     final ClientBootstrap cb = new ClientBootstrap(new NioClientSocketChannelFactory(executor, executor));
     final Queue<Promise> queue = new LinkedTransferQueue<>();
     final SimpleChannelUpstreamHandler handler = new SimpleChannelUpstreamHandler() {
@@ -147,7 +148,7 @@ public class RedisClientBase {
       @Override
       public void operationComplete(ChannelFuture channelFuture) throws Exception {
         if (channelFuture.isSuccess()) {
-          redisClient.init(channelFuture.getChannel(), queue);
+          redisClient.init(channelFuture.getChannel(), queue, executor);
           redisClient.execute(BulkReply.class, new Command("INFO")).onSuccess(new Block<BulkReply>() {
             @Override
             public void apply(BulkReply bulkReply) {
@@ -173,9 +174,10 @@ public class RedisClientBase {
   protected RedisClientBase() {
   }
 
-  protected void init(Channel channel, Queue<Promise> queue) {
+  protected void init(Channel channel, Queue<Promise> queue, ExecutorService executor) {
     this.channel = channel;
     this.queue = queue;
+    this.executor = executor;
   }
 
   public Promise<Void> close() {
@@ -197,7 +199,7 @@ public class RedisClientBase {
 
   private final Semaphore writerLock = new Semaphore(1);
 
-  protected <T> Promise<T> execute(final Class<T> clazz, Command command) {
+  protected <T> Promise<T> execute(final Class<T> clazz, final Command command) {
     final Promise<T> reply = new Promise<T>() {
       @Override
       public void set(T value) {
@@ -212,21 +214,25 @@ public class RedisClientBase {
     if (subscribed.get()) {
       reply.setException(new RedisException("Already subscribed, cannot send this command"));
     } else {
-      ChannelFuture write;
-      writerLock.acquireUninterruptibly();
-      queue.add(reply);
-      write = channel.write(command);
-      write.addListener(new ChannelFutureListener() {
+      executor.submit(new Runnable() {
         @Override
-        public void operationComplete(ChannelFuture future) throws Exception {
-          writerLock.release();
-          if (future.isSuccess()) {
-            // Netty doesn't call these in order
-          } else if (future.isCancelled()) {
-            reply.cancel(true);
-          } else {
-            reply.setException(future.getCause());
-          }
+        public void run() {
+          writerLock.acquireUninterruptibly();
+          queue.add(reply);
+          ChannelFuture write = channel.write(command);
+          write.addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+              writerLock.release();
+              if (future.isSuccess()) {
+                // Netty doesn't call these in order
+              } else if (future.isCancelled()) {
+                reply.cancel(true);
+              } else {
+                reply.setException(future.getCause());
+              }
+            }
+          });
         }
       });
     }
