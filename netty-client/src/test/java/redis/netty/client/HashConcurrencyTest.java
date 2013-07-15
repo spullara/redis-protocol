@@ -18,6 +18,7 @@ public class HashConcurrencyTest {
   public void testConcurrency() throws ExecutionException, InterruptedException {
     if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
     RedisClient client = RedisClient.connect("localhost", 6379).get();
+    client.del_("hash").get();
     for (int i = 0; i < 100; i++) {
       client.hset("hash", "key" + i, "values" + i).get();
     }
