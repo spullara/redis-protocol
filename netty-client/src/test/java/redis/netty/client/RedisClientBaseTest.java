@@ -277,7 +277,7 @@ public class RedisClientBaseTest {
                 }
               };
               long start = System.currentTimeMillis();
-              while (System.currentTimeMillis() - start < 1000) {
+              while (System.currentTimeMillis() - start < 5000) {
                 semaphore.acquire();
                 final String current = String.valueOf(total.getAndIncrement());
                 redisClient.set(current, current).ensure(release).onSuccess(new Block<StatusReply>() {
@@ -286,7 +286,9 @@ public class RedisClientBaseTest {
                     redisClient.get(current).onSuccess(new Block<BulkReply>() {
                       @Override
                       public void apply(BulkReply bulkReply) {
-                        if (!bulkReply.asAsciiString().equals(current)) {
+                        String s = bulkReply.asAsciiString();
+                        if (!s.equals(current)) {
+                          System.out.println(s + " != " + current);
                           errors.incrementAndGet();
                         }
                       }

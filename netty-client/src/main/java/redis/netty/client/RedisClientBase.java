@@ -217,20 +217,23 @@ public class RedisClientBase {
       executor.submit(new Runnable() {
         @Override
         public void run() {
-          ChannelFuture write = channel.write(command);
-          write.addListener(new ChannelFutureListener() {
-            @Override
-            public void operationComplete(ChannelFuture future) throws Exception {
-              if (future.isSuccess()) {
-                // Netty doesn't call these in order
-                queue.add(reply);
-              } else if (future.isCancelled()) {
-                reply.cancel(true);
-              } else {
-                reply.setException(future.getCause());
+          ChannelFuture write;
+          synchronized (channel) {
+            queue.add(reply);
+            write = channel.write(command);
+            write.addListener(new ChannelFutureListener() {
+              @Override
+              public void operationComplete(ChannelFuture future) throws Exception {
+                if (future.isSuccess()) {
+                  // Netty doesn't call these in order
+                } else if (future.isCancelled()) {
+                  reply.cancel(true);
+                } else {
+                  reply.setException(future.getCause());
+                }
               }
-            }
-          });
+            });
+          }
         }
       });
     }
