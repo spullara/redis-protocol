@@ -217,15 +217,13 @@ public class RedisClientBase {
       executor.submit(new Runnable() {
         @Override
         public void run() {
-          writerLock.acquireUninterruptibly();
-          queue.add(reply);
           ChannelFuture write = channel.write(command);
           write.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
-              writerLock.release();
               if (future.isSuccess()) {
                 // Netty doesn't call these in order
+                queue.add(reply);
               } else if (future.isCancelled()) {
                 reply.cancel(true);
               } else {
