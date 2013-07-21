@@ -27,6 +27,7 @@ public class RedisProtocol {
   private static final char ZERO = '0';
   private final BufferedInputStream is;
   private final OutputStream os;
+  private final Socket socket;
 
   /**
    * Create a new RedisProtocol from a socket connection.
@@ -35,6 +36,7 @@ public class RedisProtocol {
    * @throws IOException
    */
   public RedisProtocol(Socket socket) throws IOException {
+    this.socket = socket;
     is = new BufferedInputStream(socket.getInputStream());
     os = new BufferedOutputStream(socket.getOutputStream());
   }
@@ -49,6 +51,7 @@ public class RedisProtocol {
   public RedisProtocol(BufferedInputStream is, OutputStream os) {
     this.is = is;
     this.os = os;
+    socket = null;
   }
 
   /**
@@ -193,5 +196,8 @@ public class RedisProtocol {
   public void close() throws IOException {
     is.close();
     os.close();
+    if (socket != null) {
+      socket.close();
+    }
   }
 }

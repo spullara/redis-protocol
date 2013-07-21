@@ -25,7 +25,7 @@ public class Issue29Test {
       public void run() {
         try {
           latch.countDown();
-          Reply reply = client.brpoplpush("popsource", "pushdest", 2);
+          Reply reply = client.brpoplpush("popsource", "pushdest", 0);
           ref.set(reply);
         } catch(Exception e) {
           error.set(e);
