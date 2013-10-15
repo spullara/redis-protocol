@@ -15,6 +15,7 @@
     <module>netty4</module>
     <module>netty4-client</module>
     <module>netty4-server</module>
+    <module>fdb</module>
   </modules>
   <packaging>pom</packaging>
 
