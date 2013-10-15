@@ -61,6 +61,11 @@ public class RedisCommandHandler extends SimpleChannelInboundHandler<Command> {
   private static final byte LOWER_DIFF = 'a' - 'A';
 
   @Override
+  public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+    ctx.flush();
+  }
+
+  @Override
   protected void channelRead0(ChannelHandlerContext ctx, Command msg) throws Exception {
     byte[] name = msg.getName();
     for (int i = 0; i < name.length; i++) {
@@ -90,7 +95,6 @@ public class RedisCommandHandler extends SimpleChannelInboundHandler<Command> {
         reply = NYI_REPLY;
       }
       ctx.write(reply);
-      ctx.flush();
     }
   }
 }
