@@ -19,9 +19,6 @@ import static redis.fdb.FDBRedisServer.Type.LIST;
 import static redis.fdb.FDBRedisServer.Type.SET;
 import static redis.fdb.FDBRedisServer.Type.ZSET;
 
-/**
- * Created by sam on 10/15/13.
- */
 public class FDBRedisServer implements RedisServer {
 
   // Connect to FDB
@@ -154,7 +151,7 @@ public class FDBRedisServer implements RedisServer {
     db.run(new Function<Transaction, Object>() {
       @Override
       public Object apply(Transaction tx) {
-        tx.set(root.add(BYTES.key()).add(key0).pack(), value1);
+        tx.set(bytesT.add(key0).pack(), value1);
         return null;
       }
     });
