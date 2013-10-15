@@ -4,8 +4,6 @@ import com.google.common.base.Charsets;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundMessageHandlerAdapter;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -30,17 +28,7 @@ public class RedisClient {
     final SocketChannel ch = new NioSocketChannel();
     new NioEventLoopGroup().register(ch);
     final long start = System.currentTimeMillis();
-    ch.pipeline().addLast(new RedisCommandEncoder(), new RedisReplyDecoder(),
-            new ChannelInboundMessageHandlerAdapter<Reply<?>>() {
-              @Override
-              public void messageReceived(ChannelHandlerContext channelHandlerContext, Reply<?> reply) throws Exception {
-                if (i == CALLS) {
-                  System.out.println(CALLS * 1000 / (System.currentTimeMillis() - start) + " calls per second");
-                } else {
-                  write(ch);
-                }
-              }
-            });
+    ch.pipeline().addLast(new RedisCommandEncoder(), new RedisReplyDecoder());
     ch.connect(new InetSocketAddress("localhost", 6379)).addListener(new ChannelFutureListener() {
       @Override
       public void operationComplete(ChannelFuture channelFuture) throws Exception {

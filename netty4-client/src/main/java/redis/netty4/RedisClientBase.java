@@ -1,7 +1,7 @@
 package redis.netty4;
 
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelInboundMessageHandlerAdapter;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -31,9 +31,9 @@ public class RedisClientBase {
     SocketChannel socketChannel = new NioSocketChannel();
     final RedisClientBase client = new RedisClientBase(socketChannel, queue);
     socketChannel.pipeline().addLast(new RedisCommandEncoder(), new RedisReplyDecoder(),
-            new ChannelInboundMessageHandlerAdapter<Reply<?>>() {
+            new SimpleChannelInboundHandler<Reply<?>>() {
               @Override
-              public void messageReceived(ChannelHandlerContext channelHandlerContext, Reply<?> reply) throws Exception {
+              protected void channelRead0(ChannelHandlerContext channelHandlerContext, Reply<?> reply) throws Exception {
                 Promise<Reply> poll;
                 synchronized (client) {
                   poll = queue.poll();

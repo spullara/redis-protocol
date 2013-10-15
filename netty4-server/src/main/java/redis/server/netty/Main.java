@@ -57,7 +57,7 @@ public class Main {
         f.channel().closeFuture().sync();
     } finally {
         // Shut down all event loops to terminate all threads.
-        b.shutdown();
+      group.shutdownGracefully();
     }
   }
 }
