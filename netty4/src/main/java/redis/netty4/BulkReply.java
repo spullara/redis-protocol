@@ -1,54 +1,58 @@
 package redis.netty4;
 
-import com.google.common.base.Charsets;
+import static redis.util.Encoding.numToBytes;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.util.CharsetUtil;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 
-import static redis.util.Encoding.numToBytes;
-
-public class BulkReply implements Reply<ByteBuf> {
+public class BulkReply extends AbstarctReply<ByteBuf> {
   public static final BulkReply NIL_REPLY = new BulkReply();
 
   public static final char MARKER = '$';
-  private final ByteBuf bytes;
+  //private final ByteBuf bytes;
   private final int capacity;
 
   private BulkReply() {
-    bytes = null;
+	super(null);
+    //bytes = null;
     capacity = -1;
   }
 
   public BulkReply(byte[] bytes) {
-    this.bytes = Unpooled.wrappedBuffer(bytes);
+    super(Unpooled.wrappedBuffer(bytes));
     capacity = bytes.length;
   }
 
   public BulkReply(ByteBuf bytes) {
-    this.bytes = bytes;
+    super(bytes);
+    bytes.retain();//TODO release when ?
     capacity = bytes.capacity();
   }
 
-  @Override
-  public ByteBuf data() {
-    return bytes;
-  }
 
   public String asAsciiString() {
-    if (bytes == null) return null;
-    return bytes.toString(Charsets.US_ASCII);
+    if (data() == null) return null;
+    return data().toString(CharsetUtil.US_ASCII);
   }
 
   public String asUTF8String() {
-    if (bytes == null) return null;
-    return bytes.toString(Charsets.UTF_8);
+    if (data() == null) return null;
+    return data().toString(CharsetUtil.UTF_8);
   }
 
+  public byte[] asByteArray() {
+    if (data() == null) return null;
+    byte[] res = new byte[data().readableBytes()];
+    data().getBytes(data().readerIndex(), res);
+	return res;
+  }
+  
   public String asString(Charset charset) {
-    if (bytes == null) return null;
-    return bytes.toString(charset);
+    if (data() == null) return null;
+    return data().toString(charset);
   }
 
   @Override
@@ -56,7 +60,7 @@ public class BulkReply implements Reply<ByteBuf> {
     os.writeByte(MARKER);
     os.writeBytes(numToBytes(capacity, true));
     if (capacity > 0) {
-      os.writeBytes(bytes);
+      os.writeBytes(data());
       os.writeBytes(CRLF);
     }
   }

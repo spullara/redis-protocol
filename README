@@ -91,6 +91,7 @@ Various redis client benchmarks
 
 
 Copyright 2012 Sam Pullara
+Copyright 2014 Orange by Gaël Bréard
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -104,3 +105,10 @@ Copyright 2012 Sam Pullara
    See the License for the specific language governing permissions and
    limitations under the License.
 
+Contributions:
+Gaël Bréard: Update netty4 client 
+   * partial implementation of netty 4 client (some verbs are missing, need just some more copy-paste)
+   * refactoring on Reply inheritance tree
+   * fix some issues (workarround for netty bug in fact) on message order over intense usage of message pipelining
+   * some other minor modifications
+    

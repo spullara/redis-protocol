@@ -1,139 +1,179 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.github.spullara.redis</groupId>
-  <artifactId>redis</artifactId>
-  <version>0.8-SNAPSHOT</version>
-  <modules>
-    <module>util</module>
-    <module>protocol</module>
-    <module>client</module>
-    <module>redisgen</module>
-    <module>benchmark</module>
-    <module>netty</module>
-    <module>netty-client</module>
-    <module>netty4</module>
-    <module>netty4-client</module>
-    <module>netty4-server</module>
-  </modules>
-  <packaging>pom</packaging>
+	<groupId>com.orange.redis-protocol</groupId>
+	<artifactId>redis</artifactId>
+	<version>0.8-SNAPSHOT</version>
+	<modules>
+		<module>util</module>
+		<module>protocol</module>
+		<module>client</module>
+		<module>redisgen</module>
+		<module>benchmark</module>
+		<module>netty</module>
+		<module>netty-client</module>
+		<module>netty4</module>
+		<module>netty4-client</module>
+		<module>netty4-server</module>
+	</modules>
+	<packaging>pom</packaging>
 
-  <name>redis</name>
-  <url>http://github.com/spullara/redis-protocol</url>
-  <description>A very fast Java redis redis.client.</description>
+	<name>redis</name>
+	<url>http://github.com/spullara/redis-protocol</url>
+	<description>A very fast Java redis redis.client.</description>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
-  <developers>
-    <developer>
-      <id>spullara</id>
-      <name>Sam Pullara</name>
-      <email>spullara@yahoo.com</email>
-      <url>http://javarants.com</url>
-      <roles>
-        <role>architect</role>
-        <role>developer</role>
-      </roles>
-      <timezone>-8</timezone>
-      <properties>
-      </properties>
-    </developer>
-  </developers>
+	<developers>
+		<developer>
+			<id>spullara</id>
+			<name>Sam Pullara</name>
+			<email>spullara@yahoo.com</email>
+			<url>http://javarants.com</url>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>-8</timezone>
+			<properties>
+			</properties>
+		</developer>
+	</developers>
 
-  <licenses>
-    <license>
-      <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
 
-  <scm>
-    <connection>scm:git:git@github.com:spullara/redis-protocol.git</connection>
-    <developerConnection>scm:git:git@github.com:spullara/redis-protocol.git</developerConnection>
-    <url>scm:git:git@github.com:spullara/redis-protocol.git</url>
-  </scm>
+	<scm>
+		<connection>scm:git:git@github.com:spullara/redis-protocol.git</connection>
+		<developerConnection>scm:git:git@github.com:spullara/redis-protocol.git</developerConnection>
+		<url>scm:git:git@github.com:spullara/redis-protocol.git</url>
+	</scm>
 
-  <distributionManagement>
-    <repository>
-      <id>sonatype-nexus-staging</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-    </repository>
-    <snapshotRepository>
-      <id>sonatype-nexus-snapshots</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </snapshotRepository>
-  </distributionManagement>
+	<distributionManagement>
+		<repository>
+			<id>sonatype-nexus-staging</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+		</repository>
+		<snapshotRepository>
+			<id>sonatype-nexus-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+	</distributionManagement>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.orange.redis-protocol</groupId>
+				<artifactId>util</artifactId>
+				<version>0.8-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>com.orange.redis-protocol</groupId>
+				<artifactId>protocol</artifactId>
+				<version>0.8-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>com.orange.redis-protocol</groupId>
+				<artifactId>netty</artifactId>
+				<version>0.8-SNAPSHOT</version>
+			</dependency>
+			<dependency>
+				<groupId>com.orange.redis-protocol</groupId>
+				<artifactId>netty4</artifactId>
+				<version>0.8-SNAPSHOT</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
-  <dependencies>
-    <!-- Guava -->
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>13.0.1</version>
-    </dependency>
 
-    <!-- CLI -->
-    <dependency>
-      <groupId>com.github.spullara.cli-parser</groupId>
-      <artifactId>cli-parser</artifactId>
-      <version>1.1</version>
-    </dependency>
+	<dependencies>
+		<!-- Guava -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>13.0.1</version>
+		</dependency>
 
-    <!-- Testing -->
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.2</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+		<!-- CLI -->
+		<dependency>
+			<groupId>com.github.spullara.cli-parser</groupId>
+			<artifactId>cli-parser</artifactId>
+			<version>1.1</version>
+		</dependency>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.5.1</version>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-          <encoding>UTF-8</encoding>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+		<!-- Testing -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.2</version>
+			<scope>test</scope>
+		</dependency>
 
-  <profiles>
-    <profile>
-      <id>release-sign-artifacts</id>
-      <activation>
-        <property>
-          <name>performRelease</name>
-          <value>true</value>
-        </property>
-      </activation>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.4</version>
-            <executions>
-              <execution>
-                <id>sign-artifacts</id>
-                <phase>verify</phase>
-                <goals>
-                  <goal>sign</goal>
-                </goals>
-              </execution>
-            </executions>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.7.7</version>
+		</dependency>
+
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>1.1.2</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.5.1</version>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>release-sign-artifacts</id>
+			<activation>
+				<property>
+					<name>performRelease</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.4</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>

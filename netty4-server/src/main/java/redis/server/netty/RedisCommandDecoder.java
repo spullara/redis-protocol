@@ -8,7 +8,7 @@ import redis.netty4.Command;
 import java.io.IOException;
 import java.util.List;
 
-import static redis.netty4.RedisReplyDecoder.readLong;
+import static redis.netty4.AbstractRedisDecoderState.readLong;
 
 /**
  * Decode commands.

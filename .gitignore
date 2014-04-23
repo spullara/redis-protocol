@@ -1,9 +1,4 @@
-*.iml
-*~
-*.ipr
-.idea
+.project
+.settings
 target
-*.iws
-cache
-*.releaseBackup
-release.properties
+*/.classpath

@@ -1,10 +1,9 @@
 package redis.netty4;
 
-import java.io.IOException;
-
+import static redis.util.Encoding.numToBytes;
 import io.netty.buffer.ByteBuf;
 
-import static redis.util.Encoding.numToBytes;
+import java.io.IOException;
 
 /**
 * Created by IntelliJ IDEA.
@@ -13,9 +12,9 @@ import static redis.util.Encoding.numToBytes;
 * Time: 10:23 AM
 * To change this template use File | Settings | File Templates.
 */
-public class IntegerReply implements Reply<Long> {
+public class IntegerReply extends AbstarctReply<Long> {
   public static final char MARKER = ':';
-  private final long integer;
+  //private final long integer;
 
   private static IntegerReply[] replies = new IntegerReply[512];
   static {
@@ -33,18 +32,13 @@ public class IntegerReply implements Reply<Long> {
   }
 
   public IntegerReply(long integer) {
-    this.integer = integer;
-  }
-
-  @Override
-  public Long data() {
-    return integer;
+    super(integer);
   }
 
   @Override
   public void write(ByteBuf os) throws IOException {
     os.writeByte(MARKER);
-    os.writeBytes(numToBytes(integer, true));
+    os.writeBytes(numToBytes(data().longValue(), true));
   }
 
   public String toString() {

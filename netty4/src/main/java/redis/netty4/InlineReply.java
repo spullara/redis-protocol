@@ -1,35 +1,30 @@
 package redis.netty4;
 
-import com.google.common.base.Charsets;
+import static redis.util.Encoding.numToBytes;
 import io.netty.buffer.ByteBuf;
+import io.netty.util.CharsetUtil;
 
 import java.io.IOException;
-
-import static redis.util.Encoding.numToBytes;
 
 /**
  * Return the reply inline when you get an inline message.
  */
-public class InlineReply implements Reply<Object> {
+public class InlineReply extends AbstarctReply<Object> {
 
-  private final Object o;
 
   public InlineReply(Object o) {
-    this.o = o;
+    super(o);
   }
 
-  @Override
-  public Object data() {
-    return o;
-  }
 
   @Override
   public void write(ByteBuf os) throws IOException {
+	Object o = data();
     if (o == null) {
       os.writeBytes(CRLF);
     } else if (o instanceof String) {
       os.writeByte('+');
-      os.writeBytes(((String) o).getBytes(Charsets.US_ASCII));
+      os.writeBytes(((String) o).getBytes(CharsetUtil.US_ASCII));
       os.writeBytes(CRLF);
     } else if (o instanceof ByteBuf) {
       os.writeByte('+');
@@ -43,7 +38,7 @@ public class InlineReply implements Reply<Object> {
       os.writeByte(':');
       os.writeBytes(numToBytes((Long) o, true));
     } else {
-      os.writeBytes("ERR invalid inline response".getBytes(Charsets.US_ASCII));
+      os.writeBytes("ERR invalid inline response".getBytes(CharsetUtil.US_ASCII));
       os.writeBytes(CRLF);
     }
   }

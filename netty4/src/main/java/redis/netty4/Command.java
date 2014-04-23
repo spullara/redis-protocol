@@ -1,11 +1,10 @@
 package redis.netty4;
 
-import com.google.common.base.Charsets;
+import static redis.util.Encoding.numToBytes;
 import io.netty.buffer.ByteBuf;
+import io.netty.util.CharsetUtil;
 
 import java.io.IOException;
-
-import static redis.util.Encoding.numToBytes;
 
 /**
  * Command serialization.  We special case when there are few 4 or fewer parameters
@@ -81,9 +80,9 @@ public class Command {
     } else if (object instanceof ByteBuf) {
       argument = ((ByteBuf) object).array();
     } else if (object instanceof String) {
-      argument = ((String) object).getBytes(Charsets.UTF_8);
+      argument = ((String) object).getBytes(CharsetUtil.UTF_8);
     } else {
-      argument = object.toString().getBytes(Charsets.UTF_8);
+      argument = object.toString().getBytes(CharsetUtil.UTF_8);
     }
     return argument;
   }
@@ -142,9 +141,9 @@ public class Command {
       writeArgument(os, (ByteBuf) object);
       return;
     } else if (object instanceof String) {
-      argument = ((String) object).getBytes(Charsets.UTF_8);
+      argument = ((String) object).getBytes(CharsetUtil.UTF_8);
     } else {
-      argument = object.toString().getBytes(Charsets.UTF_8);
+      argument = object.toString().getBytes(CharsetUtil.UTF_8);
     }
     writeArgument(os, argument);
   }
@@ -162,5 +161,32 @@ public class Command {
     os.writeBytes(argument);
     os.writeBytes(CRLF);
   }
+
+@Override
+public String toString() {
+	StringBuilder sb = new StringBuilder();
+	sb.append("Command [");
+
+	Object name2 = name;
+	if(name instanceof byte[]){
+		name2 = new String((byte[]) name, CharsetUtil.US_ASCII);
+		//TODO optimize ? reconverted here from converted code before..
+	}
+	
+    if (name2 != null) sb.append(name2).append(',');
+    if (object1 != null)  sb.append(object1).append(',');
+    if (object2 != null)  sb.append(object2).append(',');
+    if (object3 != null)  sb.append(object3);
+    if (objects != null) {
+      for (Object object : objects) {
+    	  sb.append(',').append(object);
+      }
+    }
+	sb.append("]");
+	
+	return sb.toString();
+}
+  
+  
 
 }

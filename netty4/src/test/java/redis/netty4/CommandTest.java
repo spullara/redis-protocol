@@ -1,4 +1,4 @@
-package redis;
+package redis.netty4;
 
 import com.google.common.base.Charsets;
 import io.netty.buffer.ByteBuf;
@@ -73,7 +73,7 @@ public class CommandTest {
     }
     byte[] multiBulkReply = baos.toByteArray();
     long start = System.currentTimeMillis();
-    RedisReplyDecoder redisDecoder = new RedisReplyDecoder(false);
+    RedisReplyDecoder redisDecoder = new RedisReplyDecoder();
     ByteBuf cb = Unpooled.wrappedBuffer(multiBulkReply);
     for (int i = 0; i < 10; i++) {
       for (int j = 0; j < 100000; j++) {
