@@ -83,18 +83,19 @@ public class InitialRedisDecoderState extends AbstractRedisDecoderState {
       }
 
       InAMultiBulkDecoderState ns = new InAMultiBulkDecoderState(l.intValue());
-      if (l.intValue() < 1) {
-        res = ns.getDecodedReply();
-      } else {
-        setNextState(ns);
-        res = null;
-      }
+//      if (l.intValue() < 1) {
+//        res = ns.getDecodedReply();
+//      } else {
+//        setNextState(ns);
+//        res = null;
+//      }
 
-      // ns.decode(in);
-      // res = ns.getDecodedReply();
-      // if (res == null) {
-      // setNextState(ns);
-      // } // else mbr decoded completely => initial state
+       ns.decode(in);
+       res = ns.getDecodedReply();
+       setNextState(ns.getNextState());
+//       if (res == null) {
+//         setNextState(ns);
+//       } // else mbr decoded completely => initial state
 
       break;
 

@@ -16,34 +16,40 @@ public class InAMultiBulkDecoderState extends AbstractRedisDecoderState implemen
 
   public InAMultiBulkDecoderState(int size) {
     reply = new MultiBulkReply(size);
-    if (reply.isFull()) {
-      setDecodedReply(reply);
-      setNextState(new InitialRedisDecoderState());
-    } else {
-      setNextState(this);
-      setDecodedReply(null);
-    }
+
 
   }
 
   @Override
   public void decode(ByteBuf in) throws IOException {
-    subState.decode(in);
-    Reply dr = subState.getDecodedReply();
-    subState = subState.getNextState();
-
-    if (dr != null) {
-      LOG.trace("*addReply {}", dr);
-      reply.add(dr);
-    }
-
+    
     if (reply.isFull()) {
-      setNextState(new InitialRedisDecoderState());
       setDecodedReply(reply);
+      setNextState(new InitialRedisDecoderState());
     } else {
-      setNextState(this);
-      setDecodedReply(null);
+      
+      Reply dr;
+      do{
+        subState.decode(in);
+        dr = subState.getDecodedReply();
+        subState = subState.getNextState();
+        if (dr != null) {
+          LOG.trace("*addReply {}", dr);
+          reply.add(dr);
+        }
+      }while(dr != null && !reply.isFull());
+      
+      if (reply.isFull()) {
+        setNextState(new InitialRedisDecoderState());
+        setDecodedReply(reply);
+      } else {
+        setNextState(this);
+        setDecodedReply(null);
+      }
     }
+    
+    
+    
   }
 
 }
