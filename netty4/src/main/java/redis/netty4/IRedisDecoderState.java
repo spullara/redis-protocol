@@ -6,10 +6,10 @@ import java.io.IOException;
 
 public interface IRedisDecoderState {
 
-	void decode(ByteBuf in) throws IOException;
+  void decode(ByteBuf in) throws IOException;
 
-	Reply getDecodedReply();
+  Reply getDecodedReply();
 
-	IRedisDecoderState getNextState();
+  IRedisDecoderState getNextState();
 
 }

@@ -6,15 +6,11 @@ import io.netty.buffer.ByteBuf;
 import java.io.IOException;
 
 /**
-* Created by IntelliJ IDEA.
-* User: sam
-* Date: 7/29/11
-* Time: 10:23 AM
-* To change this template use File | Settings | File Templates.
-*/
+ * Created by IntelliJ IDEA. User: sam Date: 7/29/11 Time: 10:23 AM To change this template use File | Settings | File Templates.
+ */
 public class IntegerReply extends AbstarctReply<Long> {
   public static final char MARKER = ':';
-  //private final long integer;
+  // private final long integer;
 
   private static IntegerReply[] replies = new IntegerReply[512];
   static {

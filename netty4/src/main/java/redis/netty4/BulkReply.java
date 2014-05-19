@@ -12,12 +12,12 @@ public class BulkReply extends AbstarctReply<ByteBuf> {
   public static final BulkReply NIL_REPLY = new BulkReply();
 
   public static final char MARKER = '$';
-  //private final ByteBuf bytes;
+  // private final ByteBuf bytes;
   private final int capacity;
 
   private BulkReply() {
-	super(null);
-    //bytes = null;
+    super(null);
+    // bytes = null;
     capacity = -1;
   }
 
@@ -28,30 +28,33 @@ public class BulkReply extends AbstarctReply<ByteBuf> {
 
   public BulkReply(ByteBuf bytes) {
     super(bytes);
-    bytes.retain();//TODO release when ?
+    bytes.retain();// TODO release when ?
     capacity = bytes.capacity();
   }
 
-
   public String asAsciiString() {
-    if (data() == null) return null;
+    if (data() == null)
+      return null;
     return data().toString(CharsetUtil.US_ASCII);
   }
 
   public String asUTF8String() {
-    if (data() == null) return null;
+    if (data() == null)
+      return null;
     return data().toString(CharsetUtil.UTF_8);
   }
 
   public byte[] asByteArray() {
-    if (data() == null) return null;
+    if (data() == null)
+      return null;
     byte[] res = new byte[data().readableBytes()];
     data().getBytes(data().readerIndex(), res);
-	return res;
+    return res;
   }
-  
+
   public String asString(Charset charset) {
-    if (data() == null) return null;
+    if (data() == null)
+      return null;
     return data().toString(charset);
   }
 

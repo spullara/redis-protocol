@@ -24,7 +24,6 @@
     <dependency>
       <groupId>com.github.spullara.redis</groupId>
       <artifactId>util</artifactId>
-      <version>0.8-SNAPSHOT</version>
-    </dependency>
+    </dependency>     
   </dependencies>
 </project>

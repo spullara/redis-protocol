@@ -11,15 +11,13 @@ import java.io.IOException;
  */
 public class InlineReply extends AbstarctReply<Object> {
 
-
   public InlineReply(Object o) {
     super(o);
   }
 
-
   @Override
   public void write(ByteBuf os) throws IOException {
-	Object o = data();
+    Object o = data();
     if (o == null) {
       os.writeBytes(CRLF);
     } else if (o instanceof String) {

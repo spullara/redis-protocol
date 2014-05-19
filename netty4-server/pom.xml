@@ -14,12 +14,10 @@
     <dependency>
       <groupId>com.github.spullara.redis</groupId>
       <artifactId>netty4</artifactId>
-      <version>0.8-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.github.spullara.redis</groupId>
       <artifactId>protocol</artifactId>
-      <version>0.8-SNAPSHOT</version>
     </dependency>
   </dependencies>
 

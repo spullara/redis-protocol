@@ -1,7 +1,11 @@
 package redis.netty.client;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+
 import redis.Command;
+import redis.embedded.RedisServer;
 import redis.netty.BulkReply;
 import redis.netty.IntegerReply;
 import redis.netty.StatusReply;
@@ -26,12 +30,27 @@ import static org.junit.Assert.fail;
  * Test the base redis client. Default redis required.
  */
 public class RedisClientBaseTest {
+
+  private RedisServer redisServer;
+
+  @Before
+  public void setup() throws Exception {
+    redisServer = new RedisServer();
+    redisServer.start();
+    // redisServer.getPort()
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    redisServer.stop();
+  }
+
   @Test
   public void testConnect() throws Exception {
     final CountDownLatch done = new CountDownLatch(1);
     final AtomicBoolean success = new AtomicBoolean();
     final AtomicReference<RedisClientBase> client = new AtomicReference<>();
-    Promise<RedisClientBase> connect = RedisClientBase.connect("localhost", 6379);
+    Promise<RedisClientBase> connect = RedisClientBase.connect("localhost", redisServer.getPort());
     connect.onSuccess(new Block<RedisClientBase>() {
       @Override
       public void apply(RedisClientBase redisClientBase) {
@@ -88,13 +107,14 @@ public class RedisClientBaseTest {
     });
     done.await(5000, TimeUnit.MILLISECONDS);
     assertFalse(success.get());
-    assertTrue("Connection not refused", failure.get().getMessage().startsWith("Connection refused"));
+    assertTrue("Connection not refused - message is: " + failure.get().getMessage(), failure.get().getMessage().startsWith("Connection refused")
+        || failure.get().getMessage().startsWith("Connexion ref"));
   }
 
   @Test
   public void testError() throws ExecutionException, InterruptedException {
     try {
-      RedisClient client = RedisClient.connect("localhost", 6379).get();
+      RedisClient client = RedisClient.connect("localhost", redisServer.getPort()).get();
       client.set("test", "value").get();
       client.hgetall("test").get();
       fail("Should have failed");
@@ -107,7 +127,7 @@ public class RedisClientBaseTest {
   public void testExecute() throws Exception {
     final CountDownLatch done = new CountDownLatch(1);
     final AtomicBoolean success = new AtomicBoolean();
-    RedisClientBase.connect("localhost", 6379).onSuccess(new Block<RedisClientBase>() {
+    RedisClientBase.connect("localhost", redisServer.getPort()).onSuccess(new Block<RedisClientBase>() {
       @Override
       public void apply(final RedisClientBase redisClientBase) {
         redisClientBase.execute(StatusReply.class, new Command("set", "test", "test")).onSuccess(new Block<StatusReply>() {
@@ -141,7 +161,7 @@ public class RedisClientBaseTest {
     final CountDownLatch done = new CountDownLatch(1);
     final AtomicReference<StatusReply> setOK = new AtomicReference<>();
     final AtomicReference<BulkReply> getTest2 = new AtomicReference<>();
-    RedisClient.connect("localhost", 6379).onSuccess(new Block<RedisClient>() {
+    RedisClient.connect("localhost", redisServer.getPort()).onSuccess(new Block<RedisClient>() {
       @Override
       public void apply(final RedisClient redisClient) {
         redisClient.set("test", "test2").onSuccess(new Block<StatusReply>() {
@@ -176,10 +196,11 @@ public class RedisClientBaseTest {
 
   @Test
   public void testSerialPerformance() throws InterruptedException {
-    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null)
+      return;
     final CountDownLatch done = new CountDownLatch(1);
     final int[] i = new int[1];
-    RedisClient.connect("localhost", 6379).onSuccess(new Block<RedisClient>() {
+    RedisClient.connect("localhost", redisServer.getPort()).onSuccess(new Block<RedisClient>() {
       long start;
       private Block<StatusReply> setBlock;
 
@@ -216,10 +237,11 @@ public class RedisClientBaseTest {
 
   @Test
   public void testPipelinePerformance() throws InterruptedException {
-    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null)
+      return;
     final CountDownLatch done = new CountDownLatch(1);
     final AtomicInteger total = new AtomicInteger();
-    RedisClient.connect("localhost", 6379).onSuccess(new Block<RedisClient>() {
+    RedisClient.connect("localhost", redisServer.getPort()).onSuccess(new Block<RedisClient>() {
 
       @Override
       public void apply(final RedisClient redisClient) {
@@ -258,11 +280,12 @@ public class RedisClientBaseTest {
 
   @Test
   public void testPipelineConcurrency() throws InterruptedException {
-    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null)
+      return;
     final CountDownLatch done = new CountDownLatch(1);
     final AtomicInteger total = new AtomicInteger();
     final AtomicInteger errors = new AtomicInteger();
-    RedisClient.connect("localhost", 6379).onSuccess(new Block<RedisClient>() {
+    RedisClient.connect("localhost", redisServer.getPort()).onSuccess(new Block<RedisClient>() {
       @Override
       public void apply(final RedisClient redisClient) {
         new Thread(new Runnable() {
@@ -325,7 +348,7 @@ public class RedisClientBaseTest {
     final AtomicReference<byte[]> gotmessage = new AtomicReference<>();
     final AtomicLong listeners = new AtomicLong(0);
     final AtomicBoolean failed = new AtomicBoolean();
-    RedisClient.connect("localhost", 6379).onSuccess(new Block<RedisClient>() {
+    RedisClient.connect("localhost", redisServer.getPort()).onSuccess(new Block<RedisClient>() {
       @Override
       public void apply(final RedisClient redisClient) {
         redisClient.addListener(new ReplyListener() {
@@ -364,7 +387,7 @@ public class RedisClientBaseTest {
         redisClient.subscribe("test").onSuccess(new Block<Void>() {
           @Override
           public void apply(Void aVoid) {
-            RedisClient.connect("localhost", 6379).onSuccess(new Block<RedisClient>() {
+            RedisClient.connect("localhost", redisServer.getPort()).onSuccess(new Block<RedisClient>() {
               @Override
               public void apply(final RedisClient redisClient) {
                 wassubscribed.onSuccess(new Block<Void>() {
@@ -395,11 +418,12 @@ public class RedisClientBaseTest {
 
   @Test
   public void testPubSubPerformance() throws InterruptedException {
-    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null)
+      return;
     final CountDownLatch done = new CountDownLatch(1);
     final Semaphore semaphore = new Semaphore(100);
     final AtomicInteger total = new AtomicInteger();
-    Promise<RedisClient> redisClient = RedisClient.connect("localhost", 6379).onSuccess(new Block<RedisClient>() {
+    Promise<RedisClient> redisClient = RedisClient.connect("localhost", redisServer.getPort()).onSuccess(new Block<RedisClient>() {
       @Override
       public void apply(RedisClient redisClient) {
         redisClient.addListener(new MessageListener() {
@@ -416,7 +440,7 @@ public class RedisClientBaseTest {
         redisClient.subscribe("test").onSuccess(new Block<Void>() {
           @Override
           public void apply(Void aVoid) {
-            RedisClient.connect("localhost", 6379).onSuccess(new Block<RedisClient>() {
+            RedisClient.connect("localhost", redisServer.getPort()).onSuccess(new Block<RedisClient>() {
               @Override
               public void apply(final RedisClient redisClient) {
                 new Thread(new Runnable() {

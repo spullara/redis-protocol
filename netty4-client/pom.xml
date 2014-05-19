@@ -6,9 +6,7 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.github.spullara.redis</groupId>
   <artifactId>netty4-client</artifactId>
-  <version>0.8-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>netty4-client</name>
@@ -22,12 +20,17 @@
     <dependency>
       <groupId>com.github.spullara.redis</groupId>
       <artifactId>netty4</artifactId>
-      <version>0.8-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.github.spullara.java</groupId>
       <artifactId>concurrent6</artifactId>
       <version>0.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.orange.redis-embedded</groupId>
+      <artifactId>embedded-redis</artifactId>
+      <version>0.5</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

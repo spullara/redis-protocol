@@ -2,8 +2,13 @@ package redis.client;
 
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.SettableFuture;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+
 import redis.Command;
+import redis.embedded.RedisServer;
 import redis.reply.BulkReply;
 import redis.reply.IntegerReply;
 import redis.reply.MultiBulkReply;
@@ -23,18 +28,29 @@ import static redis.util.Encoding.numToBytes;
 /**
  * Test the boilerplate
  * <p/>
- * User: sam
- * Date: 11/5/11
- * Time: 10:20 PM
+ * User: sam Date: 11/5/11 Time: 10:20 PM
  */
 public class RedisClientTest {
 
   private static final byte[] VALUE = "value".getBytes(Charsets.UTF_8);
   private static final long CALLS = 100000l;
 
+  private RedisServer redisServer;
+
+  @Before
+  public void setup() throws Exception {
+    redisServer = new RedisServer();
+    redisServer.start();
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    redisServer.stop();
+  }
+
   @Test
   public void testIt() throws IOException, ExecutionException, InterruptedException {
-    RedisClient redisClient = new RedisClient("localhost", 6379);
+    RedisClient redisClient = new RedisClient("localhost", redisServer.getPort());
     redisClient.set("test", "value");
     BulkReply test = redisClient.get("test");
     assertEquals("value", test.asAsciiString());
@@ -54,7 +70,7 @@ public class RedisClientTest {
     assertEquals(6, hash.asStringList(Charsets.UTF_8).size());
     assertEquals(5, hash.asStringSet(Charsets.UTF_8).size());
 
-    Object[] keys = {"test1", "test2", "test3"};
+    Object[] keys = { "test1", "test2", "test3" };
     redisClient.del(keys);
     redisClient.set("test1", "value1");
     redisClient.set("test2", "value2");
@@ -67,12 +83,12 @@ public class RedisClientTest {
 
   @Test
   public void testTx() throws IOException, ExecutionException, InterruptedException {
-    RedisClient redisClient1 = new RedisClient("localhost", 6379);
-    RedisClient redisClient2 = new RedisClient("localhost", 6379);
+    RedisClient redisClient1 = new RedisClient("localhost", redisServer.getPort());
+    RedisClient redisClient2 = new RedisClient("localhost", redisServer.getPort());
 
     {
       redisClient1.set("txincr", 0);
-      redisClient1.watch(new Object[]{"txincr"});
+      redisClient1.watch(new Object[] { "txincr" });
       redisClient1.get("txincr");
       redisClient1.multi();
       RedisClient.Pipeline p = redisClient1.pipeline();
@@ -85,7 +101,7 @@ public class RedisClientTest {
 
     {
       redisClient1.set("txincr", 0);
-      redisClient1.watch(new Object[]{"txincr"});
+      redisClient1.watch(new Object[] { "txincr" });
       redisClient1.get("txincr");
       redisClient1.multi();
       redisClient2.set("txincr", 1);
@@ -102,8 +118,8 @@ public class RedisClientTest {
 
   @Test
   public void testSubscriptions() throws IOException, ExecutionException, InterruptedException {
-    RedisClient redisClient1 = new RedisClient("localhost", 6379);
-    RedisClient redisClient2 = new RedisClient("localhost", 6379);
+    RedisClient redisClient1 = new RedisClient("localhost", redisServer.getPort());
+    RedisClient redisClient2 = new RedisClient("localhost", redisServer.getPort());
     final SettableFuture<String> messaged = SettableFuture.create();
     final SettableFuture<String> pmessaged = SettableFuture.create();
     final SettableFuture<String> subscribed = SettableFuture.create();
@@ -114,18 +130,23 @@ public class RedisClientTest {
       public void subscribed(byte[] name, int channels) {
         subscribed.set(new String(name));
       }
+
       public void psubscribed(byte[] name, int channels) {
         psubscribed.set(new String(name));
       }
+
       public void unsubscribed(byte[] name, int channels) {
         unsubscribed.set(new String(name));
       }
+
       public void punsubscribed(byte[] name, int channels) {
         punsubscribed.set(new String(name));
       }
+
       public void message(byte[] channel, byte[] message) {
         messaged.set(new String(channel) + " " + new String(message));
       }
+
       public void pmessage(byte[] pattern, byte[] channel, byte[] message) {
         pmessaged.set(new String(pattern) + " " + new String(message));
       }
@@ -153,17 +174,18 @@ public class RedisClientTest {
 
   @Test
   public void testAPI() throws IOException {
-    RedisClient rc = new RedisClient("localhost", 6379);
+    RedisClient rc = new RedisClient("localhost", redisServer.getPort());
     rc.set("test1".getBytes(), "value".getBytes());
     rc.set("test2".getBytes(), "value");
-    assertEquals("value", ((BulkReply)(rc.mget(new Object[] { "test1".getBytes() }).data()[0])).asAsciiString());
+    assertEquals("value", ((BulkReply) (rc.mget(new Object[] { "test1".getBytes() }).data()[0])).asAsciiString());
   }
-  
+
   @Test
   public void benchmark() throws IOException {
-    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null)
+      return;
     long start = System.currentTimeMillis();
-    RedisClient redisClient = new RedisClient("localhost", 6379);
+    RedisClient redisClient = new RedisClient("localhost", redisServer.getPort());
     for (int i = 0; i < CALLS; i++) {
       redisClient.set(numToBytes(i, false), VALUE);
     }
@@ -174,9 +196,10 @@ public class RedisClientTest {
   @SuppressWarnings("unchecked")
   @Test
   public void benchmarkPipeline() throws IOException, ExecutionException, InterruptedException {
-    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null)
+      return;
     long start = System.currentTimeMillis();
-    RedisClient redisClient = new RedisClient("localhost", 6379);
+    RedisClient redisClient = new RedisClient("localhost", redisServer.getPort());
     redisClient.execute("INFO", new Command("INFO", "server"));
     RedisClient.Pipeline pipeline = redisClient.pipeline();
     int PIPELINE_CALLS = 50;
@@ -195,11 +218,12 @@ public class RedisClientTest {
 
   @Test
   public void benchmarkPubsub() throws IOException, ExecutionException, InterruptedException {
-    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null)
+      return;
     long start = System.currentTimeMillis();
     byte[] hello = "hello".getBytes();
     byte[] test = "test".getBytes();
-    RedisClient subscriberClient = new RedisClient("localhost", 6379);
+    RedisClient subscriberClient = new RedisClient("localhost", redisServer.getPort());
     final AtomicReference<SettableFuture> futureRef = new AtomicReference<SettableFuture>();
     subscriberClient.addListener(new MessageListener() {
       @SuppressWarnings("unchecked")
@@ -215,7 +239,7 @@ public class RedisClientTest {
       }
     });
     subscriberClient.subscribe("test");
-    RedisClient publisherClient = new RedisClient("localhost", 6379);
+    RedisClient publisherClient = new RedisClient("localhost", redisServer.getPort());
     for (int i = 0; i < CALLS; i++) {
       SettableFuture<Object> future = SettableFuture.create();
       futureRef.set(future);
@@ -228,11 +252,12 @@ public class RedisClientTest {
 
   @Test
   public void benchmarkPubsubPipelined() throws IOException, ExecutionException, InterruptedException {
-    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null)
+      return;
     long start = System.currentTimeMillis();
     byte[] hello = "hello".getBytes();
     byte[] test = "test".getBytes();
-    RedisClient subscriberClient = new RedisClient("localhost", 6379);
+    RedisClient subscriberClient = new RedisClient("localhost", redisServer.getPort());
     final Semaphore semaphore = new Semaphore(50);
     final AtomicReference<SettableFuture> futureRef = new AtomicReference<SettableFuture>();
     subscriberClient.addListener(new MessageListener() {
@@ -247,7 +272,7 @@ public class RedisClientTest {
       }
     });
     subscriberClient.subscribe("test");
-    RedisClient.Pipeline publisherClient = new RedisClient("localhost", 6379).pipeline();
+    RedisClient.Pipeline publisherClient = new RedisClient("localhost", redisServer.getPort()).pipeline();
     for (int i = 0; i < CALLS * 10; i++) {
       semaphore.acquire();
       SettableFuture<Object> future = SettableFuture.create();

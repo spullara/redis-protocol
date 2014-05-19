@@ -10,9 +10,8 @@ public class ErrorReply extends AbstarctReply<String> {
   public static final ErrorReply NYI_REPLY = new ErrorReply("Not yet implemented");
 
   public ErrorReply(String error) {
-	  super(error);
+    super(error);
   }
-
 
   @Override
   public void write(ByteBuf os) throws IOException {

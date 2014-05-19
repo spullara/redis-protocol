@@ -2,15 +2,21 @@ package redis.client;
 
 import com.google.common.base.Charsets;
 import com.google.common.util.concurrent.ListenableFuture;
+
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import redis.embedded.RedisServer;
 import redis.reply.BulkReply;
 import redis.reply.IntegerReply;
 import redis.reply.MultiBulkReply;
 import redis.reply.StatusReply;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 
@@ -31,45 +37,50 @@ public class AllCommandsTest {
   private static RedisClient.Pipeline p;
   private static RedisClient rc2;
 
+  private static RedisServer redisServer;
+
   @BeforeClass
-  public static void setup() throws IOException {
-    rc = new RedisClient("localhost", 6379);
+  public static void setup() throws IOException, URISyntaxException {
+    redisServer = new RedisServer();
+    redisServer.start();
+    rc = new RedisClient("localhost", redisServer.getPort());
     p = rc.pipeline();
-    rc2 = new RedisClient("localhost", 6379);
+    rc2 = new RedisClient("localhost", redisServer.getPort());
   }
 
   @AfterClass
-  public static void shutdown() throws IOException {
+  public static void shutdown() throws IOException, InterruptedException {
     rc.close();
     rc2.close();
+    redisServer.stop();
   }
-  
 
   @Test
   public void testDefaultAuthDB() throws IOException {
-  	rc.config_set("requirepass", "test");
-  	RedisClient test = new RedisClient("localhost", 6379, 1, "test");
-  	try {
-  	test.set("foo", "bar");
-  	} catch (RedisException e) {
-  		fail("default passwd failed");
-  	}
-  	test.config_set("requirepass", "");
-  	rc.select(1);
-  	if (!new String(rc.get("foo").data()).equals("bar"))
-  		fail("default db failed");
-  	rc.del("foo");
+    rc.config_set("requirepass", "test");
+    RedisClient test = new RedisClient("localhost", redisServer.getPort(), 1, "test");
+    try {
+      test.set("foo", "bar");
+    } catch (RedisException e) {
+      fail("default passwd failed");
+    }
+    test.config_set("requirepass", "");
+    rc.select(1);
+    if (!new String(rc.get("foo").data()).equals("bar"))
+      fail("default db failed");
+    rc.del("foo");
   }
 
   @Test
   public void testauth() throws IOException {
     rc.config_set("requirepass", "test");
-    RedisClient authtest = new RedisClient("localhost", 6379);
+    RedisClient authtest = new RedisClient("localhost", redisServer.getPort());
     try {
       authtest.info(null);
       fail("should have thrown");
     } catch (RedisException re) {
-      assertEquals("ERR operation not permitted", re.getMessage());
+      // assertEquals("ERR operation not permitted", re.getMessage());
+      assertEquals("NOAUTH Authentication required.", re.getMessage());
     }
     rc.auth("test");
     rc.config_set("requirepass", "");
@@ -142,9 +153,9 @@ public class AllCommandsTest {
   @Test
   public void eval() {
     // Commenting out for now until I upgrade my Redis
-//    eq(a("key1", "key2", "first", "second"),
-//            (MultiBulkReply) rc.eval("return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}", 2,
-//                    a("key1", "key2", "first", "second")));
+    // eq(a("key1", "key2", "first", "second"),
+    // (MultiBulkReply) rc.eval("return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}", 2,
+    // a("key1", "key2", "first", "second")));
   }
 
   @Test

@@ -33,7 +33,8 @@ public class CommandTest {
 
   @Test
   public void benchmark() {
-    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null)
+      return;
     long diff;
     long total;
     {
@@ -60,9 +61,11 @@ public class CommandTest {
     System.out.println(total + ", " + diff);
   }
 
-  @Test
+  // TODO modify this test : RedisReplyDecoder fafactored version is not intended to be used like that (resetReaderIndex.. because is has memory)
+  // @Test
   public void freelsBench() throws IOException {
-    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null)
+      return;
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     baos.write(MultiBulkReply.MARKER);
     baos.write("100\r\n".getBytes());
@@ -82,7 +85,7 @@ public class CommandTest {
       }
       long end = System.currentTimeMillis();
       long diff = end - start;
-      System.out.println(diff + " " + ((double)diff)/100000);
+      System.out.println(diff + " " + ((double) diff) / 100000);
       start = end;
     }
   }
