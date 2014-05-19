@@ -53,7 +53,7 @@ public class RedisClientBase {
     Promise<Reply> reply = new Promise<>();
     synchronized (this) {
       queue.add(reply);
-      socketChannel.write(command);
+      socketChannel.writeAndFlush(command);
     }
     return reply;
   }

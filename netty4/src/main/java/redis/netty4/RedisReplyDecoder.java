@@ -46,7 +46,7 @@ public class RedisReplyDecoder extends ReplayingDecoder<Void> {
     if (size == -1) {
       return null;
     }
-    ByteBuf buffer = is.readSlice(size);
+    ByteBuf buffer = is.readSlice(size).retain();
     int cr = is.readByte();
     int lf = is.readByte();
     if (cr != CR || lf != LF) {
