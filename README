@@ -1,3 +1,9 @@
+Fork of https://github.com/spullara/redis-protocol
+
+Maven repository available (see pom.xml in orange-groupid branch) 
+
+----
+
 A very fast Redis client for the JVM.
 
 Description of each module:
