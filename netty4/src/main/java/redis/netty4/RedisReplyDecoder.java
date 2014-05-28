@@ -128,16 +128,18 @@ public class RedisReplyDecoder extends ReplayingDecoder<Void> {
   }
 
   public MultiBulkReply decodeMultiBulkReply(ByteBuf is) throws IOException {
-    try {
-      if (reply == null) {
-        reply = new MultiBulkReply();
+    final MultiBulkReply multiBulkReply;
+    if (reply != null) {
+      multiBulkReply = reply;
+    } else {
+      multiBulkReply = new MultiBulkReply();
+      if (checkpointEnabled) {
+        reply = multiBulkReply;
         checkpoint();
       }
-      reply.read(this, is);
-      return reply;
-    } finally {
-      reply = null;
     }
+    multiBulkReply.read(this, is);
+    reply = null;
+    return multiBulkReply;
   }
-
 }
