@@ -154,4 +154,11 @@ public class MultiBulkReply extends AbstarctReply<Reply[]> {
     return asStringList(CharsetUtil.UTF_8).toString();
   }
 
+  @Override
+  public void releaseAll() {
+    for (Reply reply : data()) {
+      reply.releaseAll();
+    }
+  }
+
 }

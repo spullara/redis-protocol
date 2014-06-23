@@ -40,4 +40,12 @@ public class InlineReply extends AbstarctReply<Object> {
       os.writeBytes(CRLF);
     }
   }
+
+  @Override
+  public void releaseAll() {
+    Object o = data();
+    if (o instanceof ByteBuf) {
+      ((ByteBuf) o).release();
+    }
+  }
 }

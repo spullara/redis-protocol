@@ -9,4 +9,7 @@ public interface Reply {
   void write(ByteBuf os) throws IOException;
 
   Object data();
+
+  void releaseAll();
+  
 }

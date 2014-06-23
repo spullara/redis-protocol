@@ -33,6 +33,12 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Charsets;
 import com.google.common.primitives.UnsignedBytes;
 
+/**
+ * Redis client based on netty4.
+ * WARN: user object is responsible to call releaseAll() on replies object returned ({@link Reply}, {@link BulkReply} and {@link MultiBulkReply})
+ * @author gael
+ *
+ */
 public class RedisClient {
 
   private SocketChannel socketChannel;
@@ -73,7 +79,6 @@ public class RedisClient {
 
       @Override
       public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-
         Reply reply = (Reply) msg;
 
         LOG.trace("{} ** redis msg received: type={} - val = {} ", RedisClient.this, reply.getClass().getSimpleName(), reply);
@@ -85,14 +90,9 @@ public class RedisClient {
         }
         if (poll == null) {
           LOG.trace("{} - poll is null, it is a notif", RedisClient.this);// TODO
-          // check
-          // that
-          // !! we could
-          // resend a
-          // subscribe...
+          // check that !! we could resend a subscribe...
           if (subscribed.get()) {
-            // throw new
-            // IllegalStateException("Promise queue is empty, received reply");
+            // throw new IllegalStateException("Promise queue is empty, received reply");
             if (reply instanceof MultiBulkReply) {
               handleMessage((MultiBulkReply) reply);
             } else {

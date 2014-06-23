@@ -19,10 +19,13 @@ public class RedisReplyDecoder extends ByteToMessageDecoder {
 
   @Override
   protected final void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out) throws Exception {
-    Object decoded = decode(ctx, in);
-    if (decoded != null) {
+    Object decoded;
+    decoded = decode(ctx, in);
+    while (decoded != null) {
       out.add(decoded);
+      decoded = decode(ctx, in);
     }
+
   }
 
   /**

@@ -28,7 +28,7 @@ public class BulkReply extends AbstarctReply<ByteBuf> {
 
   public BulkReply(ByteBuf bytes) {
     super(bytes);
-    bytes.retain();// TODO release when ?
+    bytes.retain();
     capacity = bytes.capacity();
   }
 
@@ -70,5 +70,10 @@ public class BulkReply extends AbstarctReply<ByteBuf> {
 
   public String toString() {
     return asUTF8String();
+  }
+
+  @Override
+  public void releaseAll() {
+    data().release();
   }
 }
