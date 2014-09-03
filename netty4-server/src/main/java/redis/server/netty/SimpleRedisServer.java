@@ -1104,12 +1104,27 @@ public class SimpleRedisServer implements RedisServer {
    * List
    *
    * @param key0
+   * @param timeout1
    * @return MultiBulkReply
    */
   @Override
-  public MultiBulkReply blpop(byte[][] key0) throws RedisException {
-    // TODO: Blocking
-    return null;
+  public MultiBulkReply blpop(byte[][] key0, byte[] timeout1) throws RedisException {
+    // TODO No async processing possible at this level, so just short waits are possible...
+    long endTime = System.currentTimeMillis() + 100; // timeoutMillis(timeout1);
+    do {
+      // TODO Why is the timeout doubled as the last entry in key0?
+      for (int i = 0; i < key0.length - 1; i++) {
+        byte[] key = key0[i];
+        BulkReply reply = lpop(key);
+        if (reply != NIL_REPLY) {
+          return new MultiBulkReply(new Reply[]{ new BulkReply(key) , reply });
+        }
+      }
+
+      Thread.yield();
+    } while (System.currentTimeMillis() < endTime);
+
+    return MultiBulkReply.EMPTY;
   }
 
   /**
@@ -1117,12 +1132,39 @@ public class SimpleRedisServer implements RedisServer {
    * List
    *
    * @param key0
+   * @param timeout1
    * @return MultiBulkReply
    */
   @Override
-  public MultiBulkReply brpop(byte[][] key0) throws RedisException {
-    // TODO: Blocking
-    return null;
+  public MultiBulkReply brpop(byte[][] key0, byte[] timeout1) throws RedisException {
+    // TODO No async processing possible at this level, so just short waits are possible...
+    long endTime = System.currentTimeMillis() + 100; // timeoutMillis(timeout1);
+    do {
+      // TODO Why is the timeout doubled as the last entry in key0?
+      for (int i = 0; i < key0.length - 1; i++) {
+        byte[] key = key0[i];
+        BulkReply reply = rpop(key);
+        if (reply != NIL_REPLY) {
+          return new MultiBulkReply(new Reply[]{ new BulkReply(key) , reply });
+        }
+      }
+
+      Thread.yield();
+    } while (System.currentTimeMillis() < endTime);
+
+    return MultiBulkReply.EMPTY;
+  }
+
+  /**
+   * Decode timeout.
+   *
+   * @param timeout
+   *          Timeout string as bytes.
+   * @return Timeout in milliseconds.
+   */
+  private int timeoutMillis(byte[] timeout) {
+    // TODO Set encoding always to UTF-8?
+    return Integer.parseInt(new String(timeout)) * 1000;
   }
 
   /**
@@ -1546,7 +1588,7 @@ public class SimpleRedisServer implements RedisServer {
     }
     List<Reply<ByteBuf>> replies = new ArrayList<Reply<ByteBuf>>();
     Iterator<Object> it = data.keySet().iterator();
-    while(it.hasNext()) {        
+    while(it.hasNext()) {
       BytesKey key = (BytesKey) it.next();
       byte[] bytes = key.getBytes();
       boolean expired = false;

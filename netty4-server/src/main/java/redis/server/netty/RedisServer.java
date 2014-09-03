@@ -465,18 +465,20 @@ public interface RedisServer {
    * List
    *
    * @param key0
+   * @param timeout1
    * @return MultiBulkReply
    */
-  public MultiBulkReply blpop(byte[][] key0) throws RedisException;
+  public MultiBulkReply blpop(byte[][] key0, byte[] timeout1) throws RedisException;
 
   /**
    * Remove and get the last element in a list, or block until one is available
    * List
    *
    * @param key0
+   * @param timeout1
    * @return MultiBulkReply
    */
-  public MultiBulkReply brpop(byte[][] key0) throws RedisException;
+  public MultiBulkReply brpop(byte[][] key0, byte[] timeout1) throws RedisException;
 
   /**
    * Pop a value from a list, push it to another list and return it; or block until one is available
