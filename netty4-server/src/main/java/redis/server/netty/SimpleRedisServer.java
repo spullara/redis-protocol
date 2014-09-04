@@ -1,13 +1,5 @@
 package redis.server.netty;
 
-import io.netty.buffer.ByteBuf;
-import redis.netty4.*;
-import redis.util.*;
-
-import java.lang.reflect.Field;
-import java.security.SecureRandom;
-import java.util.*;
-
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.MAX_VALUE;
 import static redis.netty4.BulkReply.NIL_REPLY;
@@ -16,6 +8,31 @@ import static redis.netty4.StatusReply.OK;
 import static redis.netty4.StatusReply.QUIT;
 import static redis.util.Encoding.bytesToNum;
 import static redis.util.Encoding.numToBytes;
+import io.netty.buffer.ByteBuf;
+
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.SortedSet;
+
+import redis.netty4.BulkReply;
+import redis.netty4.IntegerReply;
+import redis.netty4.MultiBulkReply;
+import redis.netty4.Reply;
+import redis.netty4.StatusReply;
+import redis.util.BytesKey;
+import redis.util.BytesKeyObjectMap;
+import redis.util.BytesKeySet;
+import redis.util.BytesValue;
+import redis.util.ZSet;
+import redis.util.ZSetEntry;
 
 public class SimpleRedisServer implements RedisServer {
 
@@ -259,24 +276,6 @@ public class SimpleRedisServer implements RedisServer {
   }
 
   private static Random r = new SecureRandom();
-  private static Field tableField;
-  private static Field nextField;
-  private static Field mapField;
-
-  static {
-    try {
-      tableField = HashMap.class.getDeclaredField("table");
-      tableField.setAccessible(true);
-      nextField = Class.forName("java.util.HashMap$Entry").getDeclaredField("next");
-      nextField.setAccessible(true);
-      mapField = HashSet.class.getDeclaredField("map");
-      mapField.setAccessible(true);
-    } catch (Exception e) {
-      e.printStackTrace();
-      tableField = null;
-      nextField = null;
-    }
-  }
 
   private static RedisException noSuchKey() {
     return new RedisException("no such key");
@@ -1587,7 +1586,7 @@ public class SimpleRedisServer implements RedisServer {
       throw new RedisException("wrong number of arguments for KEYS");
     }
     List<Reply<ByteBuf>> replies = new ArrayList<Reply<ByteBuf>>();
-    Iterator<Object> it = data.keySet().iterator();
+    Iterator<BytesKey> it = data.keySet().iterator();
     while(it.hasNext()) {
       BytesKey key = (BytesKey) it.next();
       byte[] bytes = key.getBytes();
@@ -1738,39 +1737,21 @@ public class SimpleRedisServer implements RedisServer {
     // This implementation mirrors that of Redis. I'm not
     // sure I believe that this is a great algorithm but
     // it beats the alternatives that are very inefficient.
-    if (tableField != null) {
-      int size = data.size();
-      if (size == 0) {
-        return NIL_REPLY;
-      }
-      try {
-        BytesKey key = getRandomKey(data);
-        return new BulkReply(key.getBytes());
-      } catch (Exception e) {
-        throw new RedisException(e);
-      }
+    int size = data.size();
+    if (size == 0) {
+      return NIL_REPLY;
     }
-    return null;
+    try {
+      BytesKey key = getRandomKey(data.keySet());
+      return new BulkReply(key.getBytes());
+    } catch (Exception e) {
+      throw new RedisException(e);
+    }
   }
 
-  private BytesKey getRandomKey(Map data1) throws IllegalAccessException {
-    Map.Entry[] table = (Map.Entry[]) tableField.get(data1);
-    int length = table.length;
-    Map.Entry entry;
-    do {
-      entry = table[r.nextInt(length)];
-    } while (entry == null);
-
-    int entries = 0;
-    Map.Entry current = entry;
-    do {
-      entries++;
-      current = (Map.Entry) nextField.get(current);
-    } while (current != null);
-    int choose = r.nextInt(entries);
-    current = entry;
-    while (choose-- != 0) current = (Map.Entry) nextField.get(current);
-    return (BytesKey) current.getKey();
+  private BytesKey getRandomKey(Set<BytesKey> data1) throws IllegalAccessException {
+    // TODO somewhat inefficient, but works in jdk8 too
+    return data1.toArray(new BytesKey[data1.size()])[r.nextInt(data1.size())];
   }
 
   /**
@@ -2063,7 +2044,7 @@ public class SimpleRedisServer implements RedisServer {
     int size = hash.size();
     Reply[] replies = new Reply[size * 2];
     int i = 0;
-    for (Map.Entry<Object, byte[]> entry : hash.entrySet()) {
+    for (Map.Entry<BytesKey, byte[]> entry : hash.entrySet()) {
       replies[i++] = new BulkReply(((BytesKey) entry.getKey()).getBytes());
       replies[i++] = new BulkReply(entry.getValue());
     }
@@ -2469,13 +2450,10 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public BulkReply spop(byte[] key0) throws RedisException {
-    if (mapField == null || tableField == null) {
-      throw new RedisException("Not supported");
-    }
     BytesKeySet set = _getset(key0, false);
     if (set.size() == 0) return NIL_REPLY;
     try {
-      BytesKey key = getRandomKey((Map) mapField.get(set));
+      BytesKey key = getRandomKey(set);
       set.remove(key);
       return new BulkReply(key.getBytes());
     } catch (IllegalAccessException e) {
@@ -2492,15 +2470,12 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public Reply srandmember(byte[] key0, byte[] count1) throws RedisException {
-    if (mapField == null || tableField == null) {
-      throw new RedisException("Not supported");
-    }
     BytesKeySet set = _getset(key0, false);
     int size = set.size();
     try {
       if (count1 == null) {
         if (size == 0) return NIL_REPLY;
-        BytesKey key = getRandomKey((Map) mapField.get(set));
+        BytesKey key = getRandomKey(set);
         return new BulkReply(key.getBytes());
       } else {
         int count = _toint(count1);
@@ -2517,7 +2492,7 @@ public class SimpleRedisServer implements RedisServer {
         for (int i = 0; i < count; i++) {
           BytesKey key;
           do {
-            key = getRandomKey((Map) mapField.get(set));
+            key = getRandomKey(set);
           } while (found != null && !found.add(key));
           replies[i] = new BulkReply(key.getBytes());
         }
