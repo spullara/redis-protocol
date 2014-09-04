@@ -22,6 +22,10 @@
   <url>http://github.com/spullara/redis-protocol</url>
   <description>A very fast Java redis redis.client.</description>
 
+  <prerequisites>
+    <maven>3.2</maven>
+  </prerequisites>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -72,21 +76,21 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>13.0.1</version>
+      <version>14.0.1</version>
     </dependency>
 
     <!-- CLI -->
     <dependency>
       <groupId>com.github.spullara.cli-parser</groupId>
       <artifactId>cli-parser</artifactId>
-      <version>1.1</version>
+      <version>1.1.2</version>
     </dependency>
 
     <!-- Testing -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.8.2</version>
+      <version>4.11</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -96,10 +100,10 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.5.1</version>
+        <version>3.1</version>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <source>1.7</source>
+          <target>1.7</target>
           <encoding>UTF-8</encoding>
         </configuration>
       </plugin>
@@ -120,7 +124,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.4</version>
+            <version>1.5</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>
