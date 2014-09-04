@@ -32,7 +32,7 @@
     <dependency>
       <groupId>org.webbitserver</groupId>
       <artifactId>webbit</artifactId>
-      <version>0.4.14</version>
+      <version>0.4.15</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -42,7 +42,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.5.1</version>
+        <version>3.1</version>
         <configuration>
           <source>1.7</source>
           <target>1.7</target>
