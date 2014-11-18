@@ -723,6 +723,118 @@ public class RedisClient {
   public Future<Reply> eval_(Object... arguments) {
     return execute(Reply.class, new Command(EVAL_BYTES, arguments));
   }
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+
+  private static final String EVALSHA = "EVALSHA";
+  private static final byte[] EVALSHA_BYTES = EVALSHA.getBytes(Charsets.US_ASCII);
+  
+  /**
+   * Execute a Lua script server side
+   * Scripting
+   *
+   * @param sha10
+   * @param numkeys1
+   * @param key2
+   * @return Reply
+   */
+  public Promise<Reply> evalsha(Object sha10, Object numkeys1, Object[] key2) {
+    List<Object> list = new ArrayList<>();
+    list.add(sha10);
+    list.add(numkeys1);
+    Collections.addAll(list, key2);
+    return execute(Reply.class, new Command(EVALSHA_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public Promise<Reply> evalsha_(Object... arguments) {
+    return execute(Reply.class, new Command(EVALSHA_BYTES, arguments));
+  }
+
+  private static final String SCRIPT_EXISTS = "SCRIPT";
+  private static final String SCRIPT_EXISTS2 = "EXISTS";
+  private static final byte[] SCRIPT_EXISTS2_BYTES = SCRIPT_EXISTS2.getBytes(Charsets.US_ASCII);
+  private static final byte[] SCRIPT_EXISTS_BYTES = SCRIPT_EXISTS.getBytes(Charsets.US_ASCII);
+
+  /**
+   * Check existence of scripts in the script cache.
+   * Scripting
+   *
+   * @param script0
+   * @return Reply
+   */
+  public Promise<Reply> script_exists(Object[] script0) {
+    List<Object> list = new ArrayList<>();
+    Collections.addAll(list, script0);
+    return execute(Reply.class, new Command(SCRIPT_EXISTS_BYTES, SCRIPT_EXISTS2_BYTES, list.toArray(new Object[list.size()])));
+  }
+
+  // Varargs version to simplify commands with optional or multiple arguments
+  public Promise<Reply> script_exists_(Object... arguments) {
+    return execute(Reply.class, new Command(SCRIPT_EXISTS_BYTES, SCRIPT_EXISTS2_BYTES, arguments));
+  }
+
+  private static final String SCRIPT_FLUSH = "SCRIPT";
+  private static final String SCRIPT_FLUSH2 = "FLUSH";
+  private static final byte[] SCRIPT_FLUSH2_BYTES = SCRIPT_FLUSH2.getBytes(Charsets.US_ASCII);
+  private static final byte[] SCRIPT_FLUSH_BYTES = SCRIPT_FLUSH.getBytes(Charsets.US_ASCII);
+
+  /**
+   * Remove all the scripts from the script cache.
+   * Scripting
+   *
+   * @return Reply
+   */
+  public Promise<Reply> script_flush() {
+    return execute(Reply.class, new Command(SCRIPT_FLUSH_BYTES, SCRIPT_FLUSH2_BYTES));
+  }
+
+  private static final String SCRIPT_KILL = "SCRIPT";
+  private static final String SCRIPT_KILL2 = "KILL";
+  private static final byte[] SCRIPT_KILL2_BYTES = SCRIPT_KILL2.getBytes(Charsets.US_ASCII);
+  private static final byte[] SCRIPT_KILL_BYTES = SCRIPT_KILL.getBytes(Charsets.US_ASCII);
+
+  /**
+   * Kill the script currently in execution.
+   * Scripting
+   *
+   * @return Reply
+   */
+  public Promise<Reply> script_kill() {
+    return execute(Reply.class, new Command(SCRIPT_KILL_BYTES, SCRIPT_KILL2_BYTES));
+  }
+
+  private static final String SCRIPT_LOAD = "SCRIPT";
+  private static final String SCRIPT_LOAD2 = "LOAD";
+  private static final byte[] SCRIPT_LOAD2_BYTES = SCRIPT_LOAD2.getBytes(Charsets.US_ASCII);
+  private static final byte[] SCRIPT_LOAD_BYTES = SCRIPT_LOAD.getBytes(Charsets.US_ASCII);
+
+  /**
+   * Load the specified Lua script into the script cache.
+   * Scripting
+   *
+   * @param script0
+   * @return Reply
+   */
+  public Promise<Reply> script_load(Object script0) {
+    return execute(Reply.class, new Command(SCRIPT_LOAD_BYTES, SCRIPT_LOAD2_BYTES, script0));
+  }
+
+  
+  
+  
+  
+  
+  
+  
 
   // ----------------------------------
 
