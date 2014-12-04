@@ -1,12 +1,15 @@
 package redis.netty4;
 
-import java.io.IOException;
-
 import io.netty.buffer.ByteBuf;
 
-public interface Reply<T> {
-  byte[] CRLF = new byte[] { RedisReplyDecoder.CR, RedisReplyDecoder.LF };
+import java.io.IOException;
 
-  T data();
+public interface Reply {
+
   void write(ByteBuf os) throws IOException;
+
+  Object data();
+
+  void releaseAll();
+  
 }

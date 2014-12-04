@@ -1,6 +1,10 @@
 package redis.netty.client;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
+
+import redis.embedded.RedisServer;
 import redis.netty.MultiBulkReply;
 import spullara.util.functions.Block;
 
@@ -14,10 +18,26 @@ import static org.junit.Assert.fail;
  * Test a high concurrent application accessing a large hash table in redis.
  */
 public class HashConcurrencyTest {
+
+  private RedisServer redisServer;
+
+  @Before
+  public void setup() throws Exception {
+    redisServer = new RedisServer();
+    redisServer.start();
+    // redisServer.getPort()
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    redisServer.stop();
+  }
+
   @Test
   public void testConcurrency() throws ExecutionException, InterruptedException {
-    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null) return;
-    RedisClient client = RedisClient.connect("localhost", 6379).get();
+    if (System.getenv().containsKey("CI") || System.getProperty("CI") != null)
+      return;
+    RedisClient client = RedisClient.connect("localhost", redisServer.getPort()).get();
     client.del_("hash").get();
     for (int i = 0; i < 100; i++) {
       client.hset("hash", "key" + i, "values" + i).get();

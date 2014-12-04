@@ -66,6 +66,36 @@
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
   </distributionManagement>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.github.spullara.redis</groupId>
+        <artifactId>util</artifactId>
+        <version>0.8-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.spullara.redis</groupId>
+        <artifactId>protocol</artifactId>
+        <version>0.8-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.spullara.redis</groupId>
+        <artifactId>netty</artifactId>
+        <version>0.8-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.spullara.redis</groupId>
+        <artifactId>netty4</artifactId>
+        <version>0.8-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.spullara.redis</groupId>
+        <artifactId>client</artifactId>
+        <version>0.8-SNAPSHOT</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
 
   <dependencies>
     <!-- Guava -->
@@ -82,6 +112,12 @@
       <version>1.1</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.7</version>
+    </dependency>
+
     <!-- Testing -->
     <dependency>
       <groupId>junit</groupId>
@@ -89,6 +125,14 @@
       <version>4.8.2</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.1.2</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 
   <build>

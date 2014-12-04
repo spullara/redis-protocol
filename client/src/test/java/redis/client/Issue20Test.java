@@ -1,8 +1,12 @@
 package redis.client;
 
 import com.google.common.util.concurrent.ListenableFuture;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import redis.embedded.RedisServer;
 import redis.reply.StatusReply;
 
 import java.util.concurrent.Future;
@@ -15,9 +19,18 @@ import static junit.framework.Assert.assertEquals;
 public class Issue20Test {
   private RedisClient client;
 
+  private RedisServer redisServer;
+
   @Before
-  public void setUp() throws Exception {
-    client = new RedisClient("localhost", 6379);
+  public void setup() throws Exception {
+    redisServer = new RedisServer();
+    redisServer.start();
+    client = new RedisClient("localhost", redisServer.getPort());
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    redisServer.stop();
   }
 
   @Test

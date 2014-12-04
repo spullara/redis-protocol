@@ -1,4 +1,4 @@
-package redis;
+package redis.netty4;
 
 import com.google.common.base.Charsets;
 import io.netty.buffer.ByteBuf;
@@ -25,14 +25,14 @@ public class ReplyTest {
   public void testReadWrite() throws IOException {
     ByteBuf os;
     Reply receive;
-    RedisReplyDecoder redisDecoder = new RedisReplyDecoder(false);
+    RedisReplyDecoder redisDecoder = new RedisReplyDecoder();
     {
       os = Unpooled.buffer();
       String message = "OK";
       new StatusReply(message).write(os);
       receive = redisDecoder.receive(os);
       assertTrue(receive instanceof StatusReply);
-      assertEquals(message, receive.data());
+      assertEquals(message, ((StatusReply) receive).data());
     }
     {
       os = Unpooled.buffer();
@@ -40,7 +40,7 @@ public class ReplyTest {
       new ErrorReply(message).write(os);
       receive = redisDecoder.receive(os);
       assertTrue(receive instanceof ErrorReply);
-      assertEquals(message, receive.data());
+      assertEquals(message, ((ErrorReply) receive).data());
     }
     {
       os = Unpooled.buffer();
@@ -48,7 +48,7 @@ public class ReplyTest {
       new BulkReply(Unpooled.wrappedBuffer(message.getBytes())).write(os);
       receive = redisDecoder.receive(os);
       assertTrue(receive instanceof BulkReply);
-      assertEquals(message, ((ByteBuf)receive.data()).toString(Charsets.US_ASCII));
+      assertEquals(message, ((BulkReply) receive).data().toString(Charsets.US_ASCII));
     }
     {
       os = Unpooled.buffer();
@@ -56,28 +56,30 @@ public class ReplyTest {
       new IntegerReply(integer).write(os);
       receive = redisDecoder.receive(os);
       assertTrue(receive instanceof IntegerReply);
-      assertEquals(integer, receive.data());
+      assertEquals(integer, ((IntegerReply) receive).data().longValue());
     }
     {
       os = Unpooled.buffer();
       String message = "OK";
       long integer = 999;
-      new MultiBulkReply(new Reply[] {
-              new StatusReply(message),
-              new ErrorReply(message),
-              new MultiBulkReply(new Reply[] { new StatusReply(message)}),
-              new BulkReply(Unpooled.wrappedBuffer(message.getBytes())),
-              new IntegerReply(integer)}).write(os);
+      new MultiBulkReply(new Reply[] { new StatusReply(message), new ErrorReply(message), new MultiBulkReply(new Reply[] { new StatusReply(message) }),
+          new BulkReply(Unpooled.wrappedBuffer(message.getBytes())), new IntegerReply(integer) }).write(os);
       receive = redisDecoder.receive(os);
-      assertTrue(receive instanceof MultiBulkReply);
-      Reply[] data = (Reply[]) receive.data();
-      assertEquals(message, data[0].data());
-      assertEquals(message, data[1].data());
+      assertTrue("received should be MultiBulkReply but is " + receive,receive instanceof MultiBulkReply);
+      Reply[] data = (Reply[]) ((MultiBulkReply) receive).data();
+      assertTrue(data[0] instanceof StatusReply);
+      assertTrue(data[1] instanceof ErrorReply);
+      assertEquals(message, ((StatusReply) data[0]).data());
+      assertEquals(message, ((ErrorReply) data[1]).data());
       assertTrue(data[2] instanceof MultiBulkReply);
-      Reply[] data2 = (Reply[]) data[2].data();
-      assertEquals(message, data2[0].data());
+      Reply[] data2 = ((MultiBulkReply) data[2]).data();
+      assertTrue(data2[0] instanceof StatusReply);
+      assertEquals(message, ((StatusReply) data2[0]).data());
+      assertTrue(data[3] instanceof BulkReply);
       assertEquals(message, ((ByteBuf)data[3].data()).toString(Charsets.US_ASCII));
-      assertEquals(integer, data[4].data());
+      //assertEquals(message, ((BulkReply) data[3]).data());
+      assertTrue(data[4] instanceof IntegerReply);
+      assertEquals(integer, ((IntegerReply) data[4]).data().longValue());
     }
   }
 }

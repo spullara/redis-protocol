@@ -1544,7 +1544,7 @@ public class SimpleRedisServer implements RedisServer {
     if (pattern0 == null) {
       throw new RedisException("wrong number of arguments for KEYS");
     }
-    List<Reply<ByteBuf>> replies = new ArrayList<Reply<ByteBuf>>();
+    List<BulkReply> replies = new ArrayList<BulkReply>();
     Iterator<Object> it = data.keySet().iterator();
     while(it.hasNext()) {        
       BytesKey key = (BytesKey) it.next();
@@ -2769,7 +2769,7 @@ public class SimpleRedisServer implements RedisServer {
     int start = _torange(start1, size);
     int end = _torange(stop2, size);
     Iterator<ZSetEntry> iterator = zset.iterator();
-    List<Reply<ByteBuf>> list = new ArrayList<Reply<ByteBuf>>();
+    List<BulkReply> list = new ArrayList<BulkReply>();
     for (int i = 0; i < size; i++) {
       if (iterator.hasNext()) {
         ZSetEntry next = iterator.next();
@@ -2818,11 +2818,11 @@ public class SimpleRedisServer implements RedisServer {
   public MultiBulkReply zrangebyscore(byte[] key0, byte[] min1, byte[] max2, byte[][] withscores_offset_or_count4) throws RedisException {
     ZSet zset = _getzset(key0, false);
     if (zset.isEmpty()) return MultiBulkReply.EMPTY;
-    List<Reply<ByteBuf>> list = _zrangebyscore(min1, max2, withscores_offset_or_count4, zset, false);
+    List<BulkReply> list = _zrangebyscore(min1, max2, withscores_offset_or_count4, zset, false);
     return new MultiBulkReply(list.toArray(new Reply[list.size()]));
   }
 
-  private List<Reply<ByteBuf>> _zrangebyscore(byte[] min1, byte[] max2, byte[][] withscores_offset_or_count4, ZSet zset, boolean reverse) throws RedisException {
+  private List<BulkReply> _zrangebyscore(byte[] min1, byte[] max2, byte[][] withscores_offset_or_count4, ZSet zset, boolean reverse) throws RedisException {
     int position = 0;
     boolean withscores = false;
     if (withscores_offset_or_count4.length > 0) {
@@ -2850,7 +2850,7 @@ public class SimpleRedisServer implements RedisServer {
     List<ZSetEntry> entries = zset.subSet(min.value, max.value);
     if (reverse) Collections.reverse(entries);
     int current = 0;
-    List<Reply<ByteBuf>> list = new ArrayList<Reply<ByteBuf>>();
+    List<BulkReply> list = new ArrayList<BulkReply>();
     for (ZSetEntry entry : entries) {
       if (current >= offset && current < offset + number) {
         list.add(new BulkReply(entry.getKey().getBytes()));
@@ -3001,7 +3001,7 @@ public class SimpleRedisServer implements RedisServer {
     int end = size - _torange(start1, size) - 1;
     int start = size - _torange(stop2, size) - 1;
     Iterator<ZSetEntry> iterator = zset.iterator();
-    List<Reply<ByteBuf>> list = new ArrayList<Reply<ByteBuf>>();
+    List<BulkReply> list = new ArrayList<BulkReply>();
     for (int i = 0; i < size; i++) {
       if (iterator.hasNext()) {
         ZSetEntry next = iterator.next();
@@ -3032,7 +3032,7 @@ public class SimpleRedisServer implements RedisServer {
   public MultiBulkReply zrevrangebyscore(byte[] key0, byte[] max1, byte[] min2, byte[][] withscores_offset_or_count4) throws RedisException {
     ZSet zset = _getzset(key0, false);
     if (zset.isEmpty()) return MultiBulkReply.EMPTY;
-    List<Reply<ByteBuf>> list = _zrangebyscore(min2, max1, withscores_offset_or_count4, zset, true);
+    List<BulkReply> list = _zrangebyscore(min2, max1, withscores_offset_or_count4, zset, true);
     return new MultiBulkReply(list.toArray(new Reply[list.size()]));
   }
 

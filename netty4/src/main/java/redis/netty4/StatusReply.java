@@ -1,26 +1,26 @@
 package redis.netty4;
 
-import com.google.common.base.Charsets;
 import io.netty.buffer.ByteBuf;
+import io.netty.util.CharsetUtil;
 
 import java.io.IOException;
 
-public class StatusReply implements Reply<String> {
+public class StatusReply extends AbstarctReply<String> {
   public static final char MARKER = '+';
   public static final StatusReply OK = new StatusReply("OK");
   public static final StatusReply QUIT = new StatusReply("OK");
-  private final String status;
+  // private final String status;
   private final byte[] statusBytes;
 
   public StatusReply(String status) {
-    this.status = status;
-    this.statusBytes = status.getBytes(Charsets.UTF_8);
+    super(status);
+    this.statusBytes = status.getBytes(CharsetUtil.UTF_8);
   }
 
-  @Override
-  public String data() {
-    return status;
-  }
+  // @Override
+  // public String data() {
+  // return status;
+  // }
 
   @Override
   public void write(ByteBuf os) throws IOException {
@@ -30,6 +30,6 @@ public class StatusReply implements Reply<String> {
   }
 
   public String toString() {
-    return status;
+    return data();
   }
 }

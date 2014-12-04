@@ -1,8 +1,13 @@
 package redis.client;
 
 import com.google.common.util.concurrent.ListenableFuture;
+
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+
+import redis.embedded.RedisServer;
 import redis.reply.ErrorReply;
 
 import java.util.concurrent.ExecutionException;
@@ -15,9 +20,24 @@ import static org.junit.Assert.fail;
  * Issue 24: https://github.com/spullara/redis-protocol/issues/24
  */
 public class Issue24Test {
+
+  private RedisServer redisServer;
+
+  @Before
+  public void setup() throws Exception {
+    redisServer = new RedisServer();
+    redisServer.start();
+    // redisServer.getPort()
+  }
+
+  @After
+  public void tearDown() throws Exception {
+    redisServer.stop();
+  }
+
   @Test
   public void testRestoreBadData() throws Exception {
-    RedisClient client = new RedisClient("localhost", 6379);
+    RedisClient client = new RedisClient("localhost", redisServer.getPort());
     RedisClient.Pipeline pipeline = client.pipeline();
     client.multi();
 

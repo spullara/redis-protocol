@@ -1,16 +1,14 @@
 package redis.netty4;
 
-import com.google.common.base.Charsets;
+import static redis.util.Encoding.numToBytes;
 import io.netty.buffer.ByteBuf;
+import io.netty.util.CharsetUtil;
 
 import java.io.IOException;
 
-import static redis.util.Encoding.numToBytes;
-
 /**
- * Command serialization.  We special case when there are few 4 or fewer parameters
- * since most commands fall into that category. Passing bytes, channelbuffers and
- * strings / objects are all allowed. All strings are assumed to be UTF-8.
+ * Command serialization. We special case when there are few 4 or fewer parameters since most commands fall into that category. Passing bytes, channelbuffers and strings / objects
+ * are all allowed. All strings are assumed to be UTF-8.
  */
 public class Command {
   public static final byte[] ARGS_PREFIX = "*".getBytes();
@@ -64,7 +62,8 @@ public class Command {
 
   public byte[] getName() {
     // It is either the name or the first objects in the objects array
-    if (name != null) return getBytes(name);
+    if (name != null)
+      return getBytes(name);
     return getBytes(objects[0]);
   }
 
@@ -81,9 +80,9 @@ public class Command {
     } else if (object instanceof ByteBuf) {
       argument = ((ByteBuf) object).array();
     } else if (object instanceof String) {
-      argument = ((String) object).getBytes(Charsets.UTF_8);
+      argument = ((String) object).getBytes(CharsetUtil.UTF_8);
     } else {
-      argument = object.toString().getBytes(Charsets.UTF_8);
+      argument = object.toString().getBytes(CharsetUtil.UTF_8);
     }
     return argument;
   }
@@ -110,21 +109,23 @@ public class Command {
     }
   }
 
-
   public void write(ByteBuf os) throws IOException {
     writeDirect(os, name, object1, object2, object3, objects);
   }
 
   public static void writeDirect(ByteBuf os, Object name, Object object1, Object object2, Object object3, Object[] objects) throws IOException {
-    int others = (object1 == null ? 0 : 1) + (object2 == null ? 0 : 1) +
-            (object3 == null ? 0 : 1) + (name == null ? 0 : 1);
+    int others = (object1 == null ? 0 : 1) + (object2 == null ? 0 : 1) + (object3 == null ? 0 : 1) + (name == null ? 0 : 1);
     int length = objects == null ? 0 : objects.length;
     os.writeBytes(ARGS_PREFIX);
     os.writeBytes(numToBytes(length + others, true));
-    if (name != null) writeObject(os, name);
-    if (object1 != null) writeObject(os, object1);
-    if (object2 != null) writeObject(os, object2);
-    if (object3 != null) writeObject(os, object3);
+    if (name != null)
+      writeObject(os, name);
+    if (object1 != null)
+      writeObject(os, object1);
+    if (object2 != null)
+      writeObject(os, object2);
+    if (object3 != null)
+      writeObject(os, object3);
     if (objects != null) {
       for (Object object : objects) {
         writeObject(os, object);
@@ -142,9 +143,9 @@ public class Command {
       writeArgument(os, (ByteBuf) object);
       return;
     } else if (object instanceof String) {
-      argument = ((String) object).getBytes(Charsets.UTF_8);
+      argument = ((String) object).getBytes(CharsetUtil.UTF_8);
     } else {
-      argument = object.toString().getBytes(Charsets.UTF_8);
+      argument = object.toString().getBytes(CharsetUtil.UTF_8);
     }
     writeArgument(os, argument);
   }
@@ -161,6 +162,35 @@ public class Command {
     os.writeBytes(numToBytes(argument.readableBytes(), true));
     os.writeBytes(argument);
     os.writeBytes(CRLF);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Command [");
+
+    Object name2 = name;
+    if (name instanceof byte[]) {
+      name2 = new String((byte[]) name, CharsetUtil.US_ASCII);
+      // TODO optimize ? reconverted here from converted code before..
+    }
+
+    if (name2 != null)
+      sb.append(name2).append(',');
+    if (object1 != null)
+      sb.append(object1).append(',');
+    if (object2 != null)
+      sb.append(object2).append(',');
+    if (object3 != null)
+      sb.append(object3);
+    if (objects != null) {
+      for (Object object : objects) {
+        sb.append(',').append(object);
+      }
+    }
+    sb.append("]");
+
+    return sb.toString();
   }
 
 }
