@@ -1,3 +1,6 @@
+
+*** Maintenance discoutinued *** - I personnally switched to scredis https://github.com/Livestream/scredis
+
 Fork of https://github.com/spullara/redis-protocol
 
 Maven repository available (see pom.xml in orange-groupid branch) 
@@ -115,6 +118,6 @@ Contributions:
 Gaël Bréard: Update netty4 client 
    * partial implementation of netty 4 client (some verbs are missing, need just some more copy-paste)
    * refactoring on Reply inheritance tree
-   * fix some issues (workarround for netty bug in fact) on message order over intense usage of message pipelining
+   * fix some issues on message order over intense usage of message pipelining
    * some other minor modifications
     
