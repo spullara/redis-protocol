@@ -1,6 +1,5 @@
 package redis.client;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import com.sampullara.cli.Args;
 import com.sampullara.cli.Argument;
 import redis.Command;
@@ -10,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -78,15 +78,12 @@ public class Benchmark {
               bins.get(bin).incrementAndGet();
             } else {
               semaphore.acquire(1);
-              ListenableFuture<? extends Reply> pipeline = redisClient.pipeline(title, command);
-              pipeline.addListener(new Runnable() {
-                @Override
-                public void run() {
-                  long commandend = System.nanoTime();
-                  int bin = (int) ((commandend - commandstart) / NANOS_PER_MILLI);
-                  bins.get(bin).incrementAndGet();
-                  semaphore.release();
-                }
+              CompletableFuture<? extends Reply> pipeline = redisClient.pipeline(title, command);
+              pipeline.thenAcceptAsync(r -> {
+                long commandend = System.nanoTime();
+                int bin = (int) ((commandend - commandstart) / NANOS_PER_MILLI);
+                bins.get(bin).incrementAndGet();
+                semaphore.release();
               }, es);
             }
           }

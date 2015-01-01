@@ -1,10 +1,10 @@
 package redis.client;
 
-import com.google.common.util.concurrent.ListenableFuture;
 import org.junit.Assert;
 import org.junit.Test;
 import redis.reply.ErrorReply;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -22,7 +22,7 @@ public class Issue24Test {
     client.multi();
 
     // Use something other than dump-specific serialization to cause an error on restore
-    ListenableFuture restoreResults = pipeline.restore("testing".getBytes(), 0, "foo".getBytes());
+    CompletableFuture restoreResults = pipeline.restore("testing".getBytes(), 0, "foo".getBytes());
     Future<Boolean> execResults = client.exec();
     assertTrue(execResults.get());
 
