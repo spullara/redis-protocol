@@ -2,10 +2,8 @@ package redis.client;
 
 import com.google.common.base.Charsets;
 import com.google.common.primitives.SignedBytes;
-import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
-import com.google.common.util.concurrent.SettableFuture;
 import redis.Command;
 import redis.RedisProtocol;
 import redis.reply.*;
@@ -136,9 +134,9 @@ public class RedisClientBase {
     return version;
   }
 
-  private Queue<SettableFuture<Reply>> txReplies = new ConcurrentLinkedQueue<SettableFuture<Reply>>();
+  private Queue<CompletableFuture<Reply>> txReplies = new ConcurrentLinkedQueue<CompletableFuture<Reply>>();
 
-  public synchronized ListenableFuture<? extends Reply> pipeline(String name, Command command) throws RedisException {
+  public synchronized CompletableFuture<? extends Reply> pipeline(String name, Command command) throws RedisException {
     if (subscribed) {
       throw new RedisException("You are subscribed and cannot create a pipeline");
     }
@@ -150,20 +148,20 @@ public class RedisClientBase {
     }
     pipelined.incrementAndGet();
     if (tx) {
-      final SettableFuture<Reply> set = SettableFuture.create();
+      final CompletableFuture<Reply> set = new CompletableFuture<>();
       es.submit(new Runnable() {
         @Override
         public void run() {
           try {
             Reply reply = redisProtocol.receiveAsync();
             if (reply instanceof ErrorReply) {
-              set.setException(new RedisException(((ErrorReply) reply).data()));
+              set.completeExceptionally(new RedisException(((ErrorReply) reply).data()));
             } else if (reply instanceof StatusReply) {
               if ("QUEUED".equals(((StatusReply) reply).data())) {
                 txReplies.offer(set);
               }
             } else {
-              set.set(reply);
+              set.complete(reply);
             }
           } catch (IOException e) {
             throw new RedisException("Failed to receive queueing result");
@@ -174,20 +172,19 @@ public class RedisClientBase {
       });
       return set;
     } else {
-      return es.submit(new Callable<Reply>() {
-        @Override
-        public Reply call() throws Exception {
-          try {
-            Reply reply = redisProtocol.receiveAsync();
-            if (reply instanceof ErrorReply) {
-              throw new RedisException(((ErrorReply) reply).data());
-            }
-            return reply;
-          } finally {
-            pipelined.decrementAndGet();
+      return CompletableFuture.supplyAsync(() -> {
+        try {
+          Reply reply = redisProtocol.receiveAsync();
+          if (reply instanceof ErrorReply) {
+            throw new RedisException(((ErrorReply) reply).data());
           }
+          return reply;
+        } catch (IOException e) {
+          throw new CompletionException(e);
+        } finally {
+          pipelined.decrementAndGet();
         }
-      });
+      }, es);
     }
   }
 
@@ -255,23 +252,20 @@ public class RedisClientBase {
   }
 
   public StatusReply discard() {
-    ListenableFuture<StatusReply> discard;
+    CompletableFuture<StatusReply> discard;
     synchronized (this) {
       if (subscribed) {
         throw new RedisException("You can only issue subscription commands once subscribed");
       }
       if (tx) {
         tx = false;
-        discard = es.submit(new Callable<StatusReply>() {
-          @Override
-          public StatusReply call() {
-            synchronized (RedisClientBase.this) {
-              SettableFuture<Reply> txReply;
-              while ((txReply = txReplies.poll()) != null) {
-                txReply.setException(new RedisException("Discarded"));
-              }
-              return (StatusReply) execute("DISCARD", DISCARD);
+        discard = CompletableFuture.supplyAsync(() -> {
+          synchronized (RedisClientBase.this) {
+            CompletableFuture<Reply> txReply;
+            while ((txReply = txReplies.poll()) != null) {
+              txReply.completeExceptionally(new RedisException("Discarded"));
             }
+            return (StatusReply) execute("DISCARD", DISCARD);
           }
         });
       } else {
@@ -303,17 +297,17 @@ public class RedisClientBase {
             }
             MultiBulkReply execReply = (MultiBulkReply) maybeReply;
             if (execReply.data() == null) {
-              for (SettableFuture<Reply> txReply : txReplies) {
-                txReply.setException(new RedisException("Transaction failed"));
+              for (CompletableFuture<Reply> txReply : txReplies) {
+                txReply.completeExceptionally(new RedisException("Transaction failed"));
               }
               return false;
             }
             for (Reply reply : execReply.data()) {
-              SettableFuture<Reply> poll = txReplies.poll();
+              CompletableFuture<Reply> poll = txReplies.poll();
               if (reply instanceof ErrorReply) {
-                poll.setException(new RedisException((String) reply.data()));
+                poll.completeExceptionally(new RedisException((String) reply.data()));
               } else {
-                poll.set(reply);
+                poll.complete(reply);
               }
             }
             return true;

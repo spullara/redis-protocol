@@ -4,11 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import com.google.common.base.Charsets;
-import com.google.common.util.concurrent.ListenableFuture;
 
 import redis.Command;
 import redis.reply.BulkReply;
@@ -2714,9 +2714,9 @@ public class RedisClient extends RedisClientBase {
    * @param value1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> append(Object key0, Object value1) throws RedisException {
+  public CompletableFuture<IntegerReply> append(Object key0, Object value1) throws RedisException {
     if (version < APPEND_VERSION) throw new RedisException("Server does not support APPEND");
-    return (ListenableFuture<IntegerReply>) pipeline(APPEND, new Command(APPEND_BYTES, key0, value1));
+    return (CompletableFuture<IntegerReply>) pipeline(APPEND, new Command(APPEND_BYTES, key0, value1));
   }
 
   /**
@@ -2728,15 +2728,15 @@ public class RedisClient extends RedisClientBase {
    * @param end2
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> bitcount(Object key0, Object start1, Object end2) throws RedisException {
+  public CompletableFuture<IntegerReply> bitcount(Object key0, Object start1, Object end2) throws RedisException {
     if (version < BITCOUNT_VERSION) throw new RedisException("Server does not support BITCOUNT");
-    return (ListenableFuture<IntegerReply>) pipeline(BITCOUNT, new Command(BITCOUNT_BYTES, key0, start1, end2));
+    return (CompletableFuture<IntegerReply>) pipeline(BITCOUNT, new Command(BITCOUNT_BYTES, key0, start1, end2));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> bitcount_(Object... arguments) throws RedisException {
+  public CompletableFuture<IntegerReply> bitcount_(Object... arguments) throws RedisException {
     if (version < BITCOUNT_VERSION) throw new RedisException("Server does not support BITCOUNT");
-    return (ListenableFuture<IntegerReply>) pipeline(BITCOUNT, new Command(BITCOUNT_BYTES, arguments));
+    return (CompletableFuture<IntegerReply>) pipeline(BITCOUNT, new Command(BITCOUNT_BYTES, arguments));
   }
 
   /**
@@ -2748,19 +2748,19 @@ public class RedisClient extends RedisClientBase {
    * @param key2
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> bitop(Object operation0, Object destkey1, Object... key2) throws RedisException {
+  public CompletableFuture<IntegerReply> bitop(Object operation0, Object destkey1, Object... key2) throws RedisException {
     if (version < BITOP_VERSION) throw new RedisException("Server does not support BITOP");
     List list = new ArrayList();
     list.add(operation0);
     list.add(destkey1);
     Collections.addAll(list, key2);
-    return (ListenableFuture<IntegerReply>) pipeline(BITOP, new Command(BITOP_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<IntegerReply>) pipeline(BITOP, new Command(BITOP_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> bitop_(Object... arguments) throws RedisException {
+  public CompletableFuture<IntegerReply> bitop_(Object... arguments) throws RedisException {
     if (version < BITOP_VERSION) throw new RedisException("Server does not support BITOP");
-    return (ListenableFuture<IntegerReply>) pipeline(BITOP, new Command(BITOP_BYTES, arguments));
+    return (CompletableFuture<IntegerReply>) pipeline(BITOP, new Command(BITOP_BYTES, arguments));
   }
 
   /**
@@ -2770,9 +2770,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> decr(Object key0) throws RedisException {
+  public CompletableFuture<IntegerReply> decr(Object key0) throws RedisException {
     if (version < DECR_VERSION) throw new RedisException("Server does not support DECR");
-    return (ListenableFuture<IntegerReply>) pipeline(DECR, new Command(DECR_BYTES, key0));
+    return (CompletableFuture<IntegerReply>) pipeline(DECR, new Command(DECR_BYTES, key0));
   }
 
   /**
@@ -2783,9 +2783,9 @@ public class RedisClient extends RedisClientBase {
    * @param decrement1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> decrby(Object key0, Object decrement1) throws RedisException {
+  public CompletableFuture<IntegerReply> decrby(Object key0, Object decrement1) throws RedisException {
     if (version < DECRBY_VERSION) throw new RedisException("Server does not support DECRBY");
-    return (ListenableFuture<IntegerReply>) pipeline(DECRBY, new Command(DECRBY_BYTES, key0, decrement1));
+    return (CompletableFuture<IntegerReply>) pipeline(DECRBY, new Command(DECRBY_BYTES, key0, decrement1));
   }
 
   /**
@@ -2795,9 +2795,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return BulkReply
    */
-  public ListenableFuture<BulkReply> get(Object key0) throws RedisException {
+  public CompletableFuture<BulkReply> get(Object key0) throws RedisException {
     if (version < GET_VERSION) throw new RedisException("Server does not support GET");
-    return (ListenableFuture<BulkReply>) pipeline(GET, new Command(GET_BYTES, key0));
+    return (CompletableFuture<BulkReply>) pipeline(GET, new Command(GET_BYTES, key0));
   }
 
   /**
@@ -2808,9 +2808,9 @@ public class RedisClient extends RedisClientBase {
    * @param offset1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> getbit(Object key0, Object offset1) throws RedisException {
+  public CompletableFuture<IntegerReply> getbit(Object key0, Object offset1) throws RedisException {
     if (version < GETBIT_VERSION) throw new RedisException("Server does not support GETBIT");
-    return (ListenableFuture<IntegerReply>) pipeline(GETBIT, new Command(GETBIT_BYTES, key0, offset1));
+    return (CompletableFuture<IntegerReply>) pipeline(GETBIT, new Command(GETBIT_BYTES, key0, offset1));
   }
 
   /**
@@ -2822,9 +2822,9 @@ public class RedisClient extends RedisClientBase {
    * @param end2
    * @return BulkReply
    */
-  public ListenableFuture<BulkReply> getrange(Object key0, Object start1, Object end2) throws RedisException {
+  public CompletableFuture<BulkReply> getrange(Object key0, Object start1, Object end2) throws RedisException {
     if (version < GETRANGE_VERSION) throw new RedisException("Server does not support GETRANGE");
-    return (ListenableFuture<BulkReply>) pipeline(GETRANGE, new Command(GETRANGE_BYTES, key0, start1, end2));
+    return (CompletableFuture<BulkReply>) pipeline(GETRANGE, new Command(GETRANGE_BYTES, key0, start1, end2));
   }
 
   /**
@@ -2835,9 +2835,9 @@ public class RedisClient extends RedisClientBase {
    * @param value1
    * @return BulkReply
    */
-  public ListenableFuture<BulkReply> getset(Object key0, Object value1) throws RedisException {
+  public CompletableFuture<BulkReply> getset(Object key0, Object value1) throws RedisException {
     if (version < GETSET_VERSION) throw new RedisException("Server does not support GETSET");
-    return (ListenableFuture<BulkReply>) pipeline(GETSET, new Command(GETSET_BYTES, key0, value1));
+    return (CompletableFuture<BulkReply>) pipeline(GETSET, new Command(GETSET_BYTES, key0, value1));
   }
 
   /**
@@ -2847,9 +2847,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> incr(Object key0) throws RedisException {
+  public CompletableFuture<IntegerReply> incr(Object key0) throws RedisException {
     if (version < INCR_VERSION) throw new RedisException("Server does not support INCR");
-    return (ListenableFuture<IntegerReply>) pipeline(INCR, new Command(INCR_BYTES, key0));
+    return (CompletableFuture<IntegerReply>) pipeline(INCR, new Command(INCR_BYTES, key0));
   }
 
   /**
@@ -2860,9 +2860,9 @@ public class RedisClient extends RedisClientBase {
    * @param increment1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> incrby(Object key0, Object increment1) throws RedisException {
+  public CompletableFuture<IntegerReply> incrby(Object key0, Object increment1) throws RedisException {
     if (version < INCRBY_VERSION) throw new RedisException("Server does not support INCRBY");
-    return (ListenableFuture<IntegerReply>) pipeline(INCRBY, new Command(INCRBY_BYTES, key0, increment1));
+    return (CompletableFuture<IntegerReply>) pipeline(INCRBY, new Command(INCRBY_BYTES, key0, increment1));
   }
 
   /**
@@ -2873,9 +2873,9 @@ public class RedisClient extends RedisClientBase {
    * @param increment1
    * @return BulkReply
    */
-  public ListenableFuture<BulkReply> incrbyfloat(Object key0, Object increment1) throws RedisException {
+  public CompletableFuture<BulkReply> incrbyfloat(Object key0, Object increment1) throws RedisException {
     if (version < INCRBYFLOAT_VERSION) throw new RedisException("Server does not support INCRBYFLOAT");
-    return (ListenableFuture<BulkReply>) pipeline(INCRBYFLOAT, new Command(INCRBYFLOAT_BYTES, key0, increment1));
+    return (CompletableFuture<BulkReply>) pipeline(INCRBYFLOAT, new Command(INCRBYFLOAT_BYTES, key0, increment1));
   }
 
   /**
@@ -2885,17 +2885,17 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> mget(Object... key0) throws RedisException {
+  public CompletableFuture<MultiBulkReply> mget(Object... key0) throws RedisException {
     if (version < MGET_VERSION) throw new RedisException("Server does not support MGET");
     List list = new ArrayList();
     Collections.addAll(list, key0);
-    return (ListenableFuture<MultiBulkReply>) pipeline(MGET, new Command(MGET_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<MultiBulkReply>) pipeline(MGET, new Command(MGET_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> mget_(Object... arguments) throws RedisException {
+  public CompletableFuture<MultiBulkReply> mget_(Object... arguments) throws RedisException {
     if (version < MGET_VERSION) throw new RedisException("Server does not support MGET");
-    return (ListenableFuture<MultiBulkReply>) pipeline(MGET, new Command(MGET_BYTES, arguments));
+    return (CompletableFuture<MultiBulkReply>) pipeline(MGET, new Command(MGET_BYTES, arguments));
   }
 
   /**
@@ -2905,17 +2905,17 @@ public class RedisClient extends RedisClientBase {
    * @param key_or_value0
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> mset(Object... key_or_value0) throws RedisException {
+  public CompletableFuture<StatusReply> mset(Object... key_or_value0) throws RedisException {
     if (version < MSET_VERSION) throw new RedisException("Server does not support MSET");
     List list = new ArrayList();
     Collections.addAll(list, key_or_value0);
-    return (ListenableFuture<StatusReply>) pipeline(MSET, new Command(MSET_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<StatusReply>) pipeline(MSET, new Command(MSET_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<StatusReply> mset_(Object... arguments) throws RedisException {
+  public CompletableFuture<StatusReply> mset_(Object... arguments) throws RedisException {
     if (version < MSET_VERSION) throw new RedisException("Server does not support MSET");
-    return (ListenableFuture<StatusReply>) pipeline(MSET, new Command(MSET_BYTES, arguments));
+    return (CompletableFuture<StatusReply>) pipeline(MSET, new Command(MSET_BYTES, arguments));
   }
 
   /**
@@ -2925,17 +2925,17 @@ public class RedisClient extends RedisClientBase {
    * @param key_or_value0
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> msetnx(Object... key_or_value0) throws RedisException {
+  public CompletableFuture<IntegerReply> msetnx(Object... key_or_value0) throws RedisException {
     if (version < MSETNX_VERSION) throw new RedisException("Server does not support MSETNX");
     List list = new ArrayList();
     Collections.addAll(list, key_or_value0);
-    return (ListenableFuture<IntegerReply>) pipeline(MSETNX, new Command(MSETNX_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<IntegerReply>) pipeline(MSETNX, new Command(MSETNX_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> msetnx_(Object... arguments) throws RedisException {
+  public CompletableFuture<IntegerReply> msetnx_(Object... arguments) throws RedisException {
     if (version < MSETNX_VERSION) throw new RedisException("Server does not support MSETNX");
-    return (ListenableFuture<IntegerReply>) pipeline(MSETNX, new Command(MSETNX_BYTES, arguments));
+    return (CompletableFuture<IntegerReply>) pipeline(MSETNX, new Command(MSETNX_BYTES, arguments));
   }
 
   /**
@@ -2947,9 +2947,9 @@ public class RedisClient extends RedisClientBase {
    * @param value2
    * @return Reply
    */
-  public ListenableFuture<Reply> psetex(Object key0, Object milliseconds1, Object value2) throws RedisException {
+  public CompletableFuture<Reply> psetex(Object key0, Object milliseconds1, Object value2) throws RedisException {
     if (version < PSETEX_VERSION) throw new RedisException("Server does not support PSETEX");
-    return (ListenableFuture<Reply>) pipeline(PSETEX, new Command(PSETEX_BYTES, key0, milliseconds1, value2));
+    return (CompletableFuture<Reply>) pipeline(PSETEX, new Command(PSETEX_BYTES, key0, milliseconds1, value2));
   }
 
   /**
@@ -2961,19 +2961,19 @@ public class RedisClient extends RedisClientBase {
    * @param seconds2
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> set(Object key0, Object value1, Object... seconds2) throws RedisException {
+  public CompletableFuture<StatusReply> set(Object key0, Object value1, Object... seconds2) throws RedisException {
     if (version < SET_VERSION) throw new RedisException("Server does not support SET");
     List list = new ArrayList();
     list.add(key0);
     list.add(value1);
     Collections.addAll(list, seconds2);
-    return (ListenableFuture<StatusReply>) pipeline(SET, new Command(SET_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<StatusReply>) pipeline(SET, new Command(SET_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<StatusReply> set_(Object... arguments) throws RedisException {
+  public CompletableFuture<StatusReply> set_(Object... arguments) throws RedisException {
     if (version < SET_VERSION) throw new RedisException("Server does not support SET");
-    return (ListenableFuture<StatusReply>) pipeline(SET, new Command(SET_BYTES, arguments));
+    return (CompletableFuture<StatusReply>) pipeline(SET, new Command(SET_BYTES, arguments));
   }
 
   /**
@@ -2985,9 +2985,9 @@ public class RedisClient extends RedisClientBase {
    * @param value2
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> setbit(Object key0, Object offset1, Object value2) throws RedisException {
+  public CompletableFuture<IntegerReply> setbit(Object key0, Object offset1, Object value2) throws RedisException {
     if (version < SETBIT_VERSION) throw new RedisException("Server does not support SETBIT");
-    return (ListenableFuture<IntegerReply>) pipeline(SETBIT, new Command(SETBIT_BYTES, key0, offset1, value2));
+    return (CompletableFuture<IntegerReply>) pipeline(SETBIT, new Command(SETBIT_BYTES, key0, offset1, value2));
   }
 
   /**
@@ -2999,9 +2999,9 @@ public class RedisClient extends RedisClientBase {
    * @param value2
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> setex(Object key0, Object seconds1, Object value2) throws RedisException {
+  public CompletableFuture<StatusReply> setex(Object key0, Object seconds1, Object value2) throws RedisException {
     if (version < SETEX_VERSION) throw new RedisException("Server does not support SETEX");
-    return (ListenableFuture<StatusReply>) pipeline(SETEX, new Command(SETEX_BYTES, key0, seconds1, value2));
+    return (CompletableFuture<StatusReply>) pipeline(SETEX, new Command(SETEX_BYTES, key0, seconds1, value2));
   }
 
   /**
@@ -3012,9 +3012,9 @@ public class RedisClient extends RedisClientBase {
    * @param value1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> setnx(Object key0, Object value1) throws RedisException {
+  public CompletableFuture<IntegerReply> setnx(Object key0, Object value1) throws RedisException {
     if (version < SETNX_VERSION) throw new RedisException("Server does not support SETNX");
-    return (ListenableFuture<IntegerReply>) pipeline(SETNX, new Command(SETNX_BYTES, key0, value1));
+    return (CompletableFuture<IntegerReply>) pipeline(SETNX, new Command(SETNX_BYTES, key0, value1));
   }
 
   /**
@@ -3026,9 +3026,9 @@ public class RedisClient extends RedisClientBase {
    * @param value2
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> setrange(Object key0, Object offset1, Object value2) throws RedisException {
+  public CompletableFuture<IntegerReply> setrange(Object key0, Object offset1, Object value2) throws RedisException {
     if (version < SETRANGE_VERSION) throw new RedisException("Server does not support SETRANGE");
-    return (ListenableFuture<IntegerReply>) pipeline(SETRANGE, new Command(SETRANGE_BYTES, key0, offset1, value2));
+    return (CompletableFuture<IntegerReply>) pipeline(SETRANGE, new Command(SETRANGE_BYTES, key0, offset1, value2));
   }
 
   /**
@@ -3038,9 +3038,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> strlen(Object key0) throws RedisException {
+  public CompletableFuture<IntegerReply> strlen(Object key0) throws RedisException {
     if (version < STRLEN_VERSION) throw new RedisException("Server does not support STRLEN");
-    return (ListenableFuture<IntegerReply>) pipeline(STRLEN, new Command(STRLEN_BYTES, key0));
+    return (CompletableFuture<IntegerReply>) pipeline(STRLEN, new Command(STRLEN_BYTES, key0));
   }
 
   /**
@@ -3050,9 +3050,9 @@ public class RedisClient extends RedisClientBase {
    * @param message0
    * @return BulkReply
    */
-  public ListenableFuture<BulkReply> echo(Object message0) throws RedisException {
+  public CompletableFuture<BulkReply> echo(Object message0) throws RedisException {
     if (version < ECHO_VERSION) throw new RedisException("Server does not support ECHO");
-    return (ListenableFuture<BulkReply>) pipeline(ECHO, new Command(ECHO_BYTES, message0));
+    return (CompletableFuture<BulkReply>) pipeline(ECHO, new Command(ECHO_BYTES, message0));
   }
 
   /**
@@ -3061,9 +3061,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> ping() throws RedisException {
+  public CompletableFuture<StatusReply> ping() throws RedisException {
     if (version < PING_VERSION) throw new RedisException("Server does not support PING");
-    return (ListenableFuture<StatusReply>) pipeline(PING, new Command(PING_BYTES));
+    return (CompletableFuture<StatusReply>) pipeline(PING, new Command(PING_BYTES));
   }
 
   /**
@@ -3072,9 +3072,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> quit() throws RedisException {
+  public CompletableFuture<StatusReply> quit() throws RedisException {
     if (version < QUIT_VERSION) throw new RedisException("Server does not support QUIT");
-    return (ListenableFuture<StatusReply>) pipeline(QUIT, new Command(QUIT_BYTES));
+    return (CompletableFuture<StatusReply>) pipeline(QUIT, new Command(QUIT_BYTES));
   }
 
   /**
@@ -3084,9 +3084,9 @@ public class RedisClient extends RedisClientBase {
    * @param index0
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> select(Object index0) throws RedisException {
+  public CompletableFuture<StatusReply> select(Object index0) throws RedisException {
     if (version < SELECT_VERSION) throw new RedisException("Server does not support SELECT");
-    return (ListenableFuture<StatusReply>) pipeline(SELECT, new Command(SELECT_BYTES, index0));
+    return (CompletableFuture<StatusReply>) pipeline(SELECT, new Command(SELECT_BYTES, index0));
   }
 
   /**
@@ -3095,9 +3095,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> bgrewriteaof() throws RedisException {
+  public CompletableFuture<StatusReply> bgrewriteaof() throws RedisException {
     if (version < BGREWRITEAOF_VERSION) throw new RedisException("Server does not support BGREWRITEAOF");
-    return (ListenableFuture<StatusReply>) pipeline(BGREWRITEAOF, new Command(BGREWRITEAOF_BYTES));
+    return (CompletableFuture<StatusReply>) pipeline(BGREWRITEAOF, new Command(BGREWRITEAOF_BYTES));
   }
 
   /**
@@ -3106,9 +3106,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> bgsave() throws RedisException {
+  public CompletableFuture<StatusReply> bgsave() throws RedisException {
     if (version < BGSAVE_VERSION) throw new RedisException("Server does not support BGSAVE");
-    return (ListenableFuture<StatusReply>) pipeline(BGSAVE, new Command(BGSAVE_BYTES));
+    return (CompletableFuture<StatusReply>) pipeline(BGSAVE, new Command(BGSAVE_BYTES));
   }
 
   /**
@@ -3118,9 +3118,9 @@ public class RedisClient extends RedisClientBase {
    * @param ip_port0
    * @return Reply
    */
-  public ListenableFuture<Reply> client_kill(Object ip_port0) throws RedisException {
+  public CompletableFuture<Reply> client_kill(Object ip_port0) throws RedisException {
     if (version < CLIENT_KILL_VERSION) throw new RedisException("Server does not support CLIENT_KILL");
-    return (ListenableFuture<Reply>) pipeline(CLIENT_KILL, new Command(CLIENT_KILL_BYTES, CLIENT_KILL2_BYTES, ip_port0));
+    return (CompletableFuture<Reply>) pipeline(CLIENT_KILL, new Command(CLIENT_KILL_BYTES, CLIENT_KILL2_BYTES, ip_port0));
   }
 
   /**
@@ -3129,9 +3129,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return Reply
    */
-  public ListenableFuture<Reply> client_list() throws RedisException {
+  public CompletableFuture<Reply> client_list() throws RedisException {
     if (version < CLIENT_LIST_VERSION) throw new RedisException("Server does not support CLIENT_LIST");
-    return (ListenableFuture<Reply>) pipeline(CLIENT_LIST, new Command(CLIENT_LIST_BYTES, CLIENT_LIST2_BYTES));
+    return (CompletableFuture<Reply>) pipeline(CLIENT_LIST, new Command(CLIENT_LIST_BYTES, CLIENT_LIST2_BYTES));
   }
 
   /**
@@ -3140,9 +3140,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return Reply
    */
-  public ListenableFuture<Reply> client_getname() throws RedisException {
+  public CompletableFuture<Reply> client_getname() throws RedisException {
     if (version < CLIENT_GETNAME_VERSION) throw new RedisException("Server does not support CLIENT_GETNAME");
-    return (ListenableFuture<Reply>) pipeline(CLIENT_GETNAME, new Command(CLIENT_GETNAME_BYTES, CLIENT_GETNAME2_BYTES));
+    return (CompletableFuture<Reply>) pipeline(CLIENT_GETNAME, new Command(CLIENT_GETNAME_BYTES, CLIENT_GETNAME2_BYTES));
   }
 
   /**
@@ -3152,9 +3152,9 @@ public class RedisClient extends RedisClientBase {
    * @param connection_name0
    * @return Reply
    */
-  public ListenableFuture<Reply> client_setname(Object connection_name0) throws RedisException {
+  public CompletableFuture<Reply> client_setname(Object connection_name0) throws RedisException {
     if (version < CLIENT_SETNAME_VERSION) throw new RedisException("Server does not support CLIENT_SETNAME");
-    return (ListenableFuture<Reply>) pipeline(CLIENT_SETNAME, new Command(CLIENT_SETNAME_BYTES, CLIENT_SETNAME2_BYTES, connection_name0));
+    return (CompletableFuture<Reply>) pipeline(CLIENT_SETNAME, new Command(CLIENT_SETNAME_BYTES, CLIENT_SETNAME2_BYTES, connection_name0));
   }
 
   /**
@@ -3164,9 +3164,9 @@ public class RedisClient extends RedisClientBase {
    * @param parameter0
    * @return Reply
    */
-  public ListenableFuture<Reply> config_get(Object parameter0) throws RedisException {
+  public CompletableFuture<Reply> config_get(Object parameter0) throws RedisException {
     if (version < CONFIG_GET_VERSION) throw new RedisException("Server does not support CONFIG_GET");
-    return (ListenableFuture<Reply>) pipeline(CONFIG_GET, new Command(CONFIG_GET_BYTES, CONFIG_GET2_BYTES, parameter0));
+    return (CompletableFuture<Reply>) pipeline(CONFIG_GET, new Command(CONFIG_GET_BYTES, CONFIG_GET2_BYTES, parameter0));
   }
 
   /**
@@ -3177,9 +3177,9 @@ public class RedisClient extends RedisClientBase {
    * @param value1
    * @return Reply
    */
-  public ListenableFuture<Reply> config_set(Object parameter0, Object value1) throws RedisException {
+  public CompletableFuture<Reply> config_set(Object parameter0, Object value1) throws RedisException {
     if (version < CONFIG_SET_VERSION) throw new RedisException("Server does not support CONFIG_SET");
-    return (ListenableFuture<Reply>) pipeline(CONFIG_SET, new Command(CONFIG_SET_BYTES, CONFIG_SET2_BYTES, parameter0, value1));
+    return (CompletableFuture<Reply>) pipeline(CONFIG_SET, new Command(CONFIG_SET_BYTES, CONFIG_SET2_BYTES, parameter0, value1));
   }
 
   /**
@@ -3188,9 +3188,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return Reply
    */
-  public ListenableFuture<Reply> config_resetstat() throws RedisException {
+  public CompletableFuture<Reply> config_resetstat() throws RedisException {
     if (version < CONFIG_RESETSTAT_VERSION) throw new RedisException("Server does not support CONFIG_RESETSTAT");
-    return (ListenableFuture<Reply>) pipeline(CONFIG_RESETSTAT, new Command(CONFIG_RESETSTAT_BYTES, CONFIG_RESETSTAT2_BYTES));
+    return (CompletableFuture<Reply>) pipeline(CONFIG_RESETSTAT, new Command(CONFIG_RESETSTAT_BYTES, CONFIG_RESETSTAT2_BYTES));
   }
 
   /**
@@ -3199,9 +3199,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> dbsize() throws RedisException {
+  public CompletableFuture<IntegerReply> dbsize() throws RedisException {
     if (version < DBSIZE_VERSION) throw new RedisException("Server does not support DBSIZE");
-    return (ListenableFuture<IntegerReply>) pipeline(DBSIZE, new Command(DBSIZE_BYTES));
+    return (CompletableFuture<IntegerReply>) pipeline(DBSIZE, new Command(DBSIZE_BYTES));
   }
 
   /**
@@ -3211,9 +3211,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return Reply
    */
-  public ListenableFuture<Reply> debug_object(Object key0) throws RedisException {
+  public CompletableFuture<Reply> debug_object(Object key0) throws RedisException {
     if (version < DEBUG_OBJECT_VERSION) throw new RedisException("Server does not support DEBUG_OBJECT");
-    return (ListenableFuture<Reply>) pipeline(DEBUG_OBJECT, new Command(DEBUG_OBJECT_BYTES, DEBUG_OBJECT2_BYTES, key0));
+    return (CompletableFuture<Reply>) pipeline(DEBUG_OBJECT, new Command(DEBUG_OBJECT_BYTES, DEBUG_OBJECT2_BYTES, key0));
   }
 
   /**
@@ -3222,9 +3222,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return Reply
    */
-  public ListenableFuture<Reply> debug_segfault() throws RedisException {
+  public CompletableFuture<Reply> debug_segfault() throws RedisException {
     if (version < DEBUG_SEGFAULT_VERSION) throw new RedisException("Server does not support DEBUG_SEGFAULT");
-    return (ListenableFuture<Reply>) pipeline(DEBUG_SEGFAULT, new Command(DEBUG_SEGFAULT_BYTES, DEBUG_SEGFAULT2_BYTES));
+    return (CompletableFuture<Reply>) pipeline(DEBUG_SEGFAULT, new Command(DEBUG_SEGFAULT_BYTES, DEBUG_SEGFAULT2_BYTES));
   }
 
   /**
@@ -3233,9 +3233,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> flushall() throws RedisException {
+  public CompletableFuture<StatusReply> flushall() throws RedisException {
     if (version < FLUSHALL_VERSION) throw new RedisException("Server does not support FLUSHALL");
-    return (ListenableFuture<StatusReply>) pipeline(FLUSHALL, new Command(FLUSHALL_BYTES));
+    return (CompletableFuture<StatusReply>) pipeline(FLUSHALL, new Command(FLUSHALL_BYTES));
   }
 
   /**
@@ -3244,9 +3244,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> flushdb() throws RedisException {
+  public CompletableFuture<StatusReply> flushdb() throws RedisException {
     if (version < FLUSHDB_VERSION) throw new RedisException("Server does not support FLUSHDB");
-    return (ListenableFuture<StatusReply>) pipeline(FLUSHDB, new Command(FLUSHDB_BYTES));
+    return (CompletableFuture<StatusReply>) pipeline(FLUSHDB, new Command(FLUSHDB_BYTES));
   }
 
   /**
@@ -3256,15 +3256,15 @@ public class RedisClient extends RedisClientBase {
    * @param section0
    * @return BulkReply
    */
-  public ListenableFuture<BulkReply> info(Object section0) throws RedisException {
+  public CompletableFuture<BulkReply> info(Object section0) throws RedisException {
     if (version < INFO_VERSION) throw new RedisException("Server does not support INFO");
-    return (ListenableFuture<BulkReply>) pipeline(INFO, new Command(INFO_BYTES, section0));
+    return (CompletableFuture<BulkReply>) pipeline(INFO, new Command(INFO_BYTES, section0));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<BulkReply> info_(Object... arguments) throws RedisException {
+  public CompletableFuture<BulkReply> info_(Object... arguments) throws RedisException {
     if (version < INFO_VERSION) throw new RedisException("Server does not support INFO");
-    return (ListenableFuture<BulkReply>) pipeline(INFO, new Command(INFO_BYTES, arguments));
+    return (CompletableFuture<BulkReply>) pipeline(INFO, new Command(INFO_BYTES, arguments));
   }
 
   /**
@@ -3273,9 +3273,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> lastsave() throws RedisException {
+  public CompletableFuture<IntegerReply> lastsave() throws RedisException {
     if (version < LASTSAVE_VERSION) throw new RedisException("Server does not support LASTSAVE");
-    return (ListenableFuture<IntegerReply>) pipeline(LASTSAVE, new Command(LASTSAVE_BYTES));
+    return (CompletableFuture<IntegerReply>) pipeline(LASTSAVE, new Command(LASTSAVE_BYTES));
   }
 
   /**
@@ -3284,9 +3284,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return Reply
    */
-  public ListenableFuture<Reply> monitor() throws RedisException {
+  public CompletableFuture<Reply> monitor() throws RedisException {
     if (version < MONITOR_VERSION) throw new RedisException("Server does not support MONITOR");
-    return (ListenableFuture<Reply>) pipeline(MONITOR, new Command(MONITOR_BYTES));
+    return (CompletableFuture<Reply>) pipeline(MONITOR, new Command(MONITOR_BYTES));
   }
 
   /**
@@ -3295,9 +3295,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> save() throws RedisException {
+  public CompletableFuture<StatusReply> save() throws RedisException {
     if (version < SAVE_VERSION) throw new RedisException("Server does not support SAVE");
-    return (ListenableFuture<StatusReply>) pipeline(SAVE, new Command(SAVE_BYTES));
+    return (CompletableFuture<StatusReply>) pipeline(SAVE, new Command(SAVE_BYTES));
   }
 
   /**
@@ -3308,15 +3308,15 @@ public class RedisClient extends RedisClientBase {
    * @param SAVE1
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> shutdown(Object NOSAVE0, Object SAVE1) throws RedisException {
+  public CompletableFuture<StatusReply> shutdown(Object NOSAVE0, Object SAVE1) throws RedisException {
     if (version < SHUTDOWN_VERSION) throw new RedisException("Server does not support SHUTDOWN");
-    return (ListenableFuture<StatusReply>) pipeline(SHUTDOWN, new Command(SHUTDOWN_BYTES, NOSAVE0, SAVE1));
+    return (CompletableFuture<StatusReply>) pipeline(SHUTDOWN, new Command(SHUTDOWN_BYTES, NOSAVE0, SAVE1));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<StatusReply> shutdown_(Object... arguments) throws RedisException {
+  public CompletableFuture<StatusReply> shutdown_(Object... arguments) throws RedisException {
     if (version < SHUTDOWN_VERSION) throw new RedisException("Server does not support SHUTDOWN");
-    return (ListenableFuture<StatusReply>) pipeline(SHUTDOWN, new Command(SHUTDOWN_BYTES, arguments));
+    return (CompletableFuture<StatusReply>) pipeline(SHUTDOWN, new Command(SHUTDOWN_BYTES, arguments));
   }
 
   /**
@@ -3327,9 +3327,9 @@ public class RedisClient extends RedisClientBase {
    * @param port1
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> slaveof(Object host0, Object port1) throws RedisException {
+  public CompletableFuture<StatusReply> slaveof(Object host0, Object port1) throws RedisException {
     if (version < SLAVEOF_VERSION) throw new RedisException("Server does not support SLAVEOF");
-    return (ListenableFuture<StatusReply>) pipeline(SLAVEOF, new Command(SLAVEOF_BYTES, host0, port1));
+    return (CompletableFuture<StatusReply>) pipeline(SLAVEOF, new Command(SLAVEOF_BYTES, host0, port1));
   }
 
   /**
@@ -3340,15 +3340,15 @@ public class RedisClient extends RedisClientBase {
    * @param argument1
    * @return Reply
    */
-  public ListenableFuture<Reply> slowlog(Object subcommand0, Object argument1) throws RedisException {
+  public CompletableFuture<Reply> slowlog(Object subcommand0, Object argument1) throws RedisException {
     if (version < SLOWLOG_VERSION) throw new RedisException("Server does not support SLOWLOG");
-    return (ListenableFuture<Reply>) pipeline(SLOWLOG, new Command(SLOWLOG_BYTES, subcommand0, argument1));
+    return (CompletableFuture<Reply>) pipeline(SLOWLOG, new Command(SLOWLOG_BYTES, subcommand0, argument1));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<Reply> slowlog_(Object... arguments) throws RedisException {
+  public CompletableFuture<Reply> slowlog_(Object... arguments) throws RedisException {
     if (version < SLOWLOG_VERSION) throw new RedisException("Server does not support SLOWLOG");
-    return (ListenableFuture<Reply>) pipeline(SLOWLOG, new Command(SLOWLOG_BYTES, arguments));
+    return (CompletableFuture<Reply>) pipeline(SLOWLOG, new Command(SLOWLOG_BYTES, arguments));
   }
 
   /**
@@ -3357,9 +3357,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return Reply
    */
-  public ListenableFuture<Reply> sync() throws RedisException {
+  public CompletableFuture<Reply> sync() throws RedisException {
     if (version < SYNC_VERSION) throw new RedisException("Server does not support SYNC");
-    return (ListenableFuture<Reply>) pipeline(SYNC, new Command(SYNC_BYTES));
+    return (CompletableFuture<Reply>) pipeline(SYNC, new Command(SYNC_BYTES));
   }
 
   /**
@@ -3368,9 +3368,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> time() throws RedisException {
+  public CompletableFuture<MultiBulkReply> time() throws RedisException {
     if (version < TIME_VERSION) throw new RedisException("Server does not support TIME");
-    return (ListenableFuture<MultiBulkReply>) pipeline(TIME, new Command(TIME_BYTES));
+    return (CompletableFuture<MultiBulkReply>) pipeline(TIME, new Command(TIME_BYTES));
   }
 
   /**
@@ -3380,17 +3380,17 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> blpop(Object... key0) throws RedisException {
+  public CompletableFuture<MultiBulkReply> blpop(Object... key0) throws RedisException {
     if (version < BLPOP_VERSION) throw new RedisException("Server does not support BLPOP");
     List list = new ArrayList();
     Collections.addAll(list, key0);
-    return (ListenableFuture<MultiBulkReply>) pipeline(BLPOP, new Command(BLPOP_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<MultiBulkReply>) pipeline(BLPOP, new Command(BLPOP_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> blpop_(Object... arguments) throws RedisException {
+  public CompletableFuture<MultiBulkReply> blpop_(Object... arguments) throws RedisException {
     if (version < BLPOP_VERSION) throw new RedisException("Server does not support BLPOP");
-    return (ListenableFuture<MultiBulkReply>) pipeline(BLPOP, new Command(BLPOP_BYTES, arguments));
+    return (CompletableFuture<MultiBulkReply>) pipeline(BLPOP, new Command(BLPOP_BYTES, arguments));
   }
 
   /**
@@ -3400,17 +3400,17 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> brpop(Object... key0) throws RedisException {
+  public CompletableFuture<MultiBulkReply> brpop(Object... key0) throws RedisException {
     if (version < BRPOP_VERSION) throw new RedisException("Server does not support BRPOP");
     List list = new ArrayList();
     Collections.addAll(list, key0);
-    return (ListenableFuture<MultiBulkReply>) pipeline(BRPOP, new Command(BRPOP_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<MultiBulkReply>) pipeline(BRPOP, new Command(BRPOP_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> brpop_(Object... arguments) throws RedisException {
+  public CompletableFuture<MultiBulkReply> brpop_(Object... arguments) throws RedisException {
     if (version < BRPOP_VERSION) throw new RedisException("Server does not support BRPOP");
-    return (ListenableFuture<MultiBulkReply>) pipeline(BRPOP, new Command(BRPOP_BYTES, arguments));
+    return (CompletableFuture<MultiBulkReply>) pipeline(BRPOP, new Command(BRPOP_BYTES, arguments));
   }
 
   /**
@@ -3422,9 +3422,9 @@ public class RedisClient extends RedisClientBase {
    * @param timeout2
    * @return Reply
    */
-  public ListenableFuture<Reply> brpoplpush(Object source0, Object destination1, Object timeout2) throws RedisException {
+  public CompletableFuture<Reply> brpoplpush(Object source0, Object destination1, Object timeout2) throws RedisException {
     if (version < BRPOPLPUSH_VERSION) throw new RedisException("Server does not support BRPOPLPUSH");
-    return (ListenableFuture<Reply>) pipeline(BRPOPLPUSH, new Command(BRPOPLPUSH_BYTES, source0, destination1, timeout2));
+    return (CompletableFuture<Reply>) pipeline(BRPOPLPUSH, new Command(BRPOPLPUSH_BYTES, source0, destination1, timeout2));
   }
 
   /**
@@ -3435,9 +3435,9 @@ public class RedisClient extends RedisClientBase {
    * @param index1
    * @return BulkReply
    */
-  public ListenableFuture<BulkReply> lindex(Object key0, Object index1) throws RedisException {
+  public CompletableFuture<BulkReply> lindex(Object key0, Object index1) throws RedisException {
     if (version < LINDEX_VERSION) throw new RedisException("Server does not support LINDEX");
-    return (ListenableFuture<BulkReply>) pipeline(LINDEX, new Command(LINDEX_BYTES, key0, index1));
+    return (CompletableFuture<BulkReply>) pipeline(LINDEX, new Command(LINDEX_BYTES, key0, index1));
   }
 
   /**
@@ -3450,14 +3450,14 @@ public class RedisClient extends RedisClientBase {
    * @param value3
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> linsert(Object key0, Object where1, Object pivot2, Object value3) throws RedisException {
+  public CompletableFuture<IntegerReply> linsert(Object key0, Object where1, Object pivot2, Object value3) throws RedisException {
     if (version < LINSERT_VERSION) throw new RedisException("Server does not support LINSERT");
     List list = new ArrayList();
     list.add(key0);
     list.add(where1);
     list.add(pivot2);
     list.add(value3);
-    return (ListenableFuture<IntegerReply>) pipeline(LINSERT, new Command(LINSERT_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<IntegerReply>) pipeline(LINSERT, new Command(LINSERT_BYTES, list.toArray(new Object[list.size()])));
   }
 
   /**
@@ -3467,9 +3467,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> llen(Object key0) throws RedisException {
+  public CompletableFuture<IntegerReply> llen(Object key0) throws RedisException {
     if (version < LLEN_VERSION) throw new RedisException("Server does not support LLEN");
-    return (ListenableFuture<IntegerReply>) pipeline(LLEN, new Command(LLEN_BYTES, key0));
+    return (CompletableFuture<IntegerReply>) pipeline(LLEN, new Command(LLEN_BYTES, key0));
   }
 
   /**
@@ -3479,9 +3479,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return BulkReply
    */
-  public ListenableFuture<BulkReply> lpop(Object key0) throws RedisException {
+  public CompletableFuture<BulkReply> lpop(Object key0) throws RedisException {
     if (version < LPOP_VERSION) throw new RedisException("Server does not support LPOP");
-    return (ListenableFuture<BulkReply>) pipeline(LPOP, new Command(LPOP_BYTES, key0));
+    return (CompletableFuture<BulkReply>) pipeline(LPOP, new Command(LPOP_BYTES, key0));
   }
 
   /**
@@ -3492,18 +3492,18 @@ public class RedisClient extends RedisClientBase {
    * @param value1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> lpush(Object key0, Object... value1) throws RedisException {
+  public CompletableFuture<IntegerReply> lpush(Object key0, Object... value1) throws RedisException {
     if (version < LPUSH_VERSION) throw new RedisException("Server does not support LPUSH");
     List list = new ArrayList();
     list.add(key0);
     Collections.addAll(list, value1);
-    return (ListenableFuture<IntegerReply>) pipeline(LPUSH, new Command(LPUSH_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<IntegerReply>) pipeline(LPUSH, new Command(LPUSH_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> lpush_(Object... arguments) throws RedisException {
+  public CompletableFuture<IntegerReply> lpush_(Object... arguments) throws RedisException {
     if (version < LPUSH_VERSION) throw new RedisException("Server does not support LPUSH");
-    return (ListenableFuture<IntegerReply>) pipeline(LPUSH, new Command(LPUSH_BYTES, arguments));
+    return (CompletableFuture<IntegerReply>) pipeline(LPUSH, new Command(LPUSH_BYTES, arguments));
   }
 
   /**
@@ -3514,9 +3514,9 @@ public class RedisClient extends RedisClientBase {
    * @param value1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> lpushx(Object key0, Object value1) throws RedisException {
+  public CompletableFuture<IntegerReply> lpushx(Object key0, Object value1) throws RedisException {
     if (version < LPUSHX_VERSION) throw new RedisException("Server does not support LPUSHX");
-    return (ListenableFuture<IntegerReply>) pipeline(LPUSHX, new Command(LPUSHX_BYTES, key0, value1));
+    return (CompletableFuture<IntegerReply>) pipeline(LPUSHX, new Command(LPUSHX_BYTES, key0, value1));
   }
 
   /**
@@ -3528,9 +3528,9 @@ public class RedisClient extends RedisClientBase {
    * @param stop2
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> lrange(Object key0, Object start1, Object stop2) throws RedisException {
+  public CompletableFuture<MultiBulkReply> lrange(Object key0, Object start1, Object stop2) throws RedisException {
     if (version < LRANGE_VERSION) throw new RedisException("Server does not support LRANGE");
-    return (ListenableFuture<MultiBulkReply>) pipeline(LRANGE, new Command(LRANGE_BYTES, key0, start1, stop2));
+    return (CompletableFuture<MultiBulkReply>) pipeline(LRANGE, new Command(LRANGE_BYTES, key0, start1, stop2));
   }
 
   /**
@@ -3542,9 +3542,9 @@ public class RedisClient extends RedisClientBase {
    * @param value2
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> lrem(Object key0, Object count1, Object value2) throws RedisException {
+  public CompletableFuture<IntegerReply> lrem(Object key0, Object count1, Object value2) throws RedisException {
     if (version < LREM_VERSION) throw new RedisException("Server does not support LREM");
-    return (ListenableFuture<IntegerReply>) pipeline(LREM, new Command(LREM_BYTES, key0, count1, value2));
+    return (CompletableFuture<IntegerReply>) pipeline(LREM, new Command(LREM_BYTES, key0, count1, value2));
   }
 
   /**
@@ -3556,9 +3556,9 @@ public class RedisClient extends RedisClientBase {
    * @param value2
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> lset(Object key0, Object index1, Object value2) throws RedisException {
+  public CompletableFuture<StatusReply> lset(Object key0, Object index1, Object value2) throws RedisException {
     if (version < LSET_VERSION) throw new RedisException("Server does not support LSET");
-    return (ListenableFuture<StatusReply>) pipeline(LSET, new Command(LSET_BYTES, key0, index1, value2));
+    return (CompletableFuture<StatusReply>) pipeline(LSET, new Command(LSET_BYTES, key0, index1, value2));
   }
 
   /**
@@ -3570,9 +3570,9 @@ public class RedisClient extends RedisClientBase {
    * @param stop2
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> ltrim(Object key0, Object start1, Object stop2) throws RedisException {
+  public CompletableFuture<StatusReply> ltrim(Object key0, Object start1, Object stop2) throws RedisException {
     if (version < LTRIM_VERSION) throw new RedisException("Server does not support LTRIM");
-    return (ListenableFuture<StatusReply>) pipeline(LTRIM, new Command(LTRIM_BYTES, key0, start1, stop2));
+    return (CompletableFuture<StatusReply>) pipeline(LTRIM, new Command(LTRIM_BYTES, key0, start1, stop2));
   }
 
   /**
@@ -3582,9 +3582,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return BulkReply
    */
-  public ListenableFuture<BulkReply> rpop(Object key0) throws RedisException {
+  public CompletableFuture<BulkReply> rpop(Object key0) throws RedisException {
     if (version < RPOP_VERSION) throw new RedisException("Server does not support RPOP");
-    return (ListenableFuture<BulkReply>) pipeline(RPOP, new Command(RPOP_BYTES, key0));
+    return (CompletableFuture<BulkReply>) pipeline(RPOP, new Command(RPOP_BYTES, key0));
   }
 
   /**
@@ -3595,9 +3595,9 @@ public class RedisClient extends RedisClientBase {
    * @param destination1
    * @return BulkReply
    */
-  public ListenableFuture<BulkReply> rpoplpush(Object source0, Object destination1) throws RedisException {
+  public CompletableFuture<BulkReply> rpoplpush(Object source0, Object destination1) throws RedisException {
     if (version < RPOPLPUSH_VERSION) throw new RedisException("Server does not support RPOPLPUSH");
-    return (ListenableFuture<BulkReply>) pipeline(RPOPLPUSH, new Command(RPOPLPUSH_BYTES, source0, destination1));
+    return (CompletableFuture<BulkReply>) pipeline(RPOPLPUSH, new Command(RPOPLPUSH_BYTES, source0, destination1));
   }
 
   /**
@@ -3608,18 +3608,18 @@ public class RedisClient extends RedisClientBase {
    * @param value1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> rpush(Object key0, Object... value1) throws RedisException {
+  public CompletableFuture<IntegerReply> rpush(Object key0, Object... value1) throws RedisException {
     if (version < RPUSH_VERSION) throw new RedisException("Server does not support RPUSH");
     List list = new ArrayList();
     list.add(key0);
     Collections.addAll(list, value1);
-    return (ListenableFuture<IntegerReply>) pipeline(RPUSH, new Command(RPUSH_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<IntegerReply>) pipeline(RPUSH, new Command(RPUSH_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> rpush_(Object... arguments) throws RedisException {
+  public CompletableFuture<IntegerReply> rpush_(Object... arguments) throws RedisException {
     if (version < RPUSH_VERSION) throw new RedisException("Server does not support RPUSH");
-    return (ListenableFuture<IntegerReply>) pipeline(RPUSH, new Command(RPUSH_BYTES, arguments));
+    return (CompletableFuture<IntegerReply>) pipeline(RPUSH, new Command(RPUSH_BYTES, arguments));
   }
 
   /**
@@ -3630,9 +3630,9 @@ public class RedisClient extends RedisClientBase {
    * @param value1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> rpushx(Object key0, Object value1) throws RedisException {
+  public CompletableFuture<IntegerReply> rpushx(Object key0, Object value1) throws RedisException {
     if (version < RPUSHX_VERSION) throw new RedisException("Server does not support RPUSHX");
-    return (ListenableFuture<IntegerReply>) pipeline(RPUSHX, new Command(RPUSHX_BYTES, key0, value1));
+    return (CompletableFuture<IntegerReply>) pipeline(RPUSHX, new Command(RPUSHX_BYTES, key0, value1));
   }
 
   /**
@@ -3642,17 +3642,17 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> del(Object... key0) throws RedisException {
+  public CompletableFuture<IntegerReply> del(Object... key0) throws RedisException {
     if (version < DEL_VERSION) throw new RedisException("Server does not support DEL");
     List list = new ArrayList();
     Collections.addAll(list, key0);
-    return (ListenableFuture<IntegerReply>) pipeline(DEL, new Command(DEL_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<IntegerReply>) pipeline(DEL, new Command(DEL_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> del_(Object... arguments) throws RedisException {
+  public CompletableFuture<IntegerReply> del_(Object... arguments) throws RedisException {
     if (version < DEL_VERSION) throw new RedisException("Server does not support DEL");
-    return (ListenableFuture<IntegerReply>) pipeline(DEL, new Command(DEL_BYTES, arguments));
+    return (CompletableFuture<IntegerReply>) pipeline(DEL, new Command(DEL_BYTES, arguments));
   }
 
   /**
@@ -3662,9 +3662,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return BulkReply
    */
-  public ListenableFuture<BulkReply> dump(Object key0) throws RedisException {
+  public CompletableFuture<BulkReply> dump(Object key0) throws RedisException {
     if (version < DUMP_VERSION) throw new RedisException("Server does not support DUMP");
-    return (ListenableFuture<BulkReply>) pipeline(DUMP, new Command(DUMP_BYTES, key0));
+    return (CompletableFuture<BulkReply>) pipeline(DUMP, new Command(DUMP_BYTES, key0));
   }
 
   /**
@@ -3674,9 +3674,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> exists(Object key0) throws RedisException {
+  public CompletableFuture<IntegerReply> exists(Object key0) throws RedisException {
     if (version < EXISTS_VERSION) throw new RedisException("Server does not support EXISTS");
-    return (ListenableFuture<IntegerReply>) pipeline(EXISTS, new Command(EXISTS_BYTES, key0));
+    return (CompletableFuture<IntegerReply>) pipeline(EXISTS, new Command(EXISTS_BYTES, key0));
   }
 
   /**
@@ -3687,9 +3687,9 @@ public class RedisClient extends RedisClientBase {
    * @param seconds1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> expire(Object key0, Object seconds1) throws RedisException {
+  public CompletableFuture<IntegerReply> expire(Object key0, Object seconds1) throws RedisException {
     if (version < EXPIRE_VERSION) throw new RedisException("Server does not support EXPIRE");
-    return (ListenableFuture<IntegerReply>) pipeline(EXPIRE, new Command(EXPIRE_BYTES, key0, seconds1));
+    return (CompletableFuture<IntegerReply>) pipeline(EXPIRE, new Command(EXPIRE_BYTES, key0, seconds1));
   }
 
   /**
@@ -3700,9 +3700,9 @@ public class RedisClient extends RedisClientBase {
    * @param timestamp1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> expireat(Object key0, Object timestamp1) throws RedisException {
+  public CompletableFuture<IntegerReply> expireat(Object key0, Object timestamp1) throws RedisException {
     if (version < EXPIREAT_VERSION) throw new RedisException("Server does not support EXPIREAT");
-    return (ListenableFuture<IntegerReply>) pipeline(EXPIREAT, new Command(EXPIREAT_BYTES, key0, timestamp1));
+    return (CompletableFuture<IntegerReply>) pipeline(EXPIREAT, new Command(EXPIREAT_BYTES, key0, timestamp1));
   }
 
   /**
@@ -3712,9 +3712,9 @@ public class RedisClient extends RedisClientBase {
    * @param pattern0
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> keys(Object pattern0) throws RedisException {
+  public CompletableFuture<MultiBulkReply> keys(Object pattern0) throws RedisException {
     if (version < KEYS_VERSION) throw new RedisException("Server does not support KEYS");
-    return (ListenableFuture<MultiBulkReply>) pipeline(KEYS, new Command(KEYS_BYTES, pattern0));
+    return (CompletableFuture<MultiBulkReply>) pipeline(KEYS, new Command(KEYS_BYTES, pattern0));
   }
 
   /**
@@ -3728,7 +3728,7 @@ public class RedisClient extends RedisClientBase {
    * @param timeout4
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> migrate(Object host0, Object port1, Object key2, Object destination_db3, Object timeout4) throws RedisException {
+  public CompletableFuture<StatusReply> migrate(Object host0, Object port1, Object key2, Object destination_db3, Object timeout4) throws RedisException {
     if (version < MIGRATE_VERSION) throw new RedisException("Server does not support MIGRATE");
     List list = new ArrayList();
     list.add(host0);
@@ -3736,7 +3736,7 @@ public class RedisClient extends RedisClientBase {
     list.add(key2);
     list.add(destination_db3);
     list.add(timeout4);
-    return (ListenableFuture<StatusReply>) pipeline(MIGRATE, new Command(MIGRATE_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<StatusReply>) pipeline(MIGRATE, new Command(MIGRATE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   /**
@@ -3747,9 +3747,9 @@ public class RedisClient extends RedisClientBase {
    * @param db1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> move(Object key0, Object db1) throws RedisException {
+  public CompletableFuture<IntegerReply> move(Object key0, Object db1) throws RedisException {
     if (version < MOVE_VERSION) throw new RedisException("Server does not support MOVE");
-    return (ListenableFuture<IntegerReply>) pipeline(MOVE, new Command(MOVE_BYTES, key0, db1));
+    return (CompletableFuture<IntegerReply>) pipeline(MOVE, new Command(MOVE_BYTES, key0, db1));
   }
 
   /**
@@ -3760,18 +3760,18 @@ public class RedisClient extends RedisClientBase {
    * @param arguments1
    * @return Reply
    */
-  public ListenableFuture<Reply> object(Object subcommand0, Object... arguments1) throws RedisException {
+  public CompletableFuture<Reply> object(Object subcommand0, Object... arguments1) throws RedisException {
     if (version < OBJECT_VERSION) throw new RedisException("Server does not support OBJECT");
     List list = new ArrayList();
     list.add(subcommand0);
     Collections.addAll(list, arguments1);
-    return (ListenableFuture<Reply>) pipeline(OBJECT, new Command(OBJECT_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<Reply>) pipeline(OBJECT, new Command(OBJECT_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<Reply> object_(Object... arguments) throws RedisException {
+  public CompletableFuture<Reply> object_(Object... arguments) throws RedisException {
     if (version < OBJECT_VERSION) throw new RedisException("Server does not support OBJECT");
-    return (ListenableFuture<Reply>) pipeline(OBJECT, new Command(OBJECT_BYTES, arguments));
+    return (CompletableFuture<Reply>) pipeline(OBJECT, new Command(OBJECT_BYTES, arguments));
   }
 
   /**
@@ -3781,9 +3781,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> persist(Object key0) throws RedisException {
+  public CompletableFuture<IntegerReply> persist(Object key0) throws RedisException {
     if (version < PERSIST_VERSION) throw new RedisException("Server does not support PERSIST");
-    return (ListenableFuture<IntegerReply>) pipeline(PERSIST, new Command(PERSIST_BYTES, key0));
+    return (CompletableFuture<IntegerReply>) pipeline(PERSIST, new Command(PERSIST_BYTES, key0));
   }
 
   /**
@@ -3794,9 +3794,9 @@ public class RedisClient extends RedisClientBase {
    * @param milliseconds1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> pexpire(Object key0, Object milliseconds1) throws RedisException {
+  public CompletableFuture<IntegerReply> pexpire(Object key0, Object milliseconds1) throws RedisException {
     if (version < PEXPIRE_VERSION) throw new RedisException("Server does not support PEXPIRE");
-    return (ListenableFuture<IntegerReply>) pipeline(PEXPIRE, new Command(PEXPIRE_BYTES, key0, milliseconds1));
+    return (CompletableFuture<IntegerReply>) pipeline(PEXPIRE, new Command(PEXPIRE_BYTES, key0, milliseconds1));
   }
 
   /**
@@ -3807,9 +3807,9 @@ public class RedisClient extends RedisClientBase {
    * @param milliseconds_timestamp1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> pexpireat(Object key0, Object milliseconds_timestamp1) throws RedisException {
+  public CompletableFuture<IntegerReply> pexpireat(Object key0, Object milliseconds_timestamp1) throws RedisException {
     if (version < PEXPIREAT_VERSION) throw new RedisException("Server does not support PEXPIREAT");
-    return (ListenableFuture<IntegerReply>) pipeline(PEXPIREAT, new Command(PEXPIREAT_BYTES, key0, milliseconds_timestamp1));
+    return (CompletableFuture<IntegerReply>) pipeline(PEXPIREAT, new Command(PEXPIREAT_BYTES, key0, milliseconds_timestamp1));
   }
 
   /**
@@ -3819,9 +3819,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> pttl(Object key0) throws RedisException {
+  public CompletableFuture<IntegerReply> pttl(Object key0) throws RedisException {
     if (version < PTTL_VERSION) throw new RedisException("Server does not support PTTL");
-    return (ListenableFuture<IntegerReply>) pipeline(PTTL, new Command(PTTL_BYTES, key0));
+    return (CompletableFuture<IntegerReply>) pipeline(PTTL, new Command(PTTL_BYTES, key0));
   }
 
   /**
@@ -3830,9 +3830,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return BulkReply
    */
-  public ListenableFuture<BulkReply> randomkey() throws RedisException {
+  public CompletableFuture<BulkReply> randomkey() throws RedisException {
     if (version < RANDOMKEY_VERSION) throw new RedisException("Server does not support RANDOMKEY");
-    return (ListenableFuture<BulkReply>) pipeline(RANDOMKEY, new Command(RANDOMKEY_BYTES));
+    return (CompletableFuture<BulkReply>) pipeline(RANDOMKEY, new Command(RANDOMKEY_BYTES));
   }
 
   /**
@@ -3843,9 +3843,9 @@ public class RedisClient extends RedisClientBase {
    * @param newkey1
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> rename(Object key0, Object newkey1) throws RedisException {
+  public CompletableFuture<StatusReply> rename(Object key0, Object newkey1) throws RedisException {
     if (version < RENAME_VERSION) throw new RedisException("Server does not support RENAME");
-    return (ListenableFuture<StatusReply>) pipeline(RENAME, new Command(RENAME_BYTES, key0, newkey1));
+    return (CompletableFuture<StatusReply>) pipeline(RENAME, new Command(RENAME_BYTES, key0, newkey1));
   }
 
   /**
@@ -3856,9 +3856,9 @@ public class RedisClient extends RedisClientBase {
    * @param newkey1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> renamenx(Object key0, Object newkey1) throws RedisException {
+  public CompletableFuture<IntegerReply> renamenx(Object key0, Object newkey1) throws RedisException {
     if (version < RENAMENX_VERSION) throw new RedisException("Server does not support RENAMENX");
-    return (ListenableFuture<IntegerReply>) pipeline(RENAMENX, new Command(RENAMENX_BYTES, key0, newkey1));
+    return (CompletableFuture<IntegerReply>) pipeline(RENAMENX, new Command(RENAMENX_BYTES, key0, newkey1));
   }
 
   /**
@@ -3870,9 +3870,9 @@ public class RedisClient extends RedisClientBase {
    * @param serialized_value2
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> restore(Object key0, Object ttl1, Object serialized_value2) throws RedisException {
+  public CompletableFuture<StatusReply> restore(Object key0, Object ttl1, Object serialized_value2) throws RedisException {
     if (version < RESTORE_VERSION) throw new RedisException("Server does not support RESTORE");
-    return (ListenableFuture<StatusReply>) pipeline(RESTORE, new Command(RESTORE_BYTES, key0, ttl1, serialized_value2));
+    return (CompletableFuture<StatusReply>) pipeline(RESTORE, new Command(RESTORE_BYTES, key0, ttl1, serialized_value2));
   }
 
   /**
@@ -3883,18 +3883,18 @@ public class RedisClient extends RedisClientBase {
    * @param pattern1
    * @return Reply
    */
-  public ListenableFuture<Reply> sort(Object key0, Object... pattern1) throws RedisException {
+  public CompletableFuture<Reply> sort(Object key0, Object... pattern1) throws RedisException {
     if (version < SORT_VERSION) throw new RedisException("Server does not support SORT");
     List list = new ArrayList();
     list.add(key0);
     Collections.addAll(list, pattern1);
-    return (ListenableFuture<Reply>) pipeline(SORT, new Command(SORT_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<Reply>) pipeline(SORT, new Command(SORT_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<Reply> sort_(Object... arguments) throws RedisException {
+  public CompletableFuture<Reply> sort_(Object... arguments) throws RedisException {
     if (version < SORT_VERSION) throw new RedisException("Server does not support SORT");
-    return (ListenableFuture<Reply>) pipeline(SORT, new Command(SORT_BYTES, arguments));
+    return (CompletableFuture<Reply>) pipeline(SORT, new Command(SORT_BYTES, arguments));
   }
 
   /**
@@ -3904,9 +3904,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> ttl(Object key0) throws RedisException {
+  public CompletableFuture<IntegerReply> ttl(Object key0) throws RedisException {
     if (version < TTL_VERSION) throw new RedisException("Server does not support TTL");
-    return (ListenableFuture<IntegerReply>) pipeline(TTL, new Command(TTL_BYTES, key0));
+    return (CompletableFuture<IntegerReply>) pipeline(TTL, new Command(TTL_BYTES, key0));
   }
 
   /**
@@ -3916,9 +3916,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> type(Object key0) throws RedisException {
+  public CompletableFuture<StatusReply> type(Object key0) throws RedisException {
     if (version < TYPE_VERSION) throw new RedisException("Server does not support TYPE");
-    return (ListenableFuture<StatusReply>) pipeline(TYPE, new Command(TYPE_BYTES, key0));
+    return (CompletableFuture<StatusReply>) pipeline(TYPE, new Command(TYPE_BYTES, key0));
   }
 
   /**
@@ -3927,9 +3927,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> unwatch() throws RedisException {
+  public CompletableFuture<StatusReply> unwatch() throws RedisException {
     if (version < UNWATCH_VERSION) throw new RedisException("Server does not support UNWATCH");
-    return (ListenableFuture<StatusReply>) pipeline(UNWATCH, new Command(UNWATCH_BYTES));
+    return (CompletableFuture<StatusReply>) pipeline(UNWATCH, new Command(UNWATCH_BYTES));
   }
 
   /**
@@ -3939,17 +3939,17 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> watch(Object... key0) throws RedisException {
+  public CompletableFuture<StatusReply> watch(Object... key0) throws RedisException {
     if (version < WATCH_VERSION) throw new RedisException("Server does not support WATCH");
     List list = new ArrayList();
     Collections.addAll(list, key0);
-    return (ListenableFuture<StatusReply>) pipeline(WATCH, new Command(WATCH_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<StatusReply>) pipeline(WATCH, new Command(WATCH_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<StatusReply> watch_(Object... arguments) throws RedisException {
+  public CompletableFuture<StatusReply> watch_(Object... arguments) throws RedisException {
     if (version < WATCH_VERSION) throw new RedisException("Server does not support WATCH");
-    return (ListenableFuture<StatusReply>) pipeline(WATCH, new Command(WATCH_BYTES, arguments));
+    return (CompletableFuture<StatusReply>) pipeline(WATCH, new Command(WATCH_BYTES, arguments));
   }
 
   /**
@@ -3961,19 +3961,19 @@ public class RedisClient extends RedisClientBase {
    * @param key2
    * @return Reply
    */
-  public ListenableFuture<Reply> eval(Object script0, Object numkeys1, Object... key2) throws RedisException {
+  public CompletableFuture<Reply> eval(Object script0, Object numkeys1, Object... key2) throws RedisException {
     if (version < EVAL_VERSION) throw new RedisException("Server does not support EVAL");
     List list = new ArrayList();
     list.add(script0);
     list.add(numkeys1);
     Collections.addAll(list, key2);
-    return (ListenableFuture<Reply>) pipeline(EVAL, new Command(EVAL_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<Reply>) pipeline(EVAL, new Command(EVAL_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<Reply> eval_(Object... arguments) throws RedisException {
+  public CompletableFuture<Reply> eval_(Object... arguments) throws RedisException {
     if (version < EVAL_VERSION) throw new RedisException("Server does not support EVAL");
-    return (ListenableFuture<Reply>) pipeline(EVAL, new Command(EVAL_BYTES, arguments));
+    return (CompletableFuture<Reply>) pipeline(EVAL, new Command(EVAL_BYTES, arguments));
   }
 
   /**
@@ -3985,19 +3985,19 @@ public class RedisClient extends RedisClientBase {
    * @param key2
    * @return Reply
    */
-  public ListenableFuture<Reply> evalsha(Object sha10, Object numkeys1, Object... key2) throws RedisException {
+  public CompletableFuture<Reply> evalsha(Object sha10, Object numkeys1, Object... key2) throws RedisException {
     if (version < EVALSHA_VERSION) throw new RedisException("Server does not support EVALSHA");
     List list = new ArrayList();
     list.add(sha10);
     list.add(numkeys1);
     Collections.addAll(list, key2);
-    return (ListenableFuture<Reply>) pipeline(EVALSHA, new Command(EVALSHA_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<Reply>) pipeline(EVALSHA, new Command(EVALSHA_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<Reply> evalsha_(Object... arguments) throws RedisException {
+  public CompletableFuture<Reply> evalsha_(Object... arguments) throws RedisException {
     if (version < EVALSHA_VERSION) throw new RedisException("Server does not support EVALSHA");
-    return (ListenableFuture<Reply>) pipeline(EVALSHA, new Command(EVALSHA_BYTES, arguments));
+    return (CompletableFuture<Reply>) pipeline(EVALSHA, new Command(EVALSHA_BYTES, arguments));
   }
 
   /**
@@ -4007,17 +4007,17 @@ public class RedisClient extends RedisClientBase {
    * @param script0
    * @return Reply
    */
-  public ListenableFuture<Reply> script_exists(Object... script0) throws RedisException {
+  public CompletableFuture<Reply> script_exists(Object... script0) throws RedisException {
     if (version < SCRIPT_EXISTS_VERSION) throw new RedisException("Server does not support SCRIPT_EXISTS");
     List list = new ArrayList();
     Collections.addAll(list, script0);
-    return (ListenableFuture<Reply>) pipeline(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, SCRIPT_EXISTS2_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<Reply>) pipeline(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, SCRIPT_EXISTS2_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<Reply> script_exists_(Object... arguments) throws RedisException {
+  public CompletableFuture<Reply> script_exists_(Object... arguments) throws RedisException {
     if (version < SCRIPT_EXISTS_VERSION) throw new RedisException("Server does not support SCRIPT_EXISTS");
-    return (ListenableFuture<Reply>) pipeline(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, SCRIPT_EXISTS2_BYTES, arguments));
+    return (CompletableFuture<Reply>) pipeline(SCRIPT_EXISTS, new Command(SCRIPT_EXISTS_BYTES, SCRIPT_EXISTS2_BYTES, arguments));
   }
 
   /**
@@ -4026,9 +4026,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return Reply
    */
-  public ListenableFuture<Reply> script_flush() throws RedisException {
+  public CompletableFuture<Reply> script_flush() throws RedisException {
     if (version < SCRIPT_FLUSH_VERSION) throw new RedisException("Server does not support SCRIPT_FLUSH");
-    return (ListenableFuture<Reply>) pipeline(SCRIPT_FLUSH, new Command(SCRIPT_FLUSH_BYTES, SCRIPT_FLUSH2_BYTES));
+    return (CompletableFuture<Reply>) pipeline(SCRIPT_FLUSH, new Command(SCRIPT_FLUSH_BYTES, SCRIPT_FLUSH2_BYTES));
   }
 
   /**
@@ -4037,9 +4037,9 @@ public class RedisClient extends RedisClientBase {
    *
    * @return Reply
    */
-  public ListenableFuture<Reply> script_kill() throws RedisException {
+  public CompletableFuture<Reply> script_kill() throws RedisException {
     if (version < SCRIPT_KILL_VERSION) throw new RedisException("Server does not support SCRIPT_KILL");
-    return (ListenableFuture<Reply>) pipeline(SCRIPT_KILL, new Command(SCRIPT_KILL_BYTES, SCRIPT_KILL2_BYTES));
+    return (CompletableFuture<Reply>) pipeline(SCRIPT_KILL, new Command(SCRIPT_KILL_BYTES, SCRIPT_KILL2_BYTES));
   }
 
   /**
@@ -4049,9 +4049,9 @@ public class RedisClient extends RedisClientBase {
    * @param script0
    * @return Reply
    */
-  public ListenableFuture<Reply> script_load(Object script0) throws RedisException {
+  public CompletableFuture<Reply> script_load(Object script0) throws RedisException {
     if (version < SCRIPT_LOAD_VERSION) throw new RedisException("Server does not support SCRIPT_LOAD");
-    return (ListenableFuture<Reply>) pipeline(SCRIPT_LOAD, new Command(SCRIPT_LOAD_BYTES, SCRIPT_LOAD2_BYTES, script0));
+    return (CompletableFuture<Reply>) pipeline(SCRIPT_LOAD, new Command(SCRIPT_LOAD_BYTES, SCRIPT_LOAD2_BYTES, script0));
   }
 
   /**
@@ -4062,18 +4062,18 @@ public class RedisClient extends RedisClientBase {
    * @param field1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> hdel(Object key0, Object... field1) throws RedisException {
+  public CompletableFuture<IntegerReply> hdel(Object key0, Object... field1) throws RedisException {
     if (version < HDEL_VERSION) throw new RedisException("Server does not support HDEL");
     List list = new ArrayList();
     list.add(key0);
     Collections.addAll(list, field1);
-    return (ListenableFuture<IntegerReply>) pipeline(HDEL, new Command(HDEL_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<IntegerReply>) pipeline(HDEL, new Command(HDEL_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> hdel_(Object... arguments) throws RedisException {
+  public CompletableFuture<IntegerReply> hdel_(Object... arguments) throws RedisException {
     if (version < HDEL_VERSION) throw new RedisException("Server does not support HDEL");
-    return (ListenableFuture<IntegerReply>) pipeline(HDEL, new Command(HDEL_BYTES, arguments));
+    return (CompletableFuture<IntegerReply>) pipeline(HDEL, new Command(HDEL_BYTES, arguments));
   }
 
   /**
@@ -4084,9 +4084,9 @@ public class RedisClient extends RedisClientBase {
    * @param field1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> hexists(Object key0, Object field1) throws RedisException {
+  public CompletableFuture<IntegerReply> hexists(Object key0, Object field1) throws RedisException {
     if (version < HEXISTS_VERSION) throw new RedisException("Server does not support HEXISTS");
-    return (ListenableFuture<IntegerReply>) pipeline(HEXISTS, new Command(HEXISTS_BYTES, key0, field1));
+    return (CompletableFuture<IntegerReply>) pipeline(HEXISTS, new Command(HEXISTS_BYTES, key0, field1));
   }
 
   /**
@@ -4097,9 +4097,9 @@ public class RedisClient extends RedisClientBase {
    * @param field1
    * @return BulkReply
    */
-  public ListenableFuture<BulkReply> hget(Object key0, Object field1) throws RedisException {
+  public CompletableFuture<BulkReply> hget(Object key0, Object field1) throws RedisException {
     if (version < HGET_VERSION) throw new RedisException("Server does not support HGET");
-    return (ListenableFuture<BulkReply>) pipeline(HGET, new Command(HGET_BYTES, key0, field1));
+    return (CompletableFuture<BulkReply>) pipeline(HGET, new Command(HGET_BYTES, key0, field1));
   }
 
   /**
@@ -4109,9 +4109,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> hgetall(Object key0) throws RedisException {
+  public CompletableFuture<MultiBulkReply> hgetall(Object key0) throws RedisException {
     if (version < HGETALL_VERSION) throw new RedisException("Server does not support HGETALL");
-    return (ListenableFuture<MultiBulkReply>) pipeline(HGETALL, new Command(HGETALL_BYTES, key0));
+    return (CompletableFuture<MultiBulkReply>) pipeline(HGETALL, new Command(HGETALL_BYTES, key0));
   }
 
   /**
@@ -4123,9 +4123,9 @@ public class RedisClient extends RedisClientBase {
    * @param increment2
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> hincrby(Object key0, Object field1, Object increment2) throws RedisException {
+  public CompletableFuture<IntegerReply> hincrby(Object key0, Object field1, Object increment2) throws RedisException {
     if (version < HINCRBY_VERSION) throw new RedisException("Server does not support HINCRBY");
-    return (ListenableFuture<IntegerReply>) pipeline(HINCRBY, new Command(HINCRBY_BYTES, key0, field1, increment2));
+    return (CompletableFuture<IntegerReply>) pipeline(HINCRBY, new Command(HINCRBY_BYTES, key0, field1, increment2));
   }
 
   /**
@@ -4137,9 +4137,9 @@ public class RedisClient extends RedisClientBase {
    * @param increment2
    * @return BulkReply
    */
-  public ListenableFuture<BulkReply> hincrbyfloat(Object key0, Object field1, Object increment2) throws RedisException {
+  public CompletableFuture<BulkReply> hincrbyfloat(Object key0, Object field1, Object increment2) throws RedisException {
     if (version < HINCRBYFLOAT_VERSION) throw new RedisException("Server does not support HINCRBYFLOAT");
-    return (ListenableFuture<BulkReply>) pipeline(HINCRBYFLOAT, new Command(HINCRBYFLOAT_BYTES, key0, field1, increment2));
+    return (CompletableFuture<BulkReply>) pipeline(HINCRBYFLOAT, new Command(HINCRBYFLOAT_BYTES, key0, field1, increment2));
   }
 
   /**
@@ -4149,9 +4149,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> hkeys(Object key0) throws RedisException {
+  public CompletableFuture<MultiBulkReply> hkeys(Object key0) throws RedisException {
     if (version < HKEYS_VERSION) throw new RedisException("Server does not support HKEYS");
-    return (ListenableFuture<MultiBulkReply>) pipeline(HKEYS, new Command(HKEYS_BYTES, key0));
+    return (CompletableFuture<MultiBulkReply>) pipeline(HKEYS, new Command(HKEYS_BYTES, key0));
   }
 
   /**
@@ -4161,9 +4161,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> hlen(Object key0) throws RedisException {
+  public CompletableFuture<IntegerReply> hlen(Object key0) throws RedisException {
     if (version < HLEN_VERSION) throw new RedisException("Server does not support HLEN");
-    return (ListenableFuture<IntegerReply>) pipeline(HLEN, new Command(HLEN_BYTES, key0));
+    return (CompletableFuture<IntegerReply>) pipeline(HLEN, new Command(HLEN_BYTES, key0));
   }
 
   /**
@@ -4174,18 +4174,18 @@ public class RedisClient extends RedisClientBase {
    * @param field1
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> hmget(Object key0, Object... field1) throws RedisException {
+  public CompletableFuture<MultiBulkReply> hmget(Object key0, Object... field1) throws RedisException {
     if (version < HMGET_VERSION) throw new RedisException("Server does not support HMGET");
     List list = new ArrayList();
     list.add(key0);
     Collections.addAll(list, field1);
-    return (ListenableFuture<MultiBulkReply>) pipeline(HMGET, new Command(HMGET_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<MultiBulkReply>) pipeline(HMGET, new Command(HMGET_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> hmget_(Object... arguments) throws RedisException {
+  public CompletableFuture<MultiBulkReply> hmget_(Object... arguments) throws RedisException {
     if (version < HMGET_VERSION) throw new RedisException("Server does not support HMGET");
-    return (ListenableFuture<MultiBulkReply>) pipeline(HMGET, new Command(HMGET_BYTES, arguments));
+    return (CompletableFuture<MultiBulkReply>) pipeline(HMGET, new Command(HMGET_BYTES, arguments));
   }
 
   /**
@@ -4196,18 +4196,18 @@ public class RedisClient extends RedisClientBase {
    * @param field_or_value1
    * @return StatusReply
    */
-  public ListenableFuture<StatusReply> hmset(Object key0, Object... field_or_value1) throws RedisException {
+  public CompletableFuture<StatusReply> hmset(Object key0, Object... field_or_value1) throws RedisException {
     if (version < HMSET_VERSION) throw new RedisException("Server does not support HMSET");
     List list = new ArrayList();
     list.add(key0);
     Collections.addAll(list, field_or_value1);
-    return (ListenableFuture<StatusReply>) pipeline(HMSET, new Command(HMSET_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<StatusReply>) pipeline(HMSET, new Command(HMSET_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<StatusReply> hmset_(Object... arguments) throws RedisException {
+  public CompletableFuture<StatusReply> hmset_(Object... arguments) throws RedisException {
     if (version < HMSET_VERSION) throw new RedisException("Server does not support HMSET");
-    return (ListenableFuture<StatusReply>) pipeline(HMSET, new Command(HMSET_BYTES, arguments));
+    return (CompletableFuture<StatusReply>) pipeline(HMSET, new Command(HMSET_BYTES, arguments));
   }
 
   /**
@@ -4219,9 +4219,9 @@ public class RedisClient extends RedisClientBase {
    * @param value2
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> hset(Object key0, Object field1, Object value2) throws RedisException {
+  public CompletableFuture<IntegerReply> hset(Object key0, Object field1, Object value2) throws RedisException {
     if (version < HSET_VERSION) throw new RedisException("Server does not support HSET");
-    return (ListenableFuture<IntegerReply>) pipeline(HSET, new Command(HSET_BYTES, key0, field1, value2));
+    return (CompletableFuture<IntegerReply>) pipeline(HSET, new Command(HSET_BYTES, key0, field1, value2));
   }
 
   /**
@@ -4233,9 +4233,9 @@ public class RedisClient extends RedisClientBase {
    * @param value2
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> hsetnx(Object key0, Object field1, Object value2) throws RedisException {
+  public CompletableFuture<IntegerReply> hsetnx(Object key0, Object field1, Object value2) throws RedisException {
     if (version < HSETNX_VERSION) throw new RedisException("Server does not support HSETNX");
-    return (ListenableFuture<IntegerReply>) pipeline(HSETNX, new Command(HSETNX_BYTES, key0, field1, value2));
+    return (CompletableFuture<IntegerReply>) pipeline(HSETNX, new Command(HSETNX_BYTES, key0, field1, value2));
   }
 
   /**
@@ -4245,9 +4245,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> hvals(Object key0) throws RedisException {
+  public CompletableFuture<MultiBulkReply> hvals(Object key0) throws RedisException {
     if (version < HVALS_VERSION) throw new RedisException("Server does not support HVALS");
-    return (ListenableFuture<MultiBulkReply>) pipeline(HVALS, new Command(HVALS_BYTES, key0));
+    return (CompletableFuture<MultiBulkReply>) pipeline(HVALS, new Command(HVALS_BYTES, key0));
   }
 
   /**
@@ -4258,9 +4258,9 @@ public class RedisClient extends RedisClientBase {
    * @param message1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> publish(Object channel0, Object message1) throws RedisException {
+  public CompletableFuture<IntegerReply> publish(Object channel0, Object message1) throws RedisException {
     if (version < PUBLISH_VERSION) throw new RedisException("Server does not support PUBLISH");
-    return (ListenableFuture<IntegerReply>) pipeline(PUBLISH, new Command(PUBLISH_BYTES, channel0, message1));
+    return (CompletableFuture<IntegerReply>) pipeline(PUBLISH, new Command(PUBLISH_BYTES, channel0, message1));
   }
 
   /**
@@ -4271,18 +4271,18 @@ public class RedisClient extends RedisClientBase {
    * @param member1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> sadd(Object key0, Object... member1) throws RedisException {
+  public CompletableFuture<IntegerReply> sadd(Object key0, Object... member1) throws RedisException {
     if (version < SADD_VERSION) throw new RedisException("Server does not support SADD");
     List list = new ArrayList();
     list.add(key0);
     Collections.addAll(list, member1);
-    return (ListenableFuture<IntegerReply>) pipeline(SADD, new Command(SADD_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<IntegerReply>) pipeline(SADD, new Command(SADD_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> sadd_(Object... arguments) throws RedisException {
+  public CompletableFuture<IntegerReply> sadd_(Object... arguments) throws RedisException {
     if (version < SADD_VERSION) throw new RedisException("Server does not support SADD");
-    return (ListenableFuture<IntegerReply>) pipeline(SADD, new Command(SADD_BYTES, arguments));
+    return (CompletableFuture<IntegerReply>) pipeline(SADD, new Command(SADD_BYTES, arguments));
   }
 
   /**
@@ -4292,9 +4292,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> scard(Object key0) throws RedisException {
+  public CompletableFuture<IntegerReply> scard(Object key0) throws RedisException {
     if (version < SCARD_VERSION) throw new RedisException("Server does not support SCARD");
-    return (ListenableFuture<IntegerReply>) pipeline(SCARD, new Command(SCARD_BYTES, key0));
+    return (CompletableFuture<IntegerReply>) pipeline(SCARD, new Command(SCARD_BYTES, key0));
   }
 
   /**
@@ -4304,17 +4304,17 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> sdiff(Object... key0) throws RedisException {
+  public CompletableFuture<MultiBulkReply> sdiff(Object... key0) throws RedisException {
     if (version < SDIFF_VERSION) throw new RedisException("Server does not support SDIFF");
     List list = new ArrayList();
     Collections.addAll(list, key0);
-    return (ListenableFuture<MultiBulkReply>) pipeline(SDIFF, new Command(SDIFF_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<MultiBulkReply>) pipeline(SDIFF, new Command(SDIFF_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> sdiff_(Object... arguments) throws RedisException {
+  public CompletableFuture<MultiBulkReply> sdiff_(Object... arguments) throws RedisException {
     if (version < SDIFF_VERSION) throw new RedisException("Server does not support SDIFF");
-    return (ListenableFuture<MultiBulkReply>) pipeline(SDIFF, new Command(SDIFF_BYTES, arguments));
+    return (CompletableFuture<MultiBulkReply>) pipeline(SDIFF, new Command(SDIFF_BYTES, arguments));
   }
 
   /**
@@ -4325,18 +4325,18 @@ public class RedisClient extends RedisClientBase {
    * @param key1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> sdiffstore(Object destination0, Object... key1) throws RedisException {
+  public CompletableFuture<IntegerReply> sdiffstore(Object destination0, Object... key1) throws RedisException {
     if (version < SDIFFSTORE_VERSION) throw new RedisException("Server does not support SDIFFSTORE");
     List list = new ArrayList();
     list.add(destination0);
     Collections.addAll(list, key1);
-    return (ListenableFuture<IntegerReply>) pipeline(SDIFFSTORE, new Command(SDIFFSTORE_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<IntegerReply>) pipeline(SDIFFSTORE, new Command(SDIFFSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> sdiffstore_(Object... arguments) throws RedisException {
+  public CompletableFuture<IntegerReply> sdiffstore_(Object... arguments) throws RedisException {
     if (version < SDIFFSTORE_VERSION) throw new RedisException("Server does not support SDIFFSTORE");
-    return (ListenableFuture<IntegerReply>) pipeline(SDIFFSTORE, new Command(SDIFFSTORE_BYTES, arguments));
+    return (CompletableFuture<IntegerReply>) pipeline(SDIFFSTORE, new Command(SDIFFSTORE_BYTES, arguments));
   }
 
   /**
@@ -4346,17 +4346,17 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> sinter(Object... key0) throws RedisException {
+  public CompletableFuture<MultiBulkReply> sinter(Object... key0) throws RedisException {
     if (version < SINTER_VERSION) throw new RedisException("Server does not support SINTER");
     List list = new ArrayList();
     Collections.addAll(list, key0);
-    return (ListenableFuture<MultiBulkReply>) pipeline(SINTER, new Command(SINTER_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<MultiBulkReply>) pipeline(SINTER, new Command(SINTER_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> sinter_(Object... arguments) throws RedisException {
+  public CompletableFuture<MultiBulkReply> sinter_(Object... arguments) throws RedisException {
     if (version < SINTER_VERSION) throw new RedisException("Server does not support SINTER");
-    return (ListenableFuture<MultiBulkReply>) pipeline(SINTER, new Command(SINTER_BYTES, arguments));
+    return (CompletableFuture<MultiBulkReply>) pipeline(SINTER, new Command(SINTER_BYTES, arguments));
   }
 
   /**
@@ -4367,18 +4367,18 @@ public class RedisClient extends RedisClientBase {
    * @param key1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> sinterstore(Object destination0, Object... key1) throws RedisException {
+  public CompletableFuture<IntegerReply> sinterstore(Object destination0, Object... key1) throws RedisException {
     if (version < SINTERSTORE_VERSION) throw new RedisException("Server does not support SINTERSTORE");
     List list = new ArrayList();
     list.add(destination0);
     Collections.addAll(list, key1);
-    return (ListenableFuture<IntegerReply>) pipeline(SINTERSTORE, new Command(SINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<IntegerReply>) pipeline(SINTERSTORE, new Command(SINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> sinterstore_(Object... arguments) throws RedisException {
+  public CompletableFuture<IntegerReply> sinterstore_(Object... arguments) throws RedisException {
     if (version < SINTERSTORE_VERSION) throw new RedisException("Server does not support SINTERSTORE");
-    return (ListenableFuture<IntegerReply>) pipeline(SINTERSTORE, new Command(SINTERSTORE_BYTES, arguments));
+    return (CompletableFuture<IntegerReply>) pipeline(SINTERSTORE, new Command(SINTERSTORE_BYTES, arguments));
   }
 
   /**
@@ -4389,9 +4389,9 @@ public class RedisClient extends RedisClientBase {
    * @param member1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> sismember(Object key0, Object member1) throws RedisException {
+  public CompletableFuture<IntegerReply> sismember(Object key0, Object member1) throws RedisException {
     if (version < SISMEMBER_VERSION) throw new RedisException("Server does not support SISMEMBER");
-    return (ListenableFuture<IntegerReply>) pipeline(SISMEMBER, new Command(SISMEMBER_BYTES, key0, member1));
+    return (CompletableFuture<IntegerReply>) pipeline(SISMEMBER, new Command(SISMEMBER_BYTES, key0, member1));
   }
 
   /**
@@ -4401,9 +4401,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> smembers(Object key0) throws RedisException {
+  public CompletableFuture<MultiBulkReply> smembers(Object key0) throws RedisException {
     if (version < SMEMBERS_VERSION) throw new RedisException("Server does not support SMEMBERS");
-    return (ListenableFuture<MultiBulkReply>) pipeline(SMEMBERS, new Command(SMEMBERS_BYTES, key0));
+    return (CompletableFuture<MultiBulkReply>) pipeline(SMEMBERS, new Command(SMEMBERS_BYTES, key0));
   }
 
   /**
@@ -4415,9 +4415,9 @@ public class RedisClient extends RedisClientBase {
    * @param member2
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> smove(Object source0, Object destination1, Object member2) throws RedisException {
+  public CompletableFuture<IntegerReply> smove(Object source0, Object destination1, Object member2) throws RedisException {
     if (version < SMOVE_VERSION) throw new RedisException("Server does not support SMOVE");
-    return (ListenableFuture<IntegerReply>) pipeline(SMOVE, new Command(SMOVE_BYTES, source0, destination1, member2));
+    return (CompletableFuture<IntegerReply>) pipeline(SMOVE, new Command(SMOVE_BYTES, source0, destination1, member2));
   }
 
   /**
@@ -4427,9 +4427,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return BulkReply
    */
-  public ListenableFuture<BulkReply> spop(Object key0) throws RedisException {
+  public CompletableFuture<BulkReply> spop(Object key0) throws RedisException {
     if (version < SPOP_VERSION) throw new RedisException("Server does not support SPOP");
-    return (ListenableFuture<BulkReply>) pipeline(SPOP, new Command(SPOP_BYTES, key0));
+    return (CompletableFuture<BulkReply>) pipeline(SPOP, new Command(SPOP_BYTES, key0));
   }
 
   /**
@@ -4440,15 +4440,15 @@ public class RedisClient extends RedisClientBase {
    * @param count1
    * @return Reply
    */
-  public ListenableFuture<Reply> srandmember(Object key0, Object count1) throws RedisException {
+  public CompletableFuture<Reply> srandmember(Object key0, Object count1) throws RedisException {
     if (version < SRANDMEMBER_VERSION) throw new RedisException("Server does not support SRANDMEMBER");
-    return (ListenableFuture<Reply>) pipeline(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, key0, count1));
+    return (CompletableFuture<Reply>) pipeline(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, key0, count1));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<Reply> srandmember_(Object... arguments) throws RedisException {
+  public CompletableFuture<Reply> srandmember_(Object... arguments) throws RedisException {
     if (version < SRANDMEMBER_VERSION) throw new RedisException("Server does not support SRANDMEMBER");
-    return (ListenableFuture<Reply>) pipeline(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, arguments));
+    return (CompletableFuture<Reply>) pipeline(SRANDMEMBER, new Command(SRANDMEMBER_BYTES, arguments));
   }
 
   /**
@@ -4459,18 +4459,18 @@ public class RedisClient extends RedisClientBase {
    * @param member1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> srem(Object key0, Object... member1) throws RedisException {
+  public CompletableFuture<IntegerReply> srem(Object key0, Object... member1) throws RedisException {
     if (version < SREM_VERSION) throw new RedisException("Server does not support SREM");
     List list = new ArrayList();
     list.add(key0);
     Collections.addAll(list, member1);
-    return (ListenableFuture<IntegerReply>) pipeline(SREM, new Command(SREM_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<IntegerReply>) pipeline(SREM, new Command(SREM_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> srem_(Object... arguments) throws RedisException {
+  public CompletableFuture<IntegerReply> srem_(Object... arguments) throws RedisException {
     if (version < SREM_VERSION) throw new RedisException("Server does not support SREM");
-    return (ListenableFuture<IntegerReply>) pipeline(SREM, new Command(SREM_BYTES, arguments));
+    return (CompletableFuture<IntegerReply>) pipeline(SREM, new Command(SREM_BYTES, arguments));
   }
 
   /**
@@ -4480,17 +4480,17 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> sunion(Object... key0) throws RedisException {
+  public CompletableFuture<MultiBulkReply> sunion(Object... key0) throws RedisException {
     if (version < SUNION_VERSION) throw new RedisException("Server does not support SUNION");
     List list = new ArrayList();
     Collections.addAll(list, key0);
-    return (ListenableFuture<MultiBulkReply>) pipeline(SUNION, new Command(SUNION_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<MultiBulkReply>) pipeline(SUNION, new Command(SUNION_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> sunion_(Object... arguments) throws RedisException {
+  public CompletableFuture<MultiBulkReply> sunion_(Object... arguments) throws RedisException {
     if (version < SUNION_VERSION) throw new RedisException("Server does not support SUNION");
-    return (ListenableFuture<MultiBulkReply>) pipeline(SUNION, new Command(SUNION_BYTES, arguments));
+    return (CompletableFuture<MultiBulkReply>) pipeline(SUNION, new Command(SUNION_BYTES, arguments));
   }
 
   /**
@@ -4501,18 +4501,18 @@ public class RedisClient extends RedisClientBase {
    * @param key1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> sunionstore(Object destination0, Object... key1) throws RedisException {
+  public CompletableFuture<IntegerReply> sunionstore(Object destination0, Object... key1) throws RedisException {
     if (version < SUNIONSTORE_VERSION) throw new RedisException("Server does not support SUNIONSTORE");
     List list = new ArrayList();
     list.add(destination0);
     Collections.addAll(list, key1);
-    return (ListenableFuture<IntegerReply>) pipeline(SUNIONSTORE, new Command(SUNIONSTORE_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<IntegerReply>) pipeline(SUNIONSTORE, new Command(SUNIONSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> sunionstore_(Object... arguments) throws RedisException {
+  public CompletableFuture<IntegerReply> sunionstore_(Object... arguments) throws RedisException {
     if (version < SUNIONSTORE_VERSION) throw new RedisException("Server does not support SUNIONSTORE");
-    return (ListenableFuture<IntegerReply>) pipeline(SUNIONSTORE, new Command(SUNIONSTORE_BYTES, arguments));
+    return (CompletableFuture<IntegerReply>) pipeline(SUNIONSTORE, new Command(SUNIONSTORE_BYTES, arguments));
   }
 
   /**
@@ -4522,9 +4522,9 @@ public class RedisClient extends RedisClientBase {
    * @param args
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> zadd(Object... args) throws RedisException {
+  public CompletableFuture<IntegerReply> zadd(Object... args) throws RedisException {
     if (version < ZADD_VERSION) throw new RedisException("Server does not support ZADD");
-    return (ListenableFuture<IntegerReply>) pipeline(ZADD, new Command(ZADD_BYTES, args));
+    return (CompletableFuture<IntegerReply>) pipeline(ZADD, new Command(ZADD_BYTES, args));
   }
 
   /**
@@ -4534,9 +4534,9 @@ public class RedisClient extends RedisClientBase {
    * @param key0
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> zcard(Object key0) throws RedisException {
+  public CompletableFuture<IntegerReply> zcard(Object key0) throws RedisException {
     if (version < ZCARD_VERSION) throw new RedisException("Server does not support ZCARD");
-    return (ListenableFuture<IntegerReply>) pipeline(ZCARD, new Command(ZCARD_BYTES, key0));
+    return (CompletableFuture<IntegerReply>) pipeline(ZCARD, new Command(ZCARD_BYTES, key0));
   }
 
   /**
@@ -4548,9 +4548,9 @@ public class RedisClient extends RedisClientBase {
    * @param max2
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> zcount(Object key0, Object min1, Object max2) throws RedisException {
+  public CompletableFuture<IntegerReply> zcount(Object key0, Object min1, Object max2) throws RedisException {
     if (version < ZCOUNT_VERSION) throw new RedisException("Server does not support ZCOUNT");
-    return (ListenableFuture<IntegerReply>) pipeline(ZCOUNT, new Command(ZCOUNT_BYTES, key0, min1, max2));
+    return (CompletableFuture<IntegerReply>) pipeline(ZCOUNT, new Command(ZCOUNT_BYTES, key0, min1, max2));
   }
 
   /**
@@ -4562,9 +4562,9 @@ public class RedisClient extends RedisClientBase {
    * @param member2
    * @return BulkReply
    */
-  public ListenableFuture<BulkReply> zincrby(Object key0, Object increment1, Object member2) throws RedisException {
+  public CompletableFuture<BulkReply> zincrby(Object key0, Object increment1, Object member2) throws RedisException {
     if (version < ZINCRBY_VERSION) throw new RedisException("Server does not support ZINCRBY");
-    return (ListenableFuture<BulkReply>) pipeline(ZINCRBY, new Command(ZINCRBY_BYTES, key0, increment1, member2));
+    return (CompletableFuture<BulkReply>) pipeline(ZINCRBY, new Command(ZINCRBY_BYTES, key0, increment1, member2));
   }
 
   /**
@@ -4576,19 +4576,19 @@ public class RedisClient extends RedisClientBase {
    * @param key2
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> zinterstore(Object destination0, Object numkeys1, Object... key2) throws RedisException {
+  public CompletableFuture<IntegerReply> zinterstore(Object destination0, Object numkeys1, Object... key2) throws RedisException {
     if (version < ZINTERSTORE_VERSION) throw new RedisException("Server does not support ZINTERSTORE");
     List list = new ArrayList();
     list.add(destination0);
     list.add(numkeys1);
     Collections.addAll(list, key2);
-    return (ListenableFuture<IntegerReply>) pipeline(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<IntegerReply>) pipeline(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> zinterstore_(Object... arguments) throws RedisException {
+  public CompletableFuture<IntegerReply> zinterstore_(Object... arguments) throws RedisException {
     if (version < ZINTERSTORE_VERSION) throw new RedisException("Server does not support ZINTERSTORE");
-    return (ListenableFuture<IntegerReply>) pipeline(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, arguments));
+    return (CompletableFuture<IntegerReply>) pipeline(ZINTERSTORE, new Command(ZINTERSTORE_BYTES, arguments));
   }
 
   /**
@@ -4601,20 +4601,20 @@ public class RedisClient extends RedisClientBase {
    * @param withscores3
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> zrange(Object key0, Object start1, Object stop2, Object withscores3) throws RedisException {
+  public CompletableFuture<MultiBulkReply> zrange(Object key0, Object start1, Object stop2, Object withscores3) throws RedisException {
     if (version < ZRANGE_VERSION) throw new RedisException("Server does not support ZRANGE");
     List list = new ArrayList();
     list.add(key0);
     list.add(start1);
     list.add(stop2);
     if (withscores3 != null) list.add(withscores3);
-    return (ListenableFuture<MultiBulkReply>) pipeline(ZRANGE, new Command(ZRANGE_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<MultiBulkReply>) pipeline(ZRANGE, new Command(ZRANGE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> zrange_(Object... arguments) throws RedisException {
+  public CompletableFuture<MultiBulkReply> zrange_(Object... arguments) throws RedisException {
     if (version < ZRANGE_VERSION) throw new RedisException("Server does not support ZRANGE");
-    return (ListenableFuture<MultiBulkReply>) pipeline(ZRANGE, new Command(ZRANGE_BYTES, arguments));
+    return (CompletableFuture<MultiBulkReply>) pipeline(ZRANGE, new Command(ZRANGE_BYTES, arguments));
   }
 
   /**
@@ -4628,7 +4628,7 @@ public class RedisClient extends RedisClientBase {
    * @param offset_or_count4
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> zrangebyscore(Object key0, Object min1, Object max2, Object withscores3, Object... offset_or_count4) throws RedisException {
+  public CompletableFuture<MultiBulkReply> zrangebyscore(Object key0, Object min1, Object max2, Object withscores3, Object... offset_or_count4) throws RedisException {
     if (version < ZRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZRANGEBYSCORE");
     List list = new ArrayList();
     list.add(key0);
@@ -4636,13 +4636,13 @@ public class RedisClient extends RedisClientBase {
     list.add(max2);
     if (withscores3 != null) list.add(withscores3);
     Collections.addAll(list, offset_or_count4);
-    return (ListenableFuture<MultiBulkReply>) pipeline(ZRANGEBYSCORE, new Command(ZRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<MultiBulkReply>) pipeline(ZRANGEBYSCORE, new Command(ZRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> zrangebyscore_(Object... arguments) throws RedisException {
+  public CompletableFuture<MultiBulkReply> zrangebyscore_(Object... arguments) throws RedisException {
     if (version < ZRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZRANGEBYSCORE");
-    return (ListenableFuture<MultiBulkReply>) pipeline(ZRANGEBYSCORE, new Command(ZRANGEBYSCORE_BYTES, arguments));
+    return (CompletableFuture<MultiBulkReply>) pipeline(ZRANGEBYSCORE, new Command(ZRANGEBYSCORE_BYTES, arguments));
   }
 
   /**
@@ -4653,9 +4653,9 @@ public class RedisClient extends RedisClientBase {
    * @param member1
    * @return Reply
    */
-  public ListenableFuture<Reply> zrank(Object key0, Object member1) throws RedisException {
+  public CompletableFuture<Reply> zrank(Object key0, Object member1) throws RedisException {
     if (version < ZRANK_VERSION) throw new RedisException("Server does not support ZRANK");
-    return (ListenableFuture<Reply>) pipeline(ZRANK, new Command(ZRANK_BYTES, key0, member1));
+    return (CompletableFuture<Reply>) pipeline(ZRANK, new Command(ZRANK_BYTES, key0, member1));
   }
 
   /**
@@ -4666,18 +4666,18 @@ public class RedisClient extends RedisClientBase {
    * @param member1
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> zrem(Object key0, Object... member1) throws RedisException {
+  public CompletableFuture<IntegerReply> zrem(Object key0, Object... member1) throws RedisException {
     if (version < ZREM_VERSION) throw new RedisException("Server does not support ZREM");
     List list = new ArrayList();
     list.add(key0);
     Collections.addAll(list, member1);
-    return (ListenableFuture<IntegerReply>) pipeline(ZREM, new Command(ZREM_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<IntegerReply>) pipeline(ZREM, new Command(ZREM_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> zrem_(Object... arguments) throws RedisException {
+  public CompletableFuture<IntegerReply> zrem_(Object... arguments) throws RedisException {
     if (version < ZREM_VERSION) throw new RedisException("Server does not support ZREM");
-    return (ListenableFuture<IntegerReply>) pipeline(ZREM, new Command(ZREM_BYTES, arguments));
+    return (CompletableFuture<IntegerReply>) pipeline(ZREM, new Command(ZREM_BYTES, arguments));
   }
 
   /**
@@ -4689,9 +4689,9 @@ public class RedisClient extends RedisClientBase {
    * @param stop2
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> zremrangebyrank(Object key0, Object start1, Object stop2) throws RedisException {
+  public CompletableFuture<IntegerReply> zremrangebyrank(Object key0, Object start1, Object stop2) throws RedisException {
     if (version < ZREMRANGEBYRANK_VERSION) throw new RedisException("Server does not support ZREMRANGEBYRANK");
-    return (ListenableFuture<IntegerReply>) pipeline(ZREMRANGEBYRANK, new Command(ZREMRANGEBYRANK_BYTES, key0, start1, stop2));
+    return (CompletableFuture<IntegerReply>) pipeline(ZREMRANGEBYRANK, new Command(ZREMRANGEBYRANK_BYTES, key0, start1, stop2));
   }
 
   /**
@@ -4703,9 +4703,9 @@ public class RedisClient extends RedisClientBase {
    * @param max2
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> zremrangebyscore(Object key0, Object min1, Object max2) throws RedisException {
+  public CompletableFuture<IntegerReply> zremrangebyscore(Object key0, Object min1, Object max2) throws RedisException {
     if (version < ZREMRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZREMRANGEBYSCORE");
-    return (ListenableFuture<IntegerReply>) pipeline(ZREMRANGEBYSCORE, new Command(ZREMRANGEBYSCORE_BYTES, key0, min1, max2));
+    return (CompletableFuture<IntegerReply>) pipeline(ZREMRANGEBYSCORE, new Command(ZREMRANGEBYSCORE_BYTES, key0, min1, max2));
   }
 
   /**
@@ -4718,20 +4718,20 @@ public class RedisClient extends RedisClientBase {
    * @param withscores3
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> zrevrange(Object key0, Object start1, Object stop2, Object withscores3) throws RedisException {
+  public CompletableFuture<MultiBulkReply> zrevrange(Object key0, Object start1, Object stop2, Object withscores3) throws RedisException {
     if (version < ZREVRANGE_VERSION) throw new RedisException("Server does not support ZREVRANGE");
     List list = new ArrayList();
     list.add(key0);
     list.add(start1);
     list.add(stop2);
     if (withscores3 != null) list.add(withscores3);
-    return (ListenableFuture<MultiBulkReply>) pipeline(ZREVRANGE, new Command(ZREVRANGE_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<MultiBulkReply>) pipeline(ZREVRANGE, new Command(ZREVRANGE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> zrevrange_(Object... arguments) throws RedisException {
+  public CompletableFuture<MultiBulkReply> zrevrange_(Object... arguments) throws RedisException {
     if (version < ZREVRANGE_VERSION) throw new RedisException("Server does not support ZREVRANGE");
-    return (ListenableFuture<MultiBulkReply>) pipeline(ZREVRANGE, new Command(ZREVRANGE_BYTES, arguments));
+    return (CompletableFuture<MultiBulkReply>) pipeline(ZREVRANGE, new Command(ZREVRANGE_BYTES, arguments));
   }
 
   /**
@@ -4745,7 +4745,7 @@ public class RedisClient extends RedisClientBase {
    * @param offset_or_count4
    * @return MultiBulkReply
    */
-  public ListenableFuture<MultiBulkReply> zrevrangebyscore(Object key0, Object max1, Object min2, Object withscores3, Object... offset_or_count4) throws RedisException {
+  public CompletableFuture<MultiBulkReply> zrevrangebyscore(Object key0, Object max1, Object min2, Object withscores3, Object... offset_or_count4) throws RedisException {
     if (version < ZREVRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZREVRANGEBYSCORE");
     List list = new ArrayList();
     list.add(key0);
@@ -4753,13 +4753,13 @@ public class RedisClient extends RedisClientBase {
     list.add(min2);
     if (withscores3 != null) list.add(withscores3);
     Collections.addAll(list, offset_or_count4);
-    return (ListenableFuture<MultiBulkReply>) pipeline(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<MultiBulkReply>) pipeline(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<MultiBulkReply> zrevrangebyscore_(Object... arguments) throws RedisException {
+  public CompletableFuture<MultiBulkReply> zrevrangebyscore_(Object... arguments) throws RedisException {
     if (version < ZREVRANGEBYSCORE_VERSION) throw new RedisException("Server does not support ZREVRANGEBYSCORE");
-    return (ListenableFuture<MultiBulkReply>) pipeline(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, arguments));
+    return (CompletableFuture<MultiBulkReply>) pipeline(ZREVRANGEBYSCORE, new Command(ZREVRANGEBYSCORE_BYTES, arguments));
   }
 
   /**
@@ -4770,9 +4770,9 @@ public class RedisClient extends RedisClientBase {
    * @param member1
    * @return Reply
    */
-  public ListenableFuture<Reply> zrevrank(Object key0, Object member1) throws RedisException {
+  public CompletableFuture<Reply> zrevrank(Object key0, Object member1) throws RedisException {
     if (version < ZREVRANK_VERSION) throw new RedisException("Server does not support ZREVRANK");
-    return (ListenableFuture<Reply>) pipeline(ZREVRANK, new Command(ZREVRANK_BYTES, key0, member1));
+    return (CompletableFuture<Reply>) pipeline(ZREVRANK, new Command(ZREVRANK_BYTES, key0, member1));
   }
 
   /**
@@ -4783,9 +4783,9 @@ public class RedisClient extends RedisClientBase {
    * @param member1
    * @return BulkReply
    */
-  public ListenableFuture<BulkReply> zscore(Object key0, Object member1) throws RedisException {
+  public CompletableFuture<BulkReply> zscore(Object key0, Object member1) throws RedisException {
     if (version < ZSCORE_VERSION) throw new RedisException("Server does not support ZSCORE");
-    return (ListenableFuture<BulkReply>) pipeline(ZSCORE, new Command(ZSCORE_BYTES, key0, member1));
+    return (CompletableFuture<BulkReply>) pipeline(ZSCORE, new Command(ZSCORE_BYTES, key0, member1));
   }
 
   /**
@@ -4797,19 +4797,19 @@ public class RedisClient extends RedisClientBase {
    * @param key2
    * @return IntegerReply
    */
-  public ListenableFuture<IntegerReply> zunionstore(Object destination0, Object numkeys1, Object... key2) throws RedisException {
+  public CompletableFuture<IntegerReply> zunionstore(Object destination0, Object numkeys1, Object... key2) throws RedisException {
     if (version < ZUNIONSTORE_VERSION) throw new RedisException("Server does not support ZUNIONSTORE");
     List list = new ArrayList();
     list.add(destination0);
     list.add(numkeys1);
     Collections.addAll(list, key2);
-    return (ListenableFuture<IntegerReply>) pipeline(ZUNIONSTORE, new Command(ZUNIONSTORE_BYTES, list.toArray(new Object[list.size()])));
+    return (CompletableFuture<IntegerReply>) pipeline(ZUNIONSTORE, new Command(ZUNIONSTORE_BYTES, list.toArray(new Object[list.size()])));
   }
 
   // Varargs version to simplify commands with optional or multiple arguments
-  public ListenableFuture<IntegerReply> zunionstore_(Object... arguments) throws RedisException {
+  public CompletableFuture<IntegerReply> zunionstore_(Object... arguments) throws RedisException {
     if (version < ZUNIONSTORE_VERSION) throw new RedisException("Server does not support ZUNIONSTORE");
-    return (ListenableFuture<IntegerReply>) pipeline(ZUNIONSTORE, new Command(ZUNIONSTORE_BYTES, arguments));
+    return (CompletableFuture<IntegerReply>) pipeline(ZUNIONSTORE, new Command(ZUNIONSTORE_BYTES, arguments));
   }
   }
 }

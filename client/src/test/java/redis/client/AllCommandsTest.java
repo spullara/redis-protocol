@@ -1,7 +1,6 @@
 package redis.client;
 
 import com.google.common.base.Charsets;
-import com.google.common.util.concurrent.ListenableFuture;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -12,6 +11,7 @@ import redis.reply.StatusReply;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import static junit.framework.Assert.assertEquals;
@@ -342,11 +342,11 @@ public class AllCommandsTest {
     eq(a("one", "5", "three", "9", "two", "10"), rc.zrange_("out", 0, -1, WITHSCORES));
   }
 
-  private void eq(Object[] a, ListenableFuture<MultiBulkReply> out) throws ExecutionException, InterruptedException {
+  private void eq(Object[] a, CompletableFuture<MultiBulkReply> out) throws ExecutionException, InterruptedException {
     eq(a, out.get());
   }
 
-  private void eq(int i, ListenableFuture<IntegerReply> zadd) throws ExecutionException, InterruptedException {
+  private void eq(int i, CompletableFuture<IntegerReply> zadd) throws ExecutionException, InterruptedException {
     eq(i, zadd.get());
   }
 
