@@ -25,6 +25,7 @@ public class SimpleRedisServer implements RedisServer {
   private BytesKeyObjectMap<Object> data = new BytesKeyObjectMap<Object>();
   private BytesKeyObjectMap<Long> expires = new BytesKeyObjectMap<Long>();
   private static int[] mask = {128, 64, 32, 16, 8, 4, 2, 1};
+  private static int DATABASE_ID = 0;
 
   private static RedisException invalidValue() {
     return new RedisException("Operation against a key holding the wrong kind of value");
@@ -816,6 +817,10 @@ public class SimpleRedisServer implements RedisServer {
    */
   @Override
   public StatusReply select(byte[] index0) throws RedisException {
+    final int databaseId = Integer.parseInt(new String(index0));
+    if (DATABASE_ID == databaseId) {
+      return OK;
+    }
     throw new RedisException("Not supported");
   }
 
