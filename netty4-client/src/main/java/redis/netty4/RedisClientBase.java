@@ -34,12 +34,9 @@ public class RedisClientBase {
             new SimpleChannelInboundHandler<Reply<?>>() {
               @Override
               protected void channelRead0(ChannelHandlerContext channelHandlerContext, Reply<?> reply) throws Exception {
-                Promise<Reply> poll;
-                synchronized (client) {
-                  poll = queue.poll();
-                  if (poll == null) {
-                    throw new IllegalStateException("Promise queue is empty, received reply");
-                  }
+                Promise<Reply> poll = queue.poll();
+                if (poll == null) {
+                  throw new IllegalStateException("Promise queue is empty, received reply");
                 }
                 poll.set(reply);
               }
@@ -49,12 +46,15 @@ public class RedisClientBase {
     return promise;
   }
 
-  public Promise<Reply> send(Command command) {
-    Promise<Reply> reply = new Promise<>();
-    synchronized (this) {
-      queue.add(reply);
-      socketChannel.write(command);
-    }
+  public Promise<Reply> send(final Command command) {
+    final Promise<Reply> reply = new Promise<>();
+    socketChannel.eventLoop().execute(new Runnable() {
+      @Override
+      public void run() {
+        queue.add(reply);
+        socketChannel.writeAndFlush(command);
+      }
+    });
     return reply;
   }
 }

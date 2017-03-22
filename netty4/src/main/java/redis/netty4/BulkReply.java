@@ -28,7 +28,7 @@ public class BulkReply implements Reply<ByteBuf> {
 
   public BulkReply(ByteBuf bytes) {
     this.bytes = bytes;
-    capacity = bytes.capacity();
+    capacity = bytes == null ? -1 : bytes.readableBytes();
   }
 
   @Override
