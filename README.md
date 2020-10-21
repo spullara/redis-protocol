@@ -1,32 +1,35 @@
-A very fast Redis client for the JVM.
+# A very fast Redis client for the JVM.
 
-Description of each module:
+### Description of each module:
 
-redisgen/
+* redisgen/
   Scrapes the redis.io/commands page and produce various typed clients and servers, very extensible
-
-util/
+  
+* util/
   Some common encoding and data structures
-client/
-  Leverages the protocol module for encoding and decoding. Supports both synchronous
-  and asynchronous pipelined requests from the RedisClient. Supports 2.6 commands.
-protocol/
-  Redis protocol encoder / decoder based on input/outputstreams. This is the
-  fastest implementation if blocking i/o is ok for your use case.
-benchmark/
+  
+* client/
+  Leverages the protocol module for encoding and decoding. Supports both synchronous and asynchronous pipelined requests from the RedisClient. Supports 2.6 commands.
+  
+* protocol/
+  Redis protocol encoder / decoder based on input/outputstreams. This is the fastest implementation if blocking i/o is ok for your use case.
+  
+* benchmark/
   A redis-benchmark clone that uses this Java client for comparison testing.
-
-netty/
+  
+* netty/
   A netty 3.5.X compatible codecs for building Redis clients
-netty-client/
+  
+* netty-client/
   Complete client except for MULTI/EXEC.
-
-netty4/
+  
+* netty4/
   A netty 4.0.0.Alpha1 compatible codec for building Redis clients
-netty4-server/
+  
+* netty4-server/
   A very high performance in-JVM memory redis server clone
-
-util/
+  
+* util/
   Some library functions used by both the blocking client and the netty clients
 
 In the experiments branch you can find:
@@ -68,7 +71,7 @@ Various redis client benchmarks
     - netty 4, custom codec
     - 5.08 MB/s
     - 19,601 sps
-  - redis-benchmark -n 1000000 -c 1 -r 1000000 set test test
+  - `redis-benchmark -n 1000000 -c 1 -r 1000000 set test test`
     - C client included with distribution
     - 5.53 MB/s
     - 22,055 sps
@@ -94,9 +97,7 @@ Copyright 2012 Sam Pullara
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
+   You may obtain a copy of the License [here](http://www.apache.org/licenses/LICENSE-2.0).
 
    Unless required by applicable law or agreed to in writing, software
    distributed under the License is distributed on an "AS IS" BASIS,
